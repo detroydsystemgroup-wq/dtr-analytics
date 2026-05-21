@@ -735,6 +735,24 @@ const SUPABASE_KEY = 'ВСТАВЬ_СВОЙ_PUBLISHABLE_KEY_СЮДА'
 const ANTHROPIC_KEY = 'ВСТАВЬ_СВОЙ_ANTHROPIC_KEY_СЮДА'
 
 // Ensure keys are ASCII only
+// Fix non-ASCII headers in Supabase SDK
+const _origFetch = window.fetch
+window.fetch = function(url, init) {
+  if (init && init.headers && typeof init.headers === 'object' && !(init.headers instanceof Headers)) {
+    const safe = {}
+    for (const k in init.headers) {
+      const v = init.headers[k]
+      let sv = ''
+      for (let i = 0; i < String(v).length; i++) {
+        const c = String(v).charCodeAt(i)
+        sv += c < 128 ? String(v)[i] : ''
+      }
+      safe[k] = sv || String(v)
+    }
+    init = Object.assign({}, init, {headers: safe})
+  }
+  return _origFetch.call(window, url, init)
+}
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY.trim())
 
 // ══════════════════════════════════════════════
