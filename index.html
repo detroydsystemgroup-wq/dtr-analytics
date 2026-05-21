@@ -734,7 +734,8 @@ const SUPABASE_URL = 'https://ygxfvmpfhrfxqzoylddo.supabase.co'
 const SUPABASE_KEY = 'ВСТАВЬ_СВОЙ_PUBLISHABLE_KEY_СЮДА'
 const ANTHROPIC_KEY = 'ВСТАВЬ_СВОЙ_ANTHROPIC_KEY_СЮДА'
 
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+// Ensure keys are ASCII only
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY.trim())
 
 // ══════════════════════════════════════════════
 // STATE
