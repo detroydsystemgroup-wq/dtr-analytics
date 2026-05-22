@@ -1062,9 +1062,11 @@ async function openReport(id) {
       }
     })
     updateCounter()
-    if (S['b1'] && S['d1']) g('go-btn').disabled = false
-    // Auto-run if we have data
-    if (S['b1'] && S['d1']) runAnalysis()
+    if (S['b1'] && S['d1']) {
+      g('go-btn').disabled = false
+      // Auto-run analysis when files are loaded from DB
+      setTimeout(() => runAnalysis(), 300)
+    }
   }
 }
 
