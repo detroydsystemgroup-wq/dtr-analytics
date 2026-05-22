@@ -1009,20 +1009,50 @@ async function loadReports() {
     .eq('project_id', currentProject.id)
     .order('created_at', { ascending: false })
 
+  // Filter hidden reports for clients
+  const isClient = await checkIsClient()
+  const visible = isClient ? (data || []).filter(r => !r.hidden_for_client) : (data || [])
+
   const list = g('reports-list')
-  if (!data?.length) {
+  if (!visible.length) {
     list.innerHTML = `<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-title">Нет отчётов</div><div class="empty-sub">Создай первый отчёт для этого проекта</div></div>`
     return
   }
-  list.innerHTML = data.map(r => `
+  list.innerHTML = visible.map(r => `
     <div class="report-card" onclick="openReport('${r.id}')">
       <div class="report-card-head">
         <div class="report-title">${r.title}</div>
-        <span class="${r.status === 'published' ? 'badge-published' : 'badge-draft'}">${r.status === 'published' ? 'Опубликован' : 'Черновик'}</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="${r.status === 'published' ? 'badge-published' : 'badge-draft'}">${r.status === 'published' ? 'Опубликован' : 'Черновик'}</span>
+          <button onclick="event.stopPropagation();deleteReport('${r.id}','${r.title.replace(/'/g,"\'")}')" style="background:transparent;border:1px solid rgba(255,61,107,.25);border-radius:7px;padding:3px 9px;color:var(--red);font-size:10px;font-family:'JetBrains Mono',monospace;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(255,61,107,.1)'" onmouseout="this.style.background='transparent'">удалить</button>
+        </div>
       </div>
       <div class="report-periods">${r.period_b_label || '—'} vs ${r.period_d_label || '—'}</div>
       <div class="report-meta">${new Date(r.created_at).toLocaleDateString('ru-RU', {day:'2-digit',month:'long',year:'numeric'})}</div>
     </div>`).join('')
+}
+
+async function deleteReport(id, title) {
+  const isClient = await checkIsClient()
+  if (isClient) {
+    // Client — just hide the report locally
+    if (!confirm(`Скрыть отчёт "${title}"?`)) return
+    await sb.from('reports').update({ hidden_for_client: true }).eq('id', id)
+  } else {
+    // Agency — real delete
+    if (!confirm(`Удалить отчёт "${title}"?\nВсе файлы тоже удалятся.`)) return
+    await sb.from('report_files').delete().eq('report_id', id)
+    await sb.from('reports').delete().eq('id', id)
+  }
+  loadReports()
+}
+
+async function checkIsClient() {
+  const { data } = await sb.from('projects')
+    .select('id')
+    .eq('client_login', currentUser.email)
+    .single()
+  return !!data
 }
 
 function openCreateReport() {
