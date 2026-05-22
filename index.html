@@ -290,7 +290,7 @@ input[type=file]{display:none;}
   <div class="app-main">
     <div class="dash-header">
       <div class="dash-title">Проекты</div>
-      <button class="btn-primary" style="width:auto;padding:11px 22px;" onclick="openCreateProject()">
+      <button class="btn-primary agency-only" style="width:auto;padding:11px 22px;" onclick="openCreateProject()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Новый проект
       </button>
@@ -318,7 +318,7 @@ input[type=file]{display:none;}
     </div>
   </header>
   <div class="app-main">
-    <div class="back-btn" onclick="showPage('page-dashboard');loadProjects()">
+    <div class="back-btn agency-only" onclick="showPage('page-dashboard');loadProjects()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
       Назад к проектам
     </div>
@@ -854,13 +854,29 @@ async function doLogout() {
   showPage('page-login')
 }
 
-function afterLogin() {
+async function afterLogin() {
   const name = currentUser.user_metadata?.login_name || currentUser.user_metadata?.full_name || currentUser.email.split('@')[0]
   set('header-user', name)
   set('header-user2', name)
   set('header-user3', name)
-  showPage('page-dashboard')
-  loadProjects()
+
+  // Check if this user is a client (has a project linked to their email)
+  const { data: clientProject } = await sb.from('projects')
+    .select('*')
+    .eq('client_login', currentUser.email)
+    .single()
+
+  if (clientProject) {
+    // Client — go directly to their project, hide agency controls
+    document.querySelectorAll('.agency-only').forEach(el => el.style.display = 'none')
+    currentProject = clientProject
+    showPage('page-project')
+    loadReports()
+  } else {
+    // Agency — normal dashboard
+    showPage('page-dashboard')
+    loadProjects()
+  }
 }
 
 // Check session on load
