@@ -963,7 +963,7 @@ const SUPABASE_KEY = 'ВСТАВЬ_СВОЙ_PUBLISHABLE_KEY_СЮДА'
 const ANTHROPIC_KEY = 'ВСТАВЬ_СВОЙ_ANTHROPIC_KEY_СЮДА'
 
 // Ensure keys are ASCII only
-const _safeKey = SUPABASE_KEY.trim().replace(/[^\x20-\x7E]/g, '')
+const _safeKey = SUPABASE_KEY.trim()
 const sb = supabase.createClient(SUPABASE_URL, _safeKey)
 
 // ══════════════════════════════════════════════
