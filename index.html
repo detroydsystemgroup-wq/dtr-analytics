@@ -1451,10 +1451,15 @@ function renderBranch() {
   // Rating
   const rEl=g('branch-rating'); rEl.innerHTML=''
   if(!stats.length) return
-  const byGr=[...stats].sort((x,y)=>y.gr-x.gr)
-  const byRev=[...stats].sort((x,y)=>y.dRpd-x.dRpd)
-  [{icon:'🏆',label:'Лучший рост',s:byGr[0],extra:`▲ ${Math.abs(byGr[0]?.gr||0).toFixed(1)}%`},{icon:'🔥',label:'Лидер выручки',s:byRev[0],extra:`${fmtM(Math.round(byRev[0]?.dRpd||0))}/день`},{icon:'📉',label:'Требует внимания',s:byGr[byGr.length-1],extra:`${(byGr[byGr.length-1]?.gr||0)>=0?'▲':'▼'} ${Math.abs(byGr[byGr.length-1]?.gr||0).toFixed(1)}%`}].forEach(c=>{
-    if(!c.s)return
+  const byGr = [...stats].sort((x,y) => y.gr - x.gr)
+  const byRev = [...stats].sort((x,y) => y.dRpd - x.dRpd)
+  const ratingItems = [
+    {icon:'🏆', label:'Лучший рост', s:byGr[0], extra:'▲ '+Math.abs((byGr[0]||{gr:0}).gr).toFixed(1)+'%'},
+    {icon:'🔥', label:'Лидер выручки', s:byRev[0], extra:fmtM(Math.round(((byRev[0]||{dRpd:0}).dRpd)))+'/день'},
+    {icon:'📉', label:'Требует внимания', s:byGr[byGr.length-1], extra:((byGr[byGr.length-1]||{gr:0}).gr>=0?'▲':'▼')+' '+Math.abs(((byGr[byGr.length-1]||{gr:0}).gr)).toFixed(1)+'%'}
+  ]
+  ratingItems.forEach(c => {
+    if(!c.s) return
     rEl.innerHTML+=`<div style="background:var(--bg4);border:1px solid var(--brd);border-radius:14px;padding:18px;position:relative;overflow:hidden;transition:transform .2s;" onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform=''"><div style="position:absolute;top:0;left:0;right:0;height:2px;background:${c.s.col};"></div><div style="font-size:24px;margin-bottom:8px;">${c.icon}</div><div style="font-size:9px;color:var(--txt2);font-family:'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;">${c.label}</div><div style="font-family:'Bebas Neue';font-size:22px;color:${c.s.col};margin-bottom:4px;">${c.s.name}</div><div style="font-size:11px;color:var(--txt2);font-family:'JetBrains Mono',monospace;">${c.extra}</div></div>`
   })
 }
