@@ -1050,12 +1050,13 @@ async function openReport(id) {
   if (files?.length) {
     files.forEach(f => {
       if (f.parsed_data) {
-        S[f.template_type] = f.parsed_data
-        const zoneKey = f.template_type.replace('_', '')
         // Map: daily_b -> b1, daily_d -> d1, hourly_b -> b2, etc.
         const map = {daily_b:'b1',daily_d:'d1',hourly_b:'b2',hourly_d:'d2',items_b:'b3',items_d:'d3',types_b:'b4',types_d:'d4',branch_b:'b5',branch_d:'d5'}
         const k = map[f.template_type]
         if (k) {
+          S[k] = f.parsed_data  // Store with short key (b1, d1, etc.)
+          if (k === 'b1') { LABEL_B = f.parsed_data.meta?.period_label || buildLabel(f.parsed_data.meta) }
+          if (k === 'd1') { LABEL_D = f.parsed_data.meta?.period_label || buildLabel(f.parsed_data.meta) }
           const z = g('z-'+k); if (z) z.classList.add('done')
           const ok = g('ok-'+k); if (ok) { ok.textContent = '✓ '+f.file_name.slice(0,20); ok.style.display = 'block' }
         }
