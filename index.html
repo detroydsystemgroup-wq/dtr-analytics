@@ -942,15 +942,9 @@ async function createProject() {
   btn.disabled = true
   btn.innerHTML = '<span class="spinner"></span>Создаём...'
 
-  // Create client Supabase auth account
+  // Skip auth account creation - managed manually in Supabase Dashboard
   const clientEmail = clientLogin + '@' + AGENCY_DOMAIN
-  const { data: signUpData, error: signUpError } = await sb.auth.signUp({
-    email: clientEmail,
-    password: clientPass,
-    options: { data: { full_name: name, login_name: clientLogin, role: 'client', agency_id: currentUser.id } }
-  })
-
-  let clientUserId = signUpData?.user?.id || null
+  let clientUserId = null
 
   // Create project record (even if client signup failed - agency can still see it)
   const { data: proj, error } = await sb.from('projects').insert({
@@ -1111,6 +1105,9 @@ function processFile(file, key) {
 
       // Save to Supabase
       if (currentReport) {
+        // Refresh session before saving
+        const { data: { session } } = await sb.auth.getSession()
+        if (!session) { console.warn('No session - skipping save'); return }
         await sb.from('report_files').upsert({
           report_id: currentReport.id,
           template_type: templateType,
