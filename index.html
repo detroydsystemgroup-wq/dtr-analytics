@@ -330,7 +330,7 @@ input[type=file]{display:none;}
           <div class="project-big-desc" id="proj-desc">—</div>
         </div>
       </div>
-      <button class="btn-primary" style="width:auto;padding:11px 22px;" onclick="openCreateReport()">
+      <button class="btn-primary agency-only" style="width:auto;padding:11px 22px;" onclick="openCreateReport()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Новый отчёт
       </button>
@@ -870,6 +870,11 @@ async function afterLogin() {
     // Client — go directly to their project, hide agency controls
     document.querySelectorAll('.agency-only').forEach(el => el.style.display = 'none')
     currentProject = clientProject
+    // Set project header
+    const pi = g('proj-icon')
+    if (pi) { pi.style.cssText = `background:${clientProject.brand_color}22;border:1px solid ${clientProject.brand_color}44;color:${clientProject.brand_color};width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:26px;`; pi.textContent = clientProject.name[0] }
+    set('proj-name', clientProject.name)
+    set('proj-desc', clientProject.description || '')
     showPage('page-project')
     loadReports()
   } else {
@@ -1018,13 +1023,18 @@ async function loadReports() {
     list.innerHTML = `<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-title">Нет отчётов</div><div class="empty-sub">Создай первый отчёт для этого проекта</div></div>`
     return
   }
+  // Update agency-only visibility based on role
+  if (isClient) {
+    document.querySelectorAll('.agency-only').forEach(el => el.style.display = 'none')
+  }
+
   list.innerHTML = visible.map(r => `
     <div class="report-card" onclick="openReport('${r.id}')">
       <div class="report-card-head">
         <div class="report-title">${r.title}</div>
         <div style="display:flex;align-items:center;gap:8px;">
           <span class="${r.status === 'published' ? 'badge-published' : 'badge-draft'}">${r.status === 'published' ? 'Опубликован' : 'Черновик'}</span>
-          <button onclick="event.stopPropagation();deleteReport('${r.id}','${r.title.replace(/'/g,"\'")}')" style="background:transparent;border:1px solid rgba(255,61,107,.25);border-radius:7px;padding:3px 9px;color:var(--red);font-size:10px;font-family:'JetBrains Mono',monospace;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(255,61,107,.1)'" onmouseout="this.style.background='transparent'">удалить</button>
+          <button onclick="event.stopPropagation();deleteReport('${r.id}','${r.title.replace(/'/g,"\'")}',this)" style="background:transparent;border:1px solid rgba(255,61,107,.25);border-radius:7px;padding:3px 9px;color:var(--red);font-size:10px;font-family:'JetBrains Mono',monospace;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(255,61,107,.1)'" onmouseout="this.style.background='transparent'" class="del-report-btn">удалить</button>
         </div>
       </div>
       <div class="report-periods">${r.period_b_label || '—'} vs ${r.period_d_label || '—'}</div>
