@@ -1120,15 +1120,11 @@ function processFile(file, key) {
         }, { onConflict: 'report_id,template_type' })
 
         if (key === 'b1') await sb.from('reports').update({
-          period_b_label: LABEL_B,
-          period_b_from: parsed.meta.dateFrom,
-          period_b_to: parsed.meta.dateTo
+          period_b_label: LABEL_B
         }).eq('id', currentReport.id)
 
         if (key === 'd1') await sb.from('reports').update({
-          period_d_label: LABEL_D,
-          period_d_from: parsed.meta.dateFrom,
-          period_d_to: parsed.meta.dateTo
+          period_d_label: LABEL_D
         }).eq('id', currentReport.id)
       }
 
