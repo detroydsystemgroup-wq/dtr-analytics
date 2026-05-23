@@ -9588,64 +9588,89 @@ function showSQLHint() {
 
 
 <style id="dtr-pill-head">
-/* ── Pill head system ── */
+/* ── Pill head system — fixed square pills ── */
 .pcard-head {
   display: flex !important;
-  align-items: stretch !important;
+  align-items: flex-start !important;
   gap: 8px !important;
   margin-bottom: 16px !important;
 }
 
+/* Пилюля 1: фото — строго квадрат 72×72 */
 .pcard-pill-photo {
-  width: 68px !important;
-  min-height: 68px !important;
-  border-radius: 13px !important;
+  width: 72px !important;
+  height: 72px !important;
+  min-width: 72px !important;
+  min-height: 72px !important;
+  max-width: 72px !important;
+  max-height: 72px !important;
+  border-radius: 14px !important;
   overflow: hidden !important;
   flex-shrink: 0 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  transition: transform .3s cubic-bezier(.34,1.56,.64,1) !important;
-  box-shadow: 0 4px 16px rgba(0,0,0,.3) !important;
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,.35) !important;
 }
 .pcard:hover .pcard-pill-photo {
-  transform: scale(1.04) !important;
+  transform: scale(1.06) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.5) !important;
+}
+.pcard-pill-photo img {
+  width: 72px !important;
+  height: 72px !important;
+  object-fit: cover !important;
+  display: block !important;
 }
 
+/* Пилюля 2: средний блок — растягивается */
 .pcard-pill-info {
   flex: 1 !important;
+  height: 72px !important;
   background: rgba(255,255,255,.03) !important;
   border: 1px solid rgba(255,255,255,.07) !important;
-  border-radius: 13px !important;
-  padding: 11px 13px !important;
+  border-radius: 14px !important;
+  padding: 10px 13px !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: space-between !important;
   min-width: 0 !important;
-  gap: 8px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
   transition: border-color .2s !important;
 }
 .pcard:hover .pcard-pill-info {
-  border-color: rgba(255,255,255,.11) !important;
+  border-color: rgba(255,255,255,.12) !important;
 }
 
+/* Пилюля 3: прогресс — строго квадрат 72×72 */
 .pcard-pill-pct {
-  width: 74px !important;
+  width: 72px !important;
+  height: 72px !important;
+  min-width: 72px !important;
+  min-height: 72px !important;
+  max-width: 72px !important;
+  max-height: 72px !important;
   flex-shrink: 0 !important;
-  border-radius: 13px !important;
-  padding: 11px 12px !important;
+  border-radius: 14px !important;
+  padding: 10px 11px !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   justify-content: space-between !important;
-  transition: all .25s !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  transition: filter .25s, transform .25s !important;
 }
 .pcard:hover .pcard-pill-pct {
-  filter: brightness(1.15) !important;
+  filter: brightness(1.2) !important;
+  transform: scale(1.02) !important;
 }
 
-/* Override old pct-hero */
+/* Hide old hero */
 .pcard-pct-hero { display: none !important; }
+.pcard-icon { display: none !important; }
 </style>
 
 </body>
