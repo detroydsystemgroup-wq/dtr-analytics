@@ -1209,6 +1209,262 @@ input[type=file] { display: none; }
 /* Header fade in */
 .app-header { animation: fadeIn .3s ease both; }
 
+/* ══════════════════════════════════════════════
+   TRACKER — Project Status Timeline
+══════════════════════════════════════════════ */
+.tracker-wrap { margin: 32px 0; }
+
+.tracker-progress-card {
+  background: var(--bg3);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-lg);
+  padding: 22px 26px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.tracker-progress-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--a), var(--a2), var(--cyan));
+}
+.tracker-progress-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 14px;
+}
+.tracker-progress-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--txt3);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.tracker-progress-pct {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  color: var(--a2);
+}
+.tracker-bar-track {
+  height: 5px;
+  background: var(--bg5);
+  border-radius: 3px;
+  overflow: visible;
+  position: relative;
+  margin-bottom: 10px;
+}
+.tracker-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--a), var(--a2));
+  transition: width .7s cubic-bezier(.16,1,.3,1);
+  position: relative;
+}
+.tracker-bar-fill::after {
+  content: '';
+  position: absolute;
+  right: -4px; top: -3.5px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--a2);
+  box-shadow: 0 0 10px rgba(91,95,199,.7);
+  transition: opacity .3s;
+}
+.tracker-bar-fill[style*="width: 0"]::after,
+.tracker-bar-fill[style*="width:0"]::after { opacity: 0; }
+.tracker-stages-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--txt3);
+}
+
+/* Timeline */
+.tracker-timeline { display: flex; flex-direction: column; }
+
+.tracker-stage { display: flex; gap: 14px; }
+
+.tracker-stage-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 34px;
+}
+.tracker-dot {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  position: relative; z-index: 1;
+  transition: all .3s cubic-bezier(.16,1,.3,1);
+}
+.tracker-dot.t-done { background: rgba(74,222,128,.12); border: 1.5px solid var(--green); color: var(--green); }
+.tracker-dot.t-active {
+  background: rgba(91,95,199,.18);
+  border: 1.5px solid var(--a2);
+  color: var(--a2);
+  box-shadow: 0 0 0 4px rgba(91,95,199,.12);
+}
+.tracker-dot.t-pending { background: var(--bg4); border: 1.5px solid var(--brd2); color: var(--txt3); }
+
+.tracker-connector {
+  width: 1.5px;
+  flex: 1;
+  min-height: 14px;
+  margin: 3px 0;
+  border-radius: 1px;
+  background: var(--brd);
+  transition: background .4s;
+}
+.tracker-connector.t-done { background: rgba(74,222,128,.25); }
+
+.tracker-stage-card {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-md);
+  padding: 13px 17px;
+  margin-bottom: 10px;
+  transition: border-color .2s, background .2s, transform .2s;
+  position: relative;
+  overflow: hidden;
+}
+.tracker-stage-card.t-active {
+  border-color: rgba(91,95,199,.3);
+  background: rgba(91,95,199,.05);
+}
+.tracker-stage-card.t-done {
+  border-color: rgba(74,222,128,.18);
+  background: rgba(74,222,128,.03);
+}
+.tracker-stage-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  opacity: 0;
+  transition: opacity .3s;
+}
+.tracker-stage-card.t-active::before { background: linear-gradient(90deg, var(--a), var(--a2)); opacity: 1; }
+.tracker-stage-card.t-done::before { background: var(--green); opacity: 1; }
+
+.tracker-stage-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.tracker-stage-name-wrap { display: flex; align-items: center; gap: 8px; }
+.tracker-stage-icon { font-size: 15px; flex-shrink: 0; }
+.tracker-stage-name {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  color: var(--txt);
+}
+.tracker-stage-name.t-pending { color: var(--txt2); font-weight: 400; }
+
+.tracker-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+.tracker-badge.t-done { background: rgba(74,222,128,.1); color: var(--green); }
+.tracker-badge.t-active { background: rgba(91,95,199,.15); color: var(--a2); }
+.tracker-badge.t-pending { background: var(--bg5); color: var(--txt3); }
+
+.tracker-stage-body { margin-top: 8px; }
+.tracker-note-text {
+  font-size: 12px;
+  color: var(--txt2);
+  line-height: 1.6;
+  padding-top: 8px;
+  border-top: 1px solid var(--brd);
+  margin-top: 6px;
+}
+.tracker-meta-row {
+  display: flex; align-items: center; gap: 12px;
+  flex-wrap: wrap; margin-top: 6px;
+}
+.tracker-meta-chip {
+  display: flex; align-items: center; gap: 4px;
+  font-family: var(--font-mono); font-size: 10px; color: var(--txt3);
+}
+.tracker-link-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--a2);
+  background: rgba(91,95,199,.1);
+  border: 1px solid rgba(91,95,199,.2);
+  border-radius: var(--r-xs);
+  padding: 3px 10px;
+  text-decoration: none;
+  transition: all .15s; cursor: pointer;
+}
+.tracker-link-chip:hover { background: rgba(91,95,199,.2); color: var(--a3); }
+
+.tracker-edit-btn {
+  background: transparent;
+  border: 1px solid var(--brd);
+  border-radius: var(--r-xs);
+  padding: 4px 11px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: .06em;
+  color: var(--txt3);
+  cursor: pointer;
+  transition: all .15s;
+  flex-shrink: 0;
+}
+.tracker-edit-btn:hover {
+  border-color: var(--brd2); color: var(--txt2); background: var(--bg4);
+}
+
+/* Stage status selector in modal */
+.stage-status-btn {
+  flex: 1;
+  padding: 10px 6px;
+  background: var(--bg4);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-sm);
+  color: var(--txt2);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .15s;
+  text-align: center;
+}
+.stage-status-btn:hover { border-color: var(--brd2); color: var(--txt); }
+.stage-status-btn.ssb-active { background: rgba(91,95,199,.18); border-color: rgba(91,95,199,.45); color: var(--a2); }
+
+/* History log */
+.history-log { }
+.history-item {
+  display: flex; gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--brd);
+}
+.history-item:last-child { border-bottom: none; }
+.history-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--a);
+  margin-top: 5px; flex-shrink: 0;
+}
+.history-text { font-size: 12px; color: var(--txt2); line-height: 1.5; }
+.history-time { font-family: var(--font-mono); font-size: 10px; color: var(--txt3); margin-top: 3px; }
+
 /* Auth card subtle shimmer on the top line */
 .auth-card::after {
   content: '';
@@ -1355,6 +1611,34 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
         Новый отчёт
       </button>
     </div>
+    <!-- ── TRACKER ── -->
+    <div class="tracker-wrap">
+      <div class="section-head" style="margin-bottom:16px;">
+        <div class="section-title">Статус проекта</div>
+      </div>
+      <div class="tracker-progress-card">
+        <div class="tracker-progress-labels">
+          <div>
+            <div class="tracker-progress-title">Прогресс выполнения</div>
+            <div class="tracker-stages-label" id="tracker-stages-label" style="margin-top:4px;">Загрузка...</div>
+          </div>
+          <div class="tracker-progress-pct" id="tracker-pct">0%</div>
+        </div>
+        <div class="tracker-bar-track">
+          <div class="tracker-bar-fill" id="tracker-bar" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="tracker-timeline" id="tracker-timeline"></div>
+      <div id="tracker-history-section" style="margin-top:28px;display:none;">
+        <div class="section-head" style="margin-bottom:12px;">
+          <div class="section-title">История изменений</div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r-md);padding:4px 18px;">
+          <div class="history-log" id="tracker-history"></div>
+        </div>
+      </div>
+    </div>
+
     <div class="reports-section">
       <div class="section-head"><div class="section-title">Отчёты</div></div>
       <div id="reports-list"></div>
@@ -1745,6 +2029,31 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
   </div>
 </div>
 
+<!-- MODAL: EDIT STAGE (agency only) -->
+<div class="modal-overlay" id="modal-stage">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-title" id="stage-modal-title">Этап</div>
+    <div style="margin-bottom:18px;">
+      <div style="font-size:10px;font-family:Manrope,sans-serif;color:var(--txt3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;">Статус этапа</div>
+      <div style="display:flex;gap:8px;">
+        <button class="stage-status-btn" data-status="pending" onclick="selectStageStatus('pending')">⏳ Ожидает</button>
+        <button class="stage-status-btn" data-status="active" onclick="selectStageStatus('active')">🔵 В работе</button>
+        <button class="stage-status-btn" data-status="completed" onclick="selectStageStatus('completed')">✅ Завершён</button>
+      </div>
+    </div>
+    <div class="field"><label>Заметка для клиента</label><input type="text" id="stage-note-inp" placeholder="Например: собрали данные за 3 месяца"></div>
+    <div class="field"><label>Дата завершения (план)</label><input type="date" id="stage-deadline-inp"></div>
+    <div class="field"><label>Ссылка на материал (опционально)</label><input type="url" id="stage-link-inp" placeholder="https://drive.google.com/..."></div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-stage')">Отмена</button>
+      <button class="btn-primary" style="flex:1;" onclick="saveStage()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Сохранить
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ══════════════════════════════════════════════
 // CONFIG — замени на свои ключи
@@ -1755,6 +2064,49 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const AGENCY_DOMAIN = 'dtr.agency'
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+// ══════════════════════════════════════════════
+// TRACKER CONFIG
+// ══════════════════════════════════════════════
+// SUPABASE SQL (выполни в SQL Editor → New Query):
+/*
+CREATE TABLE IF NOT EXISTS project_stages (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  project_id uuid REFERENCES projects(id) ON DELETE CASCADE,
+  stage_index integer NOT NULL,
+  status text DEFAULT 'pending',
+  note text,
+  deadline date,
+  link text,
+  completed_at timestamptz,
+  updated_at timestamptz DEFAULT now(),
+  updated_by uuid
+);
+CREATE TABLE IF NOT EXISTS stage_history (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  project_id uuid REFERENCES projects(id) ON DELETE CASCADE,
+  stage_index integer NOT NULL,
+  event text NOT NULL,
+  note text,
+  created_at timestamptz DEFAULT now()
+);
+ALTER TABLE project_stages ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "allow_all_stages" ON project_stages FOR ALL USING (true) WITH CHECK (true);
+ALTER TABLE stage_history ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "allow_all_history" ON stage_history FOR ALL USING (true) WITH CHECK (true);
+*/
+
+const STAGES = [
+  { icon: '🔍', name: 'Анализ клиентских данных' },
+  { icon: '🏆', name: 'Анализ конкурентов' },
+  { icon: '📝', name: 'Разработка контент стратегии' },
+  { icon: '🎯', name: 'Разработка таргет стратегии' },
+  { icon: '📅', name: 'Разработка контент плана' },
+  { icon: '✍️', name: 'Написание сценариев' },
+  { icon: '🎬', name: 'Съёмки раунд 1' },
+  { icon: '🎥', name: 'Съёмки раунд 2' },
+  { icon: '📊', name: 'Подготовка отчётности' },
+]
 
 // ══════════════════════════════════════════════
 // STATE
@@ -1768,6 +2120,13 @@ let LABEL_B = 'Период 1'
 let LABEL_D = 'Период 2'
 let activeBranches = new Set()
 const BCOLS = ['#5b3ef5','#00e5a3','#0dcfff','#ffb627','#f040c0','#ff3d6b','#8b6fff','#34d399']
+
+// Tracker state
+let trackerData = []
+let editingStageIndex = null
+let selectedStageStatus = 'pending'
+let trackerChannel = null
+let _isClientCache = null
 
 // ══════════════════════════════════════════════
 // UTILS
@@ -1880,6 +2239,7 @@ async function afterLogin() {
     // Client — go directly to their project, hide agency controls
     document.querySelectorAll('.agency-only').forEach(el => el.style.display = 'none')
     currentProject = clientProject
+    _isClientCache = true
     // Set project header
     const pi = g('proj-icon')
     if (pi) { pi.style.cssText = `background:${clientProject.brand_color}22;border:1px solid ${clientProject.brand_color}44;color:${clientProject.brand_color};width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:Manrope,sans-serif;font-size:26px;`; pi.textContent = clientProject.name[0] }
@@ -1887,6 +2247,7 @@ async function afterLogin() {
     set('proj-desc', clientProject.description || '')
     showPage('page-project')
     loadReports()
+    loadTracker()
   } else {
     // Agency — normal dashboard
     showPage('page-dashboard')
@@ -2014,8 +2375,10 @@ async function openProject(id) {
   g('proj-icon').textContent = p.name[0]
   set('proj-name', p.name)
   set('proj-desc', p.description || 'Нет описания')
+  _isClientCache = false
   showPage('page-project')
   loadReports()
+  loadTracker()
 }
 
 async function loadReports() {
@@ -2598,6 +2961,207 @@ ${LABEL_D} (${dD} дн): выручка/день ${fmtM(Math.round(dRD))} | че
   btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 100 .49"/></svg> Обновить анализ'
   btn.style.opacity = '1'
   aiRunning = false
+}
+
+// ══════════════════════════════════════════════
+// TRACKER
+// ══════════════════════════════════════════════
+async function loadTracker() {
+  const { data: stages } = await sb.from('project_stages')
+    .select('*')
+    .eq('project_id', currentProject.id)
+    .order('stage_index')
+  trackerData = stages || []
+
+  const { data: hist } = await sb.from('stage_history')
+    .select('*')
+    .eq('project_id', currentProject.id)
+    .order('created_at', { ascending: false })
+    .limit(25)
+
+  renderTracker()
+  renderHistory(hist || [])
+  setupRealtimeTracker()
+}
+
+function renderTracker() {
+  const tl = g('tracker-timeline')
+  if (!tl) return
+
+  const completed = trackerData.filter(s => s.status === 'completed').length
+  const pct = Math.round((completed / 9) * 100)
+  if (g('tracker-pct')) g('tracker-pct').textContent = pct + '%'
+  if (g('tracker-bar')) g('tracker-bar').style.width = pct + '%'
+  if (g('tracker-stages-label')) g('tracker-stages-label').textContent =
+    completed === 0 ? 'Проект ещё не начат' :
+    completed === 9 ? '🎉 Все этапы завершены' :
+    `${completed} из 9 этапов завершено`
+
+  // Determine if client (use cache to avoid async in render)
+  const hideEdit = _isClientCache === true
+
+  tl.innerHTML = STAGES.map((stage, i) => {
+    const rec = trackerData.find(r => r.stage_index === i) || { status: 'pending' }
+    const st = rec.status || 'pending'
+    const isLast = i === 8
+
+    const dotInner = st === 'completed'
+      ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
+      : st === 'active'
+      ? `<div style="width:9px;height:9px;border-radius:50%;background:var(--a2);animation:pulse 2s ease infinite;"></div>`
+      : `<div style="width:6px;height:6px;border-radius:50%;background:var(--brd2);"></div>`
+
+    const badgeLabel = st === 'completed' ? 'Завершён' : st === 'active' ? 'В работе' : 'Ожидает'
+
+    let meta = ''
+    if (rec.deadline) {
+      const d = new Date(rec.deadline)
+      const dateStr = d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })
+      meta += `<div class="tracker-meta-chip">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        ${st === 'completed' ? 'Выполнено' : 'Срок'}: ${dateStr}
+      </div>`
+    }
+
+    const noteHtml = rec.note
+      ? `<div class="tracker-note-text">💬 ${rec.note}</div>` : ''
+
+    const linkHtml = rec.link
+      ? `<div style="margin-top:8px;">
+          <a href="${rec.link}" target="_blank" class="tracker-link-chip">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Открыть материал
+          </a>
+        </div>` : ''
+
+    const editBtn = hideEdit ? '' :
+      `<button class="tracker-edit-btn" onclick="openEditStage(${i})">Изменить</button>`
+
+    return `<div class="tracker-stage">
+      <div class="tracker-stage-left">
+        <div class="tracker-dot t-${st}">${dotInner}</div>
+        ${!isLast ? `<div class="tracker-connector ${st === 'completed' ? 't-done' : ''}"></div>` : ''}
+      </div>
+      <div class="tracker-stage-card t-${st}" style="margin-bottom:${isLast ? '0' : '10px'};">
+        <div class="tracker-stage-head">
+          <div class="tracker-stage-name-wrap">
+            <span class="tracker-stage-icon">${stage.icon}</span>
+            <span class="tracker-stage-name${st === 'pending' ? ' t-pending' : ''}">${stage.name}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="tracker-badge t-${st}">${badgeLabel}</span>
+            ${editBtn}
+          </div>
+        </div>
+        ${meta || noteHtml || linkHtml ? `<div class="tracker-stage-body">
+          ${meta ? `<div class="tracker-meta-row">${meta}</div>` : ''}
+          ${noteHtml}
+          ${linkHtml}
+        </div>` : ''}
+      </div>
+    </div>`
+  }).join('')
+}
+
+function renderHistory(hist) {
+  const sec = g('tracker-history-section')
+  const log = g('tracker-history')
+  if (!hist.length) { if (sec) sec.style.display = 'none'; return }
+  if (sec) sec.style.display = 'block'
+  if (!log) return
+  const eventColors = { 'Начат': 'var(--a2)', 'Завершён': 'var(--green)', 'Возвращён в ожидание': 'var(--amber)' }
+  log.innerHTML = hist.map(h => {
+    const d = new Date(h.created_at)
+    const stageName = STAGES[h.stage_index]?.name || '—'
+    const col = eventColors[h.event] || 'var(--a2)'
+    return `<div class="history-item">
+      <div class="history-dot" style="background:${col};"></div>
+      <div>
+        <div class="history-text">
+          <b style="color:var(--txt);">${stageName}</b>
+          <span style="color:${col};"> — ${h.event}</span>
+        </div>
+        ${h.note ? `<div class="history-text" style="color:var(--txt3);margin-top:2px;">«${h.note}»</div>` : ''}
+        <div class="history-time">${d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })} · ${d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}</div>
+      </div>
+    </div>`
+  }).join('')
+}
+
+function setupRealtimeTracker() {
+  if (trackerChannel) { try { sb.removeChannel(trackerChannel) } catch(e){} trackerChannel = null }
+  trackerChannel = sb.channel('tracker-' + currentProject.id)
+    .on('postgres_changes', {
+      event: '*', schema: 'public', table: 'project_stages',
+      filter: 'project_id=eq.' + currentProject.id
+    }, () => { loadTracker() })
+    .subscribe()
+}
+
+function openEditStage(i) {
+  editingStageIndex = i
+  const rec = trackerData.find(r => r.stage_index === i) || {}
+  g('stage-modal-title').textContent = STAGES[i].icon + ' ' + STAGES[i].name
+  g('stage-note-inp').value = rec.note || ''
+  g('stage-deadline-inp').value = rec.deadline || ''
+  g('stage-link-inp').value = rec.link || ''
+  selectedStageStatus = rec.status || 'pending'
+  updateStageStatusBtns()
+  g('modal-stage').classList.add('open')
+}
+
+function selectStageStatus(status) {
+  selectedStageStatus = status
+  updateStageStatusBtns()
+}
+
+function updateStageStatusBtns() {
+  document.querySelectorAll('.stage-status-btn').forEach(btn => {
+    btn.classList.toggle('ssb-active', btn.dataset.status === selectedStageStatus)
+  })
+}
+
+async function saveStage() {
+  if (editingStageIndex === null) return
+  const note = g('stage-note-inp').value.trim()
+  const deadline = g('stage-deadline-inp').value || null
+  const link = g('stage-link-inp').value.trim() || null
+  const existing = trackerData.find(r => r.stage_index === editingStageIndex)
+  const prevStatus = existing?.status || 'pending'
+
+  const payload = {
+    project_id: currentProject.id,
+    stage_index: editingStageIndex,
+    status: selectedStageStatus,
+    note: note || null,
+    deadline,
+    link,
+    updated_at: new Date().toISOString(),
+    updated_by: currentUser.id,
+    completed_at: selectedStageStatus === 'completed'
+      ? (existing?.completed_at || new Date().toISOString())
+      : null
+  }
+
+  if (existing) {
+    await sb.from('project_stages').update(payload).eq('id', existing.id)
+  } else {
+    await sb.from('project_stages').insert(payload)
+  }
+
+  // Log history if status changed
+  if (prevStatus !== selectedStageStatus) {
+    const eventMap = { active: 'Начат', completed: 'Завершён', pending: 'Возвращён в ожидание' }
+    await sb.from('stage_history').insert({
+      project_id: currentProject.id,
+      stage_index: editingStageIndex,
+      event: eventMap[selectedStageStatus] || selectedStageStatus,
+      note: note || null
+    })
+  }
+
+  closeModal('modal-stage')
+  loadTracker()
 }
 
 // ══════════════════════════════════════════════
