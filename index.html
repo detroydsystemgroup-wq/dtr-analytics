@@ -3577,6 +3577,8 @@ async function openProject(id) {
   set('proj-name', p.name)
   set('proj-desc', p.description || 'Нет описания')
   _isClientCache = false
+  // Ensure agency controls are visible (may have been hidden if navigating)
+  document.querySelectorAll('.agency-only').forEach(el => el.style.display = '')
   showPage('page-project')
   loadReports()
   loadSMMReports()
@@ -3589,8 +3591,8 @@ async function loadReports() {
     .eq('project_id', currentProject.id)
     .order('created_at', { ascending: false })
 
-  // Filter hidden reports for clients
-  const isClient = await checkIsClient()
+  // Use cached role — don't re-query DB (checkIsClient can cause false positives)
+  const isClient = _isClientCache === true
   const visible = isClient ? (data || []).filter(r => !r.hidden_for_client) : (data || [])
 
   const list = g('reports-list')
@@ -3598,10 +3600,7 @@ async function loadReports() {
     list.innerHTML = `<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-title">Нет отчётов</div><div class="empty-sub">Создай первый отчёт для этого проекта</div></div>`
     return
   }
-  // Update agency-only visibility based on role
-  if (isClient) {
-    document.querySelectorAll('.agency-only').forEach(el => el.style.display = 'none')
-  }
+  // Agency-only visibility is already handled in afterLogin/openProject
 
   list.innerHTML = visible.map(r => `
     <div class="report-card" onclick="openReport('${r.id}')">
@@ -3618,7 +3617,7 @@ async function loadReports() {
 }
 
 async function deleteReport(id, title) {
-  const isClient = await checkIsClient()
+  const isClient = _isClientCache === true
   if (isClient) {
     // Client — just hide the report locally
     if (!confirm(`Скрыть отчёт "${title}"?`)) return
