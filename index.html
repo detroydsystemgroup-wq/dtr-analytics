@@ -8126,30 +8126,35 @@ document.addEventListener('DOMContentLoaded', () => {
 .cc-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px 10px 18px;
+  gap: 10px;
+  padding: 12px 10px 14px;
   margin-bottom: 8px;
   border-bottom: 1px solid rgba(255,255,255,.05);
   position: relative;
 }
 .cc-brand-avatar {
-  width: 46px;
-  height: 46px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #6366f1, #7c3aed);
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Manrope', sans-serif;
-  font-size: 20px;
-  font-weight: 800;
-  color: #fff;
   flex-shrink: 0;
-  box-shadow: 0 4px 16px rgba(99,102,241,.45);
+  padding: 0;
+  overflow: visible;
+}
+.cc-brand-avatar img {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 8px;
+  object-fit: contain;
+  display: block;
 }
 .cc-brand-name {
   font-family: 'Manrope', sans-serif;
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 800;
   letter-spacing: -.02em;
   color: #f1f1f3;
