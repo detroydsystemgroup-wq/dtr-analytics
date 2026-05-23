@@ -4677,151 +4677,7 @@ input, select, textarea {
 </style>
 
 
-<style id="dtr-dl-pro">
-@keyframes dlDotPulse{0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,.5)}50%{box-shadow:0 0 0 5px rgba(251,191,36,0)}}
-@keyframes dlIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-@keyframes dlSlide{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
 
-.dl-command-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:16px 0 18px;border-bottom:1px solid rgba(99,102,241,.08);margin-bottom:18px;animation:dlIn .4s cubic-bezier(.16,1,.3,1) both}
-.dl-search-wrap{display:flex;align-items:center;gap:9px;background:rgba(14,14,22,.95);border:1px solid rgba(99,102,241,.12);border-radius:12px;padding:10px 14px;flex:1;min-width:180px;max-width:260px;transition:border-color .2s,box-shadow .2s;color:rgba(99,102,241,.4)}
-.dl-search-wrap:focus-within{border-color:rgba(99,102,241,.35);box-shadow:0 0 0 3px rgba(99,102,241,.08)}
-.dl-search-inp{background:transparent;border:none;outline:none;font-family:'Inter',sans-serif;font-size:13px;color:#f0eeff;flex:1;min-width:0}
-.dl-search-inp::placeholder{color:rgba(99,102,241,.3)}
-.dl-proj-filter-wrap{display:flex;align-items:center;gap:8px;background:rgba(14,14,22,.95);border:1px solid rgba(99,102,241,.12);border-radius:12px;padding:10px 14px;color:rgba(99,102,241,.4);transition:border-color .2s}
-.dl-proj-select{background:transparent;border:none;outline:none;font-family:'Inter',sans-serif;font-size:13px;color:rgba(161,159,200,.8);cursor:pointer;min-width:120px}
-.dl-proj-select option{background:#0e0e16;color:#f0eeff}
-.dl-date-wrap{display:flex;align-items:center;gap:8px;background:rgba(14,14,22,.95);border:1px solid rgba(99,102,241,.12);border-radius:12px;padding:10px 14px;color:rgba(99,102,241,.4);transition:border-color .2s}
-.dl-date-wrap:focus-within{border-color:rgba(99,102,241,.35)}
-.dl-date-inp{background:transparent;border:none;outline:none;font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(161,159,200,.8);cursor:pointer;width:110px;color-scheme:dark}
-.dl-date-sep{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(99,102,241,.25)}
-.dl-status-pills{display:flex;align-items:center;gap:4px;background:rgba(14,14,22,.9);border:1px solid rgba(99,102,241,.1);border-radius:12px;padding:5px}
-.dl-pill{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;background:transparent;border:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;color:rgba(120,100,255,.45);cursor:pointer;transition:all .18s;white-space:nowrap}
-.dl-pill:hover{color:rgba(161,159,200,.8);background:rgba(99,102,241,.08)}
-.dl-pill.dl-pill-active{background:rgba(99,102,241,.15);color:#f0eeff;box-shadow:inset 0 0 0 1px rgba(99,102,241,.25)}
-.dl-pill-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.dl-view-toggle{display:flex;gap:3px;background:rgba(14,14,22,.9);border:1px solid rgba(99,102,241,.1);border-radius:10px;padding:4px}
-.dl-view-btn{width:32px;height:32px;border-radius:7px;background:transparent;border:none;color:rgba(99,102,241,.4);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s}
-.dl-view-btn:hover{background:rgba(99,102,241,.1);color:rgba(161,159,200,.8)}
-.dl-view-btn.dl-view-active{background:rgba(99,102,241,.18);color:#818cf8;box-shadow:inset 0 0 0 1px rgba(99,102,241,.25)}
-.dl-reset-btn{display:flex;align-items:center;justify-content:center;width:32px;height:32px;padding:0;background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.18);border-radius:7px;color:#f87171;cursor:pointer;transition:all .18s;flex-shrink:0}
-.dl-reset-btn:hover{background:rgba(248,113,113,.14);border-color:rgba(248,113,113,.3)}
-
-.dl-stats-strip{display:flex;align-items:center;background:rgba(14,14,22,.9);border:1px solid rgba(99,102,241,.08);border-radius:16px;padding:0 6px;margin-bottom:20px;overflow:hidden;animation:dlIn .5s .05s cubic-bezier(.16,1,.3,1) both}
-.dl-stat-item{flex:1;padding:16px 18px;text-align:center;transition:background .18s}
-.dl-stat-item:hover{background:rgba(99,102,241,.04)}
-.dl-stat-val{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;letter-spacing:-.04em;line-height:1;margin-bottom:4px;font-variant-numeric:tabular-nums}
-.dl-stat-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(99,102,241,.4);letter-spacing:.14em;text-transform:uppercase}
-.dl-stat-div{width:1px;height:36px;background:rgba(99,102,241,.08);flex-shrink:0}
-
-.deadline-panel{display:flex;flex-direction:column;gap:0;width:100%;max-width:100%}
-.dl-week-group{margin-bottom:32px;animation:dlSlide .4s cubic-bezier(.16,1,.3,1) both}
-.dl-week-group:nth-child(1){animation-delay:.04s}.dl-week-group:nth-child(2){animation-delay:.08s}.dl-week-group:nth-child(3){animation-delay:.12s}.dl-week-group:nth-child(4){animation-delay:.16s}
-.dl-week-title{display:flex;align-items:center;gap:12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(99,102,241,.45);letter-spacing:.18em;text-transform:uppercase;padding-bottom:12px;margin-bottom:8px;border-bottom:1px solid rgba(99,102,241,.08)}
-.dl-week-count{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);border-radius:20px;padding:2px 8px;font-size:9px;color:rgba(99,102,241,.6);letter-spacing:.06em}
-
-.dl-item{
-  display:flex;
-  align-items:stretch;
-  background:rgba(14,14,22,.92);
-  border:1px solid rgba(99,102,241,.09);
-  border-radius:16px;
-  margin-bottom:10px;
-  overflow:hidden;
-  transition:all .25s cubic-bezier(.16,1,.3,1);
-  cursor:pointer;
-  animation:dlIn .35s cubic-bezier(.16,1,.3,1) both;
-  position:relative;
-  width:100%;
-  box-sizing:border-box;
-}
-.dl-item::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(99,102,241,.3),transparent);opacity:0;transition:opacity .25s;z-index:1}
-.dl-item:hover{border-color:rgba(99,102,241,.24);box-shadow:0 10px 36px rgba(0,0,0,.4),0 0 24px rgba(99,102,241,.07);transform:translateY(-2px)}
-.dl-item:hover::before{opacity:1}
-.dl-item.dl-overdue{border-color:rgba(248,113,113,.16)}
-.dl-item.dl-overdue:hover{border-color:rgba(248,113,113,.32);box-shadow:0 10px 36px rgba(0,0,0,.4),0 0 24px rgba(248,113,113,.08)}
-.dl-item.dl-today{border-color:rgba(251,191,36,.16)}
-.dl-item.dl-today:hover{border-color:rgba(251,191,36,.32)}
-.dl-item.dl-done{opacity:.4}
-.dl-item-stripe{display:none}
-.dl-dot{display:none}
-.dl-divider{width:1px;background:rgba(99,102,241,.08);flex-shrink:0;align-self:stretch}
-
-/* DATE */
-.dl-date-col{
-  flex:0 0 76px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:18px 8px;text-align:center;
-  background:rgba(99,102,241,.04);
-  flex-shrink:0;
-}
-.dl-date-day{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
-.dl-date-mon{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;margin-top:3px;opacity:.45}
-.dl-date-dow{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;margin-top:2px;opacity:.25}
-
-/* INFO */
-.dl-info{
-  flex:1;
-  display:flex;flex-direction:column;justify-content:center;
-  padding:16px 20px;gap:6px;min-width:0;overflow:hidden;
-}
-.dl-stage{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;color:#f0eeff;display:flex;align-items:center;gap:8px;line-height:1.3;min-width:0}
-.dl-stage-icon{font-size:15px;flex-shrink:0}
-.dl-stage-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dl-info-meta{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;overflow:hidden}
-.dl-project-chip{display:inline-flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 9px;border-radius:20px;letter-spacing:.04em;flex-shrink:0;white-space:nowrap}
-.dl-project-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-.dl-note-text{font-family:'Inter',sans-serif;font-size:11px;color:rgba(161,159,200,.4);display:flex;align-items:center;gap:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:1;min-width:0}
-
-/* RIGHT PANEL — fixed 280px, 3 equal cells */
-.dl-right{
-  flex:0 0 280px;
-  display:flex;align-items:stretch;
-  flex-shrink:0;
-}
-.dl-right-cell{
-  flex:1;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:14px 10px;
-  border-left:1px solid rgba(99,102,241,.07);
-  gap:3px;
-  text-align:center;
-}
-.dl-countdown-val{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1}
-.dl-countdown-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(99,102,241,.35);letter-spacing:.12em;text-transform:uppercase}
-.dl-status-badge{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.05em;padding:5px 10px;border-radius:20px;font-weight:500;white-space:nowrap;line-height:1;text-align:center}
-.dl-goto{
-  display:flex;align-items:center;justify-content:center;gap:5px;
-  padding:8px 12px;width:calc(100% - 16px);
-  background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);
-  border-radius:9px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;
-  color:rgba(129,140,248,.9);cursor:pointer;transition:all .2s;white-space:nowrap;
-}
-.dl-goto:hover{background:rgba(99,102,241,.2);border-color:rgba(99,102,241,.4);color:#a5b4fc}
-
-.dl-proj-group{margin-bottom:28px;animation:dlIn .4s cubic-bezier(.16,1,.3,1) both}
-.dl-proj-group-header{display:flex;align-items:center;gap:12px;padding:14px 18px;background:rgba(14,14,22,.95);border:1px solid rgba(99,102,241,.1);border-radius:14px 14px 0 0;border-bottom:none;cursor:pointer;transition:background .18s}
-.dl-proj-group-header:hover{background:rgba(99,102,241,.05)}
-.dl-proj-group-body{border:1px solid rgba(99,102,241,.08);border-top:none;border-radius:0 0 14px 14px;overflow:hidden}
-.dl-proj-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:800;flex-shrink:0}
-.dl-proj-name{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;letter-spacing:-.02em;flex:1}
-.dl-proj-count{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(99,102,241,.5);background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.15);padding:3px 10px;border-radius:20px}
-.dl-proj-pct-mini{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:rgba(161,159,200,.5);letter-spacing:-.02em}
-.dl-proj-row{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid rgba(99,102,241,.06);background:rgba(10,10,16,.6);transition:background .18s;cursor:pointer}
-.dl-proj-row:last-child{border-bottom:none}
-.dl-proj-row:hover{background:rgba(99,102,241,.04)}
-.dl-proj-row-idx{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(99,102,241,.3);width:20px;text-align:center;flex-shrink:0}
-.dl-proj-row-icon{font-size:14px;flex-shrink:0}
-.dl-proj-row-name{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:rgba(240,238,255,.85);flex:1}
-.dl-proj-row-date{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(99,102,241,.4);flex-shrink:0}
-.dl-proj-row-badge{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.06em;padding:3px 9px;border-radius:20px;flex-shrink:0}
-.dl-proj-row-open{width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.15);border-radius:8px;color:rgba(99,102,241,.5);cursor:pointer;transition:all .18s;font-size:12px;flex-shrink:0;text-decoration:none}
-.dl-proj-row-open:hover{background:rgba(99,102,241,.18);color:#818cf8}
-
-.dl-empty{text-align:center;padding:80px 40px;animation:dlIn .4s cubic-bezier(.16,1,.3,1) both}
-.dl-empty-icon{font-size:40px;margin-bottom:16px;opacity:.4}
-.dl-empty-title{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.02em;color:rgba(161,159,200,.6);margin-bottom:8px}
-.dl-empty-sub{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(99,102,241,.35);letter-spacing:.06em}
-</style>
 
 
 <style id="dtr-activity-pro">
@@ -4950,154 +4806,222 @@ input, select, textarea {
 </style>
 
 
-<style id="dtr-v13-fixes">
-/* ── Reset btn — square icon-only ── */
-.act-reset-btn, .dl-reset-btn {
-  width: 32px !important;
-  height: 32px !important;
-  padding: 0 !important;
-  justify-content: center !important;
-  border-radius: 7px !important;
-  font-size: 0 !important;
+
+
+
+
+
+<style id="dtr-deadline-final">
+/* ════════════════════════════════════════════════
+   DEADLINE CARD v17 — единственный источник правды
+════════════════════════════════════════════════ */
+@keyframes dlCardIn {
+  from { opacity:0; transform:translateY(8px); }
+  to   { opacity:1; transform:translateY(0); }
 }
-.act-reset-btn svg, .dl-reset-btn svg {
-  flex-shrink: 0;
+@keyframes dlDotBeat {
+  0%,100% { box-shadow:0 0 0 0 rgba(251,191,36,.5); }
+  50%     { box-shadow:0 0 0 5px rgba(251,191,36,0); }
 }
 
-/* ── Activity feed full width ── */
-.activity-feed {
-  width: 100% !important;
-  max-width: 100% !important;
-}
-
-/* ── Card fills full width, right side occupied ── */
-.act-card {
+/* Panel */
+#deadline-panel, .deadline-panel {
   display: flex !important;
   flex-direction: column !important;
+  width: 100% !important;
   gap: 0 !important;
 }
-.act-card-head {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: 12px !important;
-  margin-bottom: 6px !important;
-}
-.act-card-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
-}
-.act-card-meta {
-  display: flex !important;
-  align-items: center !important;
-  gap: 10px !important;
-  flex-wrap: wrap !important;
-}
 
-/* ── Goto button inside card ── */
-.act-goto {
-  display: flex !important;
-  align-items: center !important;
-  gap: 5px !important;
-  padding: 6px 14px !important;
-  background: rgba(99,102,241,.08) !important;
-  border: 1px solid rgba(99,102,241,.14) !important;
-  border-radius: 9px !important;
-  font-family: 'Inter', sans-serif !important;
-  font-size: 12px !important;
-  font-weight: 500 !important;
-  color: rgba(99,102,241,.6) !important;
-  cursor: pointer !important;
-  transition: all .18s !important;
-  white-space: nowrap !important;
-  flex-shrink: 0 !important;
-}
-.act-goto:hover {
-  background: rgba(99,102,241,.16) !important;
-  color: #818cf8 !important;
-}
-
-/* ── Timeline items stretch full ── */
-.act-item {
-  width: 100% !important;
-}
-.act-timeline-col {
-  flex-shrink: 0 !important;
-}
-</style>
-
-
-<style id="dtr-v15-polish">
-/* ── Deadline card final polish ── */
-
-/* Date col accent left border based on urgency */
-.dl-item.dl-overdue .dl-date-col { background: rgba(248,113,113,.06); border-right: none; }
-.dl-item.dl-today   .dl-date-col { background: rgba(251,191,36,.05); border-right: none; }
-.dl-item.dl-done    .dl-date-col { background: rgba(52,211,153,.04); border-right: none; }
-
-/* Stage name full text allowed */
-.dl-stage-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-/* Right panel cells even */
-.dl-right { border-left: 1px solid rgba(99,102,241,.08); }
-
-/* Countdown cell — bigger number */
-.dl-right-cell:first-child .dl-countdown-val { font-size: 18px; }
-
-/* Status badge centering */
-.dl-right-cell:nth-child(2) { padding: 12px 8px; }
-
-/* Open button cell */
-.dl-right-cell:last-child { padding: 12px 10px; }
-
-/* Week group title improved */
+/* Week group */
+.dl-week-group { width: 100%; margin-bottom: 28px; }
 .dl-week-title {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  display: flex; align-items: center; gap: 10px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  color: rgba(99,102,241,.4);
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  padding: 10px 0 14px;
-  margin-bottom: 6px;
+  font-size: 10px; color: rgba(99,102,241,.4);
+  letter-spacing: .18em; text-transform: uppercase;
+  padding-bottom: 12px; margin-bottom: 8px;
   border-bottom: 1px solid rgba(99,102,241,.07);
 }
 .dl-week-count {
-  background: rgba(99,102,241,.1);
-  border: 1px solid rgba(99,102,241,.18);
-  border-radius: 20px;
-  padding: 2px 8px;
-  font-size: 9px;
-  color: rgba(99,102,241,.55);
+  background: rgba(99,102,241,.1); border: 1px solid rgba(99,102,241,.18);
+  border-radius: 20px; padding: 1px 8px;
+  font-size: 9px; color: rgba(99,102,241,.55);
 }
 
-/* Overdue label color */
-.dl-item.dl-overdue .dl-date-day { }
-.dl-item.dl-today .dl-date-day { }
+/* ── CARD ROOT ── */
+.dl-card-v17 {
+  display: flex !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  background: rgba(13,13,20,.96) !important;
+  border: 1px solid rgba(99,102,241,.1) !important;
+  border-radius: 14px !important;
+  margin-bottom: 10px !important;
+  overflow: hidden !important;
+  cursor: pointer !important;
+  transition: border-color .22s, box-shadow .22s, transform .22s cubic-bezier(.16,1,.3,1) !important;
+  animation: dlCardIn .35s cubic-bezier(.16,1,.3,1) both !important;
+  position: relative !important;
+}
+.dl-card-v17:hover {
+  border-color: rgba(99,102,241,.26) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,.5), 0 0 32px rgba(99,102,241,.08) !important;
+}
+.dl-card-v17.dv-overdue { border-color: rgba(248,113,113,.18) !important; }
+.dl-card-v17.dv-overdue:hover { border-color: rgba(248,113,113,.36) !important; box-shadow: 0 16px 48px rgba(0,0,0,.5), 0 0 32px rgba(248,113,113,.07) !important; }
+.dl-card-v17.dv-today { border-color: rgba(251,191,36,.18) !important; }
+.dl-card-v17.dv-today:hover { border-color: rgba(251,191,36,.36) !important; }
+.dl-card-v17.dv-done { opacity: .42 !important; }
 
-/* Stagger items */
-.dl-item:nth-child(1){animation-delay:.03s}
-.dl-item:nth-child(2){animation-delay:.06s}
-.dl-item:nth-child(3){animation-delay:.09s}
-.dl-item:nth-child(4){animation-delay:.12s}
-.dl-item:nth-child(5){animation-delay:.15s}
-.dl-item:nth-child(6){animation-delay:.18s}
+/* ── DATE ZONE ── */
+.dv-date {
+  flex: 0 0 80px;
+  width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 8px;
+  text-align: center;
+  border-right: 1px solid rgba(99,102,241,.07);
+  background: rgba(99,102,241,.03);
+}
+.dl-card-v17.dv-overdue .dv-date { background: rgba(248,113,113,.05); border-right-color: rgba(248,113,113,.1); }
+.dl-card-v17.dv-today .dv-date   { background: rgba(251,191,36,.04); border-right-color: rgba(251,191,36,.1); }
+.dl-card-v17.dv-done .dv-date    { background: rgba(52,211,153,.03); }
 
-/* Deadline panel must be full width */
-#deadline-panel { width: 100% !important; max-width: 100% !important; }
-.dl-week-group { width: 100%; }
+.dv-day {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 32px; font-weight: 700; line-height: 1;
+  letter-spacing: -.05em; font-variant-numeric: tabular-nums;
+}
+.dv-mon {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; letter-spacing: .16em;
+  text-transform: uppercase; margin-top: 4px; opacity: .45;
+}
+.dv-dow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px; letter-spacing: .1em;
+  text-transform: uppercase; margin-top: 2px; opacity: .22;
+}
 
-/* Info section flex properly */
-.dl-info { flex: 1 1 auto; min-width: 0; }
+/* ── INFO ZONE ── */
+.dv-info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 16px 22px;
+  gap: 7px;
+}
+.dv-stage {
+  display: flex; align-items: center; gap: 9px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px; font-weight: 600; color: #f0eeff;
+  line-height: 1.3;
+}
+.dv-stage-icon { font-size: 17px; flex-shrink: 0; }
+.dv-stage-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dv-meta { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; overflow: hidden; }
+.dv-proj-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: .04em;
+  padding: 4px 10px; border-radius: 8px;
+  flex-shrink: 0; white-space: nowrap;
+}
+.dv-proj-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.dv-note {
+  font-family: 'Inter', sans-serif; font-size: 11px;
+  color: rgba(161,159,200,.38);
+  display: flex; align-items: center; gap: 5px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  min-width: 0;
+}
 
-/* Right always fixed */
-.dl-right { flex: 0 0 264px; min-width: 264px; max-width: 264px; }
+/* ── ACTIONS ZONE — фиксированная ширина 320px ── */
+.dv-actions {
+  flex: 0 0 320px;
+  width: 320px;
+  min-width: 320px;
+  max-width: 320px;
+  display: flex;
+  align-items: stretch;
+  border-left: 1px solid rgba(99,102,241,.07);
+}
+
+/* Countdown cell */
+.dv-cell-count {
+  flex: 0 0 96px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 16px 8px; gap: 4px; text-align: center;
+}
+.dv-cnt-val {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px; font-weight: 700; line-height: 1;
+  letter-spacing: -.03em; font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.dv-cnt-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px; letter-spacing: .12em;
+  text-transform: uppercase; opacity: .35;
+}
+
+/* Status cell */
+.dv-cell-status {
+  flex: 0 0 112px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 16px 10px;
+  border-left: 1px solid rgba(99,102,241,.06);
+}
+.dv-status-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 500; letter-spacing: .05em;
+  padding: 7px 12px; border-radius: 8px;
+  white-space: nowrap; width: 100%; justify-content: center;
+  box-sizing: border-box;
+}
+.dv-status-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+}
+
+/* Open button cell */
+.dv-cell-open {
+  flex: 0 0 112px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 14px 12px;
+  border-left: 1px solid rgba(99,102,241,.06);
+}
+.dv-open-btn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; padding: 11px 14px;
+  background: rgba(99,102,241,.12);
+  border: 1px solid rgba(99,102,241,.24);
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px; font-weight: 600;
+  color: rgba(129,140,248,.95);
+  cursor: pointer; transition: all .2s;
+  white-space: nowrap; box-sizing: border-box;
+}
+.dv-open-btn:hover {
+  background: rgba(99,102,241,.22);
+  border-color: rgba(99,102,241,.45);
+  color: #a5b4fc;
+  box-shadow: 0 4px 16px rgba(99,102,241,.2);
+}
+.dv-open-btn:active {
+  transform: scale(.97);
+}
 </style>
-
 </head>
 <body>
 
@@ -12482,9 +12406,10 @@ function renderDeadlinePanel() {
 
       var mon = MONTHS_SH[item.dl.getMonth()];
       var dow = DAYS_RU[item.dl.getDay()];
-      var itemCls = item.status === 'overdue' ? ' dl-overdue' : item.status === 'today' ? ' dl-today' : item.status === 'done' ? ' dl-done' : '';
+              var dvCls = item.status === 'overdue' ? ' dv-overdue' : item.status === 'today' ? ' dv-today' : item.status === 'done' ? ' dv-done' : '';
 
-                        itemsHtml += '<div class="dl-item' + itemCls + '" onclick="openProject(\'' + item.proj.id + '\')">'        + '<div class="dl-date-col">'        +   '<div class="dl-date-day" style="color:' + cntColor + ';">' + item.dl.getDate() + '</div>'        +   '<div class="dl-date-mon">' + mon + '</div>'        +   '<div class="dl-date-dow">' + dow + '</div>'        + '</div>'        + '<div class="dl-divider"></div>'        + '<div class="dl-info">'        +   '<div class="dl-stage">'        +     '<span class="dl-stage-icon">' + item.stageObj.icon + '</span>'        +     '<span class="dl-stage-name">' + item.stageObj.name + '</span>'        +   '</div>'        +   '<div class="dl-info-meta">'        +     '<span class="dl-project-chip" style="background:' + col + '14;color:' + col + ';border:1px solid ' + col + '28;">'        +       '<span class="dl-project-dot" style="background:' + col + ';"></span>' + item.proj.name        +     '</span>'        +     (item.s.note ? '<span class="dl-note-text">\ud83d\udcac ' + item.s.note + '</span>' : '')        +   '</div>'        + '</div>'        + '<div class="dl-right">'        +   '<div class="dl-right-cell">'        +     '<div class="dl-countdown-val" style="color:' + cntColor + ';">' + cntVal + '</div>'        +     '<div class="dl-countdown-lbl">' + cntLbl + '</div>'        +   '</div>'        +   '<div class="dl-right-cell">'        +     '<div class="dl-status-badge" style="background:' + badgeBg + ';color:' + badgeCol + ';border:1px solid ' + badgeCol + '33;">' + badgeTxt + '</div>'        +   '</div>'        +   '<div class="dl-right-cell">'        +     '<button class="dl-goto" onclick="event.stopPropagation();openProject(\'' + item.proj.id + '\')">\u041e\u0442\u043a\u0440\u044b\u0442\u044c</button>'        +   '</div>'        + '</div>'        + '</div>';
+                              itemsHtml +=
+        '<div class="dl-card-v17' + dvCls + '" onclick="openProject(\'' + item.proj.id + '\')">'        + '<div class="dv-date">'        +   '<div class="dv-day" style="color:' + cntColor + ';">' + item.dl.getDate() + '</div>'        +   '<div class="dv-mon">' + mon + '</div>'        +   '<div class="dv-dow">' + dow + '</div>'        + '</div>'        + '<div class="dv-info">'        +   '<div class="dv-stage">'        +     '<span class="dv-stage-icon">' + item.stageObj.icon + '</span>'        +     '<span class="dv-stage-name">' + item.stageObj.name + '</span>'        +   '</div>'        +   '<div class="dv-meta">'        +     '<span class="dv-proj-pill" style="background:' + col + '14;color:' + col + ';border:1px solid ' + col + '28;">'        +       '<span class="dv-proj-dot" style="background:' + col + ';"></span>' + item.proj.name        +     '</span>'        +     (item.s.note ? '<span class="dv-note">\ud83d\udcac ' + item.s.note + '</span>' : '')        +   '</div>'        + '</div>'        + '<div class="dv-actions">'        +   '<div class="dv-cell-count">'        +     '<div class="dv-cnt-val" style="color:' + cntColor + ';">' + cntVal + '</div>'        +     '<div class="dv-cnt-lbl">' + cntLbl + '</div>'        +   '</div>'        +   '<div class="dv-cell-status">'        +     '<div class="dv-status-pill" style="background:' + badgeBg + ';color:' + badgeCol + ';border:1px solid ' + badgeCol + '40;">'        +       '<span class="dv-status-dot" style="background:' + badgeCol + ';"></span>'        +       badgeTxt        +     '</div>'        +   '</div>'        +   '<div class="dv-cell-open">'        +     '<button class="dv-open-btn" onclick="event.stopPropagation();openProject(\'' + item.proj.id + '\')">\u041e\u0442\u043a\u0440\u044b\u0442\u044c \u2192</button>'        +   '</div>'        + '</div>'        + '</div>';
     });
 
     html += '<div class="dl-week-group" style="animation-delay:' + delay + 's">'
@@ -12805,249 +12730,7 @@ function renderActivityFeed() {
 </script>
 
 
-<style id="dtr-dl-card-nuclear">
-/* ════ DEADLINE CARD — NUCLEAR FIX ════ */
 
-#deadline-panel,
-.deadline-panel {
-  width: 100% !important;
-  max-width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-.dl-week-group {
-  width: 100% !important;
-}
-
-/* Card: simple flex, NO grid, NO overflow */
-.dl-item {
-  display: flex !important;
-  align-items: stretch !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  box-sizing: border-box !important;
-  overflow: hidden !important;
-  border-radius: 14px !important;
-  border: 1px solid rgba(99,102,241,.1) !important;
-  background: rgba(14,14,22,.95) !important;
-  margin-bottom: 10px !important;
-  transition: all .25s cubic-bezier(.16,1,.3,1) !important;
-  cursor: pointer !important;
-  position: relative !important;
-}
-.dl-item:hover {
-  border-color: rgba(99,102,241,.28) !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 12px 40px rgba(0,0,0,.45), 0 0 30px rgba(99,102,241,.08) !important;
-}
-.dl-item.dl-overdue { border-color: rgba(248,113,113,.18) !important; }
-.dl-item.dl-overdue:hover { border-color: rgba(248,113,113,.35) !important; }
-.dl-item.dl-today { border-color: rgba(251,191,36,.18) !important; }
-.dl-item.dl-today:hover { border-color: rgba(251,191,36,.35) !important; }
-.dl-item.dl-done { opacity: .4 !important; }
-
-/* hide old stripe and dot */
-.dl-item-stripe,
-.dl-dot { display: none !important; }
-
-/* DATE — fixed 72px */
-.dl-date-col {
-  flex: 0 0 72px !important;
-  width: 72px !important;
-  min-width: 72px !important;
-  max-width: 72px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 18px 6px !important;
-  text-align: center !important;
-  border-right: 1px solid rgba(99,102,241,.07) !important;
-  flex-shrink: 0 !important;
-}
-.dl-item.dl-overdue .dl-date-col { background: rgba(248,113,113,.05) !important; }
-.dl-item.dl-today .dl-date-col   { background: rgba(251,191,36,.04) !important; }
-.dl-item.dl-done .dl-date-col    { background: rgba(52,211,153,.04) !important; }
-
-.dl-date-day {
-  font-family: 'Space Grotesk', sans-serif !important;
-  font-size: 26px !important;
-  font-weight: 700 !important;
-  line-height: 1 !important;
-  letter-spacing: -.04em !important;
-  font-variant-numeric: tabular-nums !important;
-}
-.dl-date-mon {
-  font-family: 'JetBrains Mono', monospace !important;
-  font-size: 9px !important;
-  letter-spacing: .14em !important;
-  text-transform: uppercase !important;
-  margin-top: 3px !important;
-  opacity: .45 !important;
-}
-.dl-date-dow {
-  font-family: 'JetBrains Mono', monospace !important;
-  font-size: 8px !important;
-  letter-spacing: .1em !important;
-  text-transform: uppercase !important;
-  margin-top: 2px !important;
-  opacity: .25 !important;
-}
-
-/* DIVIDER */
-.dl-divider {
-  display: block !important;
-  flex: 0 0 1px !important;
-  width: 1px !important;
-  background: rgba(99,102,241,.08) !important;
-  align-self: stretch !important;
-  flex-shrink: 0 !important;
-}
-
-/* INFO — takes all remaining space */
-.dl-info {
-  flex: 1 1 auto !important;
-  min-width: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: center !important;
-  padding: 14px 20px !important;
-  gap: 5px !important;
-  overflow: hidden !important;
-}
-.dl-stage {
-  font-family: 'Inter', sans-serif !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  color: #f0eeff !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  line-height: 1.3 !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-}
-.dl-stage-icon { font-size: 15px !important; flex-shrink: 0 !important; }
-.dl-stage-name { overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
-.dl-info-meta {
-  display: flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  overflow: hidden !important;
-}
-.dl-project-chip {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 5px !important;
-  font-family: 'JetBrains Mono', monospace !important;
-  font-size: 10px !important;
-  padding: 3px 9px !important;
-  border-radius: 20px !important;
-  letter-spacing: .04em !important;
-  flex-shrink: 0 !important;
-  white-space: nowrap !important;
-}
-.dl-project-dot {
-  width: 5px !important; height: 5px !important;
-  border-radius: 50% !important; flex-shrink: 0 !important;
-}
-.dl-note-text {
-  font-family: 'Inter', sans-serif !important;
-  font-size: 11px !important;
-  color: rgba(161,159,200,.4) !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 4px !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
-  min-width: 0 !important;
-}
-
-/* RIGHT — FIXED 3 cells, each exactly 88px */
-.dl-right {
-  flex: 0 0 264px !important;
-  width: 264px !important;
-  min-width: 264px !important;
-  max-width: 264px !important;
-  display: flex !important;
-  align-items: stretch !important;
-  flex-shrink: 0 !important;
-  border-left: 1px solid rgba(99,102,241,.07) !important;
-}
-.dl-right-cell {
-  flex: 0 0 88px !important;
-  width: 88px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 10px 8px !important;
-  gap: 3px !important;
-  text-align: center !important;
-  border-left: 1px solid rgba(99,102,241,.06) !important;
-  box-sizing: border-box !important;
-}
-.dl-right-cell:first-child {
-  border-left: none !important;
-}
-
-.dl-countdown-val {
-  font-family: 'Space Grotesk', sans-serif !important;
-  font-size: 16px !important;
-  font-weight: 700 !important;
-  letter-spacing: -.03em !important;
-  font-variant-numeric: tabular-nums !important;
-  white-space: nowrap !important;
-  line-height: 1 !important;
-}
-.dl-countdown-lbl {
-  font-family: 'JetBrains Mono', monospace !important;
-  font-size: 8px !important;
-  color: rgba(99,102,241,.35) !important;
-  letter-spacing: .12em !important;
-  text-transform: uppercase !important;
-}
-.dl-status-badge {
-  font-family: 'JetBrains Mono', monospace !important;
-  font-size: 9px !important;
-  letter-spacing: .04em !important;
-  padding: 4px 8px !important;
-  border-radius: 20px !important;
-  font-weight: 500 !important;
-  white-space: nowrap !important;
-  line-height: 1.4 !important;
-  max-width: 80px !important;
-  text-align: center !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-}
-.dl-goto {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 4px !important;
-  padding: 7px 6px !important;
-  width: 72px !important;
-  background: rgba(99,102,241,.1) !important;
-  border: 1px solid rgba(99,102,241,.22) !important;
-  border-radius: 9px !important;
-  font-family: 'Inter', sans-serif !important;
-  font-size: 11px !important;
-  font-weight: 600 !important;
-  color: rgba(129,140,248,.9) !important;
-  cursor: pointer !important;
-  transition: all .2s !important;
-  white-space: nowrap !important;
-  box-sizing: border-box !important;
-}
-.dl-goto:hover {
-  background: rgba(99,102,241,.2) !important;
-  border-color: rgba(99,102,241,.42) !important;
-  color: #a5b4fc !important;
-}
-</style>
 
 </body>
 </html>
