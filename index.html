@@ -5545,6 +5545,7 @@ function renderProjectGrid() {
         </div>
         <div class="pcard-actions">
           <button class="pcard-action-btn" title="Статус / заметка" onclick="openQuickNote('${p.id}','${p.name.replace(/'/g,"\'")}','${(p.quick_note||'').replace(/'/g,"\'")}')">💬</button>
+          <button class="pcard-action-btn" title="Настройки" onclick="openProjectSettings('${p.id}')">⚙</button>
           <button class="pcard-action-btn" title="Открыть проект" onclick="openProject('${p.id}')">→</button>
         </div>
       </div>
@@ -8495,6 +8496,165 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 })
 
+
+// ════════════════════════════════
+// PROJECT SETTINGS
+// ════════════════════════════════
+let _psProjectId = null
+let _psNewPhotoFile = null
+let _psNewPhotoDataUrl = null
+
+function openProjectSettings(id) {
+  const p = _allProjects.find(x => x.id === id)
+  if (!p) return
+  _psProjectId = id
+  _psNewPhotoFile = null
+  _psNewPhotoDataUrl = null
+
+  // Fill fields
+  const nameInp = document.getElementById('ps-name-inp')
+  const descInp = document.getElementById('ps-desc-inp')
+  const catInp  = document.getElementById('ps-category-inp')
+  const colorInp = document.getElementById('ps-color-inp')
+  const nameLbl = document.getElementById('ps-project-name-display')
+  const letter  = document.getElementById('ps-avatar-letter')
+  const preview = document.getElementById('ps-avatar-preview')
+
+  if (nameInp) nameInp.value = p.name || ''
+  if (descInp) descInp.value = p.description || ''
+  if (catInp)  catInp.value  = p.category || ''
+  if (colorInp) colorInp.value = p.brand_color || '#6366f1'
+  if (nameLbl) nameLbl.textContent = p.name || '—'
+
+  // Avatar
+  const col = p.brand_color || '#6366f1'
+  if (preview) {
+    if (p.photo_url) {
+      preview.innerHTML = `<img src="${p.photo_url}" style="width:100%;height:100%;object-fit:cover;">`
+      preview.style.border = `2px solid ${col}55`
+    } else {
+      preview.innerHTML = `<span id="ps-avatar-letter" style="font-size:22px;font-weight:800;color:${col};">${(p.name||'?')[0]}</span>`
+      preview.style.background = col + '22'
+      preview.style.border = `2px solid ${col}44`
+    }
+  }
+
+  document.getElementById('modal-proj-settings').classList.add('open')
+  setTimeout(() => nameInp && nameInp.focus(), 80)
+}
+
+function updatePSAvatarColor() {
+  const col = document.getElementById('ps-color-inp')?.value || '#6366f1'
+  const preview = document.getElementById('ps-avatar-preview')
+  if (!preview || preview.querySelector('img')) return
+  preview.style.background = col + '22'
+  preview.style.border = `2px solid ${col}44`
+  const letter = preview.querySelector('span')
+  if (letter) letter.style.color = col
+}
+
+function handlePSPhoto(input) {
+  const file = input.files[0]
+  if (!file) return
+  if (file.size > 2 * 1024 * 1024) { alert('Файл > 2MB'); input.value = ''; return }
+  _psNewPhotoFile = file
+  const reader = new FileReader()
+  reader.onload = e => {
+    _psNewPhotoDataUrl = e.target.result
+    const preview = document.getElementById('ps-avatar-preview')
+    if (preview) {
+      preview.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`
+      preview.style.background = 'transparent'
+      preview.style.border = '2px solid rgba(99,102,241,.4)'
+    }
+  }
+  reader.readAsDataURL(file)
+}
+
+async function saveProjectSettings() {
+  if (!_psProjectId) return
+  const btn = document.querySelector('#modal-proj-settings .btn-primary')
+  if (btn) { btn.disabled = true; btn.textContent = 'Сохраняем...' }
+
+  const name     = document.getElementById('ps-name-inp')?.value.trim()
+  const desc     = document.getElementById('ps-desc-inp')?.value.trim()
+  const category = document.getElementById('ps-category-inp')?.value.trim()
+  const color    = document.getElementById('ps-color-inp')?.value
+
+  if (!name) {
+    alert('Название не может быть пустым')
+    if (btn) { btn.disabled = false; btn.textContent = 'Сохранить' }
+    return
+  }
+
+  // Upload photo if new one selected
+  let photoUrl = null
+  if (_psNewPhotoFile) {
+    try {
+      const ext  = _psNewPhotoFile.name.split('.').pop()
+      const path = `project-photos/${_psProjectId}_${Date.now()}.${ext}`
+      const { error: upErr } = await sb.storage.from('project-assets').upload(path, _psNewPhotoFile, { upsert: true })
+      if (!upErr) {
+        const { data: urlData } = sb.storage.from('project-assets').getPublicUrl(path)
+        photoUrl = urlData?.publicUrl || null
+      }
+    } catch(e) { console.warn('Photo upload failed:', e) }
+  }
+
+  const updates = { name, description: desc, category, brand_color: color }
+  if (photoUrl) updates.photo_url = photoUrl
+
+  const { error } = await sb.from('projects').update(updates).eq('id', _psProjectId)
+
+  if (!error) {
+    // Update local cache
+    const p = _allProjects.find(x => x.id === _psProjectId)
+    if (p) { p.name = name; p.description = desc; p.category = category; p.brand_color = color; if (photoUrl) p.photo_url = photoUrl }
+    closeModal('modal-proj-settings')
+    renderProjectGrid()
+    renderCategoryTags()
+  } else {
+    alert('Ошибка: ' + error.message)
+  }
+
+  if (btn) { btn.disabled = false; btn.textContent = 'Сохранить' }
+}
+
+function confirmDeleteProject() {
+  const p = _allProjects.find(x => x.id === _psProjectId)
+  if (!p) return
+  const confirmed = confirm(`Удалить проект "${p.name}"?\n\nЭто действие необратимо. Все этапы и отчёты будут удалены.`)
+  if (confirmed) deleteProject(_psProjectId)
+}
+
+async function deleteProject(id) {
+  const btn = document.getElementById('ps-delete-btn')
+  if (btn) { btn.disabled = true; btn.textContent = 'Удаляем...' }
+
+  // Delete stages first
+  await sb.from('project_stages').delete().eq('project_id', id)
+  // Delete reports
+  await sb.from('reports').delete().eq('project_id', id)
+  // Delete SMM reports
+  await sb.from('smm_reports').delete().eq('project_id', id)
+  // Delete project
+  const { error } = await sb.from('projects').delete().eq('id', id)
+
+  if (!error) {
+    _allProjects = _allProjects.filter(x => x.id !== id)
+    _allStages   = _allStages.filter(x => x.project_id !== id)
+    closeModal('modal-proj-settings')
+    renderProjectGrid()
+    renderCategoryTags()
+    // Update stats
+    set('stat-total',  _allProjects.length)
+    set('stat-active', _allProjects.filter(p => p.status !== 'archived').length)
+  } else {
+    alert('Ошибка удаления: ' + error.message)
+    if (btn) { btn.disabled = false; btn.textContent = 'Удалить' }
+  }
+}
+
 </script>
 
 
@@ -9237,6 +9397,95 @@ document.addEventListener('DOMContentLoaded', () => {
 .proj-photo-upload {
   min-height: 0 !important;
   height: auto !important;
+}
+</style>
+
+
+<!-- MODAL: Project Settings -->
+<div class="modal-overlay" id="modal-proj-settings">
+  <div class="modal" style="max-width:440px;">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+      <div class="modal-title" style="margin-bottom:0;">Настройки проекта</div>
+      <button onclick="closeModal('modal-proj-settings')" style="background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:8px;width:32px;height:32px;color:rgba(255,255,255,.4);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .18s;" onmouseover="this.style.borderColor='rgba(248,113,113,.3)';this.style.color='#f87171'" onmouseout="this.style.borderColor='rgba(255,255,255,.1)';this.style.color='rgba(255,255,255,.4)'">✕</button>
+    </div>
+
+    <!-- Avatar row -->
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;">
+      <div id="ps-avatar-preview" style="width:56px;height:56px;border-radius:14px;background:rgba(99,102,241,.15);border:2px solid rgba(99,102,241,.3);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#818cf8;flex-shrink:0;overflow:hidden;cursor:pointer;transition:all .2s;" onclick="document.getElementById('ps-photo-file').click()" title="Изменить фото">
+        <span id="ps-avatar-letter">?</span>
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:4px;" id="ps-project-name-display">—</div>
+        <button onclick="document.getElementById('ps-photo-file').click()" style="background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:8px;padding:6px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#a5b4fc;cursor:pointer;letter-spacing:.06em;transition:all .18s;" onmouseover="this.style.background='rgba(99,102,241,.16)'" onmouseout="this.style.background='rgba(99,102,241,.08)'">
+          📷 Загрузить фото
+        </button>
+        <div style="font-size:10px;color:rgba(255,255,255,.2);margin-top:4px;font-family:'JetBrains Mono',monospace;">PNG, JPG · до 2MB</div>
+      </div>
+      <div>
+        <label style="display:block;font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(99,102,241,.7);letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px;">Цвет</label>
+        <input type="color" id="ps-color-inp" value="#6366f1" style="width:44px;height:44px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:transparent;cursor:pointer;padding:3px;" oninput="updatePSAvatarColor()">
+      </div>
+    </div>
+    <input type="file" id="ps-photo-file" accept="image/*" style="display:none" onchange="handlePSPhoto(this)">
+
+    <!-- Fields -->
+    <div class="field">
+      <label>Название проекта</label>
+      <input type="text" id="ps-name-inp" placeholder="Название заведения" maxlength="80">
+    </div>
+
+    <div class="field">
+      <label>Описание</label>
+      <input type="text" id="ps-desc-inp" placeholder="Сеть фастфуда, Ташкент" maxlength="120">
+    </div>
+
+    <div class="field">
+      <label>Категория / теги</label>
+      <input type="text" id="ps-category-inp" placeholder="Кофейня, Specialty, Ташкент" maxlength="100">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,.2);margin-top:5px;">Несколько через запятую</div>
+    </div>
+
+    <!-- Divider -->
+    <div style="height:1px;background:rgba(255,255,255,.06);margin:20px 0;"></div>
+
+    <!-- Danger zone -->
+    <div style="background:rgba(248,113,113,.05);border:1px solid rgba(248,113,113,.15);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:rgba(248,113,113,.8);margin-bottom:2px;">Удалить проект</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.3);">Безвозвратно. Все этапы и отчёты тоже.</div>
+      </div>
+      <button id="ps-delete-btn" onclick="confirmDeleteProject()" style="background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);border-radius:10px;padding:9px 16px;color:#f87171;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;cursor:pointer;transition:all .2s;white-space:nowrap;" onmouseover="this.style.background='rgba(248,113,113,.2)';this.style.borderColor='rgba(248,113,113,.4)'" onmouseout="this.style.background='rgba(248,113,113,.1)';this.style.borderColor='rgba(248,113,113,.25)'">
+        Удалить
+      </button>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-proj-settings')">Отмена</button>
+      <button class="btn-primary" style="flex:1;margin-top:0;" onclick="saveProjectSettings()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Сохранить
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<style id="dtr-settings-btn">
+.pcard-settings-btn {
+  background: transparent !important;
+  border: 1px solid rgba(255,255,255,.09) !important;
+  transition: all 220ms cubic-bezier(.34,1.56,.64,1) !important;
+}
+.pcard-settings-btn:hover {
+  background: rgba(99,102,241,.12) !important;
+  border-color: rgba(99,102,241,.3) !important;
+  color: #a5b4fc !important;
+  transform: rotate(60deg) scale(1.12) !important;
+  box-shadow: 0 4px 14px rgba(99,102,241,.2) !important;
+}
+.pcard-settings-btn:active {
+  transform: rotate(30deg) scale(.96) !important;
 }
 </style>
 
