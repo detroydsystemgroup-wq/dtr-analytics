@@ -5098,6 +5098,390 @@ input, select, textarea {
 }
 </style>
 
+<style id="dtr-overview-v21">
+/* ════════════════════════════════════════════════════
+   ГЕНЕРАЛЬНАЯ СВОДКА v21 — McKinsey × Bloomberg
+   Philosophy: Data-dense. Every pixel earns its place.
+════════════════════════════════════════════════════ */
+@keyframes ov2In    { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+@keyframes ov2SlideL{ from{opacity:0;transform:translateX(-12px)} to{opacity:1;transform:translateX(0)} }
+@keyframes ov2Count { from{opacity:0;transform:translateY(8px);filter:blur(4px)} to{opacity:1;transform:translateY(0);filter:blur(0)} }
+@keyframes ov2Bar   { from{width:0} to{width:var(--w)} }
+@keyframes ov2Pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+@keyframes ov2Glow  { 0%,100%{box-shadow:0 0 0 0 rgba(99,102,241,0)} 50%{box-shadow:0 0 20px rgba(99,102,241,.15)} }
+@keyframes ov2Scan  { 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
+
+/* ── TOP BAR ── */
+.ov2-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 0 24px; gap: 20px; flex-wrap: wrap;
+  border-bottom: 1px solid rgba(99,102,241,.08);
+  margin-bottom: 32px;
+  animation: ov2In .5s cubic-bezier(.16,1,.3,1) both;
+}
+.ov2-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 26px; font-weight: 800; letter-spacing: -.04em;
+  background: linear-gradient(135deg, #f0eeff 0%, #818cf8 60%, #22d3ee 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.ov2-subtitle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: rgba(99,102,241,.35);
+  letter-spacing: .1em; margin-top: 3px;
+  display: flex; align-items: center; gap: 6px;
+}
+.ov2-subtitle::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: #34d399; box-shadow: 0 0 6px #34d39988;
+  animation: ov2Pulse 2s infinite; flex-shrink: 0;
+}
+.ov2-section-pills {
+  display: flex; gap: 4px;
+  background: rgba(14,14,22,.9); border: 1px solid rgba(99,102,241,.12);
+  border-radius: 12px; padding: 5px;
+}
+.ov2-spill {
+  padding: 7px 14px; border-radius: 8px; border: none;
+  background: transparent; font-family: 'Inter', sans-serif;
+  font-size: 12px; font-weight: 500; color: rgba(120,100,255,.45);
+  cursor: pointer; transition: all .18s; white-space: nowrap;
+}
+.ov2-spill:hover { background: rgba(99,102,241,.1); color: rgba(200,198,230,.8); }
+.ov2-spill.ov2-spill-active { background: rgba(99,102,241,.18); color: #f0eeff; box-shadow: inset 0 0 0 1px rgba(99,102,241,.3); }
+
+/* ── SECTION TEMPLATE ── */
+.ov2-section { margin-bottom: 48px; animation: ov2In .5s cubic-bezier(.16,1,.3,1) both; }
+.ov2-section:nth-child(2) { animation-delay: .05s }
+.ov2-section:nth-child(3) { animation-delay: .1s }
+.ov2-section:nth-child(4) { animation-delay: .15s }
+.ov2-section:nth-child(5) { animation-delay: .2s }
+.ov2-section:nth-child(6) { animation-delay: .25s }
+
+.ov2-section-head {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 20px;
+}
+.ov2-sh-label {
+  font-family: 'JetBrains Mono', monospace; font-size: 9px;
+  color: rgba(99,102,241,.5); letter-spacing: .14em;
+  background: rgba(99,102,241,.1); border: 1px solid rgba(99,102,241,.2);
+  border-radius: 6px; padding: 4px 10px; flex-shrink: 0;
+}
+.ov2-sh-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px; font-weight: 700; letter-spacing: -.03em; color: #f0eeff;
+  flex-shrink: 0;
+}
+.ov2-sh-line { flex: 1; height: 1px; background: linear-gradient(90deg, rgba(99,102,241,.2), transparent); }
+.ov2-sh-meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: rgba(99,102,241,.35); flex-shrink: 0; letter-spacing: .06em; }
+
+/* ══════════════════════════════════════
+   SECTION 1: KPI STRIP
+══════════════════════════════════════ */
+.ov2-kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+.ov2-kpi-card {
+  background: rgba(13,13,20,.96);
+  border: 1px solid rgba(99,102,241,.1);
+  border-radius: 14px; padding: 20px 18px;
+  position: relative; overflow: hidden;
+  transition: all .25s cubic-bezier(.16,1,.3,1);
+  cursor: default;
+}
+.ov2-kpi-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  border-radius: 14px 14px 0 0; opacity: 0; transition: opacity .25s;
+}
+.ov2-kpi-card:hover { border-color: rgba(99,102,241,.24); transform: translateY(-3px); box-shadow: 0 16px 40px rgba(0,0,0,.45), 0 0 24px rgba(99,102,241,.08); }
+.ov2-kpi-card:hover::before { opacity: 1; }
+
+/* Shimmer scan on load */
+.ov2-kpi-card::after {
+  content: ''; position: absolute; top: 0; left: 0; width: 40%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.03), transparent);
+  animation: ov2Scan 2s ease-in-out; pointer-events: none;
+}
+
+.ov2-kpi-icon {
+  font-size: 20px; margin-bottom: 12px; display: block;
+  filter: drop-shadow(0 0 8px currentColor);
+}
+.ov2-kpi-label {
+  font-family: 'JetBrains Mono', monospace; font-size: 9px;
+  letter-spacing: .16em; text-transform: uppercase;
+  color: rgba(99,102,241,.4); margin-bottom: 8px;
+}
+.ov2-kpi-val {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 40px; font-weight: 800; line-height: 1;
+  letter-spacing: -.05em; font-variant-numeric: tabular-nums;
+  animation: ov2Count .6s cubic-bezier(.16,1,.3,1) both;
+}
+.ov2-kpi-sub {
+  font-family: 'JetBrains Mono', monospace; font-size: 9px;
+  color: rgba(99,102,241,.35); margin-top: 6px; letter-spacing: .04em;
+}
+.ov2-kpi-delta {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600;
+  padding: 3px 8px; border-radius: 6px; margin-top: 8px;
+}
+.ov2-delta-up   { background: rgba(52,211,153,.1); color: #34d399; }
+.ov2-delta-down { background: rgba(248,113,113,.1); color: #f87171; }
+.ov2-delta-neu  { background: rgba(99,102,241,.08); color: rgba(99,102,241,.5); }
+
+/* ══════════════════════════════════════
+   SECTION 2: PROJECT STATUS GRID
+══════════════════════════════════════ */
+.ov2-proj-grid {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.ov2-proj-row {
+  display: grid;
+  grid-template-columns: 36px 180px 1fr 120px 90px 90px 100px;
+  align-items: center; gap: 16px;
+  background: rgba(13,13,20,.94);
+  border: 1px solid rgba(99,102,241,.08);
+  border-radius: 12px; padding: 14px 18px;
+  transition: all .2s cubic-bezier(.16,1,.3,1);
+  cursor: pointer; position: relative; overflow: hidden;
+}
+.ov2-proj-row::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+}
+.ov2-proj-row:hover {
+  border-color: rgba(99,102,241,.22);
+  transform: translateX(4px);
+  box-shadow: 0 8px 32px rgba(0,0,0,.35), 0 0 16px rgba(99,102,241,.06);
+}
+.ov2-pr-rank {
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  color: rgba(99,102,241,.3); text-align: center; font-weight: 600;
+}
+.ov2-pr-name-wrap { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.ov2-pr-avatar {
+  width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 800;
+}
+.ov2-pr-name {
+  font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+  color: #f0eeff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ov2-pr-desc {
+  font-family: 'JetBrains Mono', monospace; font-size: 9px;
+  color: rgba(99,102,241,.35); margin-top: 2px; letter-spacing: .04em;
+}
+/* Pipeline mini: 9 segments */
+.ov2-pipe {
+  display: flex; gap: 3px; align-items: center; height: 20px;
+}
+.ov2-pipe-seg {
+  flex: 1; height: 6px; border-radius: 3px;
+  transition: all .3s;
+}
+.ov2-pr-pct {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px; font-weight: 700; letter-spacing: -.03em;
+  text-align: center; font-variant-numeric: tabular-nums;
+}
+.ov2-pr-status {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 500;
+  padding: 5px 10px; border-radius: 8px; text-align: center;
+  white-space: nowrap;
+}
+.ov2-pr-action {
+  display: flex; align-items: center; justify-content: flex-end;
+}
+.ov2-pr-btn {
+  display: flex; align-items: center; gap: 5px;
+  padding: 7px 14px; border-radius: 8px;
+  background: rgba(99,102,241,.1); border: 1px solid rgba(99,102,241,.22);
+  font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+  color: rgba(129,140,248,.9); cursor: pointer; transition: all .18s;
+  white-space: nowrap;
+}
+.ov2-pr-btn:hover { background: rgba(99,102,241,.2); border-color: rgba(99,102,241,.45); color: #a5b4fc; }
+
+/* Table header */
+.ov2-proj-header {
+  display: grid;
+  grid-template-columns: 36px 180px 1fr 120px 90px 90px 100px;
+  gap: 16px; padding: 8px 18px 10px;
+}
+.ov2-ph-cell {
+  font-family: 'JetBrains Mono', monospace; font-size: 9px;
+  color: rgba(99,102,241,.35); letter-spacing: .14em; text-transform: uppercase;
+}
+
+/* ══════════════════════════════════════
+   SECTION 4: DEADLINE RADAR
+══════════════════════════════════════ */
+.ov2-dl-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+}
+.ov2-dl-zone {
+  background: rgba(13,13,20,.94);
+  border: 1px solid rgba(99,102,241,.09);
+  border-radius: 14px; overflow: hidden;
+  transition: border-color .2s;
+}
+.ov2-dl-zone:hover { border-color: rgba(99,102,241,.2); }
+.ov2-dl-zone-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px; border-bottom: 1px solid rgba(99,102,241,.07);
+}
+.ov2-dl-zone-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.ov2-dl-zone-title {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  letter-spacing: .14em; text-transform: uppercase; flex: 1;
+}
+.ov2-dl-zone-count {
+  font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700;
+  letter-spacing: -.03em; font-variant-numeric: tabular-nums;
+}
+.ov2-dl-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px; border-bottom: 1px solid rgba(99,102,241,.05);
+  transition: background .16s; cursor: pointer;
+}
+.ov2-dl-item:last-child { border-bottom: none; }
+.ov2-dl-item:hover { background: rgba(99,102,241,.04); }
+.ov2-dl-item-date {
+  font-family: 'Space Grotesk', sans-serif; font-size: 12px; font-weight: 700;
+  letter-spacing: -.02em; font-variant-numeric: tabular-nums;
+  flex: 0 0 44px; text-align: center;
+}
+.ov2-dl-item-icon { font-size: 13px; flex-shrink: 0; }
+.ov2-dl-item-name {
+  font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500;
+  color: rgba(240,238,255,.8); flex: 1; min-width: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ov2-dl-item-proj {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  padding: 2px 8px; border-radius: 6px; flex-shrink: 0;
+  white-space: nowrap;
+}
+.ov2-dl-empty {
+  padding: 24px; text-align: center;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: rgba(99,102,241,.3); letter-spacing: .08em;
+}
+
+/* ══════════════════════════════════════
+   SECTION 5: AGENCY HEALTH
+══════════════════════════════════════ */
+.ov2-health-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;
+}
+.ov2-health-card {
+  background: rgba(13,13,20,.94);
+  border: 1px solid rgba(99,102,241,.09);
+  border-radius: 14px; padding: 22px 20px;
+  transition: all .22s; cursor: default;
+  position: relative; overflow: hidden;
+}
+.ov2-health-card:hover { border-color: rgba(99,102,241,.2); transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,.4); }
+.ov2-health-title {
+  font-family: 'JetBrains Mono', monospace; font-size: 9px;
+  letter-spacing: .16em; text-transform: uppercase;
+  color: rgba(99,102,241,.4); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.ov2-health-title-dot { width: 6px; height: 6px; border-radius: 50%; }
+.ov2-gauge-row { display: flex; align-items: flex-end; gap: 16px; margin-bottom: 12px; }
+.ov2-gauge-val {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 52px; font-weight: 800; line-height: 1;
+  letter-spacing: -.06em; font-variant-numeric: tabular-nums;
+}
+.ov2-gauge-unit {
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  color: rgba(99,102,241,.4); margin-bottom: 8px;
+}
+.ov2-health-bar-wrap {
+  height: 6px; background: rgba(99,102,241,.08); border-radius: 6px; overflow: hidden; margin-bottom: 10px;
+}
+.ov2-health-bar { height: 100%; border-radius: 6px; transition: width 1.2s cubic-bezier(.16,1,.3,1); }
+.ov2-health-rows { display: flex; flex-direction: column; gap: 8px; }
+.ov2-health-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: 8px;
+  background: rgba(99,102,241,.04); transition: background .18s; cursor: pointer;
+}
+.ov2-health-row:hover { background: rgba(99,102,241,.08); }
+.ov2-health-row-name {
+  font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500;
+  color: rgba(240,238,255,.75); flex: 1; min-width: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ov2-health-row-bar-wrap { width: 80px; height: 4px; background: rgba(99,102,241,.08); border-radius: 4px; overflow: hidden; flex-shrink: 0; }
+.ov2-health-row-bar { height: 100%; border-radius: 4px; transition: width 1s ease; }
+.ov2-health-row-val {
+  font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 700;
+  letter-spacing: -.02em; flex-shrink: 0; min-width: 36px; text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.ov2-score-ring {
+  width: 80px; height: 80px; position: relative; flex-shrink: 0;
+}
+.ov2-score-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ov2-score-bg { fill: none; stroke: rgba(99,102,241,.1); stroke-width: 6; }
+.ov2-score-fg { fill: none; stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 1.2s cubic-bezier(.16,1,.3,1); }
+.ov2-score-txt {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.ov2-score-num {
+  font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 800;
+  letter-spacing: -.04em; line-height: 1;
+}
+.ov2-score-lbl { font-family: 'JetBrains Mono', monospace; font-size: 7px; color: rgba(99,102,241,.4); letter-spacing: .1em; text-transform: uppercase; }
+
+/* SMM leaderboard override for overview context */
+#dtab-overview-panel .smm-lb-table {
+  border-radius: 14px !important;
+  border: 1px solid rgba(99,102,241,.1) !important;
+  background: rgba(13,13,20,.94) !important;
+  overflow: hidden !important;
+}
+#dtab-overview-panel .smm-lb-col-hdr {
+  background: rgba(99,102,241,.04) !important;
+  border-bottom: 1px solid rgba(99,102,241,.08) !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important; letter-spacing: .14em !important;
+  color: rgba(99,102,241,.4) !important;
+  padding: 12px 20px !important;
+}
+#dtab-overview-panel .smm-lb-row {
+  border-bottom: 1px solid rgba(99,102,241,.06) !important;
+  padding: 14px 20px !important; transition: background .16s !important;
+}
+#dtab-overview-panel .smm-lb-row:hover { background: rgba(99,102,241,.04) !important; }
+#dtab-overview-panel .smm-lb-row.lb-top1 { background: rgba(99,102,241,.06) !important; }
+
+/* Responsive */
+@media(max-width:1100px) {
+  .ov2-kpi-strip { grid-template-columns: repeat(3,1fr) !important; }
+  .ov2-dl-grid { grid-template-columns: 1fr 1fr !important; }
+  .ov2-health-grid { grid-template-columns: 1fr 1fr !important; }
+}
+@media(max-width:800px) {
+  .ov2-kpi-strip { grid-template-columns: repeat(2,1fr) !important; }
+  .ov2-dl-grid, .ov2-health-grid { grid-template-columns: 1fr !important; }
+  .ov2-proj-row, .ov2-proj-header { grid-template-columns: 32px 1fr 80px 80px !important; }
+  .ov2-proj-row > *:nth-child(3), .ov2-proj-row > *:nth-child(6),
+  .ov2-proj-header > *:nth-child(3), .ov2-proj-header > *:nth-child(6) { display: none !important; }
+}
+</style>
+
 </head>
 <body>
 
@@ -5435,32 +5819,87 @@ input, select, textarea {
       </div>
     </div>
 
-    <!-- ── TAB: OVERVIEW ── -->
+    <!-- ── TAB: OVERVIEW — McKinsey Command Center ── -->
     <div id="dtab-overview-panel" style="display:none;">
-      <!-- SMM Leaderboard -->
-      <div class="smm-lb-header">
-        <div>
-          <div style="font-family:var(--font-display);font-size:20px;font-weight:800;letter-spacing:-.03em;margin-bottom:4px;">Рейтинг проектов по SMM</div>
-          <div style="font-family:var(--font-mono);font-size:11px;color:var(--txt3);">По последнему SMM отчёту каждого проекта</div>
+
+      <!-- ══ HEADER BAR ══ -->
+      <div class="ov2-topbar">
+        <div class="ov2-topbar-left">
+          <div class="ov2-title">Генеральная сводка</div>
+          <div class="ov2-subtitle" id="ov2-updated">Данные обновляются в реальном времени</div>
         </div>
-        <div class="smm-lb-metric-pills" id="smm-lb-pills">
-          <button class="slp slp-active" data-metric="er" onclick="setLBMetric('er',this)">ER</button>
-          <button class="slp" data-metric="lr" onclick="setLBMetric('lr',this)">LR</button>
-          <button class="slp" data-metric="tr" onclick="setLBMetric('tr',this)">C/R</button>
-          <button class="slp" data-metric="shr" onclick="setLBMetric('shr',this)">SH/R</button>
-          <button class="slp" data-metric="sr" onclick="setLBMetric('sr',this)">SR</button>
+        <div class="ov2-topbar-right">
+          <div class="ov2-section-pills">
+            <button class="ov2-spill ov2-spill-active" onclick="ov2ScrollTo('ov2-sec-kpi')">📊 KPI</button>
+            <button class="ov2-spill" onclick="ov2ScrollTo('ov2-sec-projects')">📁 Проекты</button>
+            <button class="ov2-spill" onclick="ov2ScrollTo('ov2-sec-smm')">📱 SMM</button>
+            <button class="ov2-spill" onclick="ov2ScrollTo('ov2-sec-deadlines')">📅 Дедлайны</button>
+            <button class="ov2-spill" onclick="ov2ScrollTo('ov2-sec-health')">❤️ Здоровье</button>
+          </div>
         </div>
       </div>
 
-      <div id="smm-leaderboard"></div>
-
-      <!-- Progress overview below -->
-      <div style="margin-top:28px;">
-        <div style="font-family:var(--font-display);font-size:16px;font-weight:700;letter-spacing:-.02em;margin-bottom:16px;color:var(--txt2);">Прогресс по проектам</div>
-        <div class="overview-grid" id="overview-grid">
-          <div class="activity-loading">Загрузка...</div>
+      <!-- ══ SECTION 1: MEGA KPI STRIP ══ -->
+      <div class="ov2-section" id="ov2-sec-kpi">
+        <div class="ov2-section-head">
+          <div class="ov2-sh-label">01</div>
+          <div class="ov2-sh-title">Ключевые показатели</div>
+          <div class="ov2-sh-line"></div>
+        </div>
+        <div class="ov2-kpi-strip" id="ov2-kpi-strip">
+          <!-- filled by JS -->
         </div>
       </div>
+
+      <!-- ══ SECTION 2: PROJECTS ══ -->
+      <div class="ov2-section" id="ov2-sec-projects">
+        <div class="ov2-section-head">
+          <div class="ov2-sh-label">02</div>
+          <div class="ov2-sh-title">Статус проектов</div>
+          <div class="ov2-sh-line"></div>
+          <div class="ov2-sh-meta" id="ov2-proj-meta"></div>
+        </div>
+        <div class="ov2-proj-grid" id="ov2-proj-grid"></div>
+      </div>
+
+      <!-- ══ SECTION 3: SMM INTELLIGENCE ══ -->
+      <div class="ov2-section" id="ov2-sec-smm">
+        <div class="ov2-section-head">
+          <div class="ov2-sh-label">03</div>
+          <div class="ov2-sh-title">SMM Рейтинг</div>
+          <div class="ov2-sh-line"></div>
+          <div class="smm-lb-metric-pills" id="smm-lb-pills" style="flex-shrink:0;">
+            <button class="slp slp-active" data-metric="er" onclick="setLBMetric('er',this)">ER</button>
+            <button class="slp" data-metric="lr" onclick="setLBMetric('lr',this)">LR</button>
+            <button class="slp" data-metric="tr" onclick="setLBMetric('tr',this)">C/R</button>
+            <button class="slp" data-metric="shr" onclick="setLBMetric('shr',this)">SH/R</button>
+            <button class="slp" data-metric="sr" onclick="setLBMetric('sr',this)">SR</button>
+          </div>
+        </div>
+        <div id="smm-leaderboard"></div>
+      </div>
+
+      <!-- ══ SECTION 4: DEADLINES RADAR ══ -->
+      <div class="ov2-section" id="ov2-sec-deadlines">
+        <div class="ov2-section-head">
+          <div class="ov2-sh-label">04</div>
+          <div class="ov2-sh-title">Радар дедлайнов</div>
+          <div class="ov2-sh-line"></div>
+        </div>
+        <div class="ov2-dl-grid" id="ov2-dl-grid"></div>
+      </div>
+
+      <!-- ══ SECTION 5: AGENCY HEALTH ══ -->
+      <div class="ov2-section" id="ov2-sec-health">
+        <div class="ov2-section-head">
+          <div class="ov2-sh-label">05</div>
+          <div class="ov2-sh-title">Здоровье агентства</div>
+          <div class="ov2-sh-line"></div>
+        </div>
+        <div class="ov2-health-grid" id="ov2-health-grid"></div>
+      </div>
+
+      <div style="height:60px;"></div>
     </div>
 
 
@@ -12761,6 +13200,325 @@ function renderActivityFeed() {
 
 
 
+
+<script id="dtr-overview-v21-js">
+// ══════════════════════════════════════════════════════════
+// ГЕНЕРАЛЬНАЯ СВОДКА v21 — McKinsey × Bloomberg Terminal
+// ══════════════════════════════════════════════════════════
+
+function ov2ScrollTo(id) {
+  var el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.querySelectorAll('.ov2-spill').forEach(function(b){ b.classList.remove('ov2-spill-active'); });
+  var map = { 'ov2-sec-kpi':'01','ov2-sec-projects':'02','ov2-sec-smm':'03','ov2-sec-deadlines':'04','ov2-sec-health':'05' };
+  var idx = Object.keys(map).indexOf(id);
+  var pills = document.querySelectorAll('.ov2-spill');
+  if (pills[idx]) pills[idx].classList.add('ov2-spill-active');
+}
+
+// Override loadOverview completely
+async function loadOverview() {
+  if (!_allProjects || !_allProjects.length) {
+    ['ov2-kpi-strip','ov2-proj-grid','ov2-dl-grid','ov2-health-grid'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.innerHTML = '<div style="padding:40px;text-align:center;font-family:\'JetBrains Mono\',monospace;font-size:11px;color:rgba(99,102,241,.3);">Нет данных</div>';
+    });
+    return;
+  }
+
+  var today = new Date(); today.setHours(0,0,0,0);
+  var weekEnd = new Date(today); weekEnd.setDate(today.getDate() + 7);
+  var MONTHS = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+
+  // ── Compute all metrics ──
+  var totalStages = _allProjects.length * 9;
+  var completedStages = _allStages.filter(function(s){ return s.status === 'completed'; }).length;
+  var activeStages = _allStages.filter(function(s){ return s.status === 'active'; }).length;
+  var globalPct = totalStages ? Math.round(completedStages / totalStages * 100) : 0;
+  var overdueProjs = _allProjects.filter(function(p){ return isProjectOverdue(p.id); });
+  var doneProjs = _allProjects.filter(function(p){ return getProjectProgress(p.id).pct === 100; });
+  var activeProjs = _allProjects.filter(function(p){ return p.status !== 'archived' && getProjectProgress(p.id).pct < 100; });
+  var allDeadlines = _allStages.filter(function(s){ return s.deadline && s.status !== 'completed'; });
+  var overdueDeadlines = allDeadlines.filter(function(s){ return new Date(s.deadline) < today; });
+  var todayDeadlines = allDeadlines.filter(function(s){ var d=new Date(s.deadline); d.setHours(0,0,0,0); return d.getTime()===today.getTime(); });
+  var weekDeadlines = allDeadlines.filter(function(s){ var d=new Date(s.deadline); return d>=today && d<=weekEnd; });
+  var futureDeadlines = allDeadlines.filter(function(s){ return new Date(s.deadline) > weekEnd; });
+
+  // Load report counts
+  var reportCount = 0;
+  try {
+    var rc = await sb.from('reports').select('*',{count:'exact',head:true}).in('project_id', _allProjects.map(function(p){return p.id;}));
+    reportCount = rc.count || 0;
+  } catch(e) {}
+
+  // ────────────────────────────
+  // SECTION 1: KPI STRIP
+  // ────────────────────────────
+  var kpiEl = document.getElementById('ov2-kpi-strip');
+  if (kpiEl) {
+    var avgProg = _allProjects.length ? Math.round(_allProjects.reduce(function(s,p){ return s + getProjectProgress(p.id).pct; },0) / _allProjects.length) : 0;
+    var healthScore = Math.max(0, Math.min(100, Math.round(
+      globalPct * 0.4 +
+      (overdueProjs.length === 0 ? 30 : Math.max(0, 30 - overdueProjs.length * 10)) +
+      (activeStages > 0 ? 20 : 0) +
+      (overdueDeadlines.length === 0 ? 10 : 0)
+    )));
+    var scoreColor = healthScore >= 80 ? '#34d399' : healthScore >= 50 ? '#fbbf24' : '#f87171';
+
+    kpiEl.innerHTML =
+      ov2KpiCard('🏢', 'ПРОЕКТОВ', _allProjects.length, 'Всего в работе', '#818cf8', '#6366f1',
+        activeProjs.length + ' активных · ' + doneProjs.length + ' завершено') +
+      ov2KpiCard('⚡', 'ВЫПОЛНЕНО', globalPct + '%', 'Этапов завершено', '#22d3ee', '#0e7490',
+        completedStages + ' из ' + totalStages + ' этапов') +
+      ov2KpiCard('🎯', 'АКТИВНЫХ', activeStages, 'Этапов в работе', '#fbbf24', '#92400e',
+        _allProjects.filter(function(p){
+          return _allStages.some(function(s){ return s.project_id===p.id && s.status==='active'; });
+        }).length + ' проектов имеют активные этапы') +
+      ov2KpiCard('⚠️', 'ПРОСРОЧЕНО', overdueProjs.length, 'Проектов', overdueProjs.length > 0 ? '#f87171' : '#34d399', overdueProjs.length > 0 ? '#7f1d1d' : '#064e3b',
+        overdueDeadlines.length + ' дедлайнов истекло') +
+      ov2KpiCard('❤️', 'ЗДОРОВЬЕ', healthScore + '%', 'Индекс агентства', scoreColor, scoreColor === '#34d399' ? '#064e3b' : scoreColor === '#fbbf24' ? '#92400e' : '#7f1d1d',
+        scoreColor === '#34d399' ? '✓ Отличное состояние' : scoreColor === '#fbbf24' ? '⚡ Требует внимания' : '⚠ Критическое');
+  }
+
+  // ────────────────────────────
+  // SECTION 2: PROJECTS TABLE
+  // ────────────────────────────
+  var projEl = document.getElementById('ov2-proj-grid');
+  if (projEl) {
+    var progList = _allProjects.map(function(p){
+      var prog = getProjectProgress(p.id);
+      var overdue = isProjectOverdue(p.id);
+      var next = getNextDeadline(p.id);
+      return { p:p, prog:prog, overdue:overdue, next:next };
+    }).sort(function(a,b){ return b.prog.pct - a.prog.pct; });
+
+    var metaEl = document.getElementById('ov2-proj-meta');
+    if (metaEl) metaEl.textContent = _allProjects.length + ' проектов · ' + completedStages + '/' + totalStages + ' этапов';
+
+    projEl.innerHTML =
+      '<div class="ov2-proj-header">' +
+        '<div class="ov2-ph-cell">#</div>' +
+        '<div class="ov2-ph-cell">Проект</div>' +
+        '<div class="ov2-ph-cell">Пайплайн (9 этапов)</div>' +
+        '<div class="ov2-ph-cell" style="text-align:center;">Прогресс</div>' +
+        '<div class="ov2-ph-cell" style="text-align:center;">Статус</div>' +
+        '<div class="ov2-ph-cell" style="text-align:center;">Дедлайн</div>' +
+        '<div class="ov2-ph-cell"></div>' +
+      '</div>' +
+      progList.map(function(item, idx) {
+        var p = item.p; var prog = item.prog;
+        var col = p.brand_color || '#6366f1';
+        var progColor = prog.pct >= 80 ? '#34d399' : prog.pct >= 40 ? col : '#fbbf24';
+        var statusTxt = item.overdue ? 'Просрочен' : prog.pct === 100 ? 'Завершён' : 'Активен';
+        var statusBg = item.overdue ? 'rgba(248,113,113,.1)' : prog.pct === 100 ? 'rgba(52,211,153,.1)' : 'rgba(99,102,241,.1)';
+        var statusCol = item.overdue ? '#f87171' : prog.pct === 100 ? '#34d399' : '#818cf8';
+
+        // Pipeline segments
+        var projStages = _allStages.filter(function(s){ return s.project_id === p.id; });
+        var segs = '';
+        for (var i = 0; i < 9; i++) {
+          var st = projStages.find(function(s){ return s.stage_index === i; });
+          var stStatus = st ? st.status : 'pending';
+          var segBg = stStatus === 'completed' ? col : stStatus === 'active' ? col+'88' : 'rgba(99,102,241,.1)';
+          var segH = stStatus === 'active' ? '10px' : '6px';
+          segs += '<div class="ov2-pipe-seg" style="background:' + segBg + ';height:' + segH + ';' + (stStatus==='active'?'box-shadow:0 0 6px '+col+'66;':'') + '"></div>';
+        }
+
+        // Deadline
+        var dlTxt = '—'; var dlColor = 'rgba(99,102,241,.3)';
+        if (item.next) {
+          var dl = new Date(item.next.deadline);
+          var diff = Math.ceil((dl - today) / 86400000);
+          if (diff < 0) { dlTxt = Math.abs(diff)+'д назад'; dlColor = '#f87171'; }
+          else if (diff === 0) { dlTxt = 'Сегодня'; dlColor = '#fbbf24'; }
+          else if (diff <= 3) { dlTxt = 'Через '+diff+'д'; dlColor = '#fbbf24'; }
+          else { dlTxt = dl.getDate()+' '+MONTHS[dl.getMonth()]; dlColor = '#818cf8'; }
+        }
+
+        var medals = ['🥇','🥈','🥉'];
+        var rankTxt = idx < 3 ? medals[idx] : (idx + 1);
+
+        return '<div class="ov2-proj-row" onclick="openProject(\''+p.id+'\')" style="border-left-color:'+col+';">' +
+          '<div class="ov2-pr-rank">'+rankTxt+'</div>' +
+          '<div class="ov2-pr-name-wrap">' +
+            '<div class="ov2-pr-avatar" style="background:'+col+'18;border:1.5px solid '+col+'44;color:'+col+';">'+p.name[0]+'</div>' +
+            '<div style="min-width:0;">' +
+              '<div class="ov2-pr-name">'+p.name+'</div>' +
+              '<div class="ov2-pr-desc">'+(p.description||'').substring(0,28)+'</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="ov2-pipe">'+segs+'</div>' +
+          '<div class="ov2-pr-pct" style="color:'+progColor+';">'+prog.pct+'%</div>' +
+          '<div><div class="ov2-pr-status" style="background:'+statusBg+';color:'+statusCol+';">'+statusTxt+'</div></div>' +
+          '<div style="text-align:center;font-family:\'Space Grotesk\',sans-serif;font-size:12px;font-weight:600;color:'+dlColor+';">'+dlTxt+'</div>' +
+          '<div class="ov2-pr-action"><button class="ov2-pr-btn" onclick="event.stopPropagation();openProject(\''+p.id+'\')">Открыть →</button></div>' +
+        '</div>';
+      }).join('');
+  }
+
+  // ────────────────────────────
+  // SECTION 4: DEADLINE RADAR
+  // ────────────────────────────
+  var dlEl = document.getElementById('ov2-dl-grid');
+  if (dlEl) {
+    dlEl.innerHTML =
+      ov2DlZone('Просрочено', '#f87171', overdueDeadlines, today, MONTHS, true) +
+      ov2DlZone('Сегодня + эта неделя', '#fbbf24', weekDeadlines, today, MONTHS, false) +
+      ov2DlZone('Будущие', '#818cf8', futureDeadlines, today, MONTHS, false);
+  }
+
+  // ────────────────────────────
+  // SECTION 5: AGENCY HEALTH
+  // ────────────────────────────
+  var healthEl = document.getElementById('ov2-health-grid');
+  if (healthEl) {
+    // Card 1: Completion rate by project
+    var maxPct = Math.max.apply(null, _allProjects.map(function(p){ return getProjectProgress(p.id).pct; })) || 1;
+    var compRows = _allProjects.slice(0,6).map(function(p) {
+      var prog = getProjectProgress(p.id);
+      var col = p.brand_color || '#6366f1';
+      var pc = prog.pct >= 80 ? '#34d399' : prog.pct >= 40 ? col : '#fbbf24';
+      return '<div class="ov2-health-row" onclick="openProject(\''+p.id+'\')">' +
+        '<div class="ov2-health-row-name">'+p.name+'</div>' +
+        '<div class="ov2-health-row-bar-wrap"><div class="ov2-health-row-bar" style="width:'+prog.pct+'%;background:'+pc+';"></div></div>' +
+        '<div class="ov2-health-row-val" style="color:'+pc+';">'+prog.pct+'%</div>' +
+      '</div>';
+    }).join('');
+
+    // Card 2: Stage completion heatmap
+    var STAGE_NAMES = ['Анализ клиентов','Конкуренты','Контент стратегия','Таргет','Контент план','Сценарии','Съёмки #1','Съёмки #2','Отчётность'];
+    var stageRows = STAGE_NAMES.map(function(name, i) {
+      var done = _allStages.filter(function(s){ return s.stage_index===i && s.status==='completed'; }).length;
+      var total = _allProjects.length;
+      var pct = total ? Math.round(done/total*100) : 0;
+      var col = pct >= 80 ? '#34d399' : pct >= 40 ? '#818cf8' : '#fbbf24';
+      return '<div class="ov2-health-row">' +
+        '<div class="ov2-health-row-name">'+name+'</div>' +
+        '<div class="ov2-health-row-bar-wrap"><div class="ov2-health-row-bar" style="width:'+pct+'%;background:'+col+';"></div></div>' +
+        '<div class="ov2-health-row-val" style="color:'+col+';">'+done+'/'+total+'</div>' +
+      '</div>';
+    }).join('');
+
+    // Card 3: Risk score
+    var riskItems = [
+      { label:'Просроченных проектов', val: overdueProjs.length, max: _allProjects.length, col:'#f87171', bad: true },
+      { label:'Истёкших дедлайнов', val: overdueDeadlines.length, max: Math.max(allDeadlines.length,1), col:'#f87171', bad: true },
+      { label:'Этапов завершено', val: completedStages, max: totalStages, col:'#34d399', bad: false },
+      { label:'Активных этапов', val: activeStages, max: _allProjects.length*9, col:'#818cf8', bad: false },
+    ];
+    var riskScore = Math.max(0, Math.min(100,
+      100 -
+      (overdueProjs.length/_allProjects.length*40 || 0) -
+      (overdueDeadlines.length/Math.max(allDeadlines.length,1)*30 || 0) +
+      (globalPct*0.3)
+    ));
+    var riskColor = riskScore >= 70 ? '#34d399' : riskScore >= 40 ? '#fbbf24' : '#f87171';
+    var riskRows = riskItems.map(function(item){
+      var pct = Math.round(item.val/item.max*100);
+      return '<div class="ov2-health-row">' +
+        '<div class="ov2-health-row-name">'+item.label+'</div>' +
+        '<div class="ov2-health-row-bar-wrap"><div class="ov2-health-row-bar" style="width:'+pct+'%;background:'+item.col+';"></div></div>' +
+        '<div class="ov2-health-row-val" style="color:'+item.col+';">'+item.val+'</div>' +
+      '</div>';
+    }).join('');
+
+    var circ = 2 * Math.PI * 28; // r=28
+
+    healthEl.innerHTML =
+      '<div class="ov2-health-card">' +
+        '<div class="ov2-health-title"><span class="ov2-health-title-dot" style="background:#818cf8;"></span>Прогресс по проектам</div>' +
+        '<div class="ov2-gauge-row">' +
+          '<div class="ov2-score-ring">' +
+            '<svg class="ov2-score-svg" viewBox="0 0 70 70"><circle class="ov2-score-bg" cx="35" cy="35" r="28"/><circle class="ov2-score-fg" cx="35" cy="35" r="28" stroke="#818cf8" stroke-dasharray="'+circ+'" stroke-dashoffset="'+(circ*(1-avgProg/100))+'"/></svg>' +
+            '<div class="ov2-score-txt"><div class="ov2-score-num" style="color:#818cf8;">'+avgProg+'%</div><div class="ov2-score-lbl">avg</div></div>' +
+          '</div>' +
+          '<div>' +
+            '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:13px;color:rgba(240,238,255,.6);">Средний прогресс</div>' +
+            '<div style="font-family:\'JetBrains Mono\',monospace;font-size:10px;color:rgba(99,102,241,.35);margin-top:4px;">' + doneProjs.length + ' завершено · ' + overdueProjs.length + ' просрочено</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="ov2-health-rows">'+compRows+'</div>' +
+      '</div>' +
+
+      '<div class="ov2-health-card">' +
+        '<div class="ov2-health-title"><span class="ov2-health-title-dot" style="background:#22d3ee;"></span>Выполнение по этапам</div>' +
+        '<div class="ov2-gauge-row">' +
+          '<div class="ov2-score-ring">' +
+            '<svg class="ov2-score-svg" viewBox="0 0 70 70"><circle class="ov2-score-bg" cx="35" cy="35" r="28"/><circle class="ov2-score-fg" cx="35" cy="35" r="28" stroke="#22d3ee" stroke-dasharray="'+circ+'" stroke-dashoffset="'+(circ*(1-globalPct/100))+'"/></svg>' +
+            '<div class="ov2-score-txt"><div class="ov2-score-num" style="color:#22d3ee;">'+globalPct+'%</div><div class="ov2-score-lbl">total</div></div>' +
+          '</div>' +
+          '<div>' +
+            '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:13px;color:rgba(240,238,255,.6);">Всего этапов</div>' +
+            '<div style="font-family:\'JetBrains Mono\',monospace;font-size:10px;color:rgba(99,102,241,.35);margin-top:4px;">' + completedStages + ' из ' + totalStages + ' · ' + activeStages + ' в работе</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="ov2-health-rows">'+stageRows+'</div>' +
+      '</div>' +
+
+      '<div class="ov2-health-card">' +
+        '<div class="ov2-health-title"><span class="ov2-health-title-dot" style="background:'+riskColor+';"></span>Риск-профиль агентства</div>' +
+        '<div class="ov2-gauge-row">' +
+          '<div class="ov2-score-ring">' +
+            '<svg class="ov2-score-svg" viewBox="0 0 70 70"><circle class="ov2-score-bg" cx="35" cy="35" r="28"/><circle class="ov2-score-fg" cx="35" cy="35" r="28" stroke="'+riskColor+'" stroke-dasharray="'+circ+'" stroke-dashoffset="'+(circ*(1-riskScore/100))+'"/></svg>' +
+            '<div class="ov2-score-txt"><div class="ov2-score-num" style="color:'+riskColor+';">'+Math.round(riskScore)+'</div><div class="ov2-score-lbl">score</div></div>' +
+          '</div>' +
+          '<div>' +
+            '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:13px;color:rgba(240,238,255,.6);">'+( riskScore>=70?'Низкий риск':riskScore>=40?'Средний риск':'Высокий риск')+'</div>' +
+            '<div style="font-family:\'JetBrains Mono\',monospace;font-size:10px;color:rgba(99,102,241,.35);margin-top:4px;">' + overdueProjs.length + ' критических · ' + overdueDeadlines.length + ' истекло</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="ov2-health-rows">'+riskRows+'</div>' +
+      '</div>';
+  }
+
+  // Load SMM leaderboard
+  if (typeof loadSMMLb === 'function') loadSMMLb();
+}
+
+// ── Helpers ──
+function ov2KpiCard(icon, label, val, sub, color, bgColor, detail) {
+  return '<div class="ov2-kpi-card" style="--accent:'+color+';">' +
+    '<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,'+bgColor+'44,'+color+','+bgColor+'44);"></div>' +
+    '<span class="ov2-kpi-icon" style="color:'+color+';">'+icon+'</span>' +
+    '<div class="ov2-kpi-label">'+label+'</div>' +
+    '<div class="ov2-kpi-val" style="color:'+color+';">'+val+'</div>' +
+    '<div class="ov2-kpi-sub">'+detail+'</div>' +
+  '</div>';
+}
+
+function ov2DlZone(title, color, items, today, MONTHS, isOverdue) {
+  var dotStyle = 'background:'+color+';' + (color==='#fbbf24' ? 'animation:ov2Pulse 2s infinite;' : '') + (isOverdue ? 'box-shadow:0 0 8px '+color+'66;' : '');
+  var limit = isOverdue ? 5 : 4;
+  var shown = items.slice(0, limit);
+  var rows = shown.map(function(s) {
+    var proj = _allProjects.find(function(p){ return p.id === s.project_id; });
+    var stageObj = (typeof STAGES !== 'undefined' && STAGES[s.stage_index]) || { name:'Этап', icon:'•' };
+    if (!proj) return '';
+    var col = proj.brand_color || '#6366f1';
+    var dl = new Date(s.deadline); dl.setHours(0,0,0,0);
+    var diff = Math.ceil((dl - today) / 86400000);
+    var dateTxt = isOverdue ? (Math.abs(diff)+'д назад') : (dl.getDate()+' '+MONTHS[dl.getMonth()]);
+    return '<div class="ov2-dl-item" onclick="openProject(\''+proj.id+'\')">' +
+      '<div class="ov2-dl-item-date" style="color:'+color+';">'+dateTxt+'</div>' +
+      '<div class="ov2-dl-item-icon">'+stageObj.icon+'</div>' +
+      '<div class="ov2-dl-item-name">'+stageObj.name+'</div>' +
+      '<div class="ov2-dl-item-proj" style="background:'+col+'14;color:'+col+';">'+proj.name+'</div>' +
+    '</div>';
+  }).join('');
+
+  if (!shown.length) rows = '<div class="ov2-dl-empty">'+(isOverdue?'✅ Просрочений нет':'📅 Дедлайнов нет')+'</div>';
+  else if (items.length > limit) rows += '<div class="ov2-dl-empty" style="font-size:9px;padding:8px 16px;">+' + (items.length - limit) + ' ещё</div>';
+
+  return '<div class="ov2-dl-zone">' +
+    '<div class="ov2-dl-zone-header">' +
+      '<div class="ov2-dl-zone-dot" style="'+dotStyle+'"></div>' +
+      '<div class="ov2-dl-zone-title" style="color:'+color+';">'+title+'</div>' +
+      '<div class="ov2-dl-zone-count" style="color:'+color+';">'+items.length+'</div>' +
+    '</div>' +
+    rows +
+  '</div>';
+}
+</script>
 
 </body>
 </html>
