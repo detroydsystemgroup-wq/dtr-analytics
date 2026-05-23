@@ -5315,14 +5315,14 @@ async function cpLoadTracker() {
     if (txt) txt.textContent = '🎉 Все этапы завершены!'
   } else {
     if (dot) dot.className = 'cp-status-dot'
-    const stageName = activeStage ? STAGES[activeStage.stage_index] : STAGES[completed]
+    const stageName = activeStage ? STAGES[activeStage.stage_index]?.name : STAGES[completed]?.name
     if (txt) txt.textContent = `Сейчас в работе: ${stageName} · ${completed} из ${total} этапов выполнено`
   }
 
   // Stages scroll
   const scroll = g('cp-stages-scroll')
   if (!scroll) return
-  scroll.innerHTML = STAGES.map((name, i) => {
+  scroll.innerHTML = STAGES.map((stage, i) => {
     const rec = arr.find(r => r.stage_index === i) || { status: 'pending' }
     const st = rec.status || 'pending'
     const cls = st === 'completed' ? 's-done' : st === 'active' ? 's-active' : ''
@@ -5333,7 +5333,7 @@ async function cpLoadTracker() {
       : ''
     return `<div class="cp-stage-item ${cls}">
       <div class="cp-stage-dot">${icon}</div>
-      <div class="cp-stage-label">${name}</div>
+      <div class="cp-stage-label">${stage.name}</div>
     </div>`
   }).join('')
 }
