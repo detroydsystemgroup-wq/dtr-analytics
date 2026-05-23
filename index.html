@@ -1609,6 +1609,52 @@ input[type=file] { display: none; }
   .pp-progress-mini { display:none; }
 }
 
+
+/* ── Telegram ── */
+.tg-connect-btn {
+  display: flex; align-items: center; gap: 7px;
+  padding: 7px 14px; border-radius: var(--r-xs);
+  background: var(--bg3); border: 1px solid var(--brd);
+  font-size: 12px; font-weight: 500; color: var(--txt3);
+  cursor: pointer; transition: all .18s;
+}
+.tg-connect-btn:hover { border-color: rgba(0,136,204,.4); color: #2AABEE; }
+.tg-connect-btn.connected { border-color: rgba(0,136,204,.35); color: #2AABEE; background: rgba(0,136,204,.06); }
+.tg-status-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--txt3);
+}
+.tg-status-dot.active { background: #2AABEE; box-shadow: 0 0 6px rgba(42,171,238,.5); animation: pulse 2s infinite; }
+.tg-step {
+  display: flex; gap: 14px; padding: 14px 0;
+  border-bottom: 1px solid var(--brd);
+}
+.tg-step:last-child { border-bottom: none; }
+.tg-step-num {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: rgba(91,95,199,.15); border: 1px solid rgba(91,95,199,.3);
+  color: var(--a2); font-family: var(--font-mono); font-size: 11px;
+  font-weight: 700; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 2px;
+}
+.tg-step-title { font-size: 13px; font-weight: 600; color: var(--txt); margin-bottom: 3px; }
+.tg-step-desc { font-size: 11px; color: var(--txt3); line-height: 1.5; }
+.tg-bot-link {
+  display: inline-block; margin-top: 8px;
+  font-family: var(--font-mono); font-size: 12px; color: #2AABEE;
+  background: rgba(42,171,238,.08); border: 1px solid rgba(42,171,238,.2);
+  padding: 4px 12px; border-radius: var(--r-xs); cursor: pointer;
+  transition: all .15s;
+}
+.tg-bot-link:hover { background: rgba(42,171,238,.15); }
+.tg-test-btn {
+  margin-top: 10px; padding: 6px 14px; border-radius: var(--r-xs);
+  background: rgba(42,171,238,.1); border: 1px solid rgba(42,171,238,.3);
+  color: #2AABEE; font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: all .15s; font-family: var(--font-body);
+}
+.tg-test-btn:hover { background: rgba(42,171,238,.2); }
+.tg-test-btn:disabled { opacity: .4; cursor: not-allowed; }
+
 .tracker-wrap { margin: 32px 0; }
 
 .tracker-progress-card {
@@ -2540,6 +2586,62 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
   </div>
 </div>
 
+<!-- MODAL: Telegram Setup -->
+<div class="modal-overlay" id="modal-telegram">
+  <div class="modal" style="max-width:460px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+      <div style="width:40px;height:40px;border-radius:12px;background:rgba(0,136,204,.12);border:1px solid rgba(0,136,204,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#2AABEE" stroke="none"><path d="M21.198 2.433a2.242 2.242 0 00-1.022.215l-16.5 7.5a2.25 2.25 0 00.126 4.073l3.9 1.205 2.306 6.58a.75.75 0 001.397.105l2.474-4.32 4.682 3.26a2.25 2.25 0 003.396-1.39l2.926-14.25a2.25 2.25 0 00-3.685-2.078z"/></svg>
+      </div>
+      <div class="modal-title" style="margin-bottom:0;">Telegram уведомления</div>
+    </div>
+    <div style="font-size:12px;color:var(--txt3);margin-bottom:20px;">Клиент будет получать сообщения при изменении статуса этапов</div>
+
+    <div id="tg-setup-steps">
+      <!-- Step 1 -->
+      <div class="tg-step">
+        <div class="tg-step-num">1</div>
+        <div>
+          <div class="tg-step-title">Клиент пишет боту</div>
+          <div class="tg-step-desc">Попроси клиента открыть Telegram и написать <b>/start</b> вашему боту</div>
+          <div class="tg-bot-link" id="tg-bot-link-display">@твой_бот</div>
+        </div>
+      </div>
+      <!-- Step 2 -->
+      <div class="tg-step">
+        <div class="tg-step-num">2</div>
+        <div style="flex:1;">
+          <div class="tg-step-title">Вставь Chat ID клиента</div>
+          <div class="tg-step-desc">Бот покажет клиенту его Chat ID — скопируй и вставь сюда</div>
+          <div class="field" style="margin-top:10px;margin-bottom:0;">
+            <input type="text" id="tg-chat-id-inp" placeholder="123456789" style="font-family:monospace;">
+          </div>
+        </div>
+      </div>
+      <!-- Step 3 -->
+      <div class="tg-step">
+        <div class="tg-step-num">3</div>
+        <div>
+          <div class="tg-step-title">Проверь соединение</div>
+          <div class="tg-step-desc">Отправим тестовое сообщение клиенту</div>
+          <button class="tg-test-btn" id="tg-test-btn" onclick="sendTestTelegram()">Отправить тест</button>
+          <div id="tg-test-result" style="font-size:11px;margin-top:8px;font-family:monospace;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:rgba(91,95,199,.06);border:1px solid rgba(91,95,199,.2);border-radius:var(--r-sm);padding:12px 14px;margin:16px 0;font-size:11px;color:var(--txt2);line-height:1.6;">
+      <b style="color:var(--a2);">Бот настраивается один раз в Supabase.</b><br>
+      Инструкция в README ниже — займёт ~10 минут.
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-telegram')">Закрыть</button>
+      <button class="btn-primary" style="flex:1;" onclick="saveTelegramChatId()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: Quick note -->
 <div class="modal-overlay" id="modal-quicknote">
   <div class="modal" style="max-width:420px;">
@@ -2609,6 +2711,11 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
       </button>
     </div>
     <div class="pp-tabs-actions">
+      <button class="tg-connect-btn agency-only" id="tg-connect-btn" onclick="openTelegramSetup()" title="Подключить Telegram клиента">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.198 2.433a2.242 2.242 0 00-1.022.215l-16.5 7.5a2.25 2.25 0 00.126 4.073l3.9 1.205 2.306 6.58a.75.75 0 001.397.105l2.474-4.32 4.682 3.26a2.25 2.25 0 003.396-1.39l2.926-14.25a2.25 2.25 0 00-3.685-2.078z"/></svg>
+        <span id="tg-connect-lbl">Telegram</span>
+        <span class="tg-status-dot" id="tg-status-dot"></span>
+      </button>
       <button class="btn-primary agency-only" style="width:auto;padding:8px 18px;font-size:12px;" id="pp-primary-action" onclick="openCreateReport()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <span id="pp-action-label">Новый отчёт</span>
@@ -4223,6 +4330,113 @@ function updateProjMiniProgress(pct) {
   if (lbl) lbl.textContent = pct + '%'
 }
 
+
+// ══════════════════════════════════════════════
+// TELEGRAM NOTIFICATIONS
+// ══════════════════════════════════════════════
+// CONFIG — вставь имя своего бота (без @)
+const TG_BOT_NAME = 'dtr_analytics_bot' // ← замени на своё
+// Supabase Edge Function URL (задеплоишь по инструкции)
+const TG_EDGE_URL = 'https://ygxfvmpfhrfxqzoylddo.supabase.co/functions/v1/send-telegram'
+
+function openTelegramSetup() {
+  // Show bot link
+  const linkEl = g('tg-bot-link-display')
+  if (linkEl) {
+    linkEl.textContent = '@' + TG_BOT_NAME
+    linkEl.onclick = () => window.open('https://t.me/' + TG_BOT_NAME, '_blank')
+  }
+  // Pre-fill existing chat_id if set
+  const chatId = currentProject?.telegram_chat_id || ''
+  if (g('tg-chat-id-inp')) g('tg-chat-id-inp').value = chatId
+  if (g('tg-test-result')) g('tg-test-result').textContent = ''
+  g('modal-telegram').classList.add('open')
+  setTimeout(() => g('tg-chat-id-inp')?.focus(), 100)
+}
+
+function updateTelegramButton() {
+  const btn = g('tg-connect-btn')
+  const dot = g('tg-status-dot')
+  const lbl = g('tg-connect-lbl')
+  const connected = !!(currentProject?.telegram_chat_id)
+  if (btn) btn.classList.toggle('connected', connected)
+  if (dot) dot.classList.toggle('active', connected)
+  if (lbl) lbl.textContent = connected ? 'Telegram ✓' : 'Telegram'
+}
+
+async function saveTelegramChatId() {
+  const chatId = (g('tg-chat-id-inp')?.value || '').trim()
+  if (!chatId) { alert('Введи Chat ID'); return }
+  const { error } = await sb.from('projects')
+    .update({ telegram_chat_id: chatId })
+    .eq('id', currentProject.id)
+  if (error) { alert('Ошибка: ' + error.message); return }
+  currentProject.telegram_chat_id = chatId
+  closeModal('modal-telegram')
+  updateTelegramButton()
+}
+
+async function sendTestTelegram() {
+  const chatId = (g('tg-chat-id-inp')?.value || '').trim()
+  if (!chatId) { alert('Сначала введи Chat ID'); return }
+  const btn = g('tg-test-btn')
+  const res = g('tg-test-result')
+  if (btn) { btn.disabled = true; btn.textContent = 'Отправляем...' }
+  if (res) res.textContent = ''
+  try {
+    const r = await fetch(TG_EDGE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: '✅ *DTR Analytics* подключён!\n\nТеперь вы будете получать уведомления об изменениях в вашем проекте *' + currentProject.name + '*.',
+        parse_mode: 'Markdown'
+      })
+    })
+    const data = await r.json()
+    if (data.ok || data.success) {
+      if (res) { res.textContent = '✓ Сообщение отправлено!'; res.style.color = 'var(--green)' }
+    } else {
+      throw new Error(data.description || data.error || 'Ошибка')
+    }
+  } catch(err) {
+    if (res) { res.textContent = '✗ ' + err.message; res.style.color = 'var(--red)' }
+  }
+  if (btn) { btn.disabled = false; btn.textContent = 'Отправить тест' }
+}
+
+async function sendTelegramStageNotification(stageIndex, newStatus, note) {
+  const chatId = currentProject?.telegram_chat_id
+  if (!chatId) return // no telegram connected
+
+  const stage = STAGES[stageIndex]
+  if (!stage) return
+
+  const statusText = newStatus === 'completed' ? '✅ Завершён' : '🔵 Начат'
+  const emoji = newStatus === 'completed' ? '🎉' : '🚀'
+
+  let text = `${emoji} *${currentProject.name}*
+
+`
+  text += `Этап *${stage.name}* — ${statusText}
+`
+  if (note) text += `
+💬 ${note}`
+  text += `
+
+_DTR Analytics_`
+
+  try {
+    await fetch(TG_EDGE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY },
+      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'Markdown' })
+    })
+  } catch(e) {
+    console.warn('Telegram notification failed:', e.message)
+  }
+}
+
 // Smart back navigation: client → page-client, agency → page-project
 function goBackToProject() {
   // _isClientCache is set to true in showClientPortal, false in openProject (agency)
@@ -4639,6 +4853,7 @@ async function openProject(id) {
   sb.from('projects').update({ updated_at: new Date().toISOString() }).eq('id', p.id)
   switchProjTab('tracker', g('pptab-tracker'))
   showPage('page-project')
+  updateTelegramButton()
   loadReports()
   loadSMMReports()
   loadTracker()
@@ -5667,6 +5882,11 @@ async function saveStage() {
       event: eventMap[selectedStageStatus] || selectedStageStatus,
       note: note || null
     })
+  }
+
+  // Send Telegram notification if status changed to active or completed
+  if (prevStatus !== selectedStageStatus && (selectedStageStatus === 'active' || selectedStageStatus === 'completed')) {
+    sendTelegramStageNotification(editingStageIndex, selectedStageStatus, note)
   }
 
   closeModal('modal-stage')
