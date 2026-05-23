@@ -612,6 +612,14 @@ body::before {
   font-size: 10px;
   font-weight: 500;
 }
+.copy-link-btn {
+  background: transparent; border: 1px solid var(--brd);
+  border-radius: var(--r-xs); padding: 3px 8px;
+  color: var(--txt3); cursor: pointer; transition: all .15s;
+  display: inline-flex; align-items: center;
+}
+.copy-link-btn:hover { color: var(--a2); border-color: rgba(91,95,199,.35); background: rgba(91,95,199,.06); }
+
 
 /* ══════════════════════════════════════════════
    AGENCY DASHBOARD — новый дизайн
@@ -4437,10 +4445,23 @@ _DTR Analytics_`
   }
 }
 
+
+// ── COPY REPORT LINK ─────────────────────────
+function copyReportLink(type, id, btn) {
+  const url = window.location.origin + window.location.pathname + '#' + type + '/' + id
+  navigator.clipboard.writeText(url).then(() => {
+    const orig = btn.innerHTML
+    btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>'
+    btn.style.borderColor = 'rgba(74,222,128,.4)'
+    setTimeout(() => { btn.innerHTML = orig; btn.style.borderColor = '' }, 2000)
+  }).catch(() => {
+    prompt('Скопируй ссылку:', url)
+  })
+}
+
 // Smart back navigation: client → page-client, agency → page-project
 function goBackToProject() {
-  // _isClientCache is set to true in showClientPortal, false in openProject (agency)
-  // null means freshly logged in agency user - default to page-project
+  window.location.hash = ''
   if (_isClientCache === true) {
     showPage('page-client')
     cpLoadSMMReports()
@@ -4454,12 +4475,30 @@ function goBackToProject() {
 
 
 // Check session on load
-sb.auth.getSession().then(({ data: { session } }) => {
+sb.auth.getSession().then(async ({ data: { session } }) => {
   if (session) {
     currentUser = session.user
-    afterLogin()
+    await afterLogin()
+    // Handle deep link after login
+    handleHashRoute()
   }
 })
+
+async function handleHashRoute() {
+  const hash = window.location.hash.replace('#', '')
+  if (!hash) return
+  const [type, id] = hash.split('/')
+  if (!id) return
+  try {
+    if (type === 'report') {
+      await openReport(id)
+    } else if (type === 'smm') {
+      await loadAndOpenSMM(id)
+    }
+  } catch(e) {
+    console.warn('Deep link failed:', e.message)
+  }
+}
 
 // ══════════════════════════════════════════════
 // PROJECTS
@@ -4884,6 +4923,9 @@ async function loadReports() {
         <div class="report-title">${r.title}</div>
         <div style="display:flex;align-items:center;gap:8px;">
           <span class="${r.status === 'published' ? 'badge-published' : 'badge-draft'}">${r.status === 'published' ? 'Опубликован' : 'Черновик'}</span>
+          <button onclick="event.stopPropagation();copyReportLink('report','${r.id}',this)" class="copy-link-btn" title="Копировать ссылку">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
           <button onclick="event.stopPropagation();deleteReport('${r.id}','${r.title.replace(/'/g,"\'")}',this)" style="background:transparent;border:1px solid rgba(255,61,107,.25);border-radius:7px;padding:3px 9px;color:var(--red);font-size:10px;font-family:Manrope,sans-serif;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(255,61,107,.1)'" onmouseout="this.style.background='transparent'" class="del-report-btn">удалить</button>
         </div>
       </div>
@@ -4935,6 +4977,7 @@ async function createReport() {
 }
 
 async function openReport(id) {
+  window.location.hash = 'report/' + id
   const { data: r } = await sb.from('reports').select('*').eq('id', id).single()
   currentReport = r
   set('report-title-display', r.title)
@@ -6551,6 +6594,9 @@ async function loadSMMReports() {
         <div class="report-title">📱 ${r.period_label}</div>
         <div style="display:flex;align-items:center;gap:8px;">
           <span class="badge-published">SMM</span>
+          <button onclick="event.stopPropagation();copyReportLink('smm','${r.id}',this)" class="copy-link-btn" title="Копировать ссылку">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
           <button onclick="event.stopPropagation();deleteSMMReport('${r.id}')" style="background:transparent;border:1px solid rgba(255,61,107,.25);border-radius:7px;padding:3px 9px;color:var(--red);font-size:10px;font-family:Manrope,sans-serif;cursor:pointer;" onmouseover="this.style.background='rgba(255,61,107,.1)'" onmouseout="this.style.background='transparent'">удалить</button>
         </div>
       </div>
@@ -6565,6 +6611,7 @@ async function deleteSMMReport(id) {
 }
 
 async function loadAndOpenSMM(id) {
+  window.location.hash = 'smm/' + id
   const { data } = await sb.from('smm_reports').select('*').eq('id', id).maybeSingle()
   openSMMReport(data)
 }
