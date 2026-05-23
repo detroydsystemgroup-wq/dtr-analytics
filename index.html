@@ -2161,6 +2161,164 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
 
 
 <!-- ═══════════════════════════════════════════
+     PAGE: CLIENT PORTAL
+═══════════════════════════════════════════ -->
+<div class="page" id="page-client">
+  <header class="cp-header">
+    <div class="cp-header-brand">
+      <div class="cp-header-dot"></div>
+      <span class="cp-header-name" id="cp-brand-name">—</span>
+    </div>
+    <button class="cp-logout-btn" onclick="doLogout()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Выйти
+    </button>
+  </header>
+  <div class="cp-hero">
+    <div class="cp-hero-inner">
+      <div class="cp-hero-greeting" id="cp-greeting">Добро пожаловать</div>
+      <div class="cp-hero-title" id="cp-project-title">—</div>
+      <div class="cp-hero-desc" id="cp-project-desc">—</div>
+    </div>
+    <div class="cp-progress-ring-wrap">
+      <svg class="cp-ring-svg" viewBox="0 0 120 120">
+        <circle class="cp-ring-track" cx="60" cy="60" r="50"/>
+        <circle class="cp-ring-fill" id="cp-ring-fill" cx="60" cy="60" r="50" stroke-dasharray="314" stroke-dashoffset="314"/>
+      </svg>
+      <div class="cp-ring-center">
+        <div class="cp-ring-pct" id="cp-ring-pct">0%</div>
+        <div class="cp-ring-lbl">готово</div>
+      </div>
+    </div>
+  </div>
+  <div class="cp-status-bar">
+    <div class="cp-status-dot" id="cp-status-dot-el"></div>
+    <span class="cp-status-text" id="cp-status-text">Загрузка...</span>
+  </div>
+  <div class="cp-stages-wrap">
+    <div class="cp-stages-scroll" id="cp-stages-scroll"></div>
+  </div>
+  <div class="cp-reports-section">
+    <div class="cp-section-title">Отчёты</div>
+    <div class="cp-report-blocks">
+      <div class="cp-report-block" id="cpb-smm" onclick="cpToggleBlock('smm')">
+        <div class="cp-block-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7b7fd4" stroke-width="1.6" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        </div>
+        <div class="cp-block-text">
+          <div class="cp-block-title">SMM Отчёты</div>
+          <div class="cp-block-sub" id="cpb-smm-sub">Загрузка...</div>
+        </div>
+        <div class="cp-block-arrow" id="cpb-smm-arrow">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="cp-months-panel" id="cp-smm-panel">
+        <div class="cp-months-grid" id="cp-smm-months"></div>
+      </div>
+      <div class="cp-report-block" id="cpb-perf" onclick="cpToggleBlock('perf')">
+        <div class="cp-block-icon" style="background:rgba(56,189,248,.08);border-color:rgba(56,189,248,.2);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="1.6" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div class="cp-block-text">
+          <div class="cp-block-title">Performance Отчёты</div>
+          <div class="cp-block-sub" id="cpb-perf-sub">Загрузка...</div>
+        </div>
+        <div class="cp-block-arrow" id="cpb-perf-arrow">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="cp-months-panel" id="cp-perf-panel">
+        <div class="cp-months-grid" id="cp-perf-months"></div>
+      </div>
+    </div>
+  </div>
+  <div style="height:60px;"></div>
+</div>
+
+<style>
+.cp-header {
+  position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;height:54px;
+  background:rgba(9,9,9,.88);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--brd);
+}
+.cp-header-brand { display:flex;align-items:center;gap:10px; }
+.cp-header-dot { width:8px;height:8px;border-radius:50%;background:var(--a2);animation:pulse 2.5s ease infinite; }
+.cp-header-name { font-family:var(--font-display);font-size:15px;font-weight:700;letter-spacing:-.02em;color:var(--txt); }
+.cp-logout-btn {
+  display:flex;align-items:center;gap:7px;padding:7px 14px;
+  border:1px solid var(--brd);border-radius:var(--r-xs);background:transparent;
+  font-size:12px;font-weight:500;color:var(--txt3);cursor:pointer;transition:all .18s;
+}
+.cp-logout-btn:hover { color:var(--red);border-color:rgba(248,113,113,.25); }
+.cp-hero {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:48px 40px 32px;
+  background:linear-gradient(180deg,rgba(91,95,199,.04) 0%,transparent 100%);
+  border-bottom:1px solid var(--brd);gap:32px;
+}
+.cp-hero-inner { flex:1; }
+.cp-hero-greeting { font-family:var(--font-mono);font-size:10px;color:var(--a2);letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px;animation:fadeUp .5s ease both; }
+.cp-hero-title { font-family:var(--font-display);font-size:38px;font-weight:800;letter-spacing:-.04em;line-height:1.05;color:var(--txt);margin-bottom:8px;animation:fadeUp .5s .06s ease both; }
+.cp-hero-desc { font-size:14px;color:var(--txt2);animation:fadeUp .5s .12s ease both; }
+.cp-progress-ring-wrap { flex-shrink:0;position:relative;width:120px;height:120px;animation:fadeIn .6s .2s ease both; }
+.cp-ring-svg { width:120px;height:120px;transform:rotate(-90deg); }
+.cp-ring-track { fill:none;stroke:var(--bg4);stroke-width:8; }
+.cp-ring-fill { fill:none;stroke:var(--a2);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1); }
+.cp-ring-center { position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center; }
+.cp-ring-pct { font-family:var(--font-display);font-size:22px;font-weight:800;letter-spacing:-.04em;color:var(--txt); }
+.cp-ring-lbl { font-family:var(--font-mono);font-size:9px;color:var(--txt3);letter-spacing:.1em; }
+.cp-status-bar { display:flex;align-items:center;gap:10px;padding:12px 40px;background:var(--bg2);border-bottom:1px solid var(--brd); }
+.cp-status-dot { width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s ease infinite;flex-shrink:0; }
+.cp-status-dot.inactive { background:var(--txt3);animation:none; }
+.cp-status-text { font-family:var(--font-mono);font-size:11px;color:var(--txt2);letter-spacing:.04em; }
+.cp-stages-wrap { padding:24px 40px;overflow-x:auto;border-bottom:1px solid var(--brd);scrollbar-width:none; }
+.cp-stages-wrap::-webkit-scrollbar { display:none; }
+.cp-stages-scroll { display:flex;gap:0;min-width:max-content; }
+.cp-stage-item { display:flex;flex-direction:column;align-items:center;position:relative;width:100px; }
+.cp-stage-item:not(:last-child)::after { content:\'\';position:absolute;top:14px;left:calc(50% + 15px);width:calc(100% - 30px);height:1px;background:var(--brd2);transition:background .4s; }
+.cp-stage-item.s-done:not(:last-child)::after { background:var(--a2); }
+.cp-stage-dot { width:28px;height:28px;border-radius:50%;border:2px solid var(--brd2);background:var(--bg3);display:flex;align-items:center;justify-content:center;margin-bottom:10px;position:relative;z-index:1;transition:all .3s cubic-bezier(.16,1,.3,1);flex-shrink:0; }
+.cp-stage-item.s-done .cp-stage-dot { background:var(--a);border-color:var(--a2);box-shadow:0 0 12px rgba(91,95,199,.35); }
+.cp-stage-item.s-active .cp-stage-dot { background:var(--bg3);border-color:var(--a2);box-shadow:0 0 0 4px rgba(91,95,199,.15); }
+.cp-stage-label { font-family:var(--font-mono);font-size:9px;text-align:center;color:var(--txt3);letter-spacing:.04em;line-height:1.4;max-width:84px; }
+.cp-stage-item.s-done .cp-stage-label { color:var(--txt2); }
+.cp-stage-item.s-active .cp-stage-label { color:var(--a2); }
+.cp-reports-section { padding:36px 40px; }
+.cp-section-title { font-family:var(--font-display);font-size:13px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px; }
+.cp-report-blocks { display:flex;flex-direction:column;gap:0; }
+.cp-report-block { display:flex;align-items:center;gap:18px;background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r-lg);padding:22px 24px;cursor:pointer;transition:all .22s cubic-bezier(.16,1,.3,1);margin-bottom:10px;user-select:none; }
+.cp-report-block:hover { border-color:var(--brd2);transform:translateY(-2px);box-shadow:var(--shadow-md); }
+.cp-report-block.cp-active { border-color:var(--a);background:rgba(91,95,199,.05);transform:none;box-shadow:0 0 0 1px var(--a);margin-bottom:0;border-radius:var(--r-lg) var(--r-lg) 0 0; }
+.cp-block-icon { width:46px;height:46px;border-radius:var(--r-md);background:rgba(91,95,199,.08);border:1px solid rgba(91,95,199,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+.cp-block-text { flex:1; }
+.cp-block-title { font-family:var(--font-display);font-size:16px;font-weight:700;letter-spacing:-.02em;margin-bottom:3px; }
+.cp-block-sub { font-family:var(--font-mono);font-size:11px;color:var(--txt3); }
+.cp-block-arrow { color:var(--txt3);transition:transform .3s cubic-bezier(.16,1,.3,1); }
+.cp-report-block.cp-active .cp-block-arrow { transform:rotate(180deg);color:var(--a2); }
+.cp-months-panel { background:var(--bg2);border:1px solid var(--a);border-top:none;border-radius:0 0 var(--r-lg) var(--r-lg);padding:20px 24px;margin-bottom:10px;display:none; }
+.cp-months-panel.cp-open { display:block;animation:fadeUp .28s cubic-bezier(.16,1,.3,1) both; }
+.cp-months-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:8px; }
+.cp-month-chip { padding:14px 10px;border-radius:var(--r-sm);background:var(--bg4);border:1px solid var(--brd);text-align:center;transition:all .18s cubic-bezier(.16,1,.3,1);position:relative; }
+.cp-month-chip.has-report { cursor:pointer;border-color:rgba(91,95,199,.3);background:rgba(91,95,199,.06); }
+.cp-month-chip.has-report:hover { border-color:var(--a2);background:rgba(91,95,199,.12);transform:translateY(-2px);box-shadow:var(--shadow-sm); }
+.cp-month-chip.no-report { opacity:.38;cursor:default; }
+.cp-month-name { font-family:var(--font-display);font-size:13px;font-weight:600;letter-spacing:-.01em;margin-bottom:5px; }
+.cp-month-dot { width:5px;height:5px;border-radius:50%;background:var(--a2);margin:0 auto;display:none; }
+.cp-month-chip.has-report .cp-month-dot { display:block; }
+.cp-month-badge { font-family:var(--font-mono);font-size:9px;color:var(--a2);letter-spacing:.06em;margin-top:4px;display:none; }
+.cp-month-chip.has-report .cp-month-badge { display:block; }
+@media(max-width:600px){
+  .cp-hero{flex-direction:column;padding:32px 20px 24px;gap:24px;}
+  .cp-hero-title{font-size:28px;}
+  .cp-stages-wrap,.cp-reports-section,.cp-status-bar{padding-left:20px;padding-right:20px;}
+  .cp-months-grid{grid-template-columns:repeat(3,1fr);}
+}
+</style>
+
+<!-- ═══════════════════════════════════════════
      PAGE: SMM REPORT
 ═══════════════════════════════════════════ -->
 <div class="page" id="page-smm">
@@ -3464,19 +3622,9 @@ async function afterLogin() {
     .maybeSingle()
 
   if (clientProject) {
-    // Client — go directly to their project, hide agency controls
+    // Client — show dedicated client portal
     document.querySelectorAll('.agency-only').forEach(el => el.style.display = 'none')
-    currentProject = clientProject
-    _isClientCache = true
-    // Set project header
-    const pi = g('proj-icon')
-    if (pi) { pi.style.cssText = `background:${clientProject.brand_color}22;border:1px solid ${clientProject.brand_color}44;color:${clientProject.brand_color};width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:Manrope,sans-serif;font-size:26px;`; pi.textContent = clientProject.name[0] }
-    set('proj-name', clientProject.name)
-    set('proj-desc', clientProject.description || '')
-    showPage('page-project')
-    loadReports()
-    loadSMMReports()
-    loadTracker()
+    await showClientPortal(clientProject)
   } else {
     // Agency — normal dashboard
     showPage('page-dashboard')
@@ -4810,6 +4958,175 @@ async function deleteNote(i) {
   renderNotes(); await savePassport()
 }
 
+
+// ══════════════════════════════════════════════
+// CLIENT PORTAL
+// ══════════════════════════════════════════════
+const MONTHS_RU = ['Январь','Февраль','Март','Апрель','Май','Июнь',
+                   'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь']
+
+let cpSMMReports = []
+let cpPerfReports = []
+let cpBlockOpen = null // 'smm' | 'perf' | null
+
+async function showClientPortal(project) {
+  currentProject = project
+  _isClientCache = true
+
+  // Set header brand name
+  const el = g('cp-brand-name')
+  if (el) el.textContent = project.name
+
+  // Set hero
+  const hour = new Date().getHours()
+  const greet = hour < 12 ? 'Доброе утро' : hour < 18 ? 'Добрый день' : 'Добрый вечер'
+  if (g('cp-greeting')) g('cp-greeting').textContent = greet
+  if (g('cp-project-title')) g('cp-project-title').textContent = project.name
+  if (g('cp-project-desc')) g('cp-project-desc').textContent = project.description || 'Ваш проект'
+
+  showPage('page-client')
+
+  // Load all data in parallel
+  await Promise.all([
+    cpLoadTracker(),
+    cpLoadSMMReports(),
+    cpLoadPerfReports()
+  ])
+}
+
+async function cpLoadTracker() {
+  const { data: stages } = await sb.from('project_stages')
+    .select('*')
+    .eq('project_id', currentProject.id)
+    .order('stage_index')
+  const arr = stages || []
+  const completed = arr.filter(s => s.status === 'completed').length
+  const total = 9
+  const pct = Math.round((completed / total) * 100)
+
+  // Ring
+  const circumference = 314
+  const offset = circumference - (circumference * pct / 100)
+  if (g('cp-ring-fill')) g('cp-ring-fill').style.strokeDashoffset = offset
+  if (g('cp-ring-pct')) g('cp-ring-pct').textContent = pct + '%'
+
+  // Status
+  const activeStage = arr.find(s => s.status === 'active')
+  const dot = g('cp-status-dot-el')
+  const txt = g('cp-status-text')
+  if (completed === 0) {
+    if (dot) dot.className = 'cp-status-dot inactive'
+    if (txt) txt.textContent = 'Проект готовится к старту'
+  } else if (completed === total) {
+    if (dot) dot.className = 'cp-status-dot'
+    if (txt) txt.textContent = '🎉 Все этапы завершены!'
+  } else {
+    if (dot) dot.className = 'cp-status-dot'
+    const stageName = activeStage ? STAGES[activeStage.stage_index] : STAGES[completed]
+    if (txt) txt.textContent = `Сейчас в работе: ${stageName} · ${completed} из ${total} этапов выполнено`
+  }
+
+  // Stages scroll
+  const scroll = g('cp-stages-scroll')
+  if (!scroll) return
+  scroll.innerHTML = STAGES.map((name, i) => {
+    const rec = arr.find(r => r.stage_index === i) || { status: 'pending' }
+    const st = rec.status || 'pending'
+    const cls = st === 'completed' ? 's-done' : st === 'active' ? 's-active' : ''
+    const icon = st === 'completed'
+      ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>`
+      : st === 'active'
+      ? `<div style="width:8px;height:8px;border-radius:50%;background:var(--a2);animation:pulse 2s infinite;"></div>`
+      : ''
+    return `<div class="cp-stage-item ${cls}">
+      <div class="cp-stage-dot">${icon}</div>
+      <div class="cp-stage-label">${name}</div>
+    </div>`
+  }).join('')
+}
+
+async function cpLoadSMMReports() {
+  const { data } = await sb.from('smm_reports')
+    .select('id, period_label, created_at')
+    .eq('project_id', currentProject.id)
+    .order('created_at', { ascending: false })
+  cpSMMReports = data || []
+  const count = cpSMMReports.length
+  const sub = g('cpb-smm-sub')
+  if (sub) sub.textContent = count ? `${count} ${count===1?'отчёт':count<5?'отчёта':'отчётов'} доступно` : 'Отчётов пока нет'
+  cpRenderMonths('smm')
+}
+
+async function cpLoadPerfReports() {
+  const { data } = await sb.from('reports')
+    .select('id, title, period_b_label, period_d_label, created_at, status')
+    .eq('project_id', currentProject.id)
+    .eq('status', 'published')
+    .order('created_at', { ascending: false })
+  cpPerfReports = (data || []).filter(r => !r.hidden_for_client)
+  const count = cpPerfReports.length
+  const sub = g('cpb-perf-sub')
+  if (sub) sub.textContent = count ? `${count} ${count===1?'отчёт':count<5?'отчёта':'отчётов'} доступно` : 'Отчётов пока нет'
+  cpRenderMonths('perf')
+}
+
+function cpRenderMonths(type) {
+  const grid = g(type === 'smm' ? 'cp-smm-months' : 'cp-perf-months')
+  if (!grid) return
+  const reports = type === 'smm' ? cpSMMReports : cpPerfReports
+
+  // Build month → report map
+  // Try to match period_label to month name
+  const monthMap = {}
+  reports.forEach(r => {
+    const label = (r.period_label || r.title || '').toLowerCase()
+    MONTHS_RU.forEach((m, idx) => {
+      if (label.includes(m.toLowerCase())) {
+        if (!monthMap[idx]) monthMap[idx] = r
+      }
+    })
+    // Also try to parse created_at month as fallback
+    if (Object.keys(monthMap).length === 0 || !Object.values(monthMap).includes(r)) {
+      const d = new Date(r.created_at)
+      const mo = d.getMonth()
+      if (!monthMap[mo]) monthMap[mo] = r
+    }
+  })
+
+  grid.innerHTML = MONTHS_RU.map((name, idx) => {
+    const report = monthMap[idx]
+    const hasReport = !!report
+    const cls = hasReport ? 'has-report' : 'no-report'
+    const onclick = hasReport
+      ? `onclick="${type==='smm' ? `loadAndOpenSMM('${report.id}')` : `openReport('${report.id}')`}"`
+      : ''
+    return `<div class="cp-month-chip ${cls}" ${onclick}>
+      <div class="cp-month-name">${name}</div>
+      <div class="cp-month-dot"></div>
+      <div class="cp-month-badge">${hasReport ? 'Открыть' : ''}</div>
+    </div>`
+  }).join('')
+}
+
+function cpToggleBlock(type) {
+  const panelId = type === 'smm' ? 'cp-smm-panel' : 'cp-perf-panel'
+  const blockId = type === 'smm' ? 'cpb-smm' : 'cpb-perf'
+  const panel = g(panelId)
+  const block = g(blockId)
+  const isOpen = panel && panel.classList.contains('cp-open')
+
+  // Close all
+  ;['cp-smm-panel','cp-perf-panel'].forEach(id => { const p = g(id); if(p) { p.classList.remove('cp-open') } })
+  ;['cpb-smm','cpb-perf'].forEach(id => { const b = g(id); if(b) { b.classList.remove('cp-active') } })
+
+  if (!isOpen) {
+    if (panel) panel.classList.add('cp-open')
+    if (block) block.classList.add('cp-active')
+    cpBlockOpen = type
+  } else {
+    cpBlockOpen = null
+  }
+}
 
 // ══════════════════════════════════════════════
 // SMM REPORT — Reference Design
