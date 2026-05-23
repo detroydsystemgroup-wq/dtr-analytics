@@ -2098,7 +2098,7 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
         </div>
       </div>
       <div style="display:flex;gap:10px;">
-        <button class="btn-ghost agency-only" onclick="openCreateSMMReport()" style="gap:7px;">
+        <button class="btn-ghost agency-only" onclick="document.getElementById('smm-reports-list').closest('.reports-section').scrollIntoView({behavior:'smooth'})" style="gap:7px;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 16.1A5 5 0 015 12a5 5 0 013-4.6M15 2a5 5 0 015 5 5 5 0 01-3 4.6M12 12a3 3 0 100-6 3 3 0 000 6z"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M9 18l3 3 3-3"/></svg>
           SMM Отчёт
         </button>
@@ -2143,6 +2143,17 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
     <div class="reports-section">
       <div class="section-head"><div class="section-title">Отчёты</div></div>
       <div id="reports-list"></div>
+    </div>
+
+    <div class="reports-section" style="margin-top:28px;">
+      <div class="section-head">
+        <div class="section-title">SMM Отчёты</div>
+        <button class="btn-ghost agency-only" onclick="openCreateSMMReport()" style="gap:6px;font-size:11px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Новый SMM отчёт
+        </button>
+      </div>
+      <div id="smm-reports-list"></div>
     </div>
   </div>
 </div>
@@ -3229,6 +3240,21 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
   </div>
 </div>
 
+<!-- MODAL: НОВЫЙ SMM ОТЧЁТ -->
+<div class="modal-overlay" id="modal-smm-create">
+  <div class="modal">
+    <div class="modal-title">📱 Новый SMM отчёт</div>
+    <div class="field">
+      <label>Период</label>
+      <input type="text" id="smm-period-inp" placeholder="Май 2026">
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-smm-create')">Отмена</button>
+      <button class="btn-primary" style="flex:1;" onclick="createSMMReport()">Создать</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: EDIT STAGE (agency only) -->
 <div class="modal-overlay" id="modal-stage">
   <div class="modal" style="max-width:480px;">
@@ -3433,7 +3459,7 @@ async function afterLogin() {
   const { data: clientProject } = await sb.from('projects')
     .select('*')
     .eq('client_login', currentUser.email)
-    .single()
+    .maybeSingle()
 
   if (clientProject) {
     // Client — go directly to their project, hide agency controls
@@ -3635,7 +3661,7 @@ async function checkIsClient() {
   const { data } = await sb.from('projects')
     .select('id')
     .eq('client_login', currentUser.email)
-    .single()
+    .maybeSingle()
   return !!data
 }
 
