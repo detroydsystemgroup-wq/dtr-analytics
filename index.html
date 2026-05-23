@@ -2440,7 +2440,7 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
       <div id="smm-rubrics-input-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;"></div>
 
       <div style="display:flex;justify-content:flex-end;padding-top:16px;border-top:1px solid var(--smm-brd);">
-        <button class="smm-save-bar-btn" onclick="saveSMMData(true)" style="font-size:12px;padding:12px 28px;">
+        <button class="smm-save-bar-btn" id="smm-save-data-btn" onclick="saveSMMData(true)" style="font-size:12px;padding:12px 28px;">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
           Сохранить и обновить отчёт
         </button>
@@ -3286,6 +3286,8 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
 // ══════════════════════════════════════════════
 const SUPABASE_URL = 'https://ygxfvmpfhrfxqzoylddo.supabase.co'
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlneGZ2bXBmaHJmeHF6b3lsZGRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjcxMDksImV4cCI6MjA5NDk0MzEwOX0.HEte3FOCSEztbZMQ1YgqjeYSn0IxBbP-gTdZ1zLhisk'
+// !! Вставь свой Anthropic API ключ (https://console.anthropic.com)
+const ANTHROPIC_KEY = '' // <-- сюда вставить sk-ant-...
 // Agency domain: клиентские логины превращаются в email вида login@dtr.agency
 const AGENCY_DOMAIN = 'dtr.agency'
 
@@ -3749,6 +3751,7 @@ function processFile(file, key) {
   const r = new FileReader()
   r.onload = async e => {
     try {
+    if (!ANTHROPIC_KEY) throw new Error('API ключ не задан. Вставь свой Anthropic ключ в константу ANTHROPIC_KEY в файле.')
       const wb = XLSX.read(e.target.result, {type:'array'})
       const ws = wb.Sheets[wb.SheetNames[0]]
       const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''})
@@ -4153,6 +4156,7 @@ ${LABEL_D} (${dD} дн): выручка/день ${fmtM(Math.round(dRD))} | че
   const aiColors = {'🎯':'var(--a)','📊':'var(--cyan)','💡':'var(--green)','⚠️':'var(--red)'}
 
   try {
+    if (!ANTHROPIC_KEY) throw new Error('API ключ не задан. Вставь свой Anthropic ключ в константу ANTHROPIC_KEY в файле.')
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type':'application/json', 'anthropic-dangerous-direct-browser-access':'true' },
@@ -4893,7 +4897,7 @@ async function deleteSMMReport(id) {
 }
 
 async function loadAndOpenSMM(id) {
-  const { data } = await sb.from('smm_reports').select('*').eq('id', id).single()
+  const { data } = await sb.from('smm_reports').select('*').eq('id', id).maybeSingle()
   openSMMReport(data)
 }
 
@@ -4975,17 +4979,25 @@ function collectSMMData() {
 async function saveSMMData(showFeedback) {
   if (!currentSMMReport) return
   if (!_isClientCache) collectSMMData()
-  await sb.from('smm_reports').update({
+  const { error } = await sb.from('smm_reports').update({
     metrics: smmData.metrics, prev_metrics: smmData.prev, goals: smmData.goals,
-    reels: smmData.reels, rubrics: smmData.rubrics, updated_at: new Date().toISOString()
+    reels: smmData.reels, rubrics: smmData.rubrics
   }).eq('id', currentSMMReport.id)
+  if (error) {
+    console.error('SMM save error:', error)
+    alert('Ошибка сохранения: ' + error.message)
+    return
+  }
   renderSMMPresentation()
   if (showFeedback) {
-    const btn = g('smm-save-btn'); if (!btn) return
-    const orig = btn.innerHTML
-    btn.innerHTML = '✓ Сохранено!'
-    btn.style.background = 'var(--smm-green)'; btn.style.color = '#000'
-    setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; btn.style.color = '' }, 2000)
+    // Show feedback on both save buttons (header + data tab)
+    const btns = [g('smm-save-btn'), g('smm-save-data-btn')].filter(Boolean)
+    btns.forEach(btn => {
+      const orig = btn.innerHTML
+      btn.innerHTML = '✓ Сохранено!'
+      btn.style.background = 'var(--smm-green)'; btn.style.color = '#000'
+      setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; btn.style.color = '' }, 2000)
+    })
   }
 }
 
@@ -5220,8 +5232,9 @@ ${topRub?('Лучшая рубрика: "'+topRub.name+'", ER '+topRub.er+'%'):'
 ## ⚠️ Что просело
 ## 💡 Рекомендации`
   try {
+    if (!ANTHROPIC_KEY) throw new Error('API ключ не задан. Вставь свой Anthropic ключ в константу ANTHROPIC_KEY в файле.')
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
+      method:'POST',headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:900,messages:[{role:'user',content:prompt}]})
     })
     const data=await resp.json()
