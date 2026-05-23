@@ -8346,5 +8346,338 @@ setTimeout(updateCCProjectCount, 1000);
 setTimeout(updateCCProjectCount, 3000);
 </script>
 
+
+<style id="dtr-premium-cards">
+/* ═══════════════════════════════════════════════════
+   DTR PREMIUM CARDS v2 — Linear × Vercel × Stripe
+   Concept: Each card breathes the project's color.
+   Motion: Spring physics. Tactile. Alive.
+═══════════════════════════════════════════════════ */
+
+/* ── Keyframes ── */
+@keyframes cardGlowPulse {
+  0%, 100% { opacity: .4; }
+  50%       { opacity: .7; }
+}
+@keyframes progressReveal {
+  from { transform: scaleX(0); transform-origin: left; }
+  to   { transform: scaleX(1); transform-origin: left; }
+}
+@keyframes chipPop {
+  from { opacity: 0; transform: scale(.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ════════════════════════════════
+   CARD — Full redesign
+════════════════════════════════ */
+.pcard {
+  background: #0f0f14 !important;
+  border: 1px solid rgba(255,255,255,.07) !important;
+  border-radius: 20px !important;
+  overflow: hidden !important;
+  cursor: pointer !important;
+  transition:
+    transform 400ms cubic-bezier(.34,1.56,.64,1),
+    box-shadow 400ms cubic-bezier(.16,1,.3,1),
+    border-color 250ms ease !important;
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* ── Ambient color glow behind the whole card ── */
+.pcard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: radial-gradient(ellipse 80% 50% at 20% 0%, var(--pc-color, rgba(99,102,241,.12)) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 400ms ease;
+  pointer-events: none;
+  z-index: 0;
+}
+.pcard:hover::after { opacity: 1; }
+
+.pcard:hover {
+  transform: translateY(-6px) !important;
+  box-shadow:
+    0 32px 72px rgba(0,0,0,.8),
+    0 12px 24px rgba(0,0,0,.5),
+    0 0 0 1px rgba(255,255,255,.1) !important;
+  border-color: rgba(255,255,255,.14) !important;
+}
+.pcard.pc-overdue {
+  border-color: rgba(248,113,113,.2) !important;
+}
+.pcard.pc-overdue:hover {
+  border-color: rgba(248,113,113,.35) !important;
+}
+
+/* ── TOP STRIPE — Dramatic gradient ── */
+.pcard-stripe {
+  height: 3px !important;
+  flex-shrink: 0 !important;
+  position: relative;
+  z-index: 2;
+  /* The inline style sets background color — we add glow on top */
+  box-shadow: 0 0 20px var(--pc-color, rgba(99,102,241,.5));
+  filter: brightness(1.2);
+}
+
+/* ── BODY ── */
+.pcard-body {
+  padding: 22px 22px 16px !important;
+  position: relative;
+  z-index: 1;
+  flex: 1 !important;
+}
+
+/* ── HEAD: Icon + Name ── */
+.pcard-head {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  margin-bottom: 20px !important;
+}
+
+/* ── PROJECT ICON — bigger, glowing ── */
+.pcard-icon {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 14px !important;
+  font-size: 20px !important;
+  font-weight: 800 !important;
+  flex-shrink: 0 !important;
+  position: relative;
+  /* The glow uses the same color as the border (from inline style) */
+  box-shadow: 0 4px 20px var(--pc-icon-glow, rgba(99,102,241,.3)) !important;
+  transition: transform 300ms cubic-bezier(.34,1.56,.64,1), box-shadow 300ms ease !important;
+}
+.pcard:hover .pcard-icon {
+  transform: scale(1.1) !important;
+  box-shadow: 0 8px 28px var(--pc-icon-glow, rgba(99,102,241,.5)) !important;
+}
+
+.pcard-name {
+  font-family: 'Manrope', sans-serif !important;
+  font-size: 17px !important;
+  font-weight: 800 !important;
+  letter-spacing: -.03em !important;
+  color: #f1f1f3 !important;
+  line-height: 1.2 !important;
+  margin-bottom: 3px !important;
+}
+
+.pcard-desc {
+  font-size: 12px !important;
+  color: rgba(255,255,255,.35) !important;
+  line-height: 1.5 !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 1 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  margin-top: 0 !important;
+}
+
+/* ── PROGRESS BLOCK ── */
+.pcard-prog-wrap {
+  margin-bottom: 16px !important;
+}
+
+.pcard-prog-hdr {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 10px !important;
+}
+
+.pcard-prog-lbl {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  color: rgba(255,255,255,.28) !important;
+  letter-spacing: .06em !important;
+}
+
+.pcard-prog-pct {
+  font-family: 'Manrope', sans-serif !important;
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  letter-spacing: -.04em !important;
+  line-height: 1 !important;
+  /* color comes from inline style (progColor) */
+}
+
+/* ── PROGRESS BAR — thick, rounded, animated ── */
+.pcard-bar-track {
+  height: 6px !important;
+  background: rgba(255,255,255,.06) !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+.pcard-bar-fill {
+  height: 100% !important;
+  border-radius: 6px !important;
+  transition: width 1.4s cubic-bezier(.4,0,.2,1) .15s !important;
+  position: relative !important;
+  /* Shimmer highlight */
+}
+.pcard-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(90deg, transparent 30%, rgba(255,255,255,.25) 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s ease infinite;
+  border-radius: inherit;
+}
+
+/* ── QUICK NOTE ── */
+.pcard-note {
+  font-size: 12px !important;
+  color: rgba(255,255,255,.45) !important;
+  background: rgba(255,255,255,.04) !important;
+  border-radius: 10px !important;
+  padding: 10px 13px !important;
+  margin-bottom: 14px !important;
+  line-height: 1.55 !important;
+  border-left: 2px solid rgba(255,255,255,.12) !important;
+  border-top: none !important;
+  border-right: none !important;
+  border-bottom: none !important;
+  display: none !important;
+}
+.pcard-note.visible { display: block !important; }
+
+/* ── META / CHIPS ── */
+.pcard-meta {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+}
+
+.pcard-chips {
+  display: flex !important;
+  gap: 6px !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+}
+
+/* ── CHIPS — refined pills ── */
+.pcard-chip {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  letter-spacing: .04em !important;
+  padding: 5px 12px !important;
+  border-radius: 20px !important;
+  animation: chipPop .3s cubic-bezier(.34,1.56,.64,1) both !important;
+}
+
+.pcc-green {
+  background: rgba(52,211,153,.1) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(52,211,153,.2) !important;
+}
+.pcc-red {
+  background: rgba(248,113,113,.1) !important;
+  color: #f87171 !important;
+  border: 1px solid rgba(248,113,113,.2) !important;
+}
+.pcc-amber {
+  background: rgba(245,158,11,.1) !important;
+  color: #f59e0b !important;
+  border: 1px solid rgba(245,158,11,.2) !important;
+}
+.pcc-cyan {
+  background: rgba(34,211,238,.1) !important;
+  color: #22d3ee !important;
+  border: 1px solid rgba(34,211,238,.2) !important;
+}
+.pcc-purple {
+  background: rgba(99,102,241,.1) !important;
+  color: #a5b4fc !important;
+  border: 1px solid rgba(99,102,241,.2) !important;
+}
+
+/* ── FOOTER — elevated glass ── */
+.pcard-footer {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 12px 22px !important;
+  background: rgba(255,255,255,.025) !important;
+  border-top: 1px solid rgba(255,255,255,.06) !important;
+  position: relative !important;
+  z-index: 1 !important;
+  flex-shrink: 0 !important;
+}
+
+.pcard-last-update {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  color: rgba(255,255,255,.2) !important;
+  letter-spacing: .04em !important;
+}
+
+/* ── ACTION BUTTONS — big, tactile ── */
+.pcard-actions {
+  display: flex !important;
+  gap: 6px !important;
+}
+
+.pcard-action-btn {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 12px !important;
+  background: rgba(255,255,255,.05) !important;
+  border: 1px solid rgba(255,255,255,.09) !important;
+  color: rgba(255,255,255,.4) !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 16px !important;
+  transition: all 220ms cubic-bezier(.34,1.56,.64,1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.pcard-action-btn:hover {
+  background: rgba(99,102,241,.14) !important;
+  border-color: rgba(99,102,241,.3) !important;
+  color: #a5b4fc !important;
+  transform: scale(1.12) !important;
+  box-shadow: 0 4px 16px rgba(99,102,241,.25) !important;
+}
+.pcard-action-btn:active {
+  transform: scale(.96) !important;
+}
+
+/* ── GRID: 2 columns in CC mode ── */
+.projects-grid-new {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 16px !important;
+}
+@media (min-width: 1400px) {
+  .cc-main .projects-grid-new {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+/* ── EMPTY STATE upgrade ── */
+.empty-state {
+  background: #0f0f14 !important;
+  border: 1px solid rgba(255,255,255,.06) !important;
+  border-radius: 20px !important;
+  padding: 100px 48px !important;
+}
+
+</style>
+
 </body>
 </html>
