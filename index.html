@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DTR Performance Analytics</title>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -1494,228 +1494,297 @@ input[type=file] { display: none; }
 svg { transition: stroke .2s, fill .2s, opacity .2s; }
 
 /* ══════════════════════════════════════════════
-   SMM REPORT
+   SMM REPORT — Premium Reference Design
 ══════════════════════════════════════════════ */
-.smm-tabs {
-  display: flex; gap: 5px; flex-wrap: wrap;
-  background: var(--bg3); border: 1px solid var(--brd);
-  border-radius: var(--r-lg); padding: 5px;
-  margin-bottom: 24px; position: sticky; top: 60px; z-index: 50;
-  backdrop-filter: blur(20px);
-}
-.smm-tab {
-  display: flex; align-items: center; gap: 6px;
-  padding: 8px 16px; border-radius: var(--r-sm);
-  font-family: var(--font-body); font-size: 12px; font-weight: 500;
-  color: var(--txt3); cursor: pointer; transition: all .18s;
-  background: transparent; border: none; white-space: nowrap;
-}
-.smm-tab:hover { color: var(--txt2); background: var(--bg4); }
-.smm-tab.st-active { background: var(--bg5); color: var(--txt); }
-.smm-section { display: none; animation: fadeUp .3s cubic-bezier(.16,1,.3,1) both; }
-.smm-section.ss-active { display: block; }
-
-/* Main metric card */
-.smm-metric-card {
-  background: var(--bg3); border: 1px solid var(--brd);
-  border-radius: var(--r-lg); padding: 22px 24px;
-  position: relative; overflow: hidden; transition: border-color .2s, transform .2s;
-}
-.smm-metric-card:hover { border-color: var(--brd2); transform: translateY(-2px); }
-.smm-metric-card::before {
-  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-}
-.smm-metric-lbl {
-  font-family: var(--font-mono); font-size: 10px; color: var(--txt3);
-  letter-spacing: .14em; text-transform: uppercase; margin-bottom: 10px;
-}
-.smm-metric-val {
-  font-family: var(--font-display); font-size: 36px; font-weight: 800;
-  letter-spacing: -.04em; line-height: 1; margin-bottom: 8px;
-}
-.smm-metric-input {
-  background: var(--bg4); border: 1px solid var(--brd);
-  border-radius: var(--r-sm); padding: 9px 12px;
-  color: var(--txt); font-family: var(--font-display);
-  font-size: 24px; font-weight: 800; letter-spacing: -.03em;
-  outline: none; width: 100%; transition: border-color .2s, box-shadow .2s;
-}
-.smm-metric-input:focus { border-color: var(--a2); box-shadow: 0 0 0 3px rgba(91,95,199,.1); }
-.smm-delta {
-  display: inline-flex; align-items: center; gap: 4px;
-  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
-  padding: 3px 9px; border-radius: 20px;
-}
-.smm-delta.up { background: rgba(74,222,128,.1); color: var(--green); }
-.smm-delta.down { background: rgba(248,113,113,.1); color: var(--red); }
-.smm-delta.neutral { background: var(--bg5); color: var(--txt3); }
-
-/* Goal bar */
-.goal-bar-wrap { margin-top: 10px; }
-.goal-bar-track { height: 4px; background: var(--bg5); border-radius: 2px; overflow: hidden; }
-.goal-bar-fill { height: 100%; border-radius: 2px; transition: width .6s cubic-bezier(.16,1,.3,1); }
-.goal-vs { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 10px; color: var(--txt3); margin-top: 4px; }
-
-/* Engagement metric cards (ER/LR/TR/SHR/SR) */
-.eng-cards { display: grid; grid-template-columns: repeat(5,1fr); gap: 10px; margin-bottom: 20px; }
-.eng-card {
-  background: var(--bg3); border: 1px solid var(--brd);
-  border-radius: var(--r-md); padding: 16px; text-align: center;
-  transition: border-color .2s; position: relative; overflow: hidden;
-}
-.eng-card:hover { border-color: var(--brd2); }
-.eng-card::before {
-  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-}
-.eng-name { font-family: var(--font-mono); font-size: 11px; color: var(--txt3); letter-spacing: .1em; margin-bottom: 8px; }
-.eng-val { font-family: var(--font-display); font-size: 26px; font-weight: 800; letter-spacing: -.03em; }
-.eng-input {
-  background: var(--bg4); border: 1px solid var(--brd); border-radius: var(--r-sm);
-  padding: 7px 8px; color: var(--txt); font-family: var(--font-display);
-  font-size: 18px; font-weight: 700; text-align: center;
-  outline: none; width: 100%; transition: border-color .2s;
-}
-.eng-input:focus { border-color: var(--a2); }
-
-/* Chart containers */
-.smm-chart-wrap {
-  background: var(--bg3); border: 1px solid var(--brd);
-  border-radius: var(--r-lg); padding: 24px; margin-bottom: 16px;
-}
-.smm-chart-title {
-  font-family: var(--font-display); font-size: 14px; font-weight: 600;
-  letter-spacing: -.01em; margin-bottom: 18px; color: var(--txt2);
+:root {
+  --smm-bg: #080810;
+  --smm-bg2: #0d0d1a;
+  --smm-bg3: #12121f;
+  --smm-bg4: #17172a;
+  --smm-brd: rgba(120,100,255,0.12);
+  --smm-brd2: rgba(120,100,255,0.25);
+  --smm-accent: #7c5cfc;
+  --smm-accent2: #a78bfa;
+  --smm-cyan: #22d3ee;
+  --smm-pink: #f472b6;
+  --smm-green: #34d399;
+  --smm-amber: #fbbf24;
+  --smm-red: #f87171;
+  --smm-text: #e8e6f0;
+  --smm-muted: #5a576e;
+  --smm-muted2: #8a87a0;
+  --smm-glow: rgba(124,92,252,0.15);
+  --bebas: 'Bebas Neue', sans-serif;
 }
 
-/* Reels grid */
-.reels-grid {
-  display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
-}
-.reel-card {
-  background: var(--bg3); border: 1px solid var(--brd);
-  border-radius: var(--r-md); overflow: hidden;
-  transition: border-color .2s, transform .2s; position: relative;
-  cursor: pointer;
-}
-.reel-card:hover { border-color: var(--brd2); transform: translateY(-3px); }
-.reel-rank {
-  position: absolute; top: 8px; left: 8px; z-index: 2;
-  width: 26px; height: 26px; border-radius: 50%;
-  background: rgba(0,0,0,.7); backdrop-filter: blur(8px);
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-size: 11px; font-weight: 800; color: #fff;
-}
-.reel-rank.rank-1 { background: #f59e0b; color: #000; }
-.reel-rank.rank-2 { background: #9ca3af; }
-.reel-rank.rank-3 { background: #b45309; }
-.reel-thumb {
-  width: 100%; aspect-ratio: 9/16; background: var(--bg4);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 36px; position: relative; overflow: hidden;
-}
-.reel-thumb img { width: 100%; height: 100%; object-fit: cover; }
-.reel-thumb-placeholder {
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-  color: var(--txt3);
-}
-.reel-body { padding: 12px; }
-.reel-title { font-size: 12px; font-weight: 600; margin-bottom: 8px; line-height: 1.4; color: var(--txt); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.reel-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
-.reel-stat { font-family: var(--font-mono); font-size: 10px; color: var(--txt3); }
-.reel-stat span { color: var(--txt2); font-weight: 600; }
-.reel-del {
-  position: absolute; top: 8px; right: 8px; z-index: 2;
-  width: 24px; height: 24px; border-radius: 50%;
-  background: rgba(0,0,0,.6); border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  color: var(--txt3); transition: all .15s; opacity: 0;
-}
-.reel-card:hover .reel-del { opacity: 1; }
-.reel-del:hover { background: rgba(248,113,113,.8); color: #fff; }
-.reel-er-badge {
-  display: inline-flex; font-family: var(--font-mono); font-size: 9px;
-  padding: 2px 7px; border-radius: 20px; margin-top: 6px;
-  background: rgba(91,95,199,.12); color: var(--a2);
-}
-
-/* Rubric bars */
-.rubric-list { display: flex; flex-direction: column; gap: 10px; }
-.rubric-card {
-  background: var(--bg3); border: 1px solid var(--brd);
-  border-radius: var(--r-md); padding: 16px 20px;
-  display: flex; align-items: center; gap: 16px; transition: border-color .2s;
-}
-.rubric-card:hover { border-color: var(--brd2); }
-.rubric-rank-badge {
-  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-size: 13px; font-weight: 800;
-}
-.rubric-name { font-size: 14px; font-weight: 600; min-width: 140px; }
-.rubric-bar-wrap { flex: 1; }
-.rubric-bar-track { height: 6px; background: var(--bg5); border-radius: 3px; overflow: hidden; }
-.rubric-bar-fill { height: 100%; border-radius: 3px; transition: width .6s cubic-bezier(.16,1,.3,1); }
-.rubric-meta { font-family: var(--font-mono); font-size: 10px; color: var(--txt3); text-align: right; min-width: 80px; }
-
-/* Heatmap */
-.heatmap-grid {
-  display: grid; grid-template-columns: 40px repeat(7, 1fr); gap: 4px;
-}
-.heatmap-day-label {
-  font-family: var(--font-mono); font-size: 9px; color: var(--txt3);
-  text-align: center; padding: 4px 0; letter-spacing: .06em; text-transform: uppercase;
-}
-.heatmap-week-label {
-  font-family: var(--font-mono); font-size: 10px; color: var(--txt3);
-  display: flex; align-items: center; padding-right: 6px;
-}
-.heatmap-cell {
-  aspect-ratio: 1; border-radius: 5px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
-  transition: all .15s; border: 1px solid var(--brd); background: var(--bg4);
+#page-smm {
+  background: var(--smm-bg);
+  min-height: 100vh;
   position: relative;
 }
-.heatmap-cell:hover { border-color: var(--a2); transform: scale(1.08); }
-.heatmap-cell .cell-val { position: absolute; bottom: 2px; right: 3px; font-size: 8px; color: rgba(255,255,255,.6); }
-
-/* AI SMM */
-.smm-ai-btn {
-  display: flex; align-items: center; gap: 8px;
-  background: linear-gradient(135deg, var(--a), var(--pink));
-  border: none; border-radius: var(--r-sm); padding: 10px 20px;
-  font-family: var(--font-body); font-size: 13px; font-weight: 600;
-  color: #fff; cursor: pointer; transition: all .2s;
-  box-shadow: 0 4px 20px rgba(91,95,199,.3);
+/* grid bg */
+#page-smm::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    linear-gradient(rgba(124,92,252,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,92,252,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
 }
-.smm-ai-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(91,95,199,.4); }
-.smm-ai-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
-
-.smm-ai-section {
-  background: var(--bg3); border: 1px solid rgba(91,95,199,.2);
-  border-left: 3px solid var(--a); border-radius: var(--r-md);
-  padding: 18px 20px; margin-bottom: 12px;
-  animation: sectionSlide .35s cubic-bezier(.16,1,.3,1) both;
+/* scan line */
+.smm-scan {
+  position:absolute; left:0; right:0; height:1px;
+  background: linear-gradient(90deg, transparent, rgba(124,92,252,0.4), transparent);
+  animation: smmScan 4s linear infinite; pointer-events:none; z-index:5;
 }
-.smm-ai-section-title {
-  font-family: var(--font-display); font-size: 14px; font-weight: 700;
-  margin-bottom: 8px; letter-spacing: -.01em;
-}
-.smm-ai-text { font-size: 13px; color: var(--txt2); line-height: 1.7; }
+@keyframes smmScan { 0%{top:0} 100%{top:100%} }
+@keyframes smmFadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+@keyframes smmCountUp { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:scale(1)} }
+@keyframes smmBorderPulse { 0%,100%{border-color:rgba(124,92,252,0.2)} 50%{border-color:rgba(124,92,252,0.45)} }
+@keyframes smmPulseGlow { 0%,100%{box-shadow:0 0 0 0 rgba(124,92,252,0.4)} 50%{box-shadow:0 0 0 6px rgba(124,92,252,0)} }
 
-/* SMM save bar */
-.smm-save-bar {
-  position: fixed; bottom: 24px; right: 24px; z-index: 100;
-  display: flex; gap: 10px; align-items: center;
-  background: var(--bg3); border: 1px solid var(--brd2);
-  border-radius: var(--r-lg); padding: 10px 16px;
-  box-shadow: var(--shadow-xl);
-  animation: fadeUp .3s cubic-bezier(.16,1,.3,1) both;
+/* ── SMM Header ── */
+.smm-hdr {
+  padding: 36px 56px 28px;
+  border-bottom: 1px solid var(--smm-brd);
+  display: flex; justify-content: space-between; align-items: flex-start;
+  position: relative; z-index:2;
+  animation: smmFadeUp .7s ease both;
+  background: linear-gradient(180deg, rgba(8,8,16,1) 0%, rgba(13,13,26,0.8) 100%);
 }
+.smm-hdr-logo { display:flex; flex-direction:column; gap:4px; }
+.smm-hdr-agency {
+  font-family: var(--mono-font,'JetBrains Mono',monospace);
+  font-size: 11px; color: var(--smm-accent2); letter-spacing: .18em;
+  text-transform: uppercase; display:flex; align-items:center; gap:8px; margin-bottom:4px;
+}
+.smm-hdr-agency::before { content:''; width:18px; height:1px; background:var(--smm-accent2); }
+.smm-hdr-name {
+  font-family: var(--bebas); font-size: 48px; letter-spacing:.04em; line-height:1;
+  background: linear-gradient(135deg,#fff 30%,var(--smm-accent2) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.smm-hdr-sub { font-family: 'JetBrains Mono',monospace; font-size:12px; color:var(--smm-muted2); letter-spacing:.06em; }
+.smm-hdr-right { display:flex; flex-direction:column; gap:10px; align-items:flex-end; }
+.smm-client-pill {
+  background: var(--smm-bg4); border: 1px solid var(--smm-brd2);
+  border-radius: 8px; padding: 12px 18px; animation: smmBorderPulse 3s ease infinite;
+}
+.smm-client-pill-lbl { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--smm-muted); letter-spacing:.12em; text-transform:uppercase; }
+.smm-client-pill-val { font-size:17px; font-weight:600; color:var(--smm-text); }
+.smm-status-dot {
+  display:inline-flex; align-items:center; gap:6px;
+  font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--smm-green);
+}
+.smm-status-dot::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--smm-green); animation:smmPulseGlow 2s ease infinite; }
 
-@media (max-width: 900px) {
-  .reels-grid { grid-template-columns: repeat(2, 1fr); }
-  .eng-cards { grid-template-columns: repeat(3, 1fr); }
+/* ── SMM Nav ── */
+.smm-nav {
+  display:flex; gap:0; padding:0 56px;
+  border-bottom: 1px solid var(--smm-brd);
+  position:sticky; top:52px; z-index:50;
+  background: rgba(8,8,16,0.92); backdrop-filter:blur(20px);
+}
+.smm-nav-item {
+  padding:16px 22px; font-family:'JetBrains Mono',monospace;
+  font-size:11px; font-weight:500; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--smm-muted2); cursor:pointer; border-bottom:2px solid transparent;
+  transition:all .2s; position:relative; top:1px;
+}
+.smm-nav-item:hover { color:var(--smm-text); }
+.smm-nav-item.sni-active { color:var(--smm-accent2); border-bottom-color:var(--smm-accent); }
+
+/* ── SMM Content ── */
+.smm-body { padding: 0 56px 80px; position:relative; z-index:1; }
+.smm-sec { display:none; padding-top:44px; animation: smmFadeUp .4s ease both; }
+.smm-sec.ssa { display:block; }
+
+.smm-sec-heading { display:flex; align-items:center; gap:16px; margin-bottom:32px; }
+.smm-sec-num {
+  font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--smm-accent);
+  letter-spacing:.1em; border:1px solid var(--smm-brd2); border-radius:4px; padding:4px 9px;
+}
+.smm-sec-title { font-family:var(--bebas); font-size:34px; letter-spacing:.06em; color:var(--smm-text); }
+.smm-sec-line { flex:1; height:1px; background:linear-gradient(90deg,var(--smm-brd2),transparent); }
+
+/* ── Stat Cards ── */
+.smm-stat-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:40px; }
+.smm-stat-card {
+  background:var(--smm-bg3); border:1px solid var(--smm-brd);
+  border-radius:12px; padding:22px; position:relative; overflow:hidden;
+  transition:transform .3s, border-color .3s, box-shadow .3s;
+}
+.smm-stat-card:hover {
+  transform:translateY(-4px); border-color:var(--smm-brd2);
+  box-shadow:0 16px 40px rgba(0,0,0,.5), 0 0 20px var(--smm-glow);
+}
+.smm-stat-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,transparent,var(--smm-accent),transparent);
+  opacity:0; transition:opacity .3s;
+}
+.smm-stat-card:hover::before { opacity:1; }
+.smm-stat-card.ssc-accent { border-color:rgba(124,92,252,.3); }
+.smm-stat-card.ssc-accent::after {
+  content:''; position:absolute; top:-30px; right:-30px; width:100px; height:100px;
+  border-radius:50%; background:radial-gradient(circle,rgba(124,92,252,.1),transparent 70%);
+}
+.smm-stat-lbl { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--smm-muted2); letter-spacing:.1em; text-transform:uppercase; margin-bottom:12px; }
+.smm-stat-val { font-family:var(--bebas); font-size:52px; letter-spacing:.03em; line-height:1; animation:smmCountUp .5s ease both; }
+.smm-stat-sub { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--smm-muted); margin-top:6px; }
+.smm-stat-delta {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:4px 9px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:500; margin-top:8px;
+}
+.ssd-up { background:rgba(52,211,153,.1); color:var(--smm-green); }
+.ssd-down { background:rgba(248,113,113,.1); color:var(--smm-red); }
+.ssd-neu { background:rgba(90,87,110,.2); color:var(--smm-muted2); }
+
+/* ── Block ── */
+.smm-block {
+  background:var(--smm-bg3); border:1px solid var(--smm-brd);
+  border-radius:12px; padding:26px; margin-bottom:20px; position:relative; overflow:hidden;
+}
+.smm-block-title {
+  font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:500;
+  color:var(--smm-muted2); letter-spacing:.1em; text-transform:uppercase;
+  margin-bottom:22px; padding-bottom:14px; border-bottom:1px solid var(--smm-brd);
+  display:flex; align-items:center; gap:10px;
+}
+.smm-block-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+
+/* ── Metrics grid (ER/LR/TR/SHR/SR) ── */
+.smm-metrics-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; }
+.smm-metric-card {
+  background:var(--smm-bg4); border:1px solid var(--smm-brd);
+  border-radius:10px; padding:18px; position:relative; overflow:hidden; text-align:center;
+  transition:border-color .2s, transform .2s;
+}
+.smm-metric-card:hover { border-color:var(--smm-brd2); transform:translateY(-2px); }
+.smm-metric-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+.smm-metric-code {
+  font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--smm-accent2);
+  background:rgba(124,92,252,.1); padding:3px 9px; border-radius:4px;
+  display:inline-block; margin-bottom:10px; letter-spacing:.08em;
+}
+.smm-metric-val { font-family:var(--bebas); font-size:38px; letter-spacing:.03em; line-height:1; }
+.smm-metric-bm { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--smm-muted); letter-spacing:.08em; margin-top:6px; }
+.smm-metric-status { font-size:10px; font-weight:600; margin-top:4px; }
+
+/* ── Progress bar ── */
+.smm-prog-wrap { margin-bottom:14px; }
+.smm-prog-hdr { display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; }
+.smm-prog-lbl { font-size:13px; color:var(--smm-muted2); }
+.smm-prog-val { font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--smm-text); }
+.smm-prog-bar { height:3px; background:var(--smm-bg4); border-radius:2px; overflow:hidden; }
+.smm-prog-fill { height:100%; border-radius:2px; width:0; transition:width 1.2s cubic-bezier(.4,0,.2,1); }
+
+/* ── Reels grid ── */
+.smm-reels-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
+.smm-reel-card {
+  background:var(--smm-bg4); border:1px solid var(--smm-brd); border-radius:10px; overflow:hidden;
+  transition:transform .3s, box-shadow .3s; position:relative;
+}
+.smm-reel-card:hover { transform:translateY(-4px); box-shadow:0 12px 32px rgba(0,0,0,.5); }
+.smm-reel-thumb {
+  aspect-ratio:9/16; background:var(--smm-bg2); position:relative;
+  display:flex; align-items:center; justify-content:center; overflow:hidden;
+}
+.smm-reel-rank-wm {
+  position:absolute; top:8px; left:10px;
+  font-family:var(--bebas); font-size:36px; color:rgba(255,255,255,.12); line-height:1;
+}
+.smm-reel-rank-badge {
+  position:absolute; top:8px; left:8px;
+  font-family:var(--bebas); font-size:13px;
+  background:rgba(0,0,0,.65); backdrop-filter:blur(8px);
+  border-radius:20px; padding:3px 10px; color:#fff;
+}
+.smm-reel-rank-badge.rrb1 { background:rgba(251,191,36,.9); color:#000; }
+.smm-reel-rank-badge.rrb2 { background:rgba(156,163,175,.8); }
+.smm-reel-rank-badge.rrb3 { background:rgba(180,83,9,.8); }
+.smm-reel-play {
+  width:40px; height:40px; border-radius:50%;
+  background:rgba(124,92,252,.25); border:1px solid var(--smm-accent);
+  display:flex; align-items:center; justify-content:center; color:var(--smm-accent2);
+}
+.smm-reel-body { padding:12px; }
+.smm-reel-title { font-size:11px; font-weight:500; color:var(--smm-text); margin-bottom:10px; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:30px; }
+.smm-reel-stats { display:grid; grid-template-columns:1fr 1fr; gap:4px; }
+.smm-reel-stat { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--smm-muted); }
+.smm-reel-stat span { color:var(--smm-text); display:block; font-size:11px; }
+.smm-reel-er { font-family:'JetBrains Mono',monospace; font-size:9px; margin-top:8px; padding:2px 7px; border-radius:20px; background:rgba(124,92,252,.12); color:var(--smm-accent2); display:inline-flex; }
+
+/* ── Rubrics ── */
+.smm-rubric-winner {
+  display:none; margin-bottom:18px; padding:14px 18px; border-radius:10px;
+  background:linear-gradient(135deg,rgba(52,211,153,.08),rgba(124,92,252,.06));
+  border:1px solid rgba(52,211,153,.25); align-items:center; gap:14px;
+}
+.smm-rubric-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.smm-rubric-card {
+  border-radius:14px; padding:20px; position:relative; overflow:hidden;
+  transition:transform .2s, box-shadow .2s;
+}
+.smm-rubric-card:hover { transform:translateY(-3px); box-shadow:0 12px 32px rgba(0,0,0,.4); }
+.smm-rubric-blob {
+  position:absolute; top:-30px; right:-30px; width:90px; height:90px;
+  border-radius:50%; opacity:.07; filter:blur(20px); pointer-events:none;
+}
+.smm-bar { height:3px; background:rgba(255,255,255,.07); border-radius:2px; overflow:hidden; margin-top:5px; }
+.smm-bar-fill { height:100%; border-radius:2px; transition:width 1s ease; }
+
+/* ── Data input ── */
+.smm-data-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:24px; }
+.smm-input-card {
+  background:var(--smm-bg3); border:1px solid var(--smm-brd); border-radius:10px; padding:18px;
+}
+.smm-input-lbl { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--smm-accent2); letter-spacing:.14em; text-transform:uppercase; margin-bottom:8px; }
+.smm-inp {
+  background:var(--smm-bg4); border:1px solid var(--smm-brd); border-radius:6px;
+  padding:9px 12px; color:var(--smm-text); font-family:'JetBrains Mono',monospace;
+  font-size:13px; outline:none; width:100%; transition:border-color .2s;
+}
+.smm-inp:focus { border-color:var(--smm-accent2); }
+.smm-inp::placeholder { color:var(--smm-muted); }
+.smm-inp-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.smm-inp-row3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+.smm-inp-hint { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--smm-muted); margin-top:4px; }
+
+/* ── AI ── */
+.smm-ai-card {
+  background:var(--smm-bg3); border:1px solid rgba(124,92,252,.2);
+  border-left:3px solid var(--smm-accent); border-radius:10px;
+  padding:18px 20px; margin-bottom:12px; animation:smmFadeUp .35s ease both;
+}
+.smm-ai-card-title { font-family:var(--bebas); font-size:20px; letter-spacing:.04em; margin-bottom:8px; }
+.smm-ai-card-text { font-size:13px; color:var(--smm-muted2); line-height:1.7; }
+
+.smm-run-ai-btn {
+  display:flex; align-items:center; gap:8px;
+  background:linear-gradient(135deg,rgba(124,92,252,.25),rgba(34,211,238,.15));
+  border:1px solid rgba(124,92,252,.4); border-radius:8px; padding:10px 20px;
+  font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--smm-accent2); cursor:pointer; transition:all .2s;
+}
+.smm-run-ai-btn:hover { background:linear-gradient(135deg,rgba(124,92,252,.4),rgba(34,211,238,.25)); border-color:var(--smm-accent); }
+.smm-run-ai-btn:disabled { opacity:.4; cursor:not-allowed; }
+
+/* SMM save btn */
+.smm-save-bar-btn {
+  display:flex; align-items:center; gap:6px; background:var(--smm-accent);
+  border:none; border-radius:7px; padding:9px 18px; color:#fff;
+  font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.06em;
+  text-transform:uppercase; cursor:pointer; transition:all .2s;
+}
+.smm-save-bar-btn:hover { background:#8f6ffd; }
+
+@media (max-width:900px) {
+  .smm-stat-grid { grid-template-columns:repeat(2,1fr); }
+  .smm-metrics-grid { grid-template-columns:repeat(3,1fr); }
+  .smm-reels-grid { grid-template-columns:repeat(2,1fr); }
+  .smm-rubric-grid { grid-template-columns:1fr; }
+  .smm-hdr { padding:24px 20px; flex-direction:column; gap:16px; }
+  .smm-nav, .smm-body { padding-left:20px; padding-right:20px; }
 }
 
 /* ══════════════════════════════════════════════
@@ -2084,272 +2153,305 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
      PAGE: SMM REPORT
 ═══════════════════════════════════════════ -->
 <div class="page" id="page-smm">
-  <header class="app-header">
-    <div class="header-logo">
-      <div style="font-family:Manrope,sans-serif;font-size:10px;color:var(--txt3);letter-spacing:.12em;text-transform:uppercase;">DTR Analytics</div>
-    </div>
+  <!-- global nav header (reuse app-header style) -->
+  <header class="app-header" style="background:rgba(8,8,16,.9);">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--smm-muted);letter-spacing:.12em;text-transform:uppercase;">DTR Analytics</div>
     <div class="header-right">
-      <div class="user-pill"><div style="width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s ease infinite;"></div><span id="header-user-smm">—</span></div>
+      <div class="user-pill"><div style="width:6px;height:6px;border-radius:50%;background:var(--smm-green);animation:pulse 2s ease infinite;"></div><span id="header-user-smm">—</span></div>
       <button class="logout-btn" onclick="doLogout()">Выйти</button>
     </div>
   </header>
-  <div class="app-main">
-    <div class="back-btn" onclick="showPage('page-project');loadSMMReports()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
-      Назад к проекту
-    </div>
 
-    <!-- Report header -->
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:16px;">
-      <div>
-        <div style="font-family:Manrope,sans-serif;font-size:10px;color:var(--txt3);letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px;">SMM Отчёт</div>
-        <div style="font-family:Manrope,sans-serif;font-size:28px;font-weight:800;letter-spacing:-.03em;" id="smm-title">—</div>
-        <div style="font-family:Manrope,sans-serif;font-size:13px;color:var(--txt3);margin-top:4px;" id="smm-period-display">—</div>
+  <!-- SMM branded header -->
+  <div class="smm-hdr" style="position:relative;overflow:hidden;">
+    <div class="smm-scan"></div>
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 100% at 80% 50%,rgba(124,92,252,.07) 0%,transparent 70%);pointer-events:none;"></div>
+    <div class="smm-hdr-logo">
+      <div class="smm-hdr-agency">DeTroyd System Group</div>
+      <div class="smm-hdr-name">DTR Analytics</div>
+      <div class="smm-hdr-sub">SMM Performance Report</div>
+    </div>
+    <div class="smm-hdr-right">
+      <div class="smm-client-pill">
+        <div class="smm-client-pill-lbl">Клиент</div>
+        <div class="smm-client-pill-val" id="smm-client-name">—</div>
       </div>
-      <div style="display:flex;gap:10px;align-items:center;">
-        <div id="smm-save-status" style="font-family:Manrope,sans-serif;font-size:11px;color:var(--txt3);"></div>
-        <button class="smm-ai-btn agency-only" onclick="runSMMAnalysis()" id="smm-ai-btn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 010 2h-1v1a2 2 0 01-2 2H5a2 2 0 01-2-2v-1H2a1 1 0 010-2h1a7 7 0 017-7h1V5.73A2 2 0 0110 4a2 2 0 012-2z"/></svg>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--smm-muted);letter-spacing:.1em;" id="smm-period-lbl">—</div>
+      <div class="smm-status-dot" id="smm-status-dot">Активный</div>
+      <div style="display:flex;gap:10px;margin-top:4px;">
+        <button class="smm-run-ai-btn agency-only" onclick="runSMMAnalysis()" id="smm-ai-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
           AI Анализ
         </button>
-        <button class="ps-save-btn agency-only" onclick="saveSMMData(true)" id="smm-save-btn">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <button class="smm-save-bar-btn agency-only" onclick="saveSMMData(true)" id="smm-save-btn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
           Сохранить
         </button>
+        <div style="display:flex;gap:6px;align-items:center;" class="back-btn" onclick="showPage('page-project');loadSMMReports()" style="margin:0;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;">Назад</span>
+        </div>
       </div>
     </div>
+  </div>
 
-    <!-- Tab nav -->
-    <div class="smm-tabs">
-      <button class="smm-tab st-active" onclick="switchSMMTab('overview',this)">📊 Обзор</button>
-      <button class="smm-tab" onclick="switchSMMTab('reels',this)">🎬 Reels</button>
-      <button class="smm-tab" onclick="switchSMMTab('rubrics',this)">📝 Рубрики</button>
-      <button class="smm-tab" onclick="switchSMMTab('activity',this)">🗓 Активность</button>
-      <button class="smm-tab" onclick="switchSMMTab('ai',this)">🤖 AI</button>
-    </div>
+  <!-- Nav -->
+  <div class="smm-nav">
+    <div class="smm-nav-item sni-active" onclick="switchSMMTab('smm',this)">01 / SMM</div>
+    <div class="smm-nav-item" onclick="switchSMMTab('data',this)" id="smm-data-tab">⚙ Данные</div>
+    <div class="smm-nav-item" onclick="switchSMMTab('ai',this)">🤖 AI</div>
+  </div>
 
-    <!-- ── TAB: ОБЗОР ── -->
-    <div class="smm-section ss-active" id="ss-overview">
+  <div class="smm-body">
 
-      <!-- 3 main metrics -->
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;">
-        <!-- Views -->
-        <div class="smm-metric-card" style="--mc:var(--a2);">
-          <div class="smm-metric-card" style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--a2);"></div>
-          <div class="smm-metric-lbl">👁 Просмотры</div>
-          <div class="smm-agency-edit">
-            <input class="smm-metric-input" id="sm-views" type="number" placeholder="0" min="0">
-            <div style="font-family:Manrope,sans-serif;font-size:10px;color:var(--txt3);margin-top:6px;">Прошлый период:</div>
-            <input class="smm-metric-input" id="sm-prev-views" type="number" placeholder="0" min="0" style="font-size:16px;margin-top:4px;opacity:.6;">
-          </div>
-          <div class="smm-client-view" style="display:none;">
-            <div class="smm-metric-val" id="sv-views" style="color:var(--a2);">—</div>
-            <div id="sv-views-delta"></div>
-          </div>
+    <!-- ══ TAB: SMM (presentation) ══ -->
+    <div class="smm-sec ssa" id="ss-smm">
+
+      <!-- Section 01: Ключевые показатели -->
+      <div class="smm-sec-heading">
+        <div class="smm-sec-num">01</div>
+        <div class="smm-sec-title">Ключевые показатели SMM</div>
+        <div class="smm-sec-line"></div>
+      </div>
+
+      <div class="smm-stat-grid">
+        <div class="smm-stat-card ssc-accent">
+          <div class="smm-stat-lbl">Публикаций</div>
+          <div class="smm-stat-val" id="sv-posts" style="color:var(--smm-accent2);">—</div>
+          <div class="smm-stat-sub">Reels + Посты</div>
         </div>
-        <!-- Reach -->
-        <div class="smm-metric-card">
-          <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--cyan);"></div>
-          <div class="smm-metric-lbl">📡 Охват</div>
-          <div class="smm-agency-edit">
-            <input class="smm-metric-input" id="sm-reach" type="number" placeholder="0" min="0">
-            <div style="font-family:Manrope,sans-serif;font-size:10px;color:var(--txt3);margin-top:6px;">Прошлый период:</div>
-            <input class="smm-metric-input" id="sm-prev-reach" type="number" placeholder="0" min="0" style="font-size:16px;margin-top:4px;opacity:.6;">
-          </div>
-          <div class="smm-client-view" style="display:none;">
-            <div class="smm-metric-val" id="sv-reach" style="color:var(--cyan);">—</div>
-            <div id="sv-reach-delta"></div>
-          </div>
+        <div class="smm-stat-card">
+          <div class="smm-stat-lbl">Сторис</div>
+          <div class="smm-stat-val" id="sv-stories" style="color:var(--smm-cyan);">—</div>
+          <div class="smm-stat-sub">за период</div>
         </div>
-        <!-- Followers -->
-        <div class="smm-metric-card">
-          <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--green);"></div>
-          <div class="smm-metric-lbl">👥 Прирост аудитории</div>
-          <div class="smm-agency-edit">
-            <input class="smm-metric-input" id="sm-followers" type="number" placeholder="0">
-            <div style="font-family:Manrope,sans-serif;font-size:10px;color:var(--txt3);margin-top:6px;">Прошлый период:</div>
-            <input class="smm-metric-input" id="sm-prev-followers" type="number" placeholder="0" style="font-size:16px;margin-top:4px;opacity:.6;">
+        <div class="smm-stat-card">
+          <div class="smm-stat-lbl">Общий охват</div>
+          <div class="smm-stat-val" id="sv-reach" style="color:var(--smm-green);">—</div>
+          <div class="smm-stat-sub" id="sv-reach-sub">уникальных аккаунтов</div>
+        </div>
+        <div class="smm-stat-card">
+          <div class="smm-stat-lbl">Просмотры</div>
+          <div class="smm-stat-val" id="sv-views" style="color:var(--smm-pink);">—</div>
+          <div class="smm-stat-sub" id="sv-views-sub">суммарно</div>
+        </div>
+        <div class="smm-stat-card">
+          <div class="smm-stat-lbl">Прирост аудитории</div>
+          <div class="smm-stat-val" id="sv-followers" style="color:var(--smm-amber);">—</div>
+          <div id="sv-followers-delta" style="margin-top:6px;"></div>
+        </div>
+      </div>
+
+      <!-- Охват breakdown -->
+      <div class="smm-block">
+        <div class="smm-block-title">
+          <div class="smm-block-dot" style="background:var(--smm-accent);"></div>
+          Охват и просмотры
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;">
+          <div>
+            <div style="margin-bottom:24px;">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--smm-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">Общий охват за месяц</div>
+              <div style="font-family:var(--bebas);font-size:48px;color:var(--smm-accent2);line-height:1;" id="sv-total-reach">—</div>
+            </div>
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--smm-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">Общее количество просмотров</div>
+              <div style="font-family:var(--bebas);font-size:48px;color:var(--smm-cyan);line-height:1;" id="sv-total-views">—</div>
+            </div>
           </div>
-          <div class="smm-client-view" style="display:none;">
-            <div class="smm-metric-val" id="sv-followers" style="color:var(--green);">—</div>
-            <div id="sv-followers-delta"></div>
+          <div style="display:flex;flex-direction:column;justify-content:center;">
+            <div class="smm-prog-wrap">
+              <div class="smm-prog-hdr"><span class="smm-prog-lbl">Reels</span><span class="smm-prog-val" id="sp-reels">—</span></div>
+              <div class="smm-prog-bar"><div class="smm-prog-fill" id="spf-reels" style="background:linear-gradient(90deg,var(--smm-accent),var(--smm-cyan));"></div></div>
+            </div>
+            <div class="smm-prog-wrap">
+              <div class="smm-prog-hdr"><span class="smm-prog-lbl">Посты</span><span class="smm-prog-val" id="sp-posts">—</span></div>
+              <div class="smm-prog-bar"><div class="smm-prog-fill" id="spf-posts" style="background:linear-gradient(90deg,var(--smm-pink),var(--smm-accent));"></div></div>
+            </div>
+            <div class="smm-prog-wrap">
+              <div class="smm-prog-hdr"><span class="smm-prog-lbl">Сторис</span><span class="smm-prog-val" id="sp-stories">—</span></div>
+              <div class="smm-prog-bar"><div class="smm-prog-fill" id="spf-stories" style="background:linear-gradient(90deg,var(--smm-amber),var(--smm-pink));"></div></div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Engagement metrics (ER/LR/TR/SHR/SR) -->
-      <div style="background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r-lg);padding:24px;margin-bottom:16px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-          <div style="font-family:Manrope,sans-serif;font-size:14px;font-weight:600;color:var(--txt2);">Метрики вовлечённости</div>
-          <div style="font-family:Manrope,sans-serif;font-size:10px;color:var(--txt3);">ER · LR · TR · SHR · SR</div>
-        </div>
-        <div class="eng-cards">
-          <div class="eng-card">
-            <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--a2);"></div>
-            <div class="eng-name">ER %</div>
-            <div class="smm-agency-edit">
-              <input class="eng-input" id="sm-er" type="number" step="0.01" placeholder="0.00" min="0">
-              <input class="eng-input" id="sm-prev-er" type="number" step="0.01" placeholder="пред." min="0" style="font-size:13px;margin-top:4px;opacity:.6;">
-              <input class="eng-input" id="sm-goal-er" type="number" step="0.01" placeholder="цель" min="0" style="font-size:13px;margin-top:4px;border-color:rgba(74,222,128,.3);color:var(--green);">
-            </div>
-            <div class="smm-client-view" style="display:none;">
-              <div class="eng-val" id="sv-er" style="color:var(--a2);">—</div>
-              <div id="sv-er-delta" style="margin-top:4px;"></div>
-              <div id="sv-er-goal" class="goal-bar-wrap" style="margin-top:8px;display:none;"></div>
-            </div>
-          </div>
-          <div class="eng-card">
-            <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--cyan);"></div>
-            <div class="eng-name">LR %</div>
-            <div class="smm-agency-edit">
-              <input class="eng-input" id="sm-lr" type="number" step="0.01" placeholder="0.00" min="0">
-              <input class="eng-input" id="sm-prev-lr" type="number" step="0.01" placeholder="пред." min="0" style="font-size:13px;margin-top:4px;opacity:.6;">
-              <input class="eng-input" id="sm-goal-lr" type="number" step="0.01" placeholder="цель" min="0" style="font-size:13px;margin-top:4px;border-color:rgba(74,222,128,.3);color:var(--green);">
-            </div>
-            <div class="smm-client-view" style="display:none;">
-              <div class="eng-val" id="sv-lr" style="color:var(--cyan);">—</div>
-              <div id="sv-lr-delta" style="margin-top:4px;"></div>
-              <div id="sv-lr-goal" class="goal-bar-wrap" style="margin-top:8px;display:none;"></div>
-            </div>
-          </div>
-          <div class="eng-card">
-            <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--amber);"></div>
-            <div class="eng-name">TR %</div>
-            <div class="smm-agency-edit">
-              <input class="eng-input" id="sm-tr" type="number" step="0.01" placeholder="0.00" min="0">
-              <input class="eng-input" id="sm-prev-tr" type="number" step="0.01" placeholder="пред." min="0" style="font-size:13px;margin-top:4px;opacity:.6;">
-              <input class="eng-input" id="sm-goal-tr" type="number" step="0.01" placeholder="цель" min="0" style="font-size:13px;margin-top:4px;border-color:rgba(74,222,128,.3);color:var(--green);">
-            </div>
-            <div class="smm-client-view" style="display:none;">
-              <div class="eng-val" id="sv-tr" style="color:var(--amber);">—</div>
-              <div id="sv-tr-delta" style="margin-top:4px;"></div>
-              <div id="sv-tr-goal" class="goal-bar-wrap" style="margin-top:8px;display:none;"></div>
-            </div>
-          </div>
-          <div class="eng-card">
-            <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--pink);"></div>
-            <div class="eng-name">SHR %</div>
-            <div class="smm-agency-edit">
-              <input class="eng-input" id="sm-shr" type="number" step="0.01" placeholder="0.00" min="0">
-              <input class="eng-input" id="sm-prev-shr" type="number" step="0.01" placeholder="пред." min="0" style="font-size:13px;margin-top:4px;opacity:.6;">
-              <input class="eng-input" id="sm-goal-shr" type="number" step="0.01" placeholder="цель" min="0" style="font-size:13px;margin-top:4px;border-color:rgba(74,222,128,.3);color:var(--green);">
-            </div>
-            <div class="smm-client-view" style="display:none;">
-              <div class="eng-val" id="sv-shr" style="color:var(--pink);">—</div>
-              <div id="sv-shr-delta" style="margin-top:4px;"></div>
-              <div id="sv-shr-goal" class="goal-bar-wrap" style="margin-top:8px;display:none;"></div>
-            </div>
-          </div>
-          <div class="eng-card">
-            <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--green);"></div>
-            <div class="eng-name">SR %</div>
-            <div class="smm-agency-edit">
-              <input class="eng-input" id="sm-sr" type="number" step="0.01" placeholder="0.00" min="0">
-              <input class="eng-input" id="sm-prev-sr" type="number" step="0.01" placeholder="пред." min="0" style="font-size:13px;margin-top:4px;opacity:.6;">
-              <input class="eng-input" id="sm-goal-sr" type="number" step="0.01" placeholder="цель" min="0" style="font-size:13px;margin-top:4px;border-color:rgba(74,222,128,.3);color:var(--green);">
-            </div>
-            <div class="smm-client-view" style="display:none;">
-              <div class="eng-val" id="sv-sr" style="color:var(--green);">—</div>
-              <div id="sv-sr-delta" style="margin-top:4px;"></div>
-              <div id="sv-sr-goal" class="goal-bar-wrap" style="margin-top:8px;display:none;"></div>
-            </div>
-          </div>
-        </div>
-        <div style="font-family:Manrope,sans-serif;font-size:10px;color:var(--txt3);margin-top:12px;" class="agency-only">
-          Строки: текущий период · прошлый период · цель
+      <!-- Section 02: Метрики -->
+      <div class="smm-sec-heading" style="margin-top:36px;">
+        <div class="smm-sec-num">02</div>
+        <div class="smm-sec-title">Метрики эффективности</div>
+        <div class="smm-sec-line"></div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--smm-muted);">Подписчиков:</span>
+          <select id="smm-bench-sel" onchange="renderSMMMetrics()" style="background:var(--smm-bg4);border:1px solid var(--smm-brd2);border-radius:6px;padding:5px 10px;color:var(--smm-accent2);font-family:'JetBrains Mono',monospace;font-size:10px;outline:none;cursor:pointer;">
+            <option value="10000">до 10 000</option>
+            <option value="30000">10 000 – 30 000</option>
+            <option value="50000" selected>30 000 – 50 000</option>
+            <option value="100000">50 000 – 100 000</option>
+            <option value="150000">100 000+</option>
+          </select>
         </div>
       </div>
 
-      <!-- Radar chart -->
-      <div class="smm-chart-wrap" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+      <div class="smm-metrics-grid" id="smm-metrics-grid"></div>
+
+      <!-- Section 03: Контент -->
+      <div class="smm-sec-heading" style="margin-top:36px;">
+        <div class="smm-sec-num">03</div>
+        <div class="smm-sec-title">Опубликованный контент</div>
+        <div class="smm-sec-line"></div>
+      </div>
+      <div class="smm-reels-grid" id="smm-reels-grid">
+        <div style="grid-column:1/-1;text-align:center;padding:48px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.1em;color:var(--smm-muted);">Reels ещё не добавлены — перейдите в «Данные»</div>
+      </div>
+
+      <!-- Section 04: Рубрики -->
+      <div class="smm-sec-heading" style="margin-top:36px;">
+        <div class="smm-sec-num">04</div>
+        <div class="smm-sec-title">Рубрики контента</div>
+        <div class="smm-sec-line"></div>
+      </div>
+
+      <!-- Winner banner -->
+      <div class="smm-rubric-winner" id="smm-rubric-winner">
+        <div style="width:40px;height:40px;border-radius:50%;background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.4);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🏆</div>
         <div>
-          <div class="smm-chart-title">🕸 Радар метрик</div>
-          <div style="height:260px;position:relative;"><canvas id="smm-radar"></canvas></div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--smm-green);letter-spacing:.15em;text-transform:uppercase;margin-bottom:3px;">Самая эффективная рубрика</div>
+          <div style="font-family:var(--bebas);font-size:22px;color:var(--smm-text);" id="smm-winner-name">—</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--smm-muted);margin-top:2px;" id="smm-winner-stats">—</div>
         </div>
-        <div>
-          <div class="smm-chart-title">📈 Метрики: текущий vs прошлый</div>
-          <div style="height:260px;position:relative;"><canvas id="smm-bar-compare"></canvas></div>
-        </div>
+      </div>
+
+      <div class="smm-rubric-grid" id="smm-rubric-grid">
+        <div style="grid-column:1/-1;text-align:center;padding:40px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.1em;color:var(--smm-muted);">Рубрики ещё не добавлены</div>
       </div>
     </div>
 
-    <!-- ── TAB: REELS ── -->
-    <div class="smm-section" id="ss-reels">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-        <div style="font-family:Manrope,sans-serif;font-size:13px;color:var(--txt3);">Топ Reels · ранжируются по вовлечённости · максимум 10</div>
-        <button class="ps-edit-btn agency-only" onclick="openAddReel()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Добавить Reel
+    <!-- ══ TAB: DATA INPUT ══ -->
+    <div class="smm-sec" id="ss-data">
+      <div class="smm-sec-heading">
+        <div class="smm-sec-num">⚙</div>
+        <div class="smm-sec-title">Ввод данных</div>
+        <div class="smm-sec-line"></div>
+      </div>
+
+      <!-- Общие показатели -->
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--smm-accent2);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px;">01 / Общие показатели</div>
+      <div class="smm-data-grid" style="margin-bottom:24px;">
+        <div class="smm-input-card">
+          <div class="smm-input-lbl">Reels опубликовано</div>
+          <input class="smm-inp" id="sd-reels-count" type="number" placeholder="0">
+        </div>
+        <div class="smm-input-card">
+          <div class="smm-input-lbl">Постов опубликовано</div>
+          <input class="smm-inp" id="sd-posts-count" type="number" placeholder="0">
+        </div>
+        <div class="smm-input-card">
+          <div class="smm-input-lbl">Сторис опубликовано</div>
+          <input class="smm-inp" id="sd-stories-count" type="number" placeholder="0">
+        </div>
+        <div class="smm-input-card">
+          <div class="smm-input-lbl">Охват (Reels)</div>
+          <input class="smm-inp" id="sd-reels-reach" type="number" placeholder="0">
+        </div>
+        <div class="smm-input-card">
+          <div class="smm-input-lbl">Охват (Посты)</div>
+          <input class="smm-inp" id="sd-posts-reach" type="number" placeholder="0">
+        </div>
+        <div class="smm-input-card">
+          <div class="smm-input-lbl">Охват (Сторис)</div>
+          <input class="smm-inp" id="sd-stories-reach" type="number" placeholder="0">
+        </div>
+        <div class="smm-input-card">
+          <div class="smm-input-lbl">Просмотры (Reels)</div>
+          <input class="smm-inp" id="sd-reels-views" type="number" placeholder="0">
+        </div>
+        <div class="smm-input-card">
+          <div class="smm-input-lbl">Просмотры (Посты)</div>
+          <input class="smm-inp" id="sd-posts-views" type="number" placeholder="0">
+        </div>
+        <div class="smm-input-card">
+          <div class="smm-input-lbl">Прирост подписчиков</div>
+          <div class="smm-inp-row">
+            <div><input class="smm-inp" id="sd-followers" type="number" placeholder="тек."><div class="smm-inp-hint">текущий</div></div>
+            <div><input class="smm-inp" id="sd-prev-followers" type="number" placeholder="пред."><div class="smm-inp-hint">прошлый</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Метрики -->
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--smm-accent2);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px;">02 / Метрики (ER · LR · TR · SHR · SR)</div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px;">
+        <div class="smm-input-card">
+          <div class="smm-input-lbl">ER %</div>
+          <input class="smm-inp" id="sd-er" type="number" step="0.01" placeholder="0.00">
+          <input class="smm-inp" id="sd-prev-er" type="number" step="0.01" placeholder="пред." style="margin-top:6px;opacity:.6;">
+          <input class="smm-inp" id="sd-goal-er" type="number" step="0.01" placeholder="цель" style="margin-top:6px;border-color:rgba(52,211,153,.3);color:var(--smm-green);">
+        </div>
+        <div class="smm-input-card">
+          <div class="smm-input-lbl">LR %</div>
+          <input class="smm-inp" id="sd-lr" type="number" step="0.01" placeholder="0.00">
+          <input class="smm-inp" id="sd-prev-lr" type="number" step="0.01" placeholder="пред." style="margin-top:6px;opacity:.6;">
+          <input class="smm-inp" id="sd-goal-lr" type="number" step="0.01" placeholder="цель" style="margin-top:6px;border-color:rgba(52,211,153,.3);color:var(--smm-green);">
+        </div>
+        <div class="smm-input-card">
+          <div class="smm-input-lbl">TR %</div>
+          <input class="smm-inp" id="sd-tr" type="number" step="0.01" placeholder="0.00">
+          <input class="smm-inp" id="sd-prev-tr" type="number" step="0.01" placeholder="пред." style="margin-top:6px;opacity:.6;">
+          <input class="smm-inp" id="sd-goal-tr" type="number" step="0.01" placeholder="цель" style="margin-top:6px;border-color:rgba(52,211,153,.3);color:var(--smm-green);">
+        </div>
+        <div class="smm-input-card">
+          <div class="smm-input-lbl">SHR %</div>
+          <input class="smm-inp" id="sd-shr" type="number" step="0.01" placeholder="0.00">
+          <input class="smm-inp" id="sd-prev-shr" type="number" step="0.01" placeholder="пред." style="margin-top:6px;opacity:.6;">
+          <input class="smm-inp" id="sd-goal-shr" type="number" step="0.01" placeholder="цель" style="margin-top:6px;border-color:rgba(52,211,153,.3);color:var(--smm-green);">
+        </div>
+        <div class="smm-input-card">
+          <div class="smm-input-lbl">SR %</div>
+          <input class="smm-inp" id="sd-sr" type="number" step="0.01" placeholder="0.00">
+          <input class="smm-inp" id="sd-prev-sr" type="number" step="0.01" placeholder="пред." style="margin-top:6px;opacity:.6;">
+          <input class="smm-inp" id="sd-goal-sr" type="number" step="0.01" placeholder="цель" style="margin-top:6px;border-color:rgba(52,211,153,.3);color:var(--smm-green);">
+        </div>
+      </div>
+
+      <!-- Reels input -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--smm-accent2);letter-spacing:.14em;text-transform:uppercase;">03 / Reels (макс. 10)</div>
+        <button class="smm-run-ai-btn" onclick="openAddReel()" style="padding:7px 14px;font-size:10px;">+ Добавить Reel</button>
+      </div>
+      <div id="smm-reels-input-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;"></div>
+
+      <!-- Rubrics input -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--smm-accent2);letter-spacing:.14em;text-transform:uppercase;">04 / Рубрики контента</div>
+        <button class="smm-run-ai-btn" onclick="openAddRubric()" style="padding:7px 14px;font-size:10px;">+ Добавить рубрику</button>
+      </div>
+      <div id="smm-rubrics-input-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;"></div>
+
+      <div style="display:flex;justify-content:flex-end;padding-top:16px;border-top:1px solid var(--smm-brd);">
+        <button class="smm-save-bar-btn" onclick="saveSMMData(true)" style="font-size:12px;padding:12px 28px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Сохранить и обновить отчёт
         </button>
       </div>
-      <div class="reels-grid" id="reels-grid">
-        <div style="grid-column:1/-1;" class="ps-empty"><div class="ps-empty-icon">🎬</div><div class="ps-empty-text">Reels ещё не добавлены</div></div>
-      </div>
     </div>
 
-    <!-- ── TAB: РУБРИКИ ── -->
-    <div class="smm-section" id="ss-rubrics">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-        <div style="font-family:Manrope,sans-serif;font-size:13px;color:var(--txt3);">Эффективность рубрик · сортировка по ER</div>
-        <button class="ps-edit-btn agency-only" onclick="openAddRubric()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Добавить рубрику
-        </button>
-      </div>
-      <div class="rubric-list" id="rubric-list">
-        <div class="ps-empty"><div class="ps-empty-icon">📝</div><div class="ps-empty-text">Рубрики ещё не добавлены</div></div>
-      </div>
-    </div>
-
-    <!-- ── TAB: АКТИВНОСТЬ ── -->
-    <div class="smm-section" id="ss-activity">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-        <!-- Audience growth -->
-        <div class="smm-chart-wrap">
-          <div class="smm-chart-title">📉 Динамика аудитории</div>
-          <div class="smm-agency-edit" style="margin-bottom:14px;">
-            <div style="font-family:Manrope,sans-serif;font-size:11px;color:var(--txt3);margin-bottom:8px;">Подписчики по неделям (через запятую):</div>
-            <input type="text" id="sm-growth-data" placeholder="1200, 1240, 1310, 1380" style="background:var(--bg4);border:1px solid var(--brd);border-radius:var(--r-sm);padding:9px 12px;color:var(--txt);font-family:Manrope,sans-serif;font-size:12px;outline:none;width:100%;transition:border-color .2s;" onfocus="this.style.borderColor='var(--a2)'" onblur="this.style.borderColor=''">
-          </div>
-          <div style="height:200px;position:relative;"><canvas id="smm-growth"></canvas></div>
-        </div>
-        <!-- Heatmap -->
-        <div class="smm-chart-wrap">
-          <div class="smm-chart-title">🗓 Тепловая карта активности</div>
-          <div class="smm-agency-edit" style="margin-bottom:12px;font-family:Manrope,sans-serif;font-size:11px;color:var(--txt3);">Нажмите на ячейку чтобы ввести ER или охват за день</div>
-          <div class="heatmap-grid" id="heatmap-grid"></div>
-          <div style="display:flex;align-items:center;gap:8px;margin-top:12px;">
-            <div style="font-family:Manrope,sans-serif;font-size:10px;color:var(--txt3);">Меньше</div>
-            <div style="display:flex;gap:3px;">
-              <div style="width:16px;height:16px;border-radius:3px;background:var(--bg5);border:1px solid var(--brd);"></div>
-              <div style="width:16px;height:16px;border-radius:3px;background:rgba(91,95,199,.2);"></div>
-              <div style="width:16px;height:16px;border-radius:3px;background:rgba(91,95,199,.45);"></div>
-              <div style="width:16px;height:16px;border-radius:3px;background:rgba(91,95,199,.7);"></div>
-              <div style="width:16px;height:16px;border-radius:3px;background:var(--a2);"></div>
-            </div>
-            <div style="font-family:Manrope,sans-serif;font-size:10px;color:var(--txt3);">Больше</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── TAB: AI ── -->
-    <div class="smm-section" id="ss-ai">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-        <div>
-          <div style="font-family:Manrope,sans-serif;font-size:16px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px;">AI Анализ SMM</div>
-          <div style="font-family:Manrope,sans-serif;font-size:12px;color:var(--txt3);" id="smm-ai-status">Нажмите кнопку для анализа</div>
-        </div>
-        <button class="smm-ai-btn" onclick="runSMMAnalysis()" id="smm-ai-btn2">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 010 2h-1v1a2 2 0 01-2 2H5a2 2 0 01-2-2v-1H2a1 1 0 010-2h1a7 7 0 017-7h1V5.73A2 2 0 0110 4a2 2 0 012-2z"/></svg>
+    <!-- ══ TAB: AI ══ -->
+    <div class="smm-sec" id="ss-ai">
+      <div class="smm-sec-heading">
+        <div class="smm-sec-num">AI</div>
+        <div class="smm-sec-title">Анализ данных</div>
+        <div class="smm-sec-line"></div>
+        <button class="smm-run-ai-btn" onclick="runSMMAnalysis()" id="smm-ai-btn2">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
           Запустить анализ
         </button>
       </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--smm-muted);margin-bottom:20px;" id="smm-ai-status">Готов к анализу</div>
       <div id="smm-ai-output">
-        <div style="background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r-lg);padding:40px;text-align:center;">
-          <div style="font-size:32px;margin-bottom:16px;opacity:.3;">🤖</div>
-          <div style="font-size:14px;font-weight:600;margin-bottom:8px;">AI готов к анализу</div>
-          <div style="font-size:12px;color:var(--txt3);">Заполните метрики и нажмите «Запустить анализ»</div>
+        <div style="background:var(--smm-bg3);border:1px solid var(--smm-brd);border-radius:12px;padding:48px;text-align:center;">
+          <div style="font-family:var(--bebas);font-size:48px;color:var(--smm-muted);letter-spacing:.05em;margin-bottom:12px;">AI READY</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--smm-muted);letter-spacing:.1em;">Заполните данные и нажмите «Запустить анализ»</div>
         </div>
       </div>
     </div>
@@ -2358,68 +2460,45 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
   </div>
 </div>
 
-<!-- MODAL: Create SMM Report -->
-<div class="modal-overlay" id="modal-smm-create">
-  <div class="modal" style="max-width:420px;">
-    <div class="modal-title">📱 Новый SMM отчёт</div>
-    <div class="field"><label>Период</label><input type="text" id="smm-period-inp" placeholder="Май 2026"></div>
-    <div class="modal-footer">
-      <button class="btn-ghost" onclick="closeModal('modal-smm-create')">Отмена</button>
-      <button class="btn-primary" style="flex:1;" onclick="createSMMReport()">Создать</button>
-    </div>
-  </div>
-</div>
-
 <!-- MODAL: Add Reel -->
 <div class="modal-overlay" id="modal-reel">
-  <div class="modal" style="max-width:520px;">
-    <div class="modal-title">🎬 Добавить Reel</div>
+  <div class="modal" style="max-width:520px;background:var(--smm-bg3);border-color:var(--smm-brd2);">
+    <div class="modal-title" style="font-family:var(--bebas);font-size:24px;letter-spacing:.04em;color:var(--smm-text);">Добавить Reel</div>
     <div class="ps-grid">
-      <div class="ps-field full"><label>Ссылка на Reel</label><input type="url" id="rl-link" placeholder="https://www.instagram.com/reel/..."></div>
-      <div class="ps-field full"><label>Описание / заголовок</label><input type="text" id="rl-title" placeholder="Дональд Дак ест наш донер 😂"></div>
-      <div class="ps-field"><label>Просмотры</label><input type="number" id="rl-views" placeholder="0" min="0"></div>
-      <div class="ps-field"><label>Охват</label><input type="number" id="rl-reach" placeholder="0" min="0"></div>
-      <div class="ps-field"><label>Лайки</label><input type="number" id="rl-likes" placeholder="0" min="0"></div>
-      <div class="ps-field"><label>Комментарии</label><input type="number" id="rl-comments" placeholder="0" min="0"></div>
-      <div class="ps-field"><label>Сохранения</label><input type="number" id="rl-saves" placeholder="0" min="0"></div>
-      <div class="ps-field"><label>Репосты</label><input type="number" id="rl-shares" placeholder="0" min="0"></div>
+      <div class="ps-field full"><label style="color:var(--smm-muted2);">Ссылка на Reel</label><input type="url" id="rl-link" placeholder="https://www.instagram.com/reel/..." style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
+      <div class="ps-field full"><label style="color:var(--smm-muted2);">Описание / заголовок</label><input type="text" id="rl-title" placeholder="Краткое описание контента" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
+      <div class="ps-field"><label style="color:var(--smm-muted2);">Просмотры</label><input type="number" id="rl-views" placeholder="0" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
+      <div class="ps-field"><label style="color:var(--smm-muted2);">Охват</label><input type="number" id="rl-reach" placeholder="0" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
+      <div class="ps-field"><label style="color:var(--smm-muted2);">Лайки</label><input type="number" id="rl-likes" placeholder="0" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
+      <div class="ps-field"><label style="color:var(--smm-muted2);">Комментарии</label><input type="number" id="rl-comments" placeholder="0" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
+      <div class="ps-field"><label style="color:var(--smm-muted2);">Сохранения</label><input type="number" id="rl-saves" placeholder="0" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
+      <div class="ps-field"><label style="color:var(--smm-muted2);">Репосты</label><input type="number" id="rl-shares" placeholder="0" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
     </div>
     <div class="modal-footer">
       <button class="btn-ghost" onclick="closeModal('modal-reel')">Отмена</button>
-      <button class="btn-primary" style="flex:1;" onclick="addReel()">Добавить</button>
+      <button class="btn-primary" style="flex:1;background:var(--smm-accent);" onclick="addReel()">Добавить</button>
     </div>
   </div>
 </div>
 
 <!-- MODAL: Add Rubric -->
 <div class="modal-overlay" id="modal-rubric">
-  <div class="modal" style="max-width:460px;">
-    <div class="modal-title">📝 Добавить рубрику</div>
+  <div class="modal" style="max-width:460px;background:var(--smm-bg3);border-color:var(--smm-brd2);">
+    <div class="modal-title" style="font-family:var(--bebas);font-size:24px;letter-spacing:.04em;color:var(--smm-text);">Добавить рубрику</div>
     <div class="ps-grid">
-      <div class="ps-field full"><label>Название рубрики</label><input type="text" id="rb-name" placeholder="Рецепты"></div>
-      <div class="ps-field"><label>Публикаций</label><input type="number" id="rb-posts" placeholder="0" min="0"></div>
-      <div class="ps-field"><label>Средний ER %</label><input type="number" id="rb-er" step="0.01" placeholder="0.00" min="0"></div>
-      <div class="ps-field"><label>Средний охват</label><input type="number" id="rb-reach" placeholder="0" min="0"></div>
-      <div class="ps-field full"><label>Заметка</label><input type="text" id="rb-note" placeholder="Лучший день для публикации — среда"></div>
+      <div class="ps-field full"><label style="color:var(--smm-muted2);">Название рубрики</label><input type="text" id="rb-name" placeholder="Рецепты" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
+      <div class="ps-field"><label style="color:var(--smm-muted2);">Публикаций</label><input type="number" id="rb-posts" placeholder="0" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
+      <div class="ps-field"><label style="color:var(--smm-muted2);">Средний ER %</label><input type="number" id="rb-er" step="0.01" placeholder="0.00" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
+      <div class="ps-field"><label style="color:var(--smm-muted2);">Охват</label><input type="number" id="rb-reach" placeholder="0" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
+      <div class="ps-field"><label style="color:var(--smm-muted2);">Просмотры</label><input type="number" id="rb-views" placeholder="0" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
     </div>
     <div class="modal-footer">
       <button class="btn-ghost" onclick="closeModal('modal-rubric')">Отмена</button>
-      <button class="btn-primary" style="flex:1;" onclick="addRubric()">Добавить</button>
+      <button class="btn-primary" style="flex:1;background:var(--smm-accent);" onclick="addRubric()">Добавить</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: Heatmap cell input -->
-<div class="modal-overlay" id="modal-heatmap-cell">
-  <div class="modal" style="max-width:320px;">
-    <div class="modal-title" id="hm-cell-title">День</div>
-    <div class="field"><label>Значение ER или охват</label><input type="number" id="hm-cell-val" placeholder="0" min="0" step="0.01"></div>
-    <div class="modal-footer">
-      <button class="btn-ghost" onclick="closeModal('modal-heatmap-cell');heatmapEditIndex=null">Отмена</button>
-      <button class="btn-primary" style="flex:1;" onclick="saveHeatmapCell()">OK</button>
-    </div>
-  </div>
-</div>
 <!-- ═══════════════════════════════════════════
      PAGE: PASSPORT
 ═══════════════════════════════════════════ -->
@@ -4704,36 +4783,40 @@ async function deleteNote(i) {
 
 
 // ══════════════════════════════════════════════
-// SMM REPORT
-// ══════════════════════════════════════════════
-// SQL:
-// CREATE TABLE IF NOT EXISTS smm_reports (
+// SMM REPORT — Reference Design
+// SQL: CREATE TABLE IF NOT EXISTS smm_reports (
 //   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
 //   project_id uuid REFERENCES projects(id) ON DELETE CASCADE,
 //   period_label text DEFAULT '',
-//   metrics jsonb DEFAULT '{}',
-//   prev_metrics jsonb DEFAULT '{}',
-//   goals jsonb DEFAULT '{}',
-//   reels jsonb DEFAULT '[]',
+//   metrics jsonb DEFAULT '{}', prev_metrics jsonb DEFAULT '{}',
+//   goals jsonb DEFAULT '{}', reels jsonb DEFAULT '[]',
 //   rubrics jsonb DEFAULT '[]',
-//   heatmap jsonb DEFAULT '[]',
-//   audience_growth text DEFAULT '',
 //   ai_analysis jsonb DEFAULT NULL,
-//   created_at timestamptz DEFAULT now(),
-//   updated_at timestamptz DEFAULT now()
+//   created_at timestamptz DEFAULT now(), updated_at timestamptz DEFAULT now()
 // );
 // ALTER TABLE smm_reports ENABLE ROW LEVEL SECURITY;
 // CREATE POLICY "allow_all_smm" ON smm_reports FOR ALL USING (true) WITH CHECK (true);
+// ══════════════════════════════════════════════
 
 let currentSMMReport = null
-let smmData = { metrics:{}, prev:{}, goals:{}, reels:[], rubrics:[], heatmap:new Array(28).fill(0), growth:'' }
-let heatmapEditIndex = null
-let smmCharts = {}
-const SMM_DAYS = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс']
-const SMM_METRIC_KEYS = ['er','lr','tr','shr','sr']
-const SMM_METRIC_COLORS = ['var(--a2)','var(--cyan)','var(--amber)','var(--pink)','var(--green)']
+let smmData = { metrics:{}, prev:{}, goals:{}, reels:[], rubrics:[] }
 
-// ── Create / load ──
+const SMM_BENCHMARKS = {
+  10000:  { er:[3,5],    lr:[2,4],    tr:[0.2,0.5], shr:[0.5,1.5], sr:[0.3,1] },
+  30000:  { er:[2,4],    lr:[1.5,3],  tr:[0.15,0.4],shr:[0.4,1.2], sr:[0.2,0.8] },
+  50000:  { er:[1.5,3],  lr:[1,2.5],  tr:[0.1,0.35],shr:[0.3,1],   sr:[0.15,0.6] },
+  100000: { er:[1,2.5],  lr:[0.8,2],  tr:[0.08,0.3],shr:[0.2,0.8], sr:[0.1,0.5] },
+  150000: { er:[0.8,2],  lr:[0.6,1.5],tr:[0.05,0.2],shr:[0.15,0.6],sr:[0.08,0.4] },
+}
+const SMM_PALETTES = [
+  {a:'#a78bfa',bg:'rgba(124,92,252,.08)',bd:'rgba(124,92,252,.25)'},
+  {a:'#34d399',bg:'rgba(52,211,153,.08)',bd:'rgba(52,211,153,.25)'},
+  {a:'#f472b6',bg:'rgba(244,114,182,.08)',bd:'rgba(244,114,182,.25)'},
+  {a:'#fbbf24',bg:'rgba(251,191,36,.08)',bd:'rgba(251,191,36,.25)'},
+  {a:'#22d3ee',bg:'rgba(34,211,238,.08)',bd:'rgba(34,211,238,.25)'},
+  {a:'#fb923c',bg:'rgba(251,146,60,.08)',bd:'rgba(251,146,60,.25)'},
+]
+
 function openCreateSMMReport() {
   g('modal-smm-create').classList.add('open')
   setTimeout(() => g('smm-period-inp').focus(), 50)
@@ -4744,8 +4827,7 @@ async function createSMMReport() {
   if (!period) return
   const { data, error } = await sb.from('smm_reports').insert({
     project_id: currentProject.id, period_label: period,
-    metrics: {}, prev_metrics: {}, goals: {},
-    reels: [], rubrics: [], heatmap: new Array(28).fill(0), audience_growth: ''
+    metrics:{}, prev_metrics:{}, goals:{}, reels:[], rubrics:[]
   }).select().single()
   if (error) { alert(error.message); return }
   g('smm-period-inp').value = ''
@@ -4763,7 +4845,7 @@ async function loadSMMReports() {
   if (!list) return
   const reports = data || []
   if (!reports.length) {
-    list.innerHTML = `<div class="empty-state" style="padding:40px 20px;"><div class="empty-icon" style="font-size:28px;">📱</div><div class="empty-title" style="font-size:15px;">SMM отчётов нет</div><div class="empty-sub" style="font-size:12px;">Создайте первый SMM отчёт</div></div>`
+    list.innerHTML = '<div class="empty-state" style="padding:36px 20px;"><div class="empty-icon" style="font-size:26px;">📱</div><div class="empty-title" style="font-size:14px;">SMM отчётов нет</div><div class="empty-sub" style="font-size:12px;">Создайте первый SMM отчёт</div></div>'
     return
   }
   list.innerHTML = reports.map(r => `
@@ -4797,413 +4879,360 @@ function openSMMReport(report) {
     prev: report.prev_metrics || {},
     goals: report.goals || {},
     reels: report.reels || [],
-    rubrics: report.rubrics || [],
-    heatmap: report.heatmap || new Array(28).fill(0),
-    growth: report.audience_growth || ''
+    rubrics: report.rubrics || []
   }
   const name = currentUser.user_metadata?.login_name || currentUser.email.split('@')[0]
   set('header-user-smm', name)
-  set('smm-title', currentProject.name)
-  set('smm-period-display', report.period_label)
+  set('smm-client-name', currentProject.name)
+  set('smm-period-lbl', report.period_label)
+
+  const isClient = _isClientCache === true
+  document.querySelectorAll('#page-smm .agency-only').forEach(el => el.style.display = isClient ? 'none' : '')
+  if (isClient) { const dt = g('smm-data-tab'); if (dt) dt.style.display = 'none' }
 
   showPage('page-smm')
-  switchSMMTab('overview', document.querySelector('.smm-tab'))
-
-  if (!_isClientCache) {
-    // Agency: show edit inputs, hide client views
-    document.querySelectorAll('.smm-agency-edit').forEach(el => el.style.display = 'block')
-    document.querySelectorAll('.smm-client-view').forEach(el => el.style.display = 'none')
-    fillSMMInputs()
-  } else {
-    // Client: hide inputs, show values
-    document.querySelectorAll('.smm-agency-edit').forEach(el => el.style.display = 'none')
-    document.querySelectorAll('.smm-client-view').forEach(el => el.style.display = 'block')
-    document.querySelectorAll('.agency-only').forEach(el => el.style.display = 'none')
-    renderSMMClientView()
-  }
-
-  renderReels()
-  renderRubrics()
-  renderHeatmap()
-  setTimeout(() => { renderSMMRadar(); renderSMMBarCompare(); renderSMMGrowth(); }, 100)
+  switchSMMTab('smm', document.querySelector('.smm-nav-item'))
+  renderSMMPresentation()
+  if (!isClient) fillSMMDataForm()
 
   if (report.ai_analysis?.text) {
     renderSMMAnalysis(report.ai_analysis.text)
-    if (g('smm-ai-status')) g('smm-ai-status').innerHTML = '<span style="color:var(--green)">● Анализ готов</span>'
+    if (g('smm-ai-status')) g('smm-ai-status').innerHTML = '<span style="color:var(--smm-green)">● Анализ готов</span>'
   }
 }
 
-function fillSMMInputs() {
-  const m = smmData.metrics, p = smmData.prev, go = smmData.goals
-  setVal('sm-views', m.views || ''); setVal('sm-prev-views', p.views || '')
-  setVal('sm-reach', m.reach || ''); setVal('sm-prev-reach', p.reach || '')
-  setVal('sm-followers', m.followers || ''); setVal('sm-prev-followers', p.followers || '')
-  SMM_METRIC_KEYS.forEach(k => {
-    setVal('sm-' + k, m[k] || ''); setVal('sm-prev-' + k, p[k] || ''); setVal('sm-goal-' + k, go[k] || '')
-  })
-  setVal('sm-growth-data', smmData.growth)
+function switchSMMTab(id, btn) {
+  document.querySelectorAll('.smm-nav-item').forEach(t => t.classList.remove('sni-active'))
+  document.querySelectorAll('.smm-sec').forEach(s => s.classList.remove('ssa'))
+  if (btn) btn.classList.add('sni-active')
+  const sec = g('ss-' + id); if (sec) sec.classList.add('ssa')
 }
 
-function collectSMMInputs() {
+function fillSMMDataForm() {
+  const m = smmData.metrics, p = smmData.prev, go = smmData.goals
+  const pairs = [
+    ['sd-reels-count', m.reels_count], ['sd-posts-count', m.posts_count], ['sd-stories-count', m.stories_count],
+    ['sd-reels-reach', m.reels_reach], ['sd-posts-reach', m.posts_reach], ['sd-stories-reach', m.stories_reach],
+    ['sd-reels-views', m.reels_views], ['sd-posts-views', m.posts_views],
+    ['sd-followers', m.followers], ['sd-prev-followers', p.followers],
+    ['sd-er', m.er], ['sd-prev-er', p.er], ['sd-goal-er', go.er],
+    ['sd-lr', m.lr], ['sd-prev-lr', p.lr], ['sd-goal-lr', go.lr],
+    ['sd-tr', m.tr], ['sd-prev-tr', p.tr], ['sd-goal-tr', go.tr],
+    ['sd-shr', m.shr], ['sd-prev-shr', p.shr], ['sd-goal-shr', go.shr],
+    ['sd-sr', m.sr], ['sd-prev-sr', p.sr], ['sd-goal-sr', go.sr],
+  ]
+  pairs.forEach(([id, val]) => { const el = g(id); if (el) el.value = val || '' })
+  renderReelsInputList()
+  renderRubricsInputList()
+}
+
+function collectSMMData() {
+  const n = id => { const el = g(id); return el ? +el.value || 0 : 0 }
   smmData.metrics = {
-    views: +getVal('sm-views') || 0, reach: +getVal('sm-reach') || 0, followers: +getVal('sm-followers') || 0,
-    er: +getVal('sm-er') || 0, lr: +getVal('sm-lr') || 0, tr: +getVal('sm-tr') || 0,
-    shr: +getVal('sm-shr') || 0, sr: +getVal('sm-sr') || 0
+    reels_count: n('sd-reels-count'), posts_count: n('sd-posts-count'), stories_count: n('sd-stories-count'),
+    reels_reach: n('sd-reels-reach'), posts_reach: n('sd-posts-reach'), stories_reach: n('sd-stories-reach'),
+    reels_views: n('sd-reels-views'), posts_views: n('sd-posts-views'),
+    followers: n('sd-followers'),
+    er: +g('sd-er').value || 0, lr: +g('sd-lr').value || 0, tr: +g('sd-tr').value || 0,
+    shr: +g('sd-shr').value || 0, sr: +g('sd-sr').value || 0
   }
   smmData.prev = {
-    views: +getVal('sm-prev-views') || 0, reach: +getVal('sm-prev-reach') || 0, followers: +getVal('sm-prev-followers') || 0,
-    er: +getVal('sm-prev-er') || 0, lr: +getVal('sm-prev-lr') || 0, tr: +getVal('sm-prev-tr') || 0,
-    shr: +getVal('sm-prev-shr') || 0, sr: +getVal('sm-prev-sr') || 0
+    followers: n('sd-prev-followers'),
+    er: +g('sd-prev-er').value || 0, lr: +g('sd-prev-lr').value || 0,
+    tr: +g('sd-prev-tr').value || 0, shr: +g('sd-prev-shr').value || 0, sr: +g('sd-prev-sr').value || 0
   }
   smmData.goals = {
-    er: +getVal('sm-goal-er') || 0, lr: +getVal('sm-goal-lr') || 0, tr: +getVal('sm-goal-tr') || 0,
-    shr: +getVal('sm-goal-shr') || 0, sr: +getVal('sm-goal-sr') || 0
+    er: +g('sd-goal-er').value || 0, lr: +g('sd-goal-lr').value || 0,
+    tr: +g('sd-goal-tr').value || 0, shr: +g('sd-goal-shr').value || 0, sr: +g('sd-goal-sr').value || 0
   }
-  smmData.growth = getVal('sm-growth-data')
 }
 
 async function saveSMMData(showFeedback) {
   if (!currentSMMReport) return
-  if (!_isClientCache) collectSMMInputs()
-  const { error } = await sb.from('smm_reports').update({
+  if (!_isClientCache) collectSMMData()
+  await sb.from('smm_reports').update({
     metrics: smmData.metrics, prev_metrics: smmData.prev, goals: smmData.goals,
-    reels: smmData.reels, rubrics: smmData.rubrics,
-    heatmap: smmData.heatmap, audience_growth: smmData.growth,
-    updated_at: new Date().toISOString()
+    reels: smmData.reels, rubrics: smmData.rubrics, updated_at: new Date().toISOString()
   }).eq('id', currentSMMReport.id)
+  renderSMMPresentation()
   if (showFeedback) {
-    const btn = g('smm-save-btn')
-    if (btn) {
-      const orig = btn.innerHTML
-      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Сохранено!'
-      btn.style.background = 'var(--green)'
-      setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; }, 2000)
-    }
+    const btn = g('smm-save-btn'); if (!btn) return
+    const orig = btn.innerHTML
+    btn.innerHTML = '✓ Сохранено!'
+    btn.style.background = 'var(--smm-green)'; btn.style.color = '#000'
+    setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; btn.style.color = '' }, 2000)
   }
 }
 
-// ── Tab switching ──
-function switchSMMTab(id, btn) {
-  document.querySelectorAll('.smm-tab').forEach(t => t.classList.remove('st-active'))
-  document.querySelectorAll('.smm-section').forEach(s => s.classList.remove('ss-active'))
-  if (btn) btn.classList.add('st-active')
-  const sec = g('ss-' + id); if (sec) sec.classList.add('ss-active')
-  if (id === 'overview') setTimeout(() => { renderSMMRadar(); renderSMMBarCompare(); }, 80)
-  if (id === 'activity') setTimeout(() => renderSMMGrowth(), 80)
-}
-
-// ── Client view render ──
-function renderSMMClientView() {
-  const m = smmData.metrics, p = smmData.prev, go = smmData.goals
+function renderSMMPresentation() {
+  const m = smmData.metrics, p = smmData.prev
+  const fmtBig = n => !n ? '—' : n >= 1e6 ? (n/1e6).toFixed(1)+'M' : n >= 1e3 ? (n/1e3).toFixed(0)+'K' : String(n)
   const delta = (cur, prev) => {
-    if (!prev || !cur) return ''
-    const d = ((cur - prev) / prev * 100)
-    const cls = d >= 0 ? 'up' : 'down'
-    return `<span class="smm-delta ${cls}">${d >= 0 ? '▲' : '▼'} ${Math.abs(d).toFixed(1)}%</span>`
+    if (!cur || !prev) return ''
+    const d = ((cur-prev)/prev*100).toFixed(1)
+    return `<span class="smm-stat-delta ${+d>=0?'ssd-up':'ssd-down'}">${+d>=0?'▲':'▼'} ${Math.abs(+d)}%</span>`
   }
-  const fmtBig = n => n >= 1e6 ? (n/1e6).toFixed(1)+'M' : n >= 1e3 ? (n/1e3).toFixed(0)+'K' : (n||'—')
-  if(g('sv-views')) g('sv-views').textContent = fmtBig(m.views)
-  if(g('sv-views-delta')) g('sv-views-delta').innerHTML = delta(m.views, p.views)
-  if(g('sv-reach')) g('sv-reach').textContent = fmtBig(m.reach)
-  if(g('sv-reach-delta')) g('sv-reach-delta').innerHTML = delta(m.reach, p.reach)
-  if(g('sv-followers')) g('sv-followers').textContent = (m.followers >= 0 ? '+' : '') + (m.followers || '—')
+  const totalPubs = (m.reels_count||0) + (m.posts_count||0)
+  const totalReach = (m.reels_reach||0) + (m.posts_reach||0) + (m.stories_reach||0)
+  const totalViews = (m.reels_views||0) + (m.posts_views||0)
+  const maxReach = Math.max(m.reels_reach||0, m.posts_reach||0, m.stories_reach||0, 1)
+
+  if(g('sv-posts')) g('sv-posts').textContent = totalPubs || '—'
+  if(g('sv-stories')) g('sv-stories').textContent = fmtBig(m.stories_count)
+  if(g('sv-reach')) g('sv-reach').textContent = fmtBig(totalReach)
+  if(g('sv-views')) g('sv-views').textContent = fmtBig(totalViews)
+  if(g('sv-followers')) g('sv-followers').textContent = m.followers ? (m.followers>0?'+':'') + m.followers : '—'
   if(g('sv-followers-delta')) g('sv-followers-delta').innerHTML = delta(m.followers, p.followers)
-  SMM_METRIC_KEYS.forEach(k => {
-    const el = g('sv-'+k); if(el) el.textContent = m[k] ? m[k].toFixed(2)+'%' : '—'
-    const de = g('sv-'+k+'-delta'); if(de) de.innerHTML = delta(m[k], p[k])
-    if (go[k] && m[k]) {
-      const pct = Math.min((m[k]/go[k])*100, 100)
-      const col = pct >= 100 ? 'var(--green)' : pct >= 70 ? 'var(--amber)' : 'var(--red)'
-      const ge = g('sv-'+k+'-goal')
-      if(ge) { ge.style.display='block'; ge.innerHTML=`<div class="goal-bar-track"><div class="goal-bar-fill" style="width:${pct}%;background:${col};"></div></div><div class="goal-vs"><span>Факт: ${m[k].toFixed(2)}%</span><span>Цель: ${go[k].toFixed(2)}%</span></div>` }
-    }
-  })
-}
+  if(g('sv-total-reach')) g('sv-total-reach').textContent = fmtBig(totalReach)
+  if(g('sv-total-views')) g('sv-total-views').textContent = fmtBig(totalViews)
 
-// ── Charts ──
-function renderSMMRadar() {
-  const m = smmData.metrics, p = smmData.prev
-  if (!_isClientCache) { collectSMMInputs() }
-  const labels = ['ER','LR','TR','SHR','SR']
-  const curr = SMM_METRIC_KEYS.map(k => m[k] || 0)
-  const prev = SMM_METRIC_KEYS.map(k => p[k] || 0)
-  const ctx = g('smm-radar'); if (!ctx) return
-  if (smmCharts.radar) smmCharts.radar.destroy()
-  smmCharts.radar = new Chart(ctx, {
-    type: 'radar',
-    data: {
-      labels,
-      datasets: [
-        { label: 'Текущий', data: curr, backgroundColor: 'rgba(91,95,199,.15)', borderColor: 'var(--a2)', borderWidth: 2, pointBackgroundColor: 'var(--a2)', pointRadius: 4 },
-        { label: 'Прошлый', data: prev, backgroundColor: 'rgba(136,136,136,.08)', borderColor: 'rgba(136,136,136,.4)', borderWidth: 1.5, pointBackgroundColor: 'rgba(136,136,136,.4)', pointRadius: 3 }
-      ]
-    },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#888', font: { size: 10 } } } }, scales: { r: { ticks: { color: '#555', font: { size: 9 }, backdropColor: 'transparent' }, grid: { color: 'rgba(255,255,255,.06)' }, pointLabels: { color: '#888', font: { size: 11 } } } } }
-  })
-}
-
-function renderSMMBarCompare() {
-  const m = smmData.metrics, p = smmData.prev
-  const labels = ['ER','LR','TR','SHR','SR']
-  const curr = SMM_METRIC_KEYS.map(k => +(m[k]||0).toFixed(2))
-  const prev = SMM_METRIC_KEYS.map(k => +(p[k]||0).toFixed(2))
-  const ctx = g('smm-bar-compare'); if (!ctx) return
-  if (smmCharts.bar) smmCharts.bar.destroy()
-  smmCharts.bar = new Chart(ctx, {
-    type: 'bar',
-    data: { labels, datasets: [
-      { label: 'Прошлый', data: prev, backgroundColor: 'rgba(90,87,110,.5)', borderRadius: 4 },
-      { label: 'Текущий', data: curr, backgroundColor: ['rgba(91,95,199,.8)','rgba(56,189,248,.8)','rgba(245,158,11,.8)','rgba(192,132,252,.8)','rgba(74,222,128,.8)'], borderRadius: 4 }
-    ]},
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#888', font: { size: 10 } } } }, scales: { x: { ...xCfg }, y: { ...yCfg, ticks: { ...yCfg.ticks, callback: v => v + '%' } } } }
-  })
-}
-
-function renderSMMGrowth() {
-  const raw = smmData.growth || (g('sm-growth-data') ? g('sm-growth-data').value : '')
-  const vals = raw.split(',').map(v => +v.trim()).filter(v => !isNaN(v) && v > 0)
-  const ctx = g('smm-growth'); if (!ctx) return
-  if (smmCharts.growth) smmCharts.growth.destroy()
-  if (!vals.length) return
-  const labels = vals.map((_, i) => 'Нед. ' + (i + 1))
-  smmCharts.growth = new Chart(ctx, {
-    type: 'line',
-    data: { labels, datasets: [{ label: 'Подписчики', data: vals, borderColor: 'var(--green)', backgroundColor: 'rgba(74,222,128,.08)', borderWidth: 2, pointBackgroundColor: 'var(--green)', pointRadius: 5, tension: 0.3, fill: true }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ...xCfg }, y: { ...yCfg } } }
-  })
-}
-
-// ── Heatmap ──
-function renderHeatmap() {
-  const grid = g('heatmap-grid'); if (!grid) return
-  const hm = smmData.heatmap
-  const maxVal = Math.max(...hm.filter(v => v > 0), 1)
-  const isEditable = !_isClientCache
-  let html = '<div></div>' + SMM_DAYS.map(d => `<div class="heatmap-day-label">${d}</div>`).join('')
-  for (let w = 0; w < 4; w++) {
-    html += `<div class="heatmap-week-label">${w+1}н</div>`
-    for (let d = 0; d < 7; d++) {
-      const idx = w * 7 + d
-      const val = hm[idx] || 0
-      const intensity = val > 0 ? val / maxVal : 0
-      const bg = intensity === 0 ? 'var(--bg4)' : `rgba(91,95,199,${(0.15 + intensity * 0.85).toFixed(2)})`
-      const tc = intensity > 0.5 ? '#fff' : 'var(--txt3)'
-      const onclick = isEditable ? `onclick="openHeatmapCell(${idx})"` : ''
-      html += `<div class="heatmap-cell" style="background:${bg};color:${tc};" ${onclick}>${val > 0 ? `<span class="cell-val">${val}</span>` : ''}</div>`
-    }
+  const setProg = (valId, fillId, val, max) => {
+    if(g(valId)) g(valId).textContent = fmtBig(val)
+    const fill = g(fillId); if(fill) setTimeout(() => fill.style.width = (max>0?(val/max*100):0).toFixed(1)+'%', 80)
   }
-  grid.innerHTML = html
+  setProg('sp-reels','spf-reels', m.reels_reach||0, maxReach)
+  setProg('sp-posts','spf-posts', m.posts_reach||0, maxReach)
+  setProg('sp-stories','spf-stories', m.stories_reach||0, maxReach)
+
+  renderSMMMetrics()
+  renderSMMReelsGrid()
+  renderSMMRubricGrid()
 }
 
-function openHeatmapCell(idx) {
-  heatmapEditIndex = idx
-  const days = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс']
-  const week = Math.floor(idx / 7) + 1, day = days[idx % 7]
-  set('hm-cell-title', `${week} неделя · ${day}`)
-  const inp = g('hm-cell-val'); if (inp) inp.value = smmData.heatmap[idx] || ''
-  g('modal-heatmap-cell').classList.add('open')
-  setTimeout(() => inp && inp.focus(), 50)
+function renderSMMMetrics() {
+  const grid = g('smm-metrics-grid'); if (!grid) return
+  const m = smmData.metrics, p = smmData.prev, go = smmData.goals
+  const bKey = +(g('smm-bench-sel')?.value || 50000)
+  const bench = SMM_BENCHMARKS[bKey] || SMM_BENCHMARKS[50000]
+  const mets = [
+    { code:'ER', val:m.er, prev:p.er, goal:go.er, range:bench.er, color:'var(--smm-accent2)', top:'var(--smm-accent)' },
+    { code:'LR', val:m.lr, prev:p.lr, goal:go.lr, range:bench.lr, color:'var(--smm-cyan)', top:'var(--smm-cyan)' },
+    { code:'TR', val:m.tr, prev:p.tr, goal:go.tr, range:bench.tr, color:'var(--smm-amber)', top:'var(--smm-amber)' },
+    { code:'SHR',val:m.shr,prev:p.shr,goal:go.shr,range:bench.shr,color:'var(--smm-pink)', top:'var(--smm-pink)' },
+    { code:'SR', val:m.sr, prev:p.sr, goal:go.sr, range:bench.sr, color:'var(--smm-green)', top:'var(--smm-green)' },
+  ]
+  grid.innerHTML = mets.map(met => {
+    const inBench = met.val >= met.range[0]
+    const aboveBench = met.val >= met.range[1]
+    const sCol = aboveBench ? 'var(--smm-green)' : inBench ? 'var(--smm-amber)' : 'var(--smm-red)'
+    const sTxt = aboveBench ? '✓ Отлично' : inBench ? '~ Норма' : met.val > 0 ? '↓ Ниже нормы' : ''
+    const pd = (met.val && met.prev) ? ((met.val-met.prev)/met.prev*100).toFixed(1) : null
+    const gp = (met.goal && met.val) ? Math.min((met.val/met.goal)*100,100).toFixed(0) : null
+    return `<div class="smm-metric-card">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:${met.top};"></div>
+      <div class="smm-metric-code">${met.code}</div>
+      <div class="smm-metric-val" style="color:${met.color};">${met.val ? met.val.toFixed(2)+'%' : '—'}</div>
+      ${pd !== null ? `<div style="font-family:'JetBrains Mono',monospace;font-size:10px;margin-top:4px;color:${+pd>=0?'var(--smm-green)':'var(--smm-red)'}">${+pd>=0?'+':''}${pd}%</div>` : ''}
+      ${sTxt ? `<div class="smm-metric-status" style="color:${sCol};">${sTxt}</div>` : ''}
+      ${gp ? `<div style="margin-top:8px;height:2px;background:rgba(255,255,255,.08);border-radius:1px;overflow:hidden;"><div style="height:100%;width:${gp}%;background:${met.color};transition:width 1s;"></div></div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--smm-muted);margin-top:3px;">Цель: ${gp}%</div>` : ''}
+      <div class="smm-metric-bm">Норма: ${met.range[0]}–${met.range[1]}%</div>
+    </div>`
+  }).join('')
 }
 
-function saveHeatmapCell() {
-  if (heatmapEditIndex === null) return
-  const val = +getVal('hm-cell-val') || 0
-  smmData.heatmap[heatmapEditIndex] = val
-  closeModal('modal-heatmap-cell')
-  heatmapEditIndex = null
-  renderHeatmap()
+function renderSMMReelsGrid() {
+  const grid = g('smm-reels-grid'); if (!grid) return
+  const reels = [...smmData.reels].sort((a,b) => b.er - a.er)
+  if (!reels.length) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px;font-family:\'JetBrains Mono\',monospace;font-size:12px;letter-spacing:.1em;color:var(--smm-muted);">Добавьте Reels во вкладке «Данные»</div>'; return }
+  const fmtK = n => n >= 1000 ? (n/1000).toFixed(1)+'K' : (n||0)
+  grid.innerHTML = reels.slice(0,10).map((r,i) => {
+    const rank = i+1
+    const bCls = rank===1?'rrb1':(rank===2?'rrb2':(rank===3?'rrb3':''))
+    const medal = rank===1?'🥇':(rank===2?'🥈':(rank===3?'🥉':rank))
+    return `<div class="smm-reel-card">
+      <div class="smm-reel-thumb">
+        <div class="smm-reel-rank-wm">${rank}</div>
+        <div class="smm-reel-play">
+          ${r.link ? `<a href="${r.link}" target="_blank" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:var(--smm-accent2);"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></a>` : '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:var(--smm-accent2)"><polygon points="5 3 19 12 5 21 5 3"/></svg>'}
+        </div>
+        <div class="smm-reel-rank-badge ${bCls}">${medal}</div>
+      </div>
+      <div class="smm-reel-body">
+        <div class="smm-reel-title">${r.title || 'Reel #'+rank}</div>
+        <div class="smm-reel-stats">
+          <div class="smm-reel-stat">👁 просм.<span>${fmtK(r.views)}</span></div>
+          <div class="smm-reel-stat">❤️ лайки<span>${fmtK(r.likes)}</span></div>
+          <div class="smm-reel-stat">💬 комм.<span>${fmtK(r.comments)}</span></div>
+          <div class="smm-reel-stat">🔖 сохр.<span>${fmtK(r.saves)}</span></div>
+        </div>
+        <span class="smm-reel-er">ER ${(+r.er||0).toFixed(2)}%</span>
+      </div>
+    </div>`
+  }).join('')
 }
 
-// ── Reels ──
+function renderSMMRubricGrid() {
+  const grid = g('smm-rubric-grid'); if (!grid) return
+  const winner = g('smm-rubric-winner')
+  const rubs = [...smmData.rubrics].sort((a,b) => b.er-a.er)
+  if (!rubs.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;font-family:\'JetBrains Mono\',monospace;font-size:12px;letter-spacing:.1em;color:var(--smm-muted);">Добавьте рубрики во вкладке «Данные»</div>'
+    if (winner) winner.style.display = 'none'; return
+  }
+  const best = rubs[0]
+  const maxER = Math.max(...rubs.map(r=>r.er||0),.01)
+  const maxReach = Math.max(...rubs.map(r=>r.reach||0),1)
+  const maxViews = Math.max(...rubs.map(r=>r.views||0),1)
+  const fmtM = n => n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(0)+'K':(n||0)
+
+  if (winner && best.er > 0) {
+    winner.style.display = 'flex'
+    if(g('smm-winner-name')) g('smm-winner-name').textContent = best.name
+    const stats=[]
+    if(best.er) stats.push('ER: '+best.er.toFixed(1)+'%')
+    if(best.reach) stats.push('Охват: '+fmtM(best.reach))
+    if(best.posts) stats.push('Постов: '+best.posts)
+    if(g('smm-winner-stats')) g('smm-winner-stats').textContent = stats.join('  ·  ')
+  } else if(winner) { winner.style.display='none' }
+
+  grid.innerHTML = rubs.map((r,i) => {
+    const pal = SMM_PALETTES[i%SMM_PALETTES.length]
+    const isWin = best && r.name===best.name && best.er>0
+    const erPct = (r.er/maxER*100).toFixed(1), rePct = (r.reach/maxReach*100).toFixed(1), viPct = ((r.views||0)/maxViews*100).toFixed(1)
+    return `<div class="smm-rubric-card" style="background:${isWin?pal.bg:'var(--smm-bg4)'};border:${isWin?('1px solid '+pal.a):'1px solid rgba(255,255,255,.06)'};">
+      <div class="smm-rubric-blob" style="background:${pal.a};"></div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+        <div>
+          ${isWin?`<div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:${pal.a};letter-spacing:.15em;text-transform:uppercase;margin-bottom:4px;">🏆 Лучшая</div>`:'<div style="height:17px;"></div>'}
+          <div style="font-size:15px;font-weight:600;color:#fff;">${r.name}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:9px;color:rgba(255,255,255,.35);font-family:'JetBrains Mono',monospace;letter-spacing:.1em;margin-bottom:2px;">ПОСТОВ</div>
+          <div style="font-family:var(--bebas);font-size:34px;color:${pal.a};line-height:1;">${r.posts||0}</div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+          <span style="font-size:10px;color:rgba(255,255,255,.4);font-family:'JetBrains Mono',monospace;letter-spacing:.1em;">ENGAGEMENT RATE</span>
+          <span style="font-family:var(--bebas);font-size:22px;color:${pal.a};">${r.er?r.er.toFixed(1)+'%':'—'}</span>
+        </div>
+        <div class="smm-bar"><div class="smm-bar-fill" style="width:${erPct}%;background:${pal.a};"></div></div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+          <span style="font-size:10px;color:rgba(255,255,255,.4);font-family:'JetBrains Mono',monospace;letter-spacing:.1em;">ОХВАТ</span>
+          <span style="font-family:var(--bebas);font-size:20px;color:var(--smm-cyan);">${r.reach?fmtM(r.reach):'—'}</span>
+        </div>
+        <div class="smm-bar"><div class="smm-bar-fill" style="width:${rePct}%;background:linear-gradient(90deg,var(--smm-cyan),var(--smm-accent2));"></div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+          <span style="font-size:10px;color:rgba(255,255,255,.4);font-family:'JetBrains Mono',monospace;letter-spacing:.1em;">ПРОСМОТРЫ</span>
+          <span style="font-family:var(--bebas);font-size:20px;color:rgba(255,255,255,.7);">${r.views?fmtM(r.views):'—'}</span>
+        </div>
+        <div class="smm-bar"><div class="smm-bar-fill" style="width:${viPct}%;background:rgba(255,255,255,.25);"></div></div>
+      </div>
+    </div>`
+  }).join('')
+}
+
+function renderReelsInputList() {
+  const list = g('smm-reels-input-list'); if (!list) return
+  if (!smmData.reels.length) { list.innerHTML = '<div style="font-family:\'JetBrains Mono\',monospace;font-size:11px;color:var(--smm-muted);padding:16px;text-align:center;">Нет Reels · нажмите «+ Добавить Reel»</div>'; return }
+  list.innerHTML = smmData.reels.map((r,i) => `
+    <div style="background:var(--smm-bg3);border:1px solid var(--smm-brd);border-radius:8px;padding:14px;display:flex;align-items:center;gap:12px;">
+      <div style="font-family:var(--bebas);font-size:20px;color:var(--smm-accent2);width:28px;text-align:center;">${i+1}</div>
+      <div style="flex:1;font-size:12px;color:var(--smm-text);">${r.title||r.link||('Reel #'+(i+1))}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--smm-muted);">ER ${(+r.er||0).toFixed(2)}%</div>
+      <button onclick="deleteReel(${i})" style="background:transparent;border:none;color:var(--smm-muted);cursor:pointer;font-size:16px;padding:4px;line-height:1;" onmouseover="this.style.color='var(--smm-red)'" onmouseout="this.style.color='var(--smm-muted)'">✕</button>
+    </div>`).join('')
+}
+
+function renderRubricsInputList() {
+  const list = g('smm-rubrics-input-list'); if (!list) return
+  if (!smmData.rubrics.length) { list.innerHTML = '<div style="font-family:\'JetBrains Mono\',monospace;font-size:11px;color:var(--smm-muted);padding:16px;text-align:center;">Нет рубрик · нажмите «+ Добавить рубрику»</div>'; return }
+  list.innerHTML = smmData.rubrics.map((r,i) => `
+    <div style="background:var(--smm-bg3);border:1px solid var(--smm-brd);border-radius:8px;padding:14px;display:flex;align-items:center;gap:12px;">
+      <div style="font-family:var(--bebas);font-size:20px;color:var(--smm-accent2);width:28px;text-align:center;">${i+1}</div>
+      <div style="flex:1;font-size:12px;color:var(--smm-text);">${r.name}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--smm-muted);">${r.posts||0} постов · ER ${(+r.er||0).toFixed(2)}%</div>
+      <button onclick="deleteRubric(${i})" style="background:transparent;border:none;color:var(--smm-muted);cursor:pointer;font-size:16px;padding:4px;line-height:1;" onmouseover="this.style.color='var(--smm-red)'" onmouseout="this.style.color='var(--smm-muted)'">✕</button>
+    </div>`).join('')
+}
+
 function openAddReel() {
   if (smmData.reels.length >= 10) { alert('Максимум 10 Reels'); return }
-  g('modal-reel').classList.add('open')
-  setTimeout(() => g('rl-link').focus(), 50)
+  g('modal-reel').classList.add('open'); setTimeout(() => g('rl-link').focus(), 50)
 }
-
 async function addReel() {
-  const link = getVal('rl-link')
-  const views = +getVal('rl-views') || 0
-  const reach = +getVal('rl-reach') || views
-  const likes = +getVal('rl-likes') || 0
-  const comments = +getVal('rl-comments') || 0
-  const saves = +getVal('rl-saves') || 0
-  const shares = +getVal('rl-shares') || 0
-  const er = reach > 0 ? ((likes + comments + saves) / reach * 100).toFixed(2) : 0
-  smmData.reels.push({ link, title: getVal('rl-title'), views, reach, likes, comments, saves, shares, er: +er })
-  ;['rl-link','rl-title','rl-views','rl-reach','rl-likes','rl-comments','rl-saves','rl-shares'].forEach(id => setVal(id,''))
-  closeModal('modal-reel')
-  renderReels()
-  await saveSMMData(false)
+  const views=+getVal('rl-views')||0, reach=+getVal('rl-reach')||views
+  const likes=+getVal('rl-likes')||0, comments=+getVal('rl-comments')||0
+  const saves=+getVal('rl-saves')||0, shares=+getVal('rl-shares')||0
+  const er = reach>0 ? +((likes+comments+saves)/reach*100).toFixed(2) : 0
+  smmData.reels.push({ link:getVal('rl-link'), title:getVal('rl-title'), views, reach, likes, comments, saves, shares, er })
+  ;['rl-link','rl-title','rl-views','rl-reach','rl-likes','rl-comments','rl-saves','rl-shares'].forEach(id=>setVal(id,''))
+  closeModal('modal-reel'); renderReelsInputList(); await saveSMMData(false)
 }
+async function deleteReel(idx) { smmData.reels.splice(idx,1); renderReelsInputList(); await saveSMMData(false) }
 
-function renderReels() {
-  const grid = g('reels-grid'); if (!grid) return
-  const reels = [...smmData.reels].sort((a, b) => b.er - a.er)
-  if (!reels.length) { grid.innerHTML = '<div style="grid-column:1/-1;" class="ps-empty"><div class="ps-empty-icon">🎬</div><div class="ps-empty-text">Reels ещё не добавлены</div></div>'; return }
-  const hideBtn = _isClientCache
-  const fmtK = n => n >= 1000 ? (n/1000).toFixed(1)+'K' : n
-  grid.innerHTML = reels.map((r, i) => {
-    const rank = i + 1
-    const rankCls = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : ''
-    const rankIcon = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank
-    const origIdx = smmData.reels.indexOf(r)
-    return `<div class="reel-card">
-      <div class="reel-rank ${rankCls}">${rankIcon}</div>
-      ${!hideBtn ? `<button class="reel-del" onclick="deleteReel(${origIdx})"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>` : ''}
-      <div class="reel-thumb">
-        <div class="reel-thumb-placeholder">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          ${r.link ? `<a href="${r.link}" target="_blank" onclick="event.stopPropagation()" style="font-family:Manrope,sans-serif;font-size:9px;color:var(--a2);text-decoration:none;padding:3px 8px;border:1px solid rgba(91,95,199,.3);border-radius:10px;">Открыть</a>` : ''}
-        </div>
-      </div>
-      <div class="reel-body">
-        <div class="reel-title">${r.title || 'Reel #' + rank}</div>
-        <div class="reel-stats">
-          <div class="reel-stat">👁 <span>${fmtK(r.views)}</span></div>
-          <div class="reel-stat">❤️ <span>${fmtK(r.likes)}</span></div>
-          <div class="reel-stat">💬 <span>${fmtK(r.comments)}</span></div>
-          <div class="reel-stat">🔖 <span>${fmtK(r.saves)}</span></div>
-        </div>
-        <div><span class="reel-er-badge">ER ${r.er}%</span></div>
-      </div>
-    </div>`
-  }).join('')
-}
-
-async function deleteReel(idx) {
-  smmData.reels.splice(idx, 1)
-  renderReels(); await saveSMMData(false)
-}
-
-// ── Rubrics ──
-function openAddRubric() { g('modal-rubric').classList.add('open'); setTimeout(() => g('rb-name').focus(), 50) }
-
+function openAddRubric() { g('modal-rubric').classList.add('open'); setTimeout(()=>g('rb-name').focus(),50) }
 async function addRubric() {
-  const name = getVal('rb-name'); if (!name) return
-  smmData.rubrics.push({ name, posts: +getVal('rb-posts') || 0, er: +getVal('rb-er') || 0, reach: +getVal('rb-reach') || 0, note: getVal('rb-note') })
-  ;['rb-name','rb-posts','rb-er','rb-reach','rb-note'].forEach(id => setVal(id,''))
-  closeModal('modal-rubric')
-  renderRubrics(); await saveSMMData(false)
+  const name=getVal('rb-name'); if(!name) return
+  smmData.rubrics.push({ name, posts:+getVal('rb-posts')||0, er:+getVal('rb-er')||0, reach:+getVal('rb-reach')||0, views:+getVal('rb-views')||0 })
+  ;['rb-name','rb-posts','rb-er','rb-reach','rb-views'].forEach(id=>setVal(id,''))
+  closeModal('modal-rubric'); renderRubricsInputList(); await saveSMMData(false)
 }
+async function deleteRubric(idx) { smmData.rubrics.splice(idx,1); renderRubricsInputList(); await saveSMMData(false) }
 
-function renderRubrics() {
-  const list = g('rubric-list'); if (!list) return
-  const rubs = [...smmData.rubrics].sort((a, b) => b.er - a.er)
-  if (!rubs.length) { list.innerHTML = '<div class="ps-empty"><div class="ps-empty-icon">📝</div><div class="ps-empty-text">Рубрики ещё не добавлены</div></div>'; return }
-  const maxER = Math.max(...rubs.map(r => r.er), 0.01)
-  const colors = ['#5b3ef5','#00e5a3','#0dcfff','#ffb627','#f040c0','#ff3d6b','#8b6fff','#34d399']
-  const hideBtn = _isClientCache
-  list.innerHTML = rubs.map((r, i) => {
-    const col = colors[i % colors.length]
-    const pct = (r.er / maxER * 100).toFixed(1)
-    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1)
-    const origIdx = smmData.rubrics.findIndex(x => x.name === r.name && x.er === r.er)
-    return `<div class="rubric-card">
-      <div class="rubric-rank-badge" style="background:${col}22;color:${col};">${medal}</div>
-      <div>
-        <div class="rubric-name">${r.name}</div>
-        ${r.note ? `<div style="font-family:Manrope,sans-serif;font-size:10px;color:var(--txt3);margin-top:2px;">${r.note}</div>` : ''}
-      </div>
-      <div class="rubric-bar-wrap">
-        <div class="rubric-bar-track"><div class="rubric-bar-fill" style="width:${pct}%;background:${col};"></div></div>
-      </div>
-      <div class="rubric-meta">
-        <div style="color:${col};font-weight:700;">ER ${r.er}%</div>
-        <div>${r.posts} постов</div>
-        ${r.reach ? `<div>охват ${r.reach >= 1000 ? (r.reach/1000).toFixed(0)+'K' : r.reach}</div>` : ''}
-      </div>
-      ${!hideBtn ? `<button class="persona-del-btn" onclick="deleteRubric(${origIdx})"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>` : ''}
-    </div>`
-  }).join('')
-}
-
-async function deleteRubric(idx) {
-  smmData.rubrics.splice(idx, 1)
-  renderRubrics(); await saveSMMData(false)
-}
-
-// ── AI Analysis ──
 let smmAiRunning = false
 async function runSMMAnalysis() {
   if (smmAiRunning) return
-  if (!_isClientCache) collectSMMInputs()
   smmAiRunning = true
-  const m = smmData.metrics, p = smmData.prev, go = smmData.goals
-  ;[g('smm-ai-btn'), g('smm-ai-btn2')].forEach(b => { if(b) { b.disabled = true; b.textContent = 'Анализирую...' } })
-  if (g('smm-ai-status')) g('smm-ai-status').innerHTML = '<span style="color:var(--amber)">● Обрабатываю...</span>'
-
-  const deltaStr = (cur, prev, unit='') => {
-    if (!cur || !prev) return cur ? `${cur}${unit}` : '—'
-    const d = ((cur-prev)/prev*100).toFixed(1)
-    return `${cur}${unit} (${d >= 0 ? '+' : ''}${d}%)`
-  }
-  const topReel = [...smmData.reels].sort((a,b) => b.er - a.er)[0]
-  const topRubric = [...smmData.rubrics].sort((a,b) => b.er - a.er)[0]
-
-  const prompt = `Ты — старший SMM-аналитик. Анализируй данные и пиши конкретно, по-русски. Клиент: ${currentProject.name} (фастфуд, Узбекистан).
-
-ДАННЫЕ ЗА ПЕРИОД "${currentSMMReport.period_label}":
-Просмотры: ${deltaStr(m.views, p.views)}
-Охват: ${deltaStr(m.reach, p.reach)}
-Прирост аудитории: ${deltaStr(m.followers, p.followers, ' чел.')}
-
-Метрики вовлечённости:
-ER: ${deltaStr(m.er, p.er, '%')} ${go.er ? `(цель: ${go.er}%)` : ''}
-LR: ${deltaStr(m.lr, p.lr, '%')}
-TR: ${deltaStr(m.tr, p.tr, '%')}
-SHR: ${deltaStr(m.shr, p.shr, '%')}
-SR: ${deltaStr(m.sr, p.sr, '%')}
-
-${topReel ? `Лучший Reel: "${topReel.title}" — ER ${topReel.er}%, ${topReel.views} просмотров, ${topReel.likes} лайков, ${topReel.saves} сохранений` : ''}
-${topRubric ? `Лучшая рубрика: "${topRubric.name}" — ER ${topRubric.er}%` : ''}
-${smmData.rubrics.length > 1 ? `Все рубрики: ${smmData.rubrics.map(r => r.name + ' ER:' + r.er + '%').join(', ')}` : ''}
-
-Напиши анализ строго по разделам:
+  const m=smmData.metrics, p=smmData.prev, go=smmData.goals
+  ;['smm-ai-btn','smm-ai-btn2'].forEach(id=>{const b=g(id);if(b){b.disabled=true;b.textContent='Анализирую...'}})
+  if(g('smm-ai-status')) g('smm-ai-status').innerHTML='<span style="color:var(--smm-amber)">● Обрабатываю...</span>'
+  const dStr=(a,b,u='%')=>a?`${a}${u}${b?(' ('+(((a-b)/b)*100).toFixed(1)+'%)'):''}` : '—'
+  const topReel=[...smmData.reels].sort((a,b2)=>b2.er-a.er)[0]
+  const topRub=[...smmData.rubrics].sort((a,b2)=>b2.er-a.er)[0]
+  const prompt=`Ты — старший SMM-аналитик агентства DeTroyd. Клиент: ${currentProject.name}. Период: ${currentSMMReport.period_label}.
+ДАННЫЕ: Охват (Reels) ${dStr(m.reels_reach,null,'')}, Просмотры Reels ${dStr(m.reels_views,null,'')}, Прирост ${m.followers||0} подписчиков.
+Метрики: ER ${dStr(m.er,p.er)} LR ${dStr(m.lr,p.lr)} TR ${dStr(m.tr,p.tr)} SHR ${dStr(m.shr,p.shr)} SR ${dStr(m.sr,p.sr)}
+${topReel?('Лучший Reel: "'+topReel.title+'", ER '+topReel.er+'%'):''}
+${topRub?('Лучшая рубрика: "'+topRub.name+'", ER '+topRub.er+'%'):''}
+Напиши анализ по разделам:
 ## 🎯 Главный вывод
 ## 📈 Что сработало
 ## ⚠️ Что просело
-## 💡 Рекомендации на следующий месяц`
-
+## 💡 Рекомендации`
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 900, messages: [{ role: 'user', content: prompt }] })
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:900,messages:[{role:'user',content:prompt}]})
     })
-    const data = await resp.json()
-    if (data.error) throw new Error(data.error.message)
-    const text = data.content?.[0]?.text || 'Ошибка'
+    const data=await resp.json()
+    if(data.error) throw new Error(data.error.message)
+    const text=data.content?.[0]?.text||''
     renderSMMAnalysis(text)
-    await sb.from('smm_reports').update({ ai_analysis: { text, generated_at: new Date().toISOString() } }).eq('id', currentSMMReport.id)
-    if (g('smm-ai-status')) g('smm-ai-status').innerHTML = '<span style="color:var(--green)">● Готово</span>'
-    switchSMMTab('ai', document.querySelector('.smm-tab:last-child'))
+    await sb.from('smm_reports').update({ai_analysis:{text,generated_at:new Date().toISOString()}}).eq('id',currentSMMReport.id)
+    if(g('smm-ai-status')) g('smm-ai-status').innerHTML='<span style="color:var(--smm-green)">● Готово</span>'
+    switchSMMTab('ai',document.querySelectorAll('.smm-nav-item')[2])
   } catch(err) {
-    if (g('smm-ai-output')) g('smm-ai-output').innerHTML = `<div style="background:rgba(255,61,107,.08);border:1px solid rgba(255,61,107,.25);border-radius:10px;padding:16px 18px;"><div style="color:var(--red);font-size:13px;font-weight:600;margin-bottom:6px;">⚠️ Ошибка</div><div style="color:var(--txt2);font-size:12px;">${err.message}</div></div>`
-    if (g('smm-ai-status')) g('smm-ai-status').innerHTML = '<span style="color:var(--red)">● Ошибка</span>'
+    if(g('smm-ai-output')) g('smm-ai-output').innerHTML=`<div style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);border-radius:10px;padding:16px 18px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--smm-red);">${err.message}</div>`
+    if(g('smm-ai-status')) g('smm-ai-status').innerHTML='<span style="color:var(--smm-red)">● Ошибка</span>'
   }
-  smmAiRunning = false
-  ;[g('smm-ai-btn'), g('smm-ai-btn2')].forEach(b => {
-    if(b) { b.disabled = false; b.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 010 2h-1v1a2 2 0 01-2 2H5a2 2 0 01-2-2v-1H2a1 1 0 010-2h1a7 7 0 017-7h1V5.73A2 2 0 0110 4a2 2 0 012-2z"/> </svg> AI Анализ' }
-  })
+  smmAiRunning=false
+  ;['smm-ai-btn','smm-ai-btn2'].forEach(id=>{const b=g(id);if(b){b.disabled=false;b.textContent='Запустить анализ'}})
 }
 
 function renderSMMAnalysis(text) {
-  const aiColors = { '🎯': 'var(--a)', '📈': 'var(--green)', '⚠️': 'var(--amber)', '💡': 'var(--cyan)' }
-  const html = text.split(/(?=## )/).filter(s => s.trim()).map(sec => {
-    const lines = sec.trim().split('\n')
-    const title = lines[0].replace(/^## /, '').trim()
-    const body = lines.slice(1).join('\n').trim()
-    const icon = Object.keys(aiColors).find(ic => title.includes(ic))
-    const col = aiColors[icon] || 'var(--a2)'
-    const bodyHtml = body.split('\n').map(l => {
-      l = l.trim(); if (!l) return ''
-      if (l.startsWith('- ')) return `<div style="display:flex;gap:7px;margin-bottom:5px;"><span style="color:${col};flex-shrink:0;">▸</span><span>${l.slice(2)}</span></div>`
-      return `<p style="margin-bottom:7px;">${l}</p>`
+  const cols={'🎯':'var(--smm-accent)','📈':'var(--smm-green)','⚠️':'var(--smm-amber)','💡':'var(--smm-cyan)'}
+  const html=text.split(/(?=## )/).filter(s=>s.trim()).map(sec=>{
+    const lines=sec.trim().split('\n')
+    const title=lines[0].replace(/^## /,'').trim()
+    const body=lines.slice(1).join('\n').trim()
+    const icon=Object.keys(cols).find(ic=>title.includes(ic))
+    const col=cols[icon]||cols['🎯']
+    const bodyHtml=body.split('\n').map(l=>{
+      l=l.trim();if(!l) return ''
+      if(l.startsWith('- ')) return `<div style="display:flex;gap:7px;margin-bottom:5px;"><span style="color:${col};flex-shrink:0;">▸</span><span>${l.slice(2)}</span></div>`
+      return `<p style="margin-bottom:6px;">${l}</p>`
     }).join('')
-    return `<div class="smm-ai-section" style="border-left-color:${col};"><div class="smm-ai-section-title" style="color:${col};">${title}</div><div class="smm-ai-text">${bodyHtml}</div></div>`
+    return `<div class="smm-ai-card" style="border-left-color:${col};">
+      <div class="smm-ai-card-title" style="color:${col};">${title}</div>
+      <div class="smm-ai-card-text">${bodyHtml}</div>
+    </div>`
   }).join('')
-  const out = g('smm-ai-output'); if (out) out.innerHTML = html
+  const out=g('smm-ai-output');if(out) out.innerHTML=html
 }
 
 // ══════════════════════════════════════════════
