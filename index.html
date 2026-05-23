@@ -1663,6 +1663,148 @@ input[type=file] { display: none; }
 .tg-test-btn:hover { background: rgba(42,171,238,.2); }
 .tg-test-btn:disabled { opacity: .4; cursor: not-allowed; }
 
+
+/* ══════════════════════════════════════════════
+   GLOBAL SEARCH
+══════════════════════════════════════════════ */
+.global-search-btn {
+  display: flex; align-items: center; gap: 7px;
+  padding: 6px 12px; border-radius: var(--r-xs);
+  background: var(--bg3); border: 1px solid var(--brd);
+  font-size: 12px; font-weight: 500; color: var(--txt3);
+  cursor: pointer; transition: all .18s;
+}
+.global-search-btn:hover { border-color: var(--brd2); color: var(--txt2); }
+.global-search-kbd {
+  font-family: var(--font-mono); font-size: 9px; color: var(--txt3);
+  background: var(--bg5); border: 1px solid var(--brd2);
+  padding: 1px 5px; border-radius: 4px;
+}
+.global-search-bar {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,.7); backdrop-filter: blur(12px);
+  z-index: 500; display: flex; flex-direction: column;
+  align-items: center; padding-top: 120px;
+}
+.global-search-wrap {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; max-width: 600px;
+  background: var(--bg3); border: 1px solid var(--brd2);
+  border-radius: var(--r-lg); padding: 14px 20px;
+  box-shadow: var(--shadow-xl);
+}
+.global-search-inp {
+  flex: 1; background: transparent; border: none; outline: none;
+  font-family: var(--font-body); font-size: 16px; color: var(--txt);
+}
+.global-search-inp::placeholder { color: var(--txt3); }
+.global-search-esc {
+  font-family: var(--font-mono); font-size: 10px; color: var(--txt3);
+  background: var(--bg5); border: 1px solid var(--brd);
+  padding: 2px 7px; border-radius: 4px; cursor: pointer;
+  flex-shrink: 0;
+}
+.global-search-results {
+  width: 100%; max-width: 600px; margin-top: 8px;
+  background: var(--bg3); border: 1px solid var(--brd);
+  border-radius: var(--r-lg); overflow: hidden;
+  max-height: 400px; overflow-y: auto;
+}
+.gsr-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 20px; cursor: pointer; transition: background .12s;
+  border-bottom: 1px solid var(--brd);
+}
+.gsr-item:last-child { border-bottom: none; }
+.gsr-item:hover { background: var(--bg4); }
+.gsr-icon {
+  width: 32px; height: 32px; border-radius: var(--r-xs);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.gsr-title { font-size: 13px; font-weight: 600; color: var(--txt); }
+.gsr-sub { font-family: var(--font-mono); font-size: 10px; color: var(--txt3); margin-top: 2px; }
+.gsr-empty { padding: 32px; text-align: center; font-family: var(--font-mono); font-size: 12px; color: var(--txt3); }
+.gsr-section-title {
+  padding: 8px 20px 4px; font-family: var(--font-mono);
+  font-size: 9px; color: var(--txt3); letter-spacing: .14em;
+  text-transform: uppercase; background: var(--bg2);
+}
+
+/* ══════════════════════════════════════════════
+   ACTIVITY FEED
+══════════════════════════════════════════════ */
+.activity-feed { max-width: 760px; }
+.activity-loading { padding: 40px; text-align: center; font-family: var(--font-mono); font-size: 12px; color: var(--txt3); }
+.act-day-group { margin-bottom: 28px; }
+.act-day-label {
+  font-family: var(--font-mono); font-size: 10px; color: var(--txt3);
+  letter-spacing: .14em; text-transform: uppercase;
+  padding-bottom: 10px; margin-bottom: 2px;
+  border-bottom: 1px solid var(--brd);
+}
+.act-item {
+  display: flex; gap: 14px; padding: 12px 0;
+  border-bottom: 1px solid var(--brd); align-items: flex-start;
+}
+.act-item:last-child { border-bottom: none; }
+.act-dot-wrap { display: flex; flex-direction: column; align-items: center; padding-top: 4px; flex-shrink: 0; }
+.act-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.act-body { flex: 1; }
+.act-text { font-size: 13px; color: var(--txt); line-height: 1.5; }
+.act-text b { color: var(--txt); }
+.act-meta { font-family: var(--font-mono); font-size: 10px; color: var(--txt3); margin-top: 3px; }
+.act-project-chip {
+  display: inline-block; font-family: var(--font-mono); font-size: 9px;
+  padding: 1px 7px; border-radius: 20px; margin-left: 6px;
+}
+.act-goto {
+  padding: 5px 10px; border-radius: var(--r-xs);
+  background: var(--bg4); border: 1px solid var(--brd);
+  font-size: 11px; color: var(--txt3); cursor: pointer;
+  transition: all .15s; white-space: nowrap; flex-shrink: 0;
+  margin-top: 2px;
+}
+.act-goto:hover { color: var(--txt); border-color: var(--brd2); }
+
+/* ══════════════════════════════════════════════
+   OVERVIEW GRID
+══════════════════════════════════════════════ */
+.overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.ov-card {
+  background: var(--bg3); border: 1px solid var(--brd);
+  border-radius: var(--r-lg); padding: 22px 24px;
+  transition: border-color .2s;
+}
+.ov-card:hover { border-color: var(--brd2); }
+.ov-card-title {
+  font-family: var(--font-mono); font-size: 9px; color: var(--txt3);
+  letter-spacing: .14em; text-transform: uppercase; margin-bottom: 16px;
+}
+.ov-big {
+  font-family: var(--font-display); font-size: 42px; font-weight: 800;
+  letter-spacing: -.05em; line-height: 1; margin-bottom: 4px;
+}
+.ov-sub { font-size: 12px; color: var(--txt3); }
+.ov-list { display: flex; flex-direction: column; gap: 10px; }
+.ov-list-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; background: var(--bg4); border-radius: var(--r-sm);
+  cursor: pointer; transition: background .15s;
+}
+.ov-list-item:hover { background: var(--bg5); }
+.ov-list-name { font-size: 13px; font-weight: 600; color: var(--txt); }
+.ov-list-sub { font-family: var(--font-mono); font-size: 10px; color: var(--txt3); margin-top: 2px; }
+.ov-list-val { font-family: var(--font-display); font-size: 20px; font-weight: 800; letter-spacing: -.03em; }
+.ov-progress-row { margin-bottom: 10px; }
+.ov-prog-hdr { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.ov-prog-name { font-size: 12px; color: var(--txt2); cursor: pointer; }
+.ov-prog-name:hover { color: var(--a2); }
+.ov-prog-pct { font-family: var(--font-mono); font-size: 11px; font-weight: 600; }
+.ov-prog-bar { height: 3px; background: var(--bg5); border-radius: 3px; overflow: hidden; }
+.ov-prog-fill { height: 100%; border-radius: 3px; transition: width .8s cubic-bezier(.4,0,.2,1); }
+@media(max-width:900px) { .overview-grid { grid-template-columns: 1fr; } }
+
 .tracker-wrap { margin: 32px 0; }
 
 .tracker-progress-card {
@@ -2496,6 +2638,11 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
       <div class="header-wordmark">Agency Hub</div>
     </div>
     <div class="header-right">
+      <button class="global-search-btn" onclick="openGlobalSearch()" title="Поиск (Ctrl+K)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        Поиск
+        <span class="global-search-kbd">⌘K</span>
+      </button>
       <div class="user-pill">
         <div style="width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s ease infinite;"></div>
         <span id="header-user">—</span>
@@ -2551,6 +2698,24 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
         Дедлайны
         <span class="dash-tab-badge" id="dtab-badge-cal">0</span>
       </button>
+      <button class="dash-tab" id="dtab-activity" onclick="switchDashTab('activity',this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Активность
+      </button>
+      <button class="dash-tab" id="dtab-overview" onclick="switchDashTab('overview',this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Сводка
+      </button>
+    </div>
+
+    <!-- Global search bar -->
+    <div class="global-search-bar" id="global-search-bar" style="display:none;">
+      <div class="global-search-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input class="global-search-inp" id="global-search-inp" placeholder="Поиск по проектам, отчётам, этапам..." oninput="globalSearch(this.value)" autocomplete="off">
+        <span class="global-search-esc" onclick="closeGlobalSearch()">ESC</span>
+      </div>
+      <div class="global-search-results" id="global-search-results"></div>
     </div>
 
     <!-- ── TAB: PROJECTS ── -->
@@ -2589,6 +2754,20 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
     <!-- ── TAB: CALENDAR / DEADLINES ── -->
     <div id="dtab-calendar-panel" style="display:none;">
       <div class="deadline-panel" id="deadline-panel"></div>
+    </div>
+
+    <!-- ── TAB: ACTIVITY ── -->
+    <div id="dtab-activity-panel" style="display:none;">
+      <div class="activity-feed" id="activity-feed">
+        <div class="activity-loading">Загрузка активности...</div>
+      </div>
+    </div>
+
+    <!-- ── TAB: OVERVIEW ── -->
+    <div id="dtab-overview-panel" style="display:none;">
+      <div class="overview-grid" id="overview-grid">
+        <div class="activity-loading">Загрузка сводки...</div>
+      </div>
     </div>
 
   </div>
@@ -4461,6 +4640,276 @@ function copyReportLink(type, id, btn) {
   })
 }
 
+
+// ══════════════════════════════════════════════
+// GLOBAL SEARCH (Cmd+K)
+// ══════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault()
+    const dash = g('page-dashboard')
+    if (dash && dash.classList.contains('active')) openGlobalSearch()
+  }
+  if (e.key === 'Escape') closeGlobalSearch()
+})
+
+function openGlobalSearch() {
+  const bar = g('global-search-bar')
+  if (!bar) return
+  bar.style.display = 'flex'
+  setTimeout(() => g('global-search-inp')?.focus(), 50)
+  globalSearch('')
+}
+
+function closeGlobalSearch() {
+  const bar = g('global-search-bar')
+  if (bar) bar.style.display = 'none'
+  const inp = g('global-search-inp')
+  if (inp) inp.value = ''
+}
+
+function globalSearch(q) {
+  const res = g('global-search-results')
+  if (!res) return
+  q = q.toLowerCase().trim()
+
+  const projects = _allProjects.filter(p =>
+    !q || p.name.toLowerCase().includes(q) || (p.description||'').toLowerCase().includes(q)
+  ).slice(0, 5)
+
+  const stages = !q ? [] : _allStages.filter(s => {
+    const stageName = STAGES[s.stage_index]?.name || ''
+    return stageName.toLowerCase().includes(q)
+  }).slice(0, 3)
+
+  if (!projects.length && !stages.length) {
+    res.innerHTML = `<div class="gsr-empty">Ничего не найдено по «${q}»</div>`
+    return
+  }
+
+  let html = ''
+
+  if (projects.length) {
+    html += `<div class="gsr-section-title">Проекты</div>`
+    html += projects.map(p => {
+      const prog = getProjectProgress(p.id)
+      const col = p.brand_color || '#5b5fc7'
+      return `<div class="gsr-item" onclick="closeGlobalSearch();openProject('${p.id}')">
+        <div class="gsr-icon" style="background:${col}22;border:1px solid ${col}44;color:${col};">${p.name[0]}</div>
+        <div>
+          <div class="gsr-title">${p.name}</div>
+          <div class="gsr-sub">${p.description || 'Нет описания'} · ${prog.pct}% выполнено</div>
+        </div>
+      </div>`
+    }).join('')
+  }
+
+  if (stages.length) {
+    html += `<div class="gsr-section-title">Этапы</div>`
+    html += stages.map(s => {
+      const proj = _allProjects.find(p => p.id === s.project_id)
+      const stage = STAGES[s.stage_index]
+      if (!proj || !stage) return ''
+      const stColor = s.status === 'completed' ? 'var(--green)' : s.status === 'active' ? 'var(--a2)' : 'var(--txt3)'
+      return `<div class="gsr-item" onclick="closeGlobalSearch();openProject('${proj.id}')">
+        <div class="gsr-icon" style="background:var(--bg4);font-size:16px;">${stage.icon}</div>
+        <div>
+          <div class="gsr-title">${stage.name}</div>
+          <div class="gsr-sub">${proj.name} · <span style="color:${stColor}">${s.status === 'completed' ? 'Завершён' : s.status === 'active' ? 'В работе' : 'Ожидает'}</span></div>
+        </div>
+      </div>`
+    }).join('')
+  }
+
+  res.innerHTML = html
+}
+
+// ══════════════════════════════════════════════
+// ACTIVITY FEED
+// ══════════════════════════════════════════════
+async function loadActivityFeed() {
+  const feed = g('activity-feed')
+  if (!feed) return
+
+  if (!_allProjects.length) { feed.innerHTML = '<div class="activity-loading">Нет проектов</div>'; return }
+
+  const ids = _allProjects.map(p => p.id)
+  const { data: hist } = await sb.from('stage_history')
+    .select('*')
+    .in('project_id', ids)
+    .order('created_at', { ascending: false })
+    .limit(60)
+
+  const items = (hist || []).map(h => {
+    const proj = _allProjects.find(p => p.id === h.project_id)
+    const stage = STAGES[h.stage_index]
+    if (!proj || !stage) return null
+    return { ...h, proj, stage }
+  }).filter(Boolean)
+
+  if (!items.length) {
+    feed.innerHTML = '<div class="activity-loading">Активности пока нет — начни работу с этапами проектов</div>'
+    return
+  }
+
+  // Group by date
+  const groups = {}
+  const today = new Date(); today.setHours(0,0,0,0)
+  const yesterday = new Date(today); yesterday.setDate(today.getDate()-1)
+  items.forEach(item => {
+    const d = new Date(item.created_at); d.setHours(0,0,0,0)
+    let label
+    if (d.getTime() === today.getTime()) label = 'Сегодня'
+    else if (d.getTime() === yesterday.getTime()) label = 'Вчера'
+    else label = d.toLocaleDateString('ru-RU', {day:'numeric',month:'long'})
+    if (!groups[label]) groups[label] = []
+    groups[label].push(item)
+  })
+
+  const eventColors = { 'Начат': 'var(--a2)', 'Завершён': 'var(--green)', 'Возвращён в ожидание': 'var(--amber)' }
+  const eventEmoji = { 'Начат': '🔵', 'Завершён': '✅', 'Возвращён в ожидание': '⏳' }
+
+  feed.innerHTML = Object.entries(groups).map(([label, items]) => `
+    <div class="act-day-group">
+      <div class="act-day-label">${label}</div>
+      ${items.map(item => {
+        const col = item.proj.brand_color || '#5b5fc7'
+        const evCol = eventColors[item.event] || 'var(--a2)'
+        const evEmoji = eventEmoji[item.event] || '•'
+        const time = new Date(item.created_at).toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'})
+        return `<div class="act-item">
+          <div class="act-dot-wrap">
+            <div class="act-dot" style="background:${evCol};"></div>
+          </div>
+          <div class="act-body">
+            <div class="act-text">
+              ${evEmoji} <b>${item.stage.name}</b> — ${item.event}
+              <span class="act-project-chip" style="background:${col}18;color:${col};">${item.proj.name}</span>
+            </div>
+            ${item.note ? `<div class="act-meta">💬 ${item.note}</div>` : ''}
+            <div class="act-meta">${time}</div>
+          </div>
+          <button class="act-goto" onclick="openProject('${item.proj.id}')">Открыть →</button>
+        </div>`
+      }).join('')}
+    </div>`).join('')
+}
+
+// ══════════════════════════════════════════════
+// OVERVIEW / SUMMARY
+// ══════════════════════════════════════════════
+async function loadOverview() {
+  const grid = g('overview-grid')
+  if (!grid) return
+  if (!_allProjects.length) { grid.innerHTML = '<div class="activity-loading">Нет проектов</div>'; return }
+
+  const today = new Date(); today.setHours(0,0,0,0)
+
+  // Progress leaderboard
+  const progList = _allProjects.map(p => ({
+    ...p,
+    prog: getProjectProgress(p.id)
+  })).sort((a,b) => b.prog.pct - a.prog.pct)
+
+  // Overdue count
+  const overdueProjs = _allProjects.filter(p => isProjectOverdue(p.id))
+
+  // Stages stats
+  const totalStages = _allProjects.length * 9
+  const completedStages = _allStages.filter(s => s.status === 'completed').length
+  const activeStages = _allStages.filter(s => s.status === 'active').length
+  const globalPct = totalStages ? Math.round(completedStages / totalStages * 100) : 0
+
+  // Next deadlines
+  const allDeadlines = _allStages
+    .filter(s => s.deadline && s.status !== 'completed' && new Date(s.deadline) >= today)
+    .sort((a,b) => new Date(a.deadline) - new Date(b.deadline))
+    .slice(0, 5)
+    .map(s => {
+      const proj = _allProjects.find(p => p.id === s.project_id)
+      const stage = STAGES[s.stage_index]
+      const dl = new Date(s.deadline)
+      const diff = Math.ceil((dl - today) / 86400000)
+      return { ...s, proj, stage, diff }
+    }).filter(s => s.proj && s.stage)
+
+  const MONTHS_SH = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек']
+
+  grid.innerHTML = `
+    <!-- Card 1: Global progress -->
+    <div class="ov-card">
+      <div class="ov-card-title">Общий прогресс агентства</div>
+      <div class="ov-big" style="color:var(--a2);">${globalPct}%</div>
+      <div class="ov-sub">${completedStages} из ${totalStages} этапов завершено · ${activeStages} в работе</div>
+      <div style="margin-top:16px;height:4px;background:var(--bg5);border-radius:4px;overflow:hidden;">
+        <div style="width:${globalPct}%;height:100%;background:var(--a2);border-radius:4px;transition:width 1s ease;"></div>
+      </div>
+      <div style="display:flex;gap:16px;margin-top:14px;">
+        <div><div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--green);">${_allProjects.filter(p=>getProjectProgress(p.id).pct===100).length}</div><div style="font-size:11px;color:var(--txt3);">Завершены</div></div>
+        <div><div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--red);">${overdueProjs.length}</div><div style="font-size:11px;color:var(--txt3);">Просрочены</div></div>
+        <div><div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--cyan);">${_allProjects.length}</div><div style="font-size:11px;color:var(--txt3);">Проектов</div></div>
+      </div>
+    </div>
+
+    <!-- Card 2: Progress leaderboard -->
+    <div class="ov-card">
+      <div class="ov-card-title">Прогресс по проектам</div>
+      <div class="ov-list">
+        ${progList.slice(0,6).map(p => {
+          const col = p.brand_color || '#5b5fc7'
+          const progColor = p.prog.pct >= 80 ? '#4ade80' : p.prog.pct >= 40 ? col : '#f59e0b'
+          return `<div class="ov-progress-row">
+            <div class="ov-prog-hdr">
+              <span class="ov-prog-name" onclick="openProject('${p.id}')">${p.name}</span>
+              <span class="ov-prog-pct" style="color:${progColor};">${p.prog.pct}%</span>
+            </div>
+            <div class="ov-prog-bar">
+              <div class="ov-prog-fill" style="width:${p.prog.pct}%;background:${progColor};"></div>
+            </div>
+          </div>`
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- Card 3: Nearest deadlines -->
+    <div class="ov-card">
+      <div class="ov-card-title">Ближайшие дедлайны</div>
+      ${allDeadlines.length ? `<div class="ov-list">
+        ${allDeadlines.map(s => {
+          const dlColor = s.diff <= 0 ? 'var(--red)' : s.diff <= 3 ? 'var(--amber)' : 'var(--txt2)'
+          const dlText = s.diff === 0 ? 'Сегодня' : s.diff === 1 ? 'Завтра' : `Через ${s.diff}д`
+          const col = s.proj.brand_color || '#5b5fc7'
+          return `<div class="ov-list-item" onclick="openProject('${s.proj.id}')">
+            <div>
+              <div class="ov-list-name">${s.stage.icon} ${s.stage.name}</div>
+              <div class="ov-list-sub" style="color:${col};">● ${s.proj.name}</div>
+            </div>
+            <div class="ov-list-val" style="color:${dlColor};font-size:13px;">${dlText}</div>
+          </div>`
+        }).join('')}
+      </div>` : '<div style="padding:20px;text-align:center;font-family:var(--font-mono);font-size:11px;color:var(--txt3);">Дедлайнов нет 🎉</div>'}
+    </div>
+
+    <!-- Card 4: Overdue projects -->
+    <div class="ov-card">
+      <div class="ov-card-title">Требуют внимания</div>
+      ${overdueProjs.length ? `<div class="ov-list">
+        ${overdueProjs.slice(0,5).map(p => {
+          const col = p.brand_color || '#5b5fc7'
+          const prog = getProjectProgress(p.id)
+          return `<div class="ov-list-item" onclick="openProject('${p.id}')">
+            <div>
+              <div class="ov-list-name">${p.name}</div>
+              <div class="ov-list-sub">⚠️ Просрочен · ${prog.pct}% выполнено</div>
+            </div>
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--red);box-shadow:0 0 6px rgba(248,113,113,.5);"></div>
+          </div>`
+        }).join('')}
+      </div>` : '<div style="padding:20px;text-align:center;font-size:28px;">✅<div style="font-family:var(--font-mono);font-size:11px;color:var(--txt3);margin-top:8px;">Всё в порядке!</div></div>'}
+    </div>
+  `
+}
+
 // Smart back navigation: client → page-client, agency → page-project
 function goBackToProject() {
   window.location.hash = ''
@@ -4802,6 +5251,10 @@ function switchDashTab(tab, btn) {
   btn.classList.add('dt-active')
   g('dtab-projects-panel').style.display = tab === 'projects' ? 'block' : 'none'
   g('dtab-calendar-panel').style.display = tab === 'calendar' ? 'block' : 'none'
+  g('dtab-activity-panel').style.display = tab === 'activity' ? 'block' : 'none'
+  g('dtab-overview-panel').style.display = tab === 'overview' ? 'block' : 'none'
+  if (tab === 'activity') loadActivityFeed()
+  if (tab === 'overview') loadOverview()
 }
 
 // Quick note modal
