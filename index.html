@@ -4775,6 +4775,131 @@ input, select, textarea {
 .dl-empty-sub{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(99,102,241,.35);letter-spacing:.06em}
 </style>
 
+
+<style id="dtr-activity-pro">
+@keyframes actIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes actSlide{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+@keyframes actDotPop{0%{transform:scale(0)}70%{transform:scale(1.3)}100%{transform:scale(1)}}
+@keyframes actLineDraw{from{height:0}to{height:100%}}
+
+/* ── Command bar ── */
+.act-command-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:16px 0 18px;border-bottom:1px solid rgba(99,102,241,.08);margin-bottom:18px;animation:actIn .4s cubic-bezier(.16,1,.3,1) both}
+.act-search-wrap{display:flex;align-items:center;gap:9px;background:rgba(14,14,22,.95);border:1px solid rgba(99,102,241,.12);border-radius:12px;padding:10px 14px;flex:1;min-width:180px;max-width:280px;transition:border-color .2s,box-shadow .2s;color:rgba(99,102,241,.4)}
+.act-search-wrap:focus-within{border-color:rgba(99,102,241,.35);box-shadow:0 0 0 3px rgba(99,102,241,.08)}
+.act-search-inp{background:transparent;border:none;outline:none;font-family:'Inter',sans-serif;font-size:13px;color:#f0eeff;flex:1;min-width:0}
+.act-search-inp::placeholder{color:rgba(99,102,241,.3)}
+.act-proj-wrap{display:flex;align-items:center;gap:8px;background:rgba(14,14,22,.95);border:1px solid rgba(99,102,241,.12);border-radius:12px;padding:10px 14px;color:rgba(99,102,241,.4);transition:border-color .2s}
+.act-proj-wrap:focus-within{border-color:rgba(99,102,241,.35)}
+.act-proj-sel{background:transparent;border:none;outline:none;font-family:'Inter',sans-serif;font-size:13px;color:rgba(161,159,200,.8);cursor:pointer;min-width:120px}
+.act-proj-sel option{background:#0e0e16;color:#f0eeff}
+.act-event-pills{display:flex;align-items:center;gap:4px;background:rgba(14,14,22,.9);border:1px solid rgba(99,102,241,.1);border-radius:12px;padding:5px}
+.act-epill{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;background:transparent;border:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;color:rgba(120,100,255,.45);cursor:pointer;transition:all .18s;white-space:nowrap}
+.act-epill:hover{color:rgba(161,159,200,.8);background:rgba(99,102,241,.08)}
+.act-epill.act-epill-active{background:rgba(99,102,241,.15);color:#f0eeff;box-shadow:inset 0 0 0 1px rgba(99,102,241,.25)}
+.act-epill-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.act-view-toggle{display:flex;gap:3px;background:rgba(14,14,22,.9);border:1px solid rgba(99,102,241,.1);border-radius:10px;padding:4px}
+.act-vbtn{width:32px;height:32px;border-radius:7px;background:transparent;border:none;color:rgba(99,102,241,.4);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s}
+.act-vbtn:hover{background:rgba(99,102,241,.1);color:rgba(161,159,200,.8)}
+.act-vbtn.act-vbtn-active{background:rgba(99,102,241,.18);color:#818cf8;box-shadow:inset 0 0 0 1px rgba(99,102,241,.25)}
+.act-reset-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.18);border-radius:10px;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;color:#f87171;cursor:pointer;transition:all .18s}
+.act-reset-btn:hover{background:rgba(248,113,113,.14);border-color:rgba(248,113,113,.3)}
+
+/* ── Stats strip ── */
+.act-stats-strip{display:flex;align-items:center;background:rgba(14,14,22,.9);border:1px solid rgba(99,102,241,.08);border-radius:16px;padding:0 6px;margin-bottom:24px;overflow:hidden;animation:actIn .5s .05s cubic-bezier(.16,1,.3,1) both}
+.act-stat-item{flex:1;padding:16px 18px;text-align:center;transition:background .18s}
+.act-stat-item:hover{background:rgba(99,102,241,.04)}
+.act-stat-val{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;letter-spacing:-.04em;line-height:1;margin-bottom:4px;font-variant-numeric:tabular-nums}
+.act-stat-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(99,102,241,.4);letter-spacing:.14em;text-transform:uppercase}
+.act-stat-div{width:1px;height:36px;background:rgba(99,102,241,.08);flex-shrink:0}
+
+/* ── Activity feed container ── */
+.activity-feed{max-width:860px}
+.activity-loading{padding:60px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(99,102,241,.35);letter-spacing:.08em}
+
+/* ── TIMELINE VIEW ── */
+.act-day-group{margin-bottom:36px;animation:actSlide .4s cubic-bezier(.16,1,.3,1) both}
+.act-day-group:nth-child(1){animation-delay:.03s}.act-day-group:nth-child(2){animation-delay:.07s}.act-day-group:nth-child(3){animation-delay:.11s}.act-day-group:nth-child(4){animation-delay:.15s}
+.act-day-label{display:flex;align-items:center;gap:12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(99,102,241,.45);letter-spacing:.18em;text-transform:uppercase;padding-bottom:14px;margin-bottom:4px;border-bottom:1px solid rgba(99,102,241,.08)}
+.act-day-count{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.18);border-radius:20px;padding:2px 8px;font-size:9px;color:rgba(99,102,241,.6);letter-spacing:.06em}
+.act-day-date{margin-left:auto;font-size:9px;color:rgba(99,102,241,.3)}
+
+/* ── Timeline item ── */
+.act-item{display:flex;gap:0;margin-bottom:8px;animation:actIn .3s cubic-bezier(.16,1,.3,1) both}
+.act-item:nth-child(1){animation-delay:.02s}.act-item:nth-child(2){animation-delay:.05s}.act-item:nth-child(3){animation-delay:.08s}.act-item:nth-child(4){animation-delay:.11s}.act-item:nth-child(5){animation-delay:.14s}
+
+/* Left timeline column */
+.act-timeline-col{display:flex;flex-direction:column;align-items:center;width:40px;flex-shrink:0;padding-top:4px}
+.act-dot-wrap{position:relative;z-index:1}
+.act-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;animation:actDotPop .4s cubic-bezier(.16,1,.3,1) both}
+.act-connector{width:1.5px;flex:1;min-height:8px;background:rgba(99,102,241,.08);margin:3px 0;border-radius:1px}
+.act-item:last-child .act-connector{display:none}
+
+/* Card */
+.act-card{flex:1;background:rgba(14,14,22,.9);border:1px solid rgba(99,102,241,.07);border-radius:14px;padding:14px 18px;transition:all .22s cubic-bezier(.16,1,.3,1);cursor:pointer;position:relative;overflow:hidden}
+.act-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(99,102,241,.2),transparent);opacity:0;transition:opacity .2s}
+.act-card:hover{border-color:rgba(99,102,241,.22);transform:translateX(6px);box-shadow:0 8px 32px rgba(0,0,0,.3),0 0 20px rgba(99,102,241,.05)}
+.act-card:hover::before{opacity:1}
+.act-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+.act-card-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.act-stage-icon{font-size:16px;flex-shrink:0}
+.act-stage-name{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;color:#f0eeff;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.act-event-badge{display:inline-flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;padding:4px 10px;border-radius:20px;flex-shrink:0}
+.aeb-done{background:rgba(52,211,153,.1);color:#34d399}
+.aeb-start{background:rgba(129,140,248,.1);color:#818cf8}
+.aeb-pending{background:rgba(251,191,36,.1);color:#fbbf24}
+.act-card-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.act-proj-chip{display:inline-flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 10px;border-radius:20px;letter-spacing:.04em;flex-shrink:0}
+.act-proj-chip-dot{width:5px;height:5px;border-radius:50%}
+.act-time-chip{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(99,102,241,.35);display:flex;align-items:center;gap:4px}
+.act-note-row{display:flex;align-items:flex-start;gap:6px;margin-top:6px;padding:8px 10px;background:rgba(99,102,241,.04);border-radius:8px;border-left:2px solid rgba(99,102,241,.2)}
+.act-note-text{font-family:'Inter',sans-serif;font-size:12px;color:rgba(161,159,200,.6);line-height:1.5}
+.act-goto{display:flex;align-items:center;gap:5px;padding:7px 14px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.15);border-radius:9px;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;color:rgba(99,102,241,.7);cursor:pointer;transition:all .18s;white-space:nowrap;flex-shrink:0}
+.act-goto:hover{background:rgba(99,102,241,.16);color:#818cf8;transform:translateX(2px)}
+
+/* ── PROJECT VIEW ── */
+.act-proj-group{margin-bottom:24px;animation:actIn .4s cubic-bezier(.16,1,.3,1) both}
+.act-proj-header{display:flex;align-items:center;gap:12px;padding:14px 18px;background:rgba(14,14,22,.95);border:1px solid rgba(99,102,241,.1);border-radius:14px 14px 0 0;border-bottom:none;cursor:pointer;transition:background .18s}
+.act-proj-header:hover{background:rgba(99,102,241,.05)}
+.act-proj-avatar{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:800;flex-shrink:0}
+.act-proj-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;letter-spacing:-.02em;flex:1}
+.act-proj-badge{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(99,102,241,.5);background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.15);padding:3px 10px;border-radius:20px}
+.act-proj-done-count{font-family:'JetBrains Mono',monospace;font-size:10px;color:#34d399;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);padding:3px 10px;border-radius:20px}
+.act-proj-body{border:1px solid rgba(99,102,241,.08);border-top:none;border-radius:0 0 14px 14px;overflow:hidden}
+.act-proj-row{display:flex;align-items:center;gap:14px;padding:12px 18px;border-bottom:1px solid rgba(99,102,241,.06);background:rgba(10,10,16,.6);transition:background .18s;cursor:pointer}
+.act-proj-row:last-child{border-bottom:none}
+.act-proj-row:hover{background:rgba(99,102,241,.04)}
+.act-proj-row-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.act-proj-row-icon{font-size:14px;flex-shrink:0}
+.act-proj-row-name{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:rgba(240,238,255,.85);flex:1}
+.act-proj-row-badge{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.06em;padding:3px 9px;border-radius:20px;flex-shrink:0}
+.act-proj-row-time{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(99,102,241,.35);flex-shrink:0}
+.act-proj-row-open{width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.15);border-radius:8px;color:rgba(99,102,241,.5);cursor:pointer;transition:all .18s;font-size:12px;flex-shrink:0}
+.act-proj-row-open:hover{background:rgba(99,102,241,.18);color:#818cf8}
+
+/* ── STAGE VIEW ── */
+.act-stage-group{margin-bottom:20px;animation:actIn .4s cubic-bezier(.16,1,.3,1) both}
+.act-stage-header{display:flex;align-items:center;gap:12px;padding:12px 18px;background:rgba(14,14,22,.95);border:1px solid rgba(99,102,241,.1);border-radius:12px 12px 0 0;border-bottom:none}
+.act-stage-header-icon{font-size:18px;flex-shrink:0}
+.act-stage-header-name{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;letter-spacing:-.02em;flex:1}
+.act-stage-header-count{font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(99,102,241,.5);background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.15);padding:2px 8px;border-radius:20px}
+.act-stage-body{border:1px solid rgba(99,102,241,.08);border-top:none;border-radius:0 0 12px 12px;overflow:hidden}
+.act-stage-row{display:flex;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px solid rgba(99,102,241,.05);background:rgba(10,10,16,.6);transition:background .18s;cursor:pointer}
+.act-stage-row:last-child{border-bottom:none}
+.act-stage-row:hover{background:rgba(99,102,241,.04)}
+.act-stage-row-ev{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.06em;padding:2px 8px;border-radius:20px;flex-shrink:0}
+.act-stage-row-proj{display:inline-flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:10px;padding:2px 8px;border-radius:20px;flex:1;min-width:0}
+.act-stage-row-note{font-family:'Inter',sans-serif;font-size:11px;color:rgba(161,159,200,.5);flex:2;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.act-stage-row-time{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(99,102,241,.3);flex-shrink:0}
+.act-stage-row-open{width:26px;height:26px;display:flex;align-items:center;justify-content:center;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.14);border-radius:7px;color:rgba(99,102,241,.5);cursor:pointer;transition:all .18s;font-size:11px;flex-shrink:0}
+.act-stage-row-open:hover{background:rgba(99,102,241,.18);color:#818cf8}
+
+/* ── Empty ── */
+.act-empty{text-align:center;padding:80px 40px;animation:actIn .4s cubic-bezier(.16,1,.3,1) both}
+.act-empty-icon{font-size:40px;margin-bottom:16px;opacity:.4}
+.act-empty-title{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.02em;color:rgba(161,159,200,.6);margin-bottom:8px}
+.act-empty-sub{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(99,102,241,.35);letter-spacing:.06em}
+</style>
+
 </head>
 <body>
 
@@ -5036,8 +5161,79 @@ input, select, textarea {
       <div class="deadline-panel" id="deadline-panel"></div>
     </div>
 
-    <!-- ── TAB: ACTIVITY ── -->
+    <!-- ── TAB: ACTIVITY ── UPGRADED ── -->
     <div id="dtab-activity-panel" style="display:none;">
+
+      <!-- Command Bar -->
+      <div class="act-command-bar">
+        <div class="act-search-wrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input class="act-search-inp" id="act-search" placeholder="Поиск по этапу, проекту, заметке..." oninput="filterActivity()">
+        </div>
+        <div class="act-proj-wrap">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+          <select class="act-proj-sel" id="act-proj-filter" onchange="filterActivity()">
+            <option value="">Все проекты</option>
+          </select>
+        </div>
+        <div class="act-event-pills" id="act-event-pills">
+          <button class="act-epill act-epill-active" data-event="all" onclick="setActEvent('all',this)">Все действия</button>
+          <button class="act-epill" data-event="done" onclick="setActEvent('done',this)">
+            <span class="act-epill-dot" style="background:#34d399;"></span>Завершён
+          </button>
+          <button class="act-epill" data-event="start" onclick="setActEvent('start',this)">
+            <span class="act-epill-dot" style="background:#818cf8;"></span>Начат
+          </button>
+          <button class="act-epill" data-event="pending" onclick="setActEvent('pending',this)">
+            <span class="act-epill-dot" style="background:#fbbf24;"></span>Возврат
+          </button>
+        </div>
+        <div class="act-view-toggle">
+          <button class="act-vbtn act-vbtn-active" id="act-view-timeline" onclick="setActView('timeline',this)" title="Таймлайн">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </button>
+          <button class="act-vbtn" id="act-view-project" onclick="setActView('project',this)" title="По проектам">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          </button>
+          <button class="act-vbtn" id="act-view-stage" onclick="setActView('stage',this)" title="По этапам">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </button>
+        </div>
+        <button class="act-reset-btn" id="act-reset-btn" onclick="resetActFilters()" style="display:none;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          Сбросить
+        </button>
+      </div>
+
+      <!-- Stats Strip -->
+      <div class="act-stats-strip">
+        <div class="act-stat-item">
+          <div class="act-stat-val" id="act-stat-total">—</div>
+          <div class="act-stat-lbl">Всего событий</div>
+        </div>
+        <div class="act-stat-div"></div>
+        <div class="act-stat-item">
+          <div class="act-stat-val" id="act-stat-done" style="color:#34d399;">—</div>
+          <div class="act-stat-lbl">Завершено</div>
+        </div>
+        <div class="act-stat-div"></div>
+        <div class="act-stat-item">
+          <div class="act-stat-val" id="act-stat-started" style="color:#818cf8;">—</div>
+          <div class="act-stat-lbl">Начато</div>
+        </div>
+        <div class="act-stat-div"></div>
+        <div class="act-stat-item">
+          <div class="act-stat-val" id="act-stat-projects" style="color:#22d3ee;">—</div>
+          <div class="act-stat-lbl">Проектов</div>
+        </div>
+        <div class="act-stat-div"></div>
+        <div class="act-stat-item">
+          <div class="act-stat-val" id="act-stat-today" style="color:#fbbf24;">—</div>
+          <div class="act-stat-lbl">Сегодня</div>
+        </div>
+      </div>
+
+      <!-- Feed -->
       <div class="activity-feed" id="activity-feed">
         <div class="activity-loading">Загрузка активности...</div>
       </div>
@@ -12120,6 +12316,310 @@ function renderDeadlinePanel() {
   });
 
   panel.innerHTML = html;
+}
+</script>
+
+<script id="dtr-activity-upgrade-js">
+// ══════════════════════════════════════════════
+// ACTIVITY FEED PRO — Full JS Override
+// ══════════════════════════════════════════════
+var _actEventFilter = 'all';
+var _actViewMode = 'timeline';
+var _actProjDropFilled = false;
+var _actAllItems = [];
+
+function setActEvent(ev, btn) {
+  _actEventFilter = ev;
+  document.querySelectorAll('.act-epill').forEach(function(b){ b.classList.remove('act-epill-active'); });
+  if (btn) btn.classList.add('act-epill-active');
+  renderActivityFeed();
+}
+
+function setActView(view, btn) {
+  _actViewMode = view;
+  document.querySelectorAll('.act-vbtn').forEach(function(b){ b.classList.remove('act-vbtn-active'); });
+  if (btn) btn.classList.add('act-vbtn-active');
+  renderActivityFeed();
+}
+
+function resetActFilters() {
+  _actEventFilter = 'all';
+  _actViewMode = 'timeline';
+  var si = document.getElementById('act-search');
+  var pf = document.getElementById('act-proj-filter');
+  if (si) si.value = '';
+  if (pf) pf.value = '';
+  document.querySelectorAll('.act-epill').forEach(function(b){ b.classList.remove('act-epill-active'); });
+  var ap = document.querySelector('.act-epill[data-event="all"]');
+  if (ap) ap.classList.add('act-epill-active');
+  document.querySelectorAll('.act-vbtn').forEach(function(b){ b.classList.remove('act-vbtn-active'); });
+  var vt = document.getElementById('act-view-timeline');
+  if (vt) vt.classList.add('act-vbtn-active');
+  var rb = document.getElementById('act-reset-btn');
+  if (rb) rb.style.display = 'none';
+  renderActivityFeed();
+}
+
+function filterActivity() {
+  var si = document.getElementById('act-search') ? document.getElementById('act-search').value : '';
+  var pf = document.getElementById('act-proj-filter') ? document.getElementById('act-proj-filter').value : '';
+  var hasFilter = si || pf || _actEventFilter !== 'all';
+  var rb = document.getElementById('act-reset-btn');
+  if (rb) rb.style.display = hasFilter ? 'flex' : 'none';
+  renderActivityFeed();
+}
+
+// Override the original loadActivityFeed
+var _origLoadActivity = typeof loadActivityFeed === 'function' ? loadActivityFeed : null;
+
+async function loadActivityFeed() {
+  var feed = document.getElementById('activity-feed');
+  if (!feed) return;
+
+  if (typeof _allProjects === 'undefined' || !_allProjects.length) {
+    feed.innerHTML = '<div class="activity-loading">\u041d\u0435\u0442 \u043f\u0440\u043e\u0435\u043a\u0442\u043e\u0432</div>';
+    return;
+  }
+
+  var ids = _allProjects.map(function(p){ return p.id; });
+  var result = await sb.from('stage_history')
+    .select('*')
+    .in('project_id', ids)
+    .order('created_at', { ascending: false })
+    .limit(120);
+
+  var hist = result.data || [];
+
+  _actAllItems = hist.map(function(h) {
+    var proj = _allProjects.find(function(p){ return p.id === h.project_id; });
+    var stage = (typeof STAGES !== 'undefined' && STAGES[h.stage_index]) || { name: '\u042d\u0442\u0430\u043f ' + h.stage_index, icon: '\u2022' };
+    if (!proj || !stage) return null;
+    return { h: h, proj: proj, stage: stage };
+  }).filter(Boolean);
+
+  // Fill project dropdown once
+  var pf = document.getElementById('act-proj-filter');
+  if (pf && !_actProjDropFilled) {
+    _actProjDropFilled = true;
+    var seen = {};
+    _actAllItems.forEach(function(item) {
+      if (!seen[item.proj.id]) {
+        seen[item.proj.id] = true;
+        var o = document.createElement('option');
+        o.value = item.proj.id;
+        o.textContent = item.proj.name;
+        pf.appendChild(o);
+      }
+    });
+  }
+
+  renderActivityFeed();
+}
+
+function renderActivityFeed() {
+  var feed = document.getElementById('activity-feed');
+  if (!feed) return;
+  if (!_actAllItems.length) {
+    feed.innerHTML = '<div class="act-empty"><div class="act-empty-icon">\u26a1</div><div class="act-empty-title">\u0410\u043a\u0442\u0438\u0432\u043d\u043e\u0441\u0442\u0438 \u043f\u043e\u043a\u0430 \u043d\u0435\u0442</div><div class="act-empty-sub">\u041d\u0430\u0447\u043d\u0438 \u0440\u0430\u0431\u043e\u0442\u0430\u0442\u044c \u0441 \u044d\u0442\u0430\u043f\u0430\u043c\u0438 \u043f\u0440\u043e\u0435\u043a\u0442\u043e\u0432</div></div>';
+    return;
+  }
+
+  var search = (document.getElementById('act-search') ? document.getElementById('act-search').value : '').toLowerCase().trim();
+  var projId = document.getElementById('act-proj-filter') ? document.getElementById('act-proj-filter').value : '';
+
+  // Filter
+  var filtered = _actAllItems.filter(function(item) {
+    if (search) {
+      var haystack = (item.stage.name + ' ' + item.proj.name + ' ' + (item.h.note || '')).toLowerCase();
+      if (haystack.indexOf(search) === -1) return false;
+    }
+    if (projId && item.proj.id !== projId) return false;
+    if (_actEventFilter === 'done' && item.h.event !== '\u0417\u0430\u0432\u0435\u0440\u0448\u0451\u043d') return false;
+    if (_actEventFilter === 'start' && item.h.event !== '\u041d\u0430\u0447\u0430\u0442') return false;
+    if (_actEventFilter === 'pending' && item.h.event.indexOf('\u043e\u0436\u0438\u0434\u0430') === -1) return false;
+    return true;
+  });
+
+  // Update stats
+  function setS(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+  var today = new Date(); today.setHours(0,0,0,0);
+  var todayCount = filtered.filter(function(item) {
+    var d = new Date(item.h.created_at); d.setHours(0,0,0,0);
+    return d.getTime() === today.getTime();
+  }).length;
+  var doneCount = filtered.filter(function(i){ return i.h.event === '\u0417\u0430\u0432\u0435\u0440\u0448\u0451\u043d'; }).length;
+  var startCount = filtered.filter(function(i){ return i.h.event === '\u041d\u0430\u0447\u0430\u0442'; }).length;
+  var projSet = {};
+  filtered.forEach(function(i){ projSet[i.proj.id] = true; });
+  setS('act-stat-total', filtered.length);
+  setS('act-stat-done', doneCount);
+  setS('act-stat-started', startCount);
+  setS('act-stat-projects', Object.keys(projSet).length);
+  setS('act-stat-today', todayCount);
+
+  if (!filtered.length) {
+    feed.innerHTML = '<div class="act-empty"><div class="act-empty-icon">\ud83d\udd0d</div><div class="act-empty-title">\u041d\u0438\u0447\u0435\u0433\u043e \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043e</div><div class="act-empty-sub">\u0418\u0437\u043c\u0435\u043d\u0438 \u0444\u0438\u043b\u044c\u0442\u0440\u044b</div></div>';
+    return;
+  }
+
+  // ── STAGE VIEW ──
+  if (_actViewMode === 'stage') {
+    var stageMap = {};
+    filtered.forEach(function(item) {
+      var key = item.stage.name;
+      if (!stageMap[key]) stageMap[key] = { stage: item.stage, items: [] };
+      stageMap[key].items.push(item);
+    });
+    var html = '';
+    var gi = 0;
+    Object.values(stageMap).forEach(function(group) {
+      var delay = (gi * 0.06).toFixed(2);
+      gi++;
+      var rowsHtml = '';
+      group.items.forEach(function(item) {
+        var col = item.proj.brand_color || '#6366f1';
+        var evBg = item.h.event === '\u0417\u0430\u0432\u0435\u0440\u0448\u0451\u043d' ? 'rgba(52,211,153,.1)' : item.h.event === '\u041d\u0430\u0447\u0430\u0442' ? 'rgba(129,140,248,.1)' : 'rgba(251,191,36,.1)';
+        var evCol = item.h.event === '\u0417\u0430\u0432\u0435\u0440\u0448\u0451\u043d' ? '#34d399' : item.h.event === '\u041d\u0430\u0447\u0430\u0442' ? '#818cf8' : '#fbbf24';
+        var time = new Date(item.h.created_at).toLocaleString('ru-RU', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+        rowsHtml += '<div class="act-stage-row" onclick="openProject(\'' + item.proj.id + '\')">'
+          + '<div class="act-stage-row-ev" style="background:' + evBg + ';color:' + evCol + ';">' + item.h.event + '</div>'
+          + '<div class="act-stage-row-proj" style="background:' + col + '12;color:' + col + ';"><span style="width:5px;height:5px;border-radius:50%;background:' + col + ';display:inline-block;flex-shrink:0;"></span>' + item.proj.name + '</div>'
+          + '<div class="act-stage-row-note">' + (item.h.note ? '\ud83d\udcac ' + item.h.note : '') + '</div>'
+          + '<div class="act-stage-row-time">' + time + '</div>'
+          + '<button class="act-stage-row-open" onclick="event.stopPropagation();openProject(\'' + item.proj.id + '\')">\u2192</button>'
+          + '</div>';
+      });
+      html += '<div class="act-stage-group" style="animation-delay:' + delay + 's">'
+        + '<div class="act-stage-header">'
+        +   '<div class="act-stage-header-icon">' + group.stage.icon + '</div>'
+        +   '<div class="act-stage-header-name">' + group.stage.name + '</div>'
+        +   '<div class="act-stage-header-count">' + group.items.length + ' \u0441\u043e\u0431\u044b\u0442\u0438\u0439</div>'
+        + '</div>'
+        + '<div class="act-stage-body">' + rowsHtml + '</div>'
+        + '</div>';
+    });
+    feed.innerHTML = html;
+    return;
+  }
+
+  // ── PROJECT VIEW ──
+  if (_actViewMode === 'project') {
+    var projMap = {};
+    filtered.forEach(function(item) {
+      if (!projMap[item.proj.id]) projMap[item.proj.id] = { proj: item.proj, items: [] };
+      projMap[item.proj.id].items.push(item);
+    });
+    var html2 = '';
+    var gi2 = 0;
+    Object.values(projMap).forEach(function(group) {
+      var col = group.proj.brand_color || '#6366f1';
+      var delay = (gi2 * 0.06).toFixed(2);
+      gi2++;
+      var doneC = group.items.filter(function(i){ return i.h.event === '\u0417\u0430\u0432\u0435\u0440\u0448\u0451\u043d'; }).length;
+      var rowsHtml = '';
+      group.items.forEach(function(item) {
+        var evBg = item.h.event === '\u0417\u0430\u0432\u0435\u0440\u0448\u0451\u043d' ? 'rgba(52,211,153,.1)' : item.h.event === '\u041d\u0430\u0447\u0430\u0442' ? 'rgba(129,140,248,.1)' : 'rgba(251,191,36,.1)';
+        var evCol = item.h.event === '\u0417\u0430\u0432\u0435\u0440\u0448\u0451\u043d' ? '#34d399' : item.h.event === '\u041d\u0430\u0447\u0430\u0442' ? '#818cf8' : '#fbbf24';
+        var dotCol = item.h.event === '\u0417\u0430\u0432\u0435\u0440\u0448\u0451\u043d' ? '#34d399' : item.h.event === '\u041d\u0430\u0447\u0430\u0442' ? '#818cf8' : '#fbbf24';
+        var time = new Date(item.h.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        rowsHtml += '<div class="act-proj-row" onclick="openProject(\'' + item.proj.id + '\')">'
+          + '<div class="act-proj-row-dot" style="background:' + dotCol + ';"></div>'
+          + '<div class="act-proj-row-icon">' + item.stage.icon + '</div>'
+          + '<div class="act-proj-row-name">' + item.stage.name + '</div>'
+          + '<div class="act-proj-row-badge" style="background:' + evBg + ';color:' + evCol + ';">' + item.h.event + '</div>'
+          + '<div class="act-proj-row-time">' + time + '</div>'
+          + '<button class="act-proj-row-open" onclick="event.stopPropagation();openProject(\'' + item.proj.id + '\')">\u2192</button>'
+          + '</div>';
+      });
+      html2 += '<div class="act-proj-group" style="animation-delay:' + delay + 's">'
+        + '<div class="act-proj-header" onclick="openProject(\'' + group.proj.id + '\')">'
+        +   '<div class="act-proj-avatar" style="background:' + col + '18;border:1.5px solid ' + col + '44;color:' + col + ';">' + group.proj.name[0] + '</div>'
+        +   '<div class="act-proj-title">' + group.proj.name + '</div>'
+        +   (doneC ? '<div class="act-proj-done-count">' + doneC + ' \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043d\u043e</div>' : '')
+        +   '<div class="act-proj-badge">' + group.items.length + ' \u0441\u043e\u0431\u044b\u0442\u0438\u0439</div>'
+        + '</div>'
+        + '<div class="act-proj-body">' + rowsHtml + '</div>'
+        + '</div>';
+    });
+    feed.innerHTML = html2;
+    return;
+  }
+
+  // ── TIMELINE VIEW (default) ──
+  var groups = {};
+  var todayObj = new Date(); todayObj.setHours(0,0,0,0);
+  var yest = new Date(todayObj); yest.setDate(todayObj.getDate()-1);
+
+  filtered.forEach(function(item) {
+    var d = new Date(item.h.created_at); d.setHours(0,0,0,0);
+    var label;
+    if (d.getTime() === todayObj.getTime()) label = '\u0421\u0435\u0433\u043e\u0434\u043d\u044f';
+    else if (d.getTime() === yest.getTime()) label = '\u0412\u0447\u0435\u0440\u0430';
+    else label = d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+    if (!groups[label]) groups[label] = { items: [], date: d };
+    groups[label].items.push(item);
+  });
+
+  var html3 = '';
+  var gi3 = 0;
+  Object.entries(groups).forEach(function(entry) {
+    var label = entry[0];
+    var grp = entry[1];
+    var delay = (gi3 * 0.07).toFixed(2);
+    gi3++;
+    var dateStr = grp.date.toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' });
+
+    var itemsHtml = '';
+    grp.items.forEach(function(item, ii) {
+      var col = item.proj.brand_color || '#6366f1';
+      var dotColor = item.h.event === '\u0417\u0430\u0432\u0435\u0440\u0448\u0451\u043d' ? '#34d399'
+        : item.h.event === '\u041d\u0430\u0447\u0430\u0442' ? '#818cf8' : '#fbbf24';
+      var evCls = item.h.event === '\u0417\u0430\u0432\u0435\u0440\u0448\u0451\u043d' ? 'aeb-done'
+        : item.h.event === '\u041d\u0430\u0447\u0430\u0442' ? 'aeb-start' : 'aeb-pending';
+      var evEmoji = item.h.event === '\u0417\u0430\u0432\u0435\u0440\u0448\u0451\u043d' ? '\u2705'
+        : item.h.event === '\u041d\u0430\u0447\u0430\u0442' ? '\ud83d\udd35' : '\u23f3';
+      var time = new Date(item.h.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+      var aDelay = (ii * 0.04).toFixed(2);
+
+      itemsHtml += '<div class="act-item" style="animation-delay:' + aDelay + 's">'
+        + '<div class="act-timeline-col">'
+        +   '<div class="act-dot-wrap"><div class="act-dot" style="background:' + dotColor + ';box-shadow:0 0 8px ' + dotColor + '66;"></div></div>'
+        +   '<div class="act-connector"></div>'
+        + '</div>'
+        + '<div class="act-card">'
+        +   '<div class="act-card-head">'
+        +     '<div class="act-card-left">'
+        +       '<span class="act-stage-icon">' + item.stage.icon + '</span>'
+        +       '<span class="act-stage-name">' + item.stage.name + '</span>'
+        +     '</div>'
+        +     '<div class="act-event-badge ' + evCls + '">' + evEmoji + ' ' + item.h.event + '</div>'
+        +   '</div>'
+        +   '<div class="act-card-meta">'
+        +     '<span class="act-proj-chip" style="background:' + col + '12;color:' + col + ';">'
+        +       '<span class="act-proj-chip-dot" style="background:' + col + ';"></span>'
+        +       item.proj.name
+        +     '</span>'
+        +     '<span class="act-time-chip">'
+        +       '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
+        +       time
+        +     '</span>'
+        +   '</div>'
+        +   (item.h.note ? '<div class="act-note-row"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(129,140,248,.4)" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="act-note-text">' + item.h.note + '</span></div>' : '')
+        + '</div>'
+        + '</div>';
+    });
+
+    html3 += '<div class="act-day-group" style="animation-delay:' + delay + 's">'
+      + '<div class="act-day-label">'
+      +   label
+      +   '<span class="act-day-count">' + grp.items.length + '</span>'
+      +   '<span class="act-day-date">' + dateStr + '</span>'
+      + '</div>'
+      + itemsHtml
+      + '</div>';
+  });
+
+  feed.innerHTML = html3;
 }
 </script>
 
