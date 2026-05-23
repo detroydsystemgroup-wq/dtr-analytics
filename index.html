@@ -4291,6 +4291,8 @@ async function afterLogin() {
     showPage('page-dashboard')
     loadProjects()
   }
+  // Handle deep link AFTER login flow completes
+  await handleHashRoute()
 }
 
 // ── PROJECT PAGE TABS ────────────────────────
@@ -4479,8 +4481,6 @@ sb.auth.getSession().then(async ({ data: { session } }) => {
   if (session) {
     currentUser = session.user
     await afterLogin()
-    // Handle deep link after login
-    handleHashRoute()
   }
 })
 
@@ -4491,8 +4491,20 @@ async function handleHashRoute() {
   if (!id) return
   try {
     if (type === 'report') {
+      // For agency: need currentProject set; load report directly
+      const { data: rep } = await sb.from('reports').select('*, projects(*)').eq('id', id).maybeSingle()
+      if (!rep) return
+      if (!currentProject || currentProject.id !== rep.project_id) {
+        await openProject(rep.project_id)
+      }
       await openReport(id)
     } else if (type === 'smm') {
+      const { data: rep } = await sb.from('smm_reports').select('*').eq('id', id).maybeSingle()
+      if (!rep) return
+      if (!currentProject || currentProject.id !== rep.project_id) {
+        // For client: currentProject already set by showClientPortal
+        if (!_isClientCache) await openProject(rep.project_id)
+      }
       await loadAndOpenSMM(id)
     }
   } catch(e) {
@@ -4985,6 +4997,7 @@ async function openReport(id) {
   LABEL_D = r.period_d_label || 'Период 2'
   g('btn-publish').style.display = r.status === 'draft' ? 'flex' : 'none'
   g('back-to-project').onclick = () => goBackToProject()
+
   // Reset file states
   Object.keys(S).forEach(k => delete S[k])
   document.querySelectorAll('.drop').forEach(d => d.classList.remove('done'))
@@ -4992,23 +5005,33 @@ async function openReport(id) {
   g('file-counter').textContent = '0'
   g('go-btn').disabled = true
   g('analytics-wrap').classList.remove('visible')
-  // Reset files section state for new report
-  if (g('files-section')) g('files-section').classList.remove('collapsed')
-  if (g('files-toggle-bar')) g('files-toggle-bar').style.display = 'none'
-  if (g('files-toggle-label')) g('files-toggle-label').textContent = 'Показать файлы'
-  if (g('files-toggle-icon')) g('files-toggle-icon').style.transform = ''
+
+  // Load files BEFORE showing page — so we know whether to hide upload blocks
+  const { data: files } = await sb.from('report_files').select('*').eq('report_id', id)
+  const hasAnalysis = files?.some(f => f.parsed_data)
+
+  // If report already has data — pre-collapse files section before page shows
+  if (hasAnalysis) {
+    if (g('files-section')) g('files-section').classList.add('collapsed')
+    if (g('files-toggle-bar')) g('files-toggle-bar').style.display = 'flex'
+    if (g('files-toggle-label')) g('files-toggle-label').textContent = 'Показать файлы'
+    if (g('files-toggle-icon')) g('files-toggle-icon').style.transform = ''
+  } else {
+    if (g('files-section')) g('files-section').classList.remove('collapsed')
+    if (g('files-toggle-bar')) g('files-toggle-bar').style.display = 'none'
+    if (g('files-toggle-label')) g('files-toggle-label').textContent = 'Показать файлы'
+    if (g('files-toggle-icon')) g('files-toggle-icon').style.transform = ''
+  }
+
   showPage('page-report')
 
-  // Load existing files if report has data
-  const { data: files } = await sb.from('report_files').select('*').eq('report_id', id)
   if (files?.length) {
     files.forEach(f => {
       if (f.parsed_data) {
-        // Map: daily_b -> b1, daily_d -> d1, hourly_b -> b2, etc.
         const map = {daily_b:'b1',daily_d:'d1',hourly_b:'b2',hourly_d:'d2',items_b:'b3',items_d:'d3',types_b:'b4',types_d:'d4',branch_b:'b5',branch_d:'d5'}
         const k = map[f.template_type]
         if (k) {
-          S[k] = f.parsed_data  // Store with short key (b1, d1, etc.)
+          S[k] = f.parsed_data
           if (k === 'b1') { LABEL_B = f.parsed_data.meta?.period_label || buildLabel(f.parsed_data.meta) }
           if (k === 'd1') { LABEL_D = f.parsed_data.meta?.period_label || buildLabel(f.parsed_data.meta) }
           const z = g('z-'+k); if (z) z.classList.add('done')
@@ -5019,8 +5042,8 @@ async function openReport(id) {
     updateCounter()
     if (S['b1'] && S['d1']) {
       g('go-btn').disabled = false
-      // Auto-run analysis when files are loaded from DB
-      setTimeout(() => runAnalysis(), 300)
+      // Run analysis immediately — files already hidden
+      runAnalysis()
     } else {
       restoreFilesCollapseState()
     }
