@@ -1805,6 +1805,89 @@ input[type=file] { display: none; }
 .ov-prog-fill { height: 100%; border-radius: 3px; transition: width .8s cubic-bezier(.4,0,.2,1); }
 @media(max-width:900px) { .overview-grid { grid-template-columns: 1fr; } }
 
+
+/* ══════════════════════════════════════════════
+   SMM LEADERBOARD
+══════════════════════════════════════════════ */
+.smm-lb-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 20px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.smm-lb-metric-pills {
+  display: flex; gap: 6px; flex-wrap: wrap; flex-shrink: 0;
+}
+.slp {
+  padding: 7px 16px; border-radius: 20px;
+  background: var(--bg3); border: 1px solid var(--brd);
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  color: var(--txt3); cursor: pointer; transition: all .18s;
+  letter-spacing: .06em;
+}
+.slp:hover { color: var(--txt2); border-color: var(--brd2); background: var(--bg4); }
+.slp.slp-active { background: var(--a); border-color: var(--a); color: #fff; box-shadow: 0 0 16px rgba(91,95,199,.3); }
+
+.smm-lb-table {
+  background: var(--bg3); border: 1px solid var(--brd);
+  border-radius: var(--r-lg); overflow: hidden;
+}
+.smm-lb-col-hdr {
+  display: grid; grid-template-columns: 48px 1fr 120px 120px 120px 80px;
+  padding: 10px 20px; gap: 12px;
+  background: var(--bg2); border-bottom: 1px solid var(--brd);
+  font-family: var(--font-mono); font-size: 9px; color: var(--txt3);
+  letter-spacing: .14em; text-transform: uppercase; align-items: center;
+}
+.smm-lb-row {
+  display: grid; grid-template-columns: 48px 1fr 120px 120px 120px 80px;
+  padding: 14px 20px; gap: 12px; align-items: center;
+  border-bottom: 1px solid var(--brd); cursor: pointer;
+  transition: background .15s;
+}
+.smm-lb-row:last-child { border-bottom: none; }
+.smm-lb-row:hover { background: var(--bg4); }
+.smm-lb-row.lb-top1 { background: rgba(91,95,199,.06); }
+.smm-lb-row.lb-top2 { background: rgba(91,95,199,.03); }
+.smm-lb-rank {
+  font-family: var(--font-display); font-size: 20px; font-weight: 800;
+  letter-spacing: -.04em; color: var(--txt3); text-align: center;
+}
+.smm-lb-row.lb-top1 .smm-lb-rank { color: var(--amber); }
+.smm-lb-row.lb-top2 .smm-lb-rank { color: var(--txt2); }
+.smm-lb-row.lb-top3 .smm-lb-rank { color: #c47722; }
+.smm-lb-project { display: flex; align-items: center; gap: 12px; }
+.smm-lb-proj-icon {
+  width: 36px; height: 36px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 15px; font-weight: 800;
+  flex-shrink: 0;
+}
+.smm-lb-proj-name { font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: -.01em; }
+.smm-lb-proj-period { font-family: var(--font-mono); font-size: 10px; color: var(--txt3); margin-top: 1px; }
+.smm-lb-metric-val {
+  font-family: var(--font-display); font-size: 20px; font-weight: 800;
+  letter-spacing: -.03em; text-align: center;
+}
+.smm-lb-metric-val.muted { color: var(--txt3); font-size: 14px; }
+.smm-lb-zone { text-align: center; }
+.smm-lb-zone-pill {
+  display: inline-block; font-family: var(--font-mono); font-size: 9px;
+  padding: 3px 9px; border-radius: 20px; font-weight: 600;
+}
+.smm-lb-bar-wrap { display: flex; align-items: center; gap: 8px; }
+.smm-lb-bar-track { flex: 1; height: 4px; background: var(--bg5); border-radius: 3px; overflow: hidden; }
+.smm-lb-bar-fill { height: 100%; border-radius: 3px; transition: width .8s cubic-bezier(.4,0,.2,1); }
+.smm-lb-empty {
+  padding: 48px; text-align: center;
+  font-family: var(--font-mono); font-size: 12px; color: var(--txt3);
+}
+@media(max-width:900px){
+  .smm-lb-col-hdr, .smm-lb-row { grid-template-columns: 40px 1fr 80px 60px; }
+  .smm-lb-col-hdr > *:nth-child(3),
+  .smm-lb-col-hdr > *:nth-child(4),
+  .smm-lb-row > *:nth-child(3),
+  .smm-lb-row > *:nth-child(4) { display: none; }
+}
+
 .tracker-wrap { margin: 32px 0; }
 
 .tracker-progress-card {
@@ -2766,8 +2849,29 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
 
     <!-- ── TAB: OVERVIEW ── -->
     <div id="dtab-overview-panel" style="display:none;">
-      <div class="overview-grid" id="overview-grid">
-        <div class="activity-loading">Загрузка сводки...</div>
+      <!-- SMM Leaderboard -->
+      <div class="smm-lb-header">
+        <div>
+          <div style="font-family:var(--font-display);font-size:20px;font-weight:800;letter-spacing:-.03em;margin-bottom:4px;">Рейтинг проектов по SMM</div>
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--txt3);">По последнему SMM отчёту каждого проекта</div>
+        </div>
+        <div class="smm-lb-metric-pills" id="smm-lb-pills">
+          <button class="slp slp-active" data-metric="er" onclick="setLBMetric('er',this)">ER</button>
+          <button class="slp" data-metric="lr" onclick="setLBMetric('lr',this)">LR</button>
+          <button class="slp" data-metric="tr" onclick="setLBMetric('tr',this)">C/R</button>
+          <button class="slp" data-metric="shr" onclick="setLBMetric('shr',this)">SH/R</button>
+          <button class="slp" data-metric="sr" onclick="setLBMetric('sr',this)">SR</button>
+        </div>
+      </div>
+
+      <div id="smm-leaderboard"></div>
+
+      <!-- Progress overview below -->
+      <div style="margin-top:28px;">
+        <div style="font-family:var(--font-display);font-size:16px;font-weight:700;letter-spacing:-.02em;margin-bottom:16px;color:var(--txt2);">Прогресс по проектам</div>
+        <div class="overview-grid" id="overview-grid">
+          <div class="activity-loading">Загрузка...</div>
+        </div>
       </div>
     </div>
 
@@ -4921,6 +5025,152 @@ async function loadOverview() {
   `
 }
 
+
+// ══════════════════════════════════════════════
+// SMM LEADERBOARD
+// ══════════════════════════════════════════════
+let _lbMetric = 'er'
+let _lbData = []   // [{project, report, metrics}]
+
+async function loadSMMLb() {
+  if (!_allProjects.length) return
+  const ids = _allProjects.map(p => p.id)
+
+  // Load latest SMM report per project
+  const { data: reports } = await sb.from('smm_reports')
+    .select('*')
+    .in('project_id', ids)
+    .order('created_at', { ascending: false })
+
+  // Keep only latest per project
+  const seen = new Set()
+  _lbData = []
+  ;(reports || []).forEach(r => {
+    if (seen.has(r.project_id)) return
+    seen.add(r.project_id)
+    const proj = _allProjects.find(p => p.id === r.project_id)
+    if (!proj) return
+    _lbData.push({ proj, report: r, m: r.metrics || {} })
+  })
+
+  renderSMMLb()
+}
+
+function setLBMetric(metric, btn) {
+  _lbMetric = metric
+  document.querySelectorAll('.slp').forEach(b => b.classList.remove('slp-active'))
+  btn.classList.add('slp-active')
+  renderSMMLb()
+}
+
+function renderSMMLb() {
+  const el = g('smm-leaderboard')
+  if (!el) return
+
+  const METRIC_INFO = {
+    er:  { label:'ER %',   desc:'Вовлечённость',  color:'var(--a2)',    key:'er'  },
+    lr:  { label:'LR %',   desc:'Лайки',           color:'var(--cyan)',  key:'lr'  },
+    tr:  { label:'C/R %',  desc:'Комментарии',     color:'var(--amber)', key:'tr'  },
+    shr: { label:'SH/R %', desc:'Репосты',         color:'var(--pink)',  key:'shr' },
+    sr:  { label:'SR %',   desc:'Сохранения',      color:'var(--green)', key:'sr'  },
+  }
+  const mi = METRIC_INFO[_lbMetric]
+  const bKey = 50000 // default bench
+
+  if (!_lbData.length) {
+    el.innerHTML = `<div class="smm-lb-empty">📊 SMM отчётов пока нет<br><span style="font-size:10px;opacity:.5;margin-top:6px;display:block;">Создайте SMM отчёты в проектах</span></div>`
+    return
+  }
+
+  // Sort by selected metric descending
+  const sorted = [..._lbData]
+    .filter(d => d.m[_lbMetric] != null)
+    .sort((a,b) => (b.m[_lbMetric]||0) - (a.m[_lbMetric]||0))
+
+  const noData = _lbData.filter(d => !d.m[_lbMetric])
+  const maxVal = sorted[0]?.m[_lbMetric] || 1
+  const bench = SMM_BENCHMARKS[bKey]?.[_lbMetric]
+
+  const medals = ['🥇','🥈','🥉']
+
+  const allMetrics = ['er','lr','tr','shr','sr']
+  const otherMetrics = allMetrics.filter(k => k !== _lbMetric)
+
+  el.innerHTML = `
+    <div class="smm-lb-table">
+      <div class="smm-lb-col-hdr">
+        <div>#</div>
+        <div>Проект</div>
+        ${otherMetrics.slice(0,3).map(k => `<div style="text-align:center;">${METRIC_INFO[k].label}</div>`).join('')}
+        <div style="text-align:center;">${mi.label}</div>
+      </div>
+      ${sorted.map((d, i) => {
+        const val = d.m[_lbMetric] || 0
+        const barW = Math.round(val / maxVal * 100)
+        const zone = getSMMZone(val, bench)
+        const zoneCol = getSMMZoneColor(zone)
+        const col = d.proj.brand_color || '#5b5fc7'
+        const rankCls = i===0?'lb-top1':i===1?'lb-top2':i===2?'lb-top3':''
+        const rankIcon = i < 3 ? medals[i] : (i+1)
+
+        return `<div class="smm-lb-row ${rankCls}" onclick="loadAndOpenSMM('${d.report.id}')">
+          <div class="smm-lb-rank">${rankIcon}</div>
+          <div class="smm-lb-project">
+            <div class="smm-lb-proj-icon" style="background:${col}22;border:1px solid ${col}44;color:${col};">${d.proj.name[0]}</div>
+            <div>
+              <div class="smm-lb-proj-name">${d.proj.name}</div>
+              <div class="smm-lb-proj-period">📅 ${d.report.period_label}</div>
+            </div>
+          </div>
+          ${otherMetrics.slice(0,3).map(k => {
+            const v = d.m[k]
+            const z = getSMMZone(v, SMM_BENCHMARKS[bKey]?.[k])
+            const zc = getSMMZoneColor(z)
+            return `<div style="text-align:center;">
+              <span style="font-family:var(--font-mono);font-size:12px;font-weight:600;color:${v ? zc : 'var(--txt3)'};">${v ? v.toFixed(2)+'%' : '—'}</span>
+            </div>`
+          }).join('')}
+          <div style="text-align:center;">
+            <div class="smm-lb-metric-val" style="color:${zoneCol};">${val.toFixed(2)}%</div>
+            <div style="margin-top:4px;height:3px;background:var(--bg5);border-radius:3px;overflow:hidden;width:70px;margin-left:auto;margin-right:auto;">
+              <div style="height:100%;width:${barW}%;background:${mi.color};border-radius:3px;transition:width .8s;"></div>
+            </div>
+            ${zone !== 'none' ? `<div style="margin-top:4px;font-size:10px;">${getSMMZoneEmoji(zone)}</div>` : ''}
+          </div>
+        </div>`
+      }).join('')}
+
+      ${noData.length ? `
+        <div style="padding:10px 20px;border-top:1px solid var(--brd);font-family:var(--font-mono);font-size:10px;color:var(--txt3);">
+          Без данных: ${noData.map(d=>d.proj.name).join(', ')}
+        </div>` : ''}
+    </div>
+
+    ${sorted.length > 1 ? `
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px;">
+      <div class="ov-card" style="text-align:center;">
+        <div class="ov-card-title">Лидер по ${mi.label}</div>
+        <div style="font-size:28px;margin:8px 0;">🏆</div>
+        <div style="font-family:var(--font-display);font-size:18px;font-weight:800;letter-spacing:-.02em;color:var(--txt);">${sorted[0].proj.name}</div>
+        <div style="font-family:var(--font-mono);font-size:16px;font-weight:700;color:${mi.color};margin-top:4px;">${(sorted[0].m[_lbMetric]||0).toFixed(2)}%</div>
+      </div>
+      <div class="ov-card" style="text-align:center;">
+        <div class="ov-card-title">Средний ${mi.label} по агентству</div>
+        <div style="font-family:var(--font-display);font-size:38px;font-weight:800;letter-spacing:-.04em;color:${mi.color};margin:10px 0;">
+          ${(sorted.reduce((s,d)=>s+(d.m[_lbMetric]||0),0)/sorted.length).toFixed(2)}%
+        </div>
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--txt3);">${sorted.length} проектов с данными</div>
+      </div>
+      <div class="ov-card" style="text-align:center;">
+        <div class="ov-card-title">Требует внимания</div>
+        <div style="font-size:28px;margin:8px 0;">📉</div>
+        <div style="font-family:var(--font-display);font-size:18px;font-weight:800;letter-spacing:-.02em;color:var(--txt);">${sorted[sorted.length-1].proj.name}</div>
+        <div style="font-family:var(--font-mono);font-size:16px;font-weight:700;color:var(--red);margin-top:4px;">${(sorted[sorted.length-1].m[_lbMetric]||0).toFixed(2)}%</div>
+      </div>
+    </div>` : ''}
+  `
+}
+
 // Smart back navigation: client → page-client, agency → page-project
 function goBackToProject() {
   window.location.hash = ''
@@ -5265,7 +5515,7 @@ function switchDashTab(tab, btn) {
   g('dtab-activity-panel').style.display = tab === 'activity' ? 'block' : 'none'
   g('dtab-overview-panel').style.display = tab === 'overview' ? 'block' : 'none'
   if (tab === 'activity') loadActivityFeed()
-  if (tab === 'overview') loadOverview()
+  if (tab === 'overview') { loadOverview(); loadSMMLb(); }
 }
 
 // Quick note modal
