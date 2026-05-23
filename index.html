@@ -4379,8 +4379,8 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
         <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(99,102,241,.7);background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:6px;padding:5px 12px;flex-shrink:0;letter-spacing:.06em;">Выбрать</div>
       </div>
       <input type="file" id="proj-photo-file" accept="image/*" style="display:none" onchange="previewProjectPhoto(this)">
-      <div style="margin-top:6px;background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.15);border-radius:8px;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:rgba(165,180,252,.55);line-height:1.6;">
-        ⚡ SQL: <b style="color:rgba(165,180,252,.75);">ALTER TABLE projects ADD COLUMN IF NOT EXISTS photo_url text;</b><br>+ Supabase Storage bucket: <b style="color:rgba(165,180,252,.75);">project-assets</b> (публичный)
+      <div style="margin-top:6px;background:rgba(52,211,153,.05);border:1px solid rgba(52,211,153,.15);border-radius:8px;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:rgba(52,211,153,.6);line-height:1.6;">
+        ⚡ SQL (один раз): <b style="color:rgba(52,211,153,.8);">ALTER TABLE projects ADD COLUMN IF NOT EXISTS photo_url text;</b>
       </div>
     </div>
     <div style="border-top:1px solid var(--brd);padding-top:16px;margin-top:4px;">
@@ -5688,19 +5688,12 @@ async function createProject() {
   let clientUserId = null
 
   // Create project record (even if client signup failed - agency can still see it)
-  // Upload photo if selected
+  // Convert photo to compressed base64 (no Storage needed)
   let photoUrl = null
   const photoFile = document.getElementById('proj-photo-file')?.files?.[0]
   if (photoFile) {
-    try {
-      const ext = photoFile.name.split('.').pop()
-      const path = `project-photos/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`
-      const { error: upErr } = await sb.storage.from('project-assets').upload(path, photoFile, { upsert: true })
-      if (!upErr) {
-        const { data: urlData } = sb.storage.from('project-assets').getPublicUrl(path)
-        photoUrl = urlData?.publicUrl || null
-      }
-    } catch(e) { console.warn('Photo upload failed:', e) }
+    try { photoUrl = await compressImageToBase64(photoFile, 240) }
+    catch(e) { console.warn('Photo compress failed:', e) }
   }
 
   const { data: proj, error } = await sb.from('projects').insert({
@@ -8587,18 +8580,11 @@ async function saveProjectSettings() {
     return
   }
 
-  // Upload photo if new one selected
+  // Convert photo to compressed base64 (no Storage needed)
   let photoUrl = null
   if (_psNewPhotoFile) {
-    try {
-      const ext  = _psNewPhotoFile.name.split('.').pop()
-      const path = `project-photos/${_psProjectId}_${Date.now()}.${ext}`
-      const { error: upErr } = await sb.storage.from('project-assets').upload(path, _psNewPhotoFile, { upsert: true })
-      if (!upErr) {
-        const { data: urlData } = sb.storage.from('project-assets').getPublicUrl(path)
-        photoUrl = urlData?.publicUrl || null
-      }
-    } catch(e) { console.warn('Photo upload failed:', e) }
+    try { photoUrl = await compressImageToBase64(_psNewPhotoFile, 240) }
+    catch(e) { console.warn('Photo compress failed:', e) }
   }
 
   const updates = { name, description: desc, category, brand_color: color }
@@ -8653,6 +8639,31 @@ async function deleteProject(id) {
     alert('Ошибка удаления: ' + error.message)
     if (btn) { btn.disabled = false; btn.textContent = 'Удалить' }
   }
+}
+
+
+// ── Image compress → base64 (Canvas, no Storage required) ──
+function compressImageToBase64(file, maxPx = 240) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onerror = reject
+    reader.onload = e => {
+      const img = new Image()
+      img.onerror = reject
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        const ratio  = Math.min(maxPx / img.width, maxPx / img.height, 1)
+        canvas.width  = Math.round(img.width  * ratio)
+        canvas.height = Math.round(img.height * ratio)
+        const ctx = canvas.getContext('2d')
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+        // JPEG quality 0.82 keeps file small
+        resolve(canvas.toDataURL('image/jpeg', 0.82))
+      }
+      img.src = e.target.result
+    }
+    reader.readAsDataURL(file)
+  })
 }
 
 </script>
