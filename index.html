@@ -614,6 +614,254 @@ body::before {
 }
 
 /* ══════════════════════════════════════════════
+   AGENCY DASHBOARD — новый дизайн
+══════════════════════════════════════════════ */
+
+/* Top row */
+.dash-toprow {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 20px; margin-bottom: 24px;
+}
+.dash-kpi-strip {
+  display: flex; align-items: center; gap: 0;
+  background: var(--bg3); border: 1px solid var(--brd);
+  border-radius: var(--r-lg); padding: 0 4px; flex: 1;
+  overflow: hidden;
+}
+.dks-item {
+  padding: 16px 20px; text-align: center; flex: 1;
+}
+.dks-val {
+  font-family: var(--font-display); font-size: 26px; font-weight: 800;
+  letter-spacing: -.04em; color: var(--txt); line-height: 1;
+  margin-bottom: 4px;
+}
+.dks-lbl {
+  font-family: var(--font-mono); font-size: 9px; color: var(--txt3);
+  letter-spacing: .1em; text-transform: uppercase;
+}
+.dks-div {
+  width: 1px; height: 32px; background: var(--brd); flex-shrink: 0;
+}
+
+/* Tabs */
+.dash-tabs {
+  display: flex; gap: 4px; margin-bottom: 20px;
+  background: var(--bg3); border: 1px solid var(--brd);
+  border-radius: var(--r-md); padding: 4px; width: fit-content;
+}
+.dash-tab {
+  display: flex; align-items: center; gap: 7px;
+  padding: 8px 16px; border-radius: var(--r-sm);
+  background: transparent; border: none;
+  font-family: var(--font-body); font-size: 12px; font-weight: 500;
+  color: var(--txt3); cursor: pointer; transition: all .18s;
+}
+.dash-tab:hover { color: var(--txt2); }
+.dash-tab.dt-active {
+  background: var(--bg5); color: var(--txt);
+  box-shadow: var(--shadow-sm);
+}
+.dash-tab-badge {
+  background: var(--amber); color: #000; font-size: 9px; font-weight: 700;
+  padding: 1px 6px; border-radius: 20px; font-family: var(--font-mono);
+  min-width: 18px; text-align: center; display: none;
+}
+.dash-tab-badge.visible { display: inline-block; }
+
+/* Filters */
+.dash-filters {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
+}
+.dash-search-wrap {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg3); border: 1px solid var(--brd);
+  border-radius: var(--r-sm); padding: 8px 14px;
+  flex: 1; min-width: 200px; max-width: 280px;
+  transition: border-color .18s;
+}
+.dash-search-wrap:focus-within { border-color: var(--a2); }
+.dash-search {
+  background: transparent; border: none; outline: none;
+  font-family: var(--font-body); font-size: 13px; color: var(--txt);
+  width: 100%;
+}
+.dash-search::placeholder { color: var(--txt3); }
+.dash-filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.dfp {
+  padding: 6px 14px; border-radius: 20px;
+  background: var(--bg3); border: 1px solid var(--brd);
+  font-family: var(--font-body); font-size: 12px; font-weight: 500;
+  color: var(--txt3); cursor: pointer; transition: all .18s;
+  white-space: nowrap;
+}
+.dfp:hover { color: var(--txt2); border-color: var(--brd2); }
+.dfp.dfp-active { background: var(--a); border-color: var(--a); color: #fff; }
+.dash-sort {
+  background: var(--bg3); border: 1px solid var(--brd);
+  border-radius: var(--r-sm); padding: 7px 12px;
+  font-family: var(--font-mono); font-size: 11px; color: var(--txt2);
+  outline: none; cursor: pointer;
+}
+
+/* Category tags row */
+.dash-tags-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; min-height: 4px; }
+.dash-cat-tag {
+  padding: 4px 12px; border-radius: 20px; font-family: var(--font-mono);
+  font-size: 10px; border: 1px solid var(--brd); background: var(--bg3);
+  color: var(--txt3); cursor: pointer; transition: all .15s;
+}
+.dash-cat-tag:hover { border-color: var(--brd2); color: var(--txt2); }
+.dash-cat-tag.active { background: rgba(91,95,199,.15); border-color: var(--a2); color: var(--a2); }
+
+/* Projects grid — new card design */
+.projects-grid-new {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.pcard {
+  background: var(--bg3); border: 1px solid var(--brd);
+  border-radius: var(--r-lg); padding: 0;
+  cursor: pointer; transition: all .22s cubic-bezier(.16,1,.3,1);
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.pcard:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--brd2); }
+.pcard.pc-overdue { border-color: rgba(248,113,113,.3); }
+.pcard.pc-overdue:hover { border-color: rgba(248,113,113,.5); }
+
+/* Color stripe top */
+.pcard-stripe { height: 3px; width: 100%; flex-shrink: 0; }
+
+.pcard-body { padding: 20px; flex: 1; }
+
+.pcard-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.pcard-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 16px; font-weight: 800;
+  flex-shrink: 0;
+}
+.pcard-name {
+  font-family: var(--font-display); font-size: 15px; font-weight: 700;
+  letter-spacing: -.02em; color: var(--txt); line-height: 1.2;
+}
+.pcard-desc {
+  font-size: 11px; color: var(--txt3); margin-top: 2px;
+  display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* Progress bar */
+.pcard-prog-wrap { margin-bottom: 14px; }
+.pcard-prog-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 6px;
+}
+.pcard-prog-lbl { font-family: var(--font-mono); font-size: 9px; color: var(--txt3); letter-spacing: .1em; }
+.pcard-prog-pct { font-family: var(--font-mono); font-size: 11px; font-weight: 600; }
+.pcard-bar-track {
+  height: 4px; background: var(--bg5); border-radius: 4px; overflow: hidden;
+}
+.pcard-bar-fill {
+  height: 100%; border-radius: 4px;
+  transition: width .8s cubic-bezier(.4,0,.2,1);
+}
+
+/* Status note */
+.pcard-note {
+  font-size: 11px; color: var(--txt2); background: var(--bg4);
+  border-radius: var(--r-xs); padding: 7px 10px;
+  margin-bottom: 12px; line-height: 1.5;
+  border-left: 2px solid var(--brd2);
+  display: none;
+}
+.pcard-note.visible { display: block; }
+
+/* Meta row */
+.pcard-meta {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 6px;
+}
+.pcard-chips { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; }
+.pcard-chip {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: .06em;
+  padding: 2px 8px; border-radius: 20px;
+}
+.pcc-green { background: rgba(74,222,128,.08); color: var(--green); }
+.pcc-red { background: rgba(248,113,113,.08); color: var(--red); }
+.pcc-amber { background: rgba(245,158,11,.08); color: var(--amber); }
+.pcc-cyan { background: rgba(56,189,248,.08); color: var(--cyan); }
+.pcc-purple { background: rgba(91,95,199,.1); color: var(--a2); }
+
+/* Footer actions */
+.pcard-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 20px; border-top: 1px solid var(--brd);
+  background: var(--bg2);
+}
+.pcard-actions { display: flex; gap: 4px; }
+.pcard-action-btn {
+  width: 30px; height: 30px; border-radius: var(--r-xs);
+  background: transparent; border: 1px solid var(--brd);
+  color: var(--txt3); cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+  transition: all .15s; font-size: 13px;
+}
+.pcard-action-btn:hover { background: var(--bg4); border-color: var(--brd2); color: var(--txt2); }
+.pcard-last-update {
+  font-family: var(--font-mono); font-size: 9px; color: var(--txt3);
+}
+
+/* DEADLINE PANEL */
+.deadline-panel { display: flex; flex-direction: column; gap: 0; }
+.dl-week-group { margin-bottom: 28px; }
+.dl-week-title {
+  font-family: var(--font-mono); font-size: 10px; color: var(--txt3);
+  letter-spacing: .14em; text-transform: uppercase;
+  padding: 0 0 10px; margin-bottom: 2px;
+  border-bottom: 1px solid var(--brd);
+}
+.dl-item {
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 0; border-bottom: 1px solid var(--brd);
+  transition: background .15s;
+}
+.dl-item:last-child { border-bottom: none; }
+.dl-date-col { width: 80px; flex-shrink: 0; text-align: center; }
+.dl-date-day { font-family: var(--font-display); font-size: 24px; font-weight: 800; line-height: 1; letter-spacing: -.04em; }
+.dl-date-mon { font-family: var(--font-mono); font-size: 9px; color: var(--txt3); letter-spacing: .1em; text-transform: uppercase; }
+.dl-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dl-dot.overdue { background: var(--red); box-shadow: 0 0 6px rgba(248,113,113,.5); }
+.dl-dot.today { background: var(--amber); box-shadow: 0 0 6px rgba(245,158,11,.5); animation: pulse 2s infinite; }
+.dl-dot.soon { background: var(--green); }
+.dl-dot.future { background: var(--txt3); }
+.dl-info { flex: 1; }
+.dl-stage { font-size: 13px; font-weight: 600; color: var(--txt); margin-bottom: 2px; }
+.dl-project { font-family: var(--font-mono); font-size: 10px; color: var(--txt3); }
+.dl-status-badge { font-family: var(--font-mono); font-size: 10px; padding: 3px 10px; border-radius: 20px; }
+.dl-goto {
+  padding: 6px 12px; border-radius: var(--r-xs);
+  background: var(--bg4); border: 1px solid var(--brd);
+  font-size: 11px; color: var(--txt3); cursor: pointer; transition: all .15s;
+  white-space: nowrap;
+}
+.dl-goto:hover { color: var(--txt); border-color: var(--brd2); }
+.dl-empty {
+  text-align: center; padding: 60px 40px; color: var(--txt3);
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em;
+}
+
+@media(max-width:900px) {
+  .projects-grid-new { grid-template-columns: 1fr; }
+  .dash-toprow { flex-direction: column; align-items: stretch; }
+  .dash-kpi-strip { overflow-x: auto; }
+  .dks-item { padding: 12px 16px; }
+}
+
+
+/* ══════════════════════════════════════════════
    UPLOAD BLOCKS — Clean template cards
 ══════════════════════════════════════════════ */
 .upload-grid {
@@ -2073,10 +2321,8 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
 <div class="page" id="page-dashboard">
   <header class="app-header">
     <div class="header-logo">
-      <div>
-        <div style="font-family:Manrope,sans-serif;font-size:10px;color:var(--txt3);letter-spacing:.12em;text-transform:uppercase;">DTR Analytics</div>
-        <div class="header-wordmark">Dashboard</div>
-      </div>
+      <div style="font-family:Manrope,sans-serif;font-size:10px;color:var(--txt3);letter-spacing:.12em;text-transform:uppercase;">DTR Analytics</div>
+      <div class="header-wordmark">Agency Hub</div>
     </div>
     <div class="header-right">
       <div class="user-pill">
@@ -2086,20 +2332,110 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
       <button class="logout-btn" onclick="doLogout()">Выйти</button>
     </div>
   </header>
+
   <div class="app-main">
-    <div class="dash-header">
-      <div class="dash-title">Проекты</div>
-      <button class="btn-primary agency-only" style="width:auto;padding:11px 22px;" onclick="openCreateProject()">
+
+    <!-- ── TOP ROW: stats + new project ── -->
+    <div class="dash-toprow">
+      <div class="dash-kpi-strip">
+        <div class="dks-item">
+          <div class="dks-val" id="stat-total">0</div>
+          <div class="dks-lbl">Проектов</div>
+        </div>
+        <div class="dks-div"></div>
+        <div class="dks-item">
+          <div class="dks-val" style="color:var(--green)" id="stat-active">0</div>
+          <div class="dks-lbl">Активных</div>
+        </div>
+        <div class="dks-div"></div>
+        <div class="dks-item">
+          <div class="dks-val" style="color:var(--amber)" id="stat-overdue">0</div>
+          <div class="dks-lbl">Просрочено</div>
+        </div>
+        <div class="dks-div"></div>
+        <div class="dks-item">
+          <div class="dks-val" style="color:var(--cyan)" id="stat-reports">0</div>
+          <div class="dks-lbl">Отчётов</div>
+        </div>
+        <div class="dks-div"></div>
+        <div class="dks-item">
+          <div class="dks-val" style="color:var(--pink)" id="stat-deadlines-week">0</div>
+          <div class="dks-lbl">Дедлайнов на неделе</div>
+        </div>
+      </div>
+      <button class="btn-primary" style="width:auto;padding:11px 22px;flex-shrink:0;" onclick="openCreateProject()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Новый проект
       </button>
     </div>
-    <div class="stats-row">
-      <div class="stat-card"><div class="stat-label">Всего проектов</div><div class="stat-val" style="color:var(--a2)" id="stat-total">0</div></div>
-      <div class="stat-card"><div class="stat-label">Активных</div><div class="stat-val" style="color:var(--green)" id="stat-active">0</div></div>
-      <div class="stat-card"><div class="stat-label">Отчётов</div><div class="stat-val" style="color:var(--cyan)" id="stat-reports">0</div></div>
+
+    <!-- ── TABS ── -->
+    <div class="dash-tabs">
+      <button class="dash-tab dt-active" id="dtab-projects" onclick="switchDashTab('projects',this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        Проекты
+      </button>
+      <button class="dash-tab" id="dtab-calendar" onclick="switchDashTab('calendar',this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Дедлайны
+        <span class="dash-tab-badge" id="dtab-badge-cal">0</span>
+      </button>
     </div>
-    <div id="projects-grid" class="projects-grid"></div>
+
+    <!-- ── TAB: PROJECTS ── -->
+    <div id="dtab-projects-panel">
+
+      <!-- Filters + search -->
+      <div class="dash-filters">
+        <div class="dash-search-wrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input class="dash-search" id="dash-search" placeholder="Поиск проекта..." oninput="filterProjects()">
+        </div>
+        <div class="dash-filter-pills">
+          <button class="dfp dfp-active" data-filter="all" onclick="setProjectFilter('all',this)">Все</button>
+          <button class="dfp" data-filter="active" onclick="setProjectFilter('active',this)">Активные</button>
+          <button class="dfp" data-filter="overdue" onclick="setProjectFilter('overdue',this)">Просрочены</button>
+          <button class="dfp" data-filter="done" onclick="setProjectFilter('done',this)">Завершены</button>
+        </div>
+        <div class="dash-sort-wrap">
+          <select class="dash-sort" id="dash-sort" onchange="filterProjects()">
+            <option value="updated">По активности</option>
+            <option value="name">По имени</option>
+            <option value="progress">По прогрессу</option>
+            <option value="deadline">По дедлайну</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Category tags -->
+      <div class="dash-tags-row" id="dash-tags-row"></div>
+
+      <!-- Projects grid -->
+      <div id="projects-grid" class="projects-grid-new"></div>
+
+    </div>
+
+    <!-- ── TAB: CALENDAR / DEADLINES ── -->
+    <div id="dtab-calendar-panel" style="display:none;">
+      <div class="deadline-panel" id="deadline-panel"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL: Quick note -->
+<div class="modal-overlay" id="modal-quicknote">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-title">💬 Статус проекта</div>
+    <div style="font-size:13px;color:var(--txt2);margin-bottom:14px;" id="qn-project-name">—</div>
+    <div class="field">
+      <label>Заметка / статус</label>
+      <input type="text" id="qn-text" placeholder="Ждём материалы от клиента..." maxlength="120">
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-quicknote')">Отмена</button>
+      <button class="btn-primary" style="flex:1;" onclick="saveQuickNote()">Сохранить</button>
+    </div>
   </div>
 </div>
 
@@ -3511,6 +3847,10 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 // !! Вставь свой Anthropic API ключ (https://console.anthropic.com)
 const ANTHROPIC_KEY = '' // <-- сюда вставить sk-ant-...
 // Agency domain: клиентские логины превращаются в email вида login@dtr.agency
+// SQL: добавь колонки в projects если их нет:
+// ALTER TABLE projects ADD COLUMN IF NOT EXISTS quick_note text DEFAULT '';
+// ALTER TABLE projects ADD COLUMN IF NOT EXISTS category text DEFAULT '';
+// ALTER TABLE projects ADD COLUMN IF NOT EXISTS updated_at timestamptz DEFAULT now();
 const AGENCY_DOMAIN = 'dtr.agency'
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
@@ -3723,40 +4063,313 @@ sb.auth.getSession().then(({ data: { session } }) => {
 // ══════════════════════════════════════════════
 // PROJECTS
 // ══════════════════════════════════════════════
+// ── DASHBOARD STATE ──────────────────────────
+let _allProjects = []
+let _allStages = []
+let _projectFilter = 'all'
+let _activeCatTag = null
+
 async function loadProjects() {
-  const { data } = await sb.from('projects')
+  const { data: projects } = await sb.from('projects')
     .select('*')
     .eq('agency_id', currentUser.id)
     .order('created_at', { ascending: false })
+  _allProjects = projects || []
 
-  const projects = data || []
-  set('stat-total', projects.length)
-  set('stat-active', projects.filter(p => p.status === 'active').length)
+  // Load all stages for all projects at once
+  if (_allProjects.length) {
+    const ids = _allProjects.map(p => p.id)
+    const { data: stages } = await sb.from('project_stages')
+      .select('*')
+      .in('project_id', ids)
+    _allStages = stages || []
 
-  // Count total reports
-  let totalReports = 0
-  if (projects.length) {
-    const { count } = await sb.from('reports').select('*', { count: 'exact', head: true }).in('project_id', projects.map(p => p.id))
-    totalReports = count || 0
+    const { count: repCount } = await sb.from('reports')
+      .select('*', { count: 'exact', head: true })
+      .in('project_id', ids)
+    set('stat-reports', repCount || 0)
+  } else {
+    set('stat-reports', 0)
   }
-  set('stat-reports', totalReports)
 
+  // Compute stats
+  const today = new Date(); today.setHours(0,0,0,0)
+  const weekEnd = new Date(today); weekEnd.setDate(today.getDate() + 7)
+
+  let overdueCount = 0, deadlinesWeek = 0
+  _allProjects.forEach(p => {
+    const pStages = _allStages.filter(s => s.project_id === p.id)
+    const overdue = pStages.some(s => s.status !== 'completed' && s.deadline && new Date(s.deadline) < today)
+    if (overdue) overdueCount++
+    const soon = pStages.filter(s => s.status !== 'completed' && s.deadline && new Date(s.deadline) >= today && new Date(s.deadline) <= weekEnd)
+    deadlinesWeek += soon.length
+  })
+
+  set('stat-total', _allProjects.length)
+  set('stat-active', _allProjects.filter(p => p.status !== 'archived').length)
+  set('stat-overdue', overdueCount)
+  set('stat-deadlines-week', deadlinesWeek)
+
+  // Badge on tab
+  const badge = g('dtab-badge-cal')
+  if (badge) {
+    badge.textContent = deadlinesWeek
+    badge.classList.toggle('visible', deadlinesWeek > 0)
+  }
+
+  renderProjectGrid()
+  renderDeadlinePanel()
+  renderCategoryTags()
+}
+
+function getProjectProgress(projectId) {
+  const stages = _allStages.filter(s => s.project_id === projectId)
+  const completed = stages.filter(s => s.status === 'completed').length
+  return { completed, total: 9, pct: Math.round((completed / 9) * 100) }
+}
+
+function isProjectOverdue(projectId) {
+  const today = new Date(); today.setHours(0,0,0,0)
+  return _allStages.some(s => s.project_id === projectId && s.status !== 'completed' && s.deadline && new Date(s.deadline) < today)
+}
+
+function getNextDeadline(projectId) {
+  const today = new Date(); today.setHours(0,0,0,0)
+  const upcoming = _allStages
+    .filter(s => s.project_id === projectId && s.status !== 'completed' && s.deadline)
+    .sort((a,b) => new Date(a.deadline) - new Date(b.deadline))
+  return upcoming[0] || null
+}
+
+function renderCategoryTags() {
+  const row = g('dash-tags-row')
+  if (!row) return
+  const tags = new Set()
+  _allProjects.forEach(p => { if (p.category) p.category.split(',').forEach(t => tags.add(t.trim())) })
+  if (!tags.size) { row.innerHTML = ''; return }
+  row.innerHTML = [...tags].map(t =>
+    `<button class="dash-cat-tag${_activeCatTag===t?' active':''}" onclick="setCatFilter('${t}')">${t}</button>`
+  ).join('')
+}
+
+function setCatFilter(tag) {
+  _activeCatTag = _activeCatTag === tag ? null : tag
+  renderCategoryTags()
+  renderProjectGrid()
+}
+
+function setProjectFilter(f, btn) {
+  _projectFilter = f
+  document.querySelectorAll('.dfp').forEach(b => b.classList.remove('dfp-active'))
+  btn.classList.add('dfp-active')
+  renderProjectGrid()
+}
+
+function filterProjects() { renderProjectGrid() }
+
+function renderProjectGrid() {
   const grid = g('projects-grid')
-  if (!projects.length) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:span 3;"><div class="empty-icon">🚀</div><div class="empty-title">Нет проектов</div><div class="empty-sub">Создай первый проект для клиента</div></div>`
+  if (!grid) return
+  const search = (g('dash-search')?.value || '').toLowerCase().trim()
+  const sort = g('dash-sort')?.value || 'updated'
+  const today = new Date(); today.setHours(0,0,0,0)
+
+  let list = _allProjects.filter(p => {
+    if (search && !p.name.toLowerCase().includes(search) && !(p.description||'').toLowerCase().includes(search)) return false
+    if (_activeCatTag && !(p.category||'').includes(_activeCatTag)) return false
+    if (_projectFilter === 'active') return p.status !== 'archived'
+    if (_projectFilter === 'done') return getProjectProgress(p.id).pct === 100
+    if (_projectFilter === 'overdue') return isProjectOverdue(p.id)
+    return true
+  })
+
+  // Sort
+  list = list.sort((a,b) => {
+    if (sort === 'name') return a.name.localeCompare(b.name)
+    if (sort === 'progress') return getProjectProgress(b.id).pct - getProjectProgress(a.id).pct
+    if (sort === 'deadline') {
+      const da = getNextDeadline(a.id)?.deadline || '9999'
+      const db = getNextDeadline(b.id)?.deadline || '9999'
+      return da < db ? -1 : 1
+    }
+    return new Date(b.updated_at||b.created_at) - new Date(a.updated_at||a.created_at)
+  })
+
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:span 3;">
+      <div class="empty-icon">🔍</div>
+      <div class="empty-title">Ничего не найдено</div>
+      <div class="empty-sub">Попробуй изменить фильтры или поиск</div>
+    </div>`
     return
   }
 
-  grid.innerHTML = projects.map(p => `
-    <div class="project-card" onclick="openProject('${p.id}')">
-      <div class="project-icon" style="background:${p.brand_color}22;border:1px solid ${p.brand_color}44;color:${p.brand_color};">${p.name[0]}</div>
-      <div class="project-name">${p.name}</div>
-      <div class="project-desc">${p.description || 'Нет описания'}</div>
-      <div class="project-meta">
-        <span>${new Date(p.created_at).toLocaleDateString('ru-RU')}</span>
-        <span class="badge-active">Активный</span>
+  const MONTHS_SH = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек']
+
+  grid.innerHTML = list.map(p => {
+    const { pct, completed } = getProjectProgress(p.id)
+    const overdue = isProjectOverdue(p.id)
+    const next = getNextDeadline(p.id)
+    const col = p.brand_color || '#5b5fc7'
+    const hasNote = !!p.quick_note
+
+    // Progress color
+    const progColor = pct >= 80 ? '#4ade80' : pct >= 40 ? '#5b5fc7' : '#f59e0b'
+
+    // Deadline chip
+    let deadlineHtml = ''
+    if (next) {
+      const dl = new Date(next.deadline)
+      const diffDays = Math.ceil((dl - today) / 86400000)
+      const dlLabel = diffDays < 0 ? `просрочено ${Math.abs(diffDays)}д` : diffDays === 0 ? 'сегодня' : `через ${diffDays}д`
+      const dlCls = diffDays < 0 ? 'pcc-red' : diffDays <= 3 ? 'pcc-amber' : 'pcc-cyan'
+      deadlineHtml = `<span class="pcard-chip ${dlCls}">📅 ${dlLabel}</span>`
+    }
+
+    // Category
+    const catHtml = p.category ? p.category.split(',').slice(0,2).map(t =>
+      `<span class="pcard-chip pcc-purple">${t.trim()}</span>`
+    ).join('') : ''
+
+    // Last update
+    const upd = new Date(p.updated_at || p.created_at)
+    const updStr = upd.toLocaleDateString('ru-RU', {day:'numeric', month:'short'})
+
+    return `<div class="pcard${overdue?' pc-overdue':''}" onclick="openProject('${p.id}')">
+      <div class="pcard-stripe" style="background:${col};"></div>
+      <div class="pcard-body">
+        <div class="pcard-head">
+          <div class="pcard-icon" style="background:${col}22;border:1px solid ${col}44;color:${col};">${p.name[0]}</div>
+          <div>
+            <div class="pcard-name">${p.name}</div>
+            <div class="pcard-desc">${p.description || 'Нет описания'}</div>
+          </div>
+        </div>
+
+        <div class="pcard-prog-wrap">
+          <div class="pcard-prog-hdr">
+            <span class="pcard-prog-lbl">Прогресс · ${completed}/9 этапов</span>
+            <span class="pcard-prog-pct" style="color:${progColor}">${pct}%</span>
+          </div>
+          <div class="pcard-bar-track">
+            <div class="pcard-bar-fill" style="width:${pct}%;background:${progColor};"></div>
+          </div>
+        </div>
+
+        ${hasNote ? `<div class="pcard-note visible">💬 ${p.quick_note}</div>` : ''}
+
+        <div class="pcard-meta">
+          <div class="pcard-chips">
+            ${overdue ? '<span class="pcard-chip pcc-red">⚠️ Просрочен</span>' : pct===100 ? '<span class="pcard-chip pcc-green">✅ Готов</span>' : '<span class="pcard-chip pcc-green">● Активный</span>'}
+            ${deadlineHtml}
+            ${catHtml}
+          </div>
+        </div>
       </div>
+
+      <div class="pcard-footer" onclick="event.stopPropagation()">
+        <div class="pcard-last-update">Обновлён ${updStr}</div>
+        <div class="pcard-actions">
+          <button class="pcard-action-btn" title="Статус / заметка" onclick="openQuickNote('${p.id}','${p.name.replace(/'/g,"\'")}','${(p.quick_note||'').replace(/'/g,"\'")}')" >💬</button>
+          <button class="pcard-action-btn" title="Открыть проект" onclick="openProject('${p.id}')">→</button>
+        </div>
+      </div>
+    </div>`
+  }).join('')
+}
+
+function renderDeadlinePanel() {
+  const panel = g('deadline-panel')
+  if (!panel) return
+  const today = new Date(); today.setHours(0,0,0,0)
+  const MONTHS_SH = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек']
+  const DAYS_RU = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб']
+
+  // Collect all stages with deadlines
+  const items = []
+  _allStages.forEach(s => {
+    if (!s.deadline) return
+    const proj = _allProjects.find(p => p.id === s.project_id)
+    if (!proj) return
+    const stageObj = STAGES[s.stage_index] || { name: 'Этап ' + s.stage_index, icon: '•' }
+    items.push({
+      date: new Date(s.deadline),
+      stageName: stageObj.name,
+      projectName: proj.name,
+      projectId: proj.id,
+      projectColor: proj.brand_color || '#5b5fc7',
+      status: s.status,
+      diffDays: Math.ceil((new Date(s.deadline) - today) / 86400000)
+    })
+  })
+  items.sort((a,b) => a.date - b.date)
+
+  if (!items.length) {
+    panel.innerHTML = '<div class="dl-empty">📅 Дедлайнов пока нет<br><span style="opacity:.5;font-size:10px;margin-top:6px;display:block;">Добавь дедлайны к этапам проектов</span></div>'
+    return
+  }
+
+  // Group by: overdue, today, this week, next week, later
+  const groups = [
+    { key: 'overdue', label: '🔴 Просрочено', items: items.filter(i => i.diffDays < 0 && i.status !== 'completed') },
+    { key: 'today', label: '🟡 Сегодня', items: items.filter(i => i.diffDays === 0 && i.status !== 'completed') },
+    { key: 'week', label: '📅 На этой неделе', items: items.filter(i => i.diffDays > 0 && i.diffDays <= 7 && i.status !== 'completed') },
+    { key: 'later', label: '🗓 Позже', items: items.filter(i => i.diffDays > 7 && i.status !== 'completed') },
+    { key: 'done', label: '✅ Выполнено', items: items.filter(i => i.status === 'completed') },
+  ].filter(g => g.items.length)
+
+  panel.innerHTML = groups.map(gr => `
+    <div class="dl-week-group">
+      <div class="dl-week-title">${gr.label} · ${gr.items.length}</div>
+      ${gr.items.map(it => {
+        const dotCls = it.diffDays < 0 ? 'overdue' : it.diffDays === 0 ? 'today' : it.diffDays <= 7 ? 'soon' : 'future'
+        const statusBadge = it.status === 'completed'
+          ? '<span class="dl-status-badge pcc-green">Выполнен</span>'
+          : it.status === 'active'
+          ? '<span class="dl-status-badge pcc-cyan">В работе</span>'
+          : '<span class="dl-status-badge pcc-amber">Ожидает</span>'
+        return `<div class="dl-item">
+          <div class="dl-date-col">
+            <div class="dl-date-day" style="color:${it.diffDays<0?'var(--red)':it.diffDays===0?'var(--amber)':'var(--txt)'};">${it.date.getDate()}</div>
+            <div class="dl-date-mon">${MONTHS_SH[it.date.getMonth()]} · ${DAYS_RU[it.date.getDay()]}</div>
+          </div>
+          <div class="dl-dot ${dotCls}"></div>
+          <div class="dl-info">
+            <div class="dl-stage">${it.stageName}</div>
+            <div class="dl-project" style="color:${it.projectColor};">● ${it.projectName}</div>
+          </div>
+          ${statusBadge}
+          <button class="dl-goto" onclick="openProject('${it.projectId}')">Открыть →</button>
+        </div>`
+      }).join('')}
     </div>`).join('')
+}
+
+function switchDashTab(tab, btn) {
+  document.querySelectorAll('.dash-tab').forEach(b => b.classList.remove('dt-active'))
+  btn.classList.add('dt-active')
+  g('dtab-projects-panel').style.display = tab === 'projects' ? 'block' : 'none'
+  g('dtab-calendar-panel').style.display = tab === 'calendar' ? 'block' : 'none'
+}
+
+// Quick note modal
+let _qnProjectId = null
+function openQuickNote(id, name, currentNote) {
+  _qnProjectId = id
+  if (g('qn-project-name')) g('qn-project-name').textContent = name
+  if (g('qn-text')) g('qn-text').value = currentNote || ''
+  g('modal-quicknote').classList.add('open')
+  setTimeout(() => g('qn-text').focus(), 50)
+}
+async function saveQuickNote() {
+  if (!_qnProjectId) return
+  const note = (g('qn-text')?.value || '').trim()
+  await sb.from('projects').update({ quick_note: note }).eq('id', _qnProjectId)
+  // Update local cache
+  const p = _allProjects.find(x => x.id === _qnProjectId)
+  if (p) p.quick_note = note
+  closeModal('modal-quicknote')
+  renderProjectGrid()
 }
 
 function openCreateProject() {
@@ -3835,6 +4448,8 @@ async function openProject(id) {
   _isClientCache = false
   // Ensure agency controls are visible (may have been hidden if navigating)
   document.querySelectorAll('.agency-only').forEach(el => el.style.display = '')
+  // Update project updated_at on open (tracks last activity)
+  sb.from('projects').update({ updated_at: new Date().toISOString() }).eq('id', p.id)
   showPage('page-project')
   loadReports()
   loadSMMReports()
