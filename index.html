@@ -5436,42 +5436,93 @@ function renderProjectGrid() {
     const upd = new Date(p.updated_at || p.created_at)
     const updStr = upd.toLocaleDateString('ru-RU', {day:'numeric', month:'short'})
 
+    // Stage pipeline data
+    const projStages = _allStages.filter(s => s.project_id === p.id)
+    const stageStatuses = Array.from({length:9}, (_,i) => {
+      const st = projStages.find(s => s.stage_index === i)
+      return st ? st.status : 'pending'
+    })
+    const activeIdx = stageStatuses.findIndex(s => s === 'in_progress')
+    const firstPending = stageStatuses.findIndex(s => s !== 'completed')
+    const curIdx = activeIdx !== -1 ? activeIdx : (pct < 100 ? firstPending : -1)
+    const stageSegs = stageStatuses.map((st,i) => {
+      const done = st === 'completed'
+      const active = (i === activeIdx) || (activeIdx === -1 && i === firstPending && pct < 100)
+      const bg = done ? col : active ? col+'99' : 'rgba(255,255,255,.07)'
+      const glow = active ? `box-shadow:0 0 10px ${col}70;` : ''
+      return `<div class="pcard-seg${active?' pcs-active':''}" style="background:${bg};${glow}"></div>`
+    }).join('')
+    const stageInfo = curIdx >= 0 && curIdx < 9 && pct < 100
+      ? `<span style="opacity:.7">${STAGES[curIdx].icon}</span> <span class="pcs-name">${STAGES[curIdx].name}</span><span class="pcs-dot">·</span><span class="pcs-status">в работе</span>`
+      : pct === 100 ? '<span style="color:var(--green)">✅ Все этапы завершены</span>' : ''
+
+    // KPI values
+    const daysActive = Math.floor((Date.now() - new Date(p.created_at)) / 86400000)
+    let dlText = '—', dlColor = 'rgba(255,255,255,.28)'
+    if (next) {
+      const diff = Math.ceil((new Date(next.deadline) - today) / 86400000)
+      if (diff < 0)      { dlText = `${Math.abs(diff)}д назад`; dlColor = 'var(--red)' }
+      else if (diff === 0){ dlText = 'сегодня';                  dlColor = 'var(--amber)' }
+      else if (diff <= 3) { dlText = `через ${diff}д`;           dlColor = 'var(--amber)' }
+      else                { dlText = `через ${diff}д`;           dlColor = 'var(--cyan)' }
+    }
+    const daysAgo = Math.floor((Date.now() - new Date(p.updated_at || p.created_at)) / 86400000)
+    const updAgo = daysAgo === 0 ? 'сегодня' : daysAgo === 1 ? 'вчера' : `${daysAgo}д назад`
+
+
     return `<div class="pcard${overdue?' pc-overdue':''}" onclick="openProject('${p.id}')">
       <div class="pcard-stripe" style="background:${col};"></div>
       <div class="pcard-body">
+
+        <!-- HEAD: icon + name + big % -->
         <div class="pcard-head">
-          <div class="pcard-icon" style="background:${col}22;border:1px solid ${col}44;color:${col};">${p.name[0]}</div>
-          <div>
+          <div class="pcard-icon" style="background:${col}1a;border:1px solid ${col}44;color:${col};">${p.name[0]}</div>
+          <div style="flex:1;min-width:0;">
             <div class="pcard-name">${p.name}</div>
             <div class="pcard-desc">${p.description || 'Нет описания'}</div>
           </div>
+          <div class="pcard-pct-hero" style="color:${progColor};">
+            ${pct}%
+            <div class="pcard-pct-sub">прогресс</div>
+          </div>
         </div>
 
-        <div class="pcard-prog-wrap">
-          <div class="pcard-prog-hdr">
-            <span class="pcard-prog-lbl">Прогресс · ${completed}/9 этапов</span>
-            <span class="pcard-prog-pct" style="color:${progColor}">${pct}%</span>
+        <!-- PIPELINE: 9 segments -->
+        <div class="pcard-pipeline">
+          <div class="pcard-pipe-lbl">Этапы · ${completed} / 9</div>
+          <div class="pcard-segs">${stageSegs}</div>
+          ${stageInfo ? `<div class="pcard-stage-info">${stageInfo}</div>` : ''}
+        </div>
+
+        <!-- MINI KPI ROW -->
+        <div class="pcard-kpi-row">
+          <div class="pcard-kpi-item">
+            <div class="pcard-kpi-val">${daysActive}</div>
+            <div class="pcard-kpi-lbl">Дней</div>
           </div>
-          <div class="pcard-bar-track">
-            <div class="pcard-bar-fill" style="width:${pct}%;background:${progColor};"></div>
+          <div class="pcard-kpi-sep"></div>
+          <div class="pcard-kpi-item">
+            <div class="pcard-kpi-val" style="color:${dlColor}">${dlText}</div>
+            <div class="pcard-kpi-lbl">Дедлайн</div>
+          </div>
+          <div class="pcard-kpi-sep"></div>
+          <div class="pcard-kpi-item">
+            <div class="pcard-kpi-val pcard-kv-upd">${updAgo}</div>
+            <div class="pcard-kpi-lbl">Обновлён</div>
           </div>
         </div>
 
         ${hasNote ? `<div class="pcard-note visible">💬 ${p.quick_note}</div>` : ''}
 
-        <div class="pcard-meta">
-          <div class="pcard-chips">
-            ${overdue ? '<span class="pcard-chip pcc-red">⚠️ Просрочен</span>' : pct===100 ? '<span class="pcard-chip pcc-green">✅ Готов</span>' : '<span class="pcard-chip pcc-green">● Активный</span>'}
-            ${deadlineHtml}
-            ${catHtml}
-          </div>
-        </div>
       </div>
 
       <div class="pcard-footer" onclick="event.stopPropagation()">
-        <div class="pcard-last-update">Обновлён ${updStr}</div>
+        <div class="pcard-chips">
+          ${overdue ? '<span class="pcard-chip pcc-red">⚠️ Просрочен</span>' : pct===100 ? '<span class="pcard-chip pcc-green">✅ Готов</span>' : '<span class="pcard-chip pcc-green">● Активный</span>'}
+          ${catHtml}
+        </div>
         <div class="pcard-actions">
-          <button class="pcard-action-btn" title="Статус / заметка" onclick="openQuickNote('${p.id}','${p.name.replace(/'/g,"\'")}','${(p.quick_note||'').replace(/'/g,"\'")}')" >💬</button>
+          <button class="pcard-action-btn" title="Статус / заметка" onclick="openQuickNote('${p.id}','${p.name.replace(/'/g,"\'")}','${(p.quick_note||'').replace(/'/g,"\'")}')">💬</button>
           <button class="pcard-action-btn" title="Открыть проект" onclick="openProject('${p.id}')">→</button>
         </div>
       </div>
@@ -8677,6 +8728,189 @@ setTimeout(updateCCProjectCount, 3000);
   padding: 100px 48px !important;
 }
 
+</style>
+
+
+<style id="dtr-pipeline-card-css">
+/* ═══════════════════════════════════════════════
+   PIPELINE CARD SYSTEM — Enhanced Data Display
+   Design: Option A · Stage pipeline + KPI strip
+═══════════════════════════════════════════════ */
+
+/* ── Head layout: icon + name + % hero ── */
+.pcard-head {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  margin-bottom: 20px !important;
+}
+
+/* ── Big % hero ── */
+.pcard-pct-hero {
+  font-family: 'Manrope', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  line-height: 1;
+  text-align: right;
+  flex-shrink: 0;
+  animation: numberTick .7s cubic-bezier(.16,1,.3,1) .2s both;
+}
+.pcard-pct-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: rgba(255,255,255,.3);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  font-weight: 400;
+  margin-top: 3px;
+  text-align: right;
+  -webkit-text-fill-color: rgba(255,255,255,.3);
+}
+
+/* ── Pipeline block ── */
+.pcard-pipeline {
+  margin-bottom: 16px;
+}
+
+.pcard-pipe-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: rgba(255,255,255,.28);
+  letter-spacing: .08em;
+  margin-bottom: 9px;
+  text-transform: uppercase;
+}
+
+/* ── 9 segments ── */
+.pcard-segs {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.pcard-seg {
+  flex: 1;
+  height: 7px;
+  border-radius: 4px;
+  transition: all .35s cubic-bezier(.16,1,.3,1);
+  position: relative;
+}
+
+/* Active segment: slightly taller + glow */
+.pcard-seg.pcs-active {
+  height: 10px !important;
+  border-radius: 5px;
+  transform: scaleY(1.1);
+}
+
+/* Hover: all segs brighten slightly */
+.pcard:hover .pcard-seg { filter: brightness(1.15); }
+.pcard:hover .pcard-seg.pcs-active { filter: brightness(1.3); }
+
+/* ── Active stage info ── */
+.pcard-stage-info {
+  font-size: 12px;
+  color: rgba(255,255,255,.55);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.4;
+}
+.pcs-name {
+  font-weight: 600;
+  color: rgba(255,255,255,.75);
+}
+.pcs-dot {
+  color: rgba(255,255,255,.2);
+}
+.pcs-status {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: rgba(255,255,255,.35);
+  letter-spacing: .06em;
+}
+
+/* ── Mini KPI row ── */
+.pcard-kpi-row {
+  display: flex;
+  align-items: stretch;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 16px;
+  margin-bottom: 2px;
+}
+
+.pcard-kpi-item {
+  flex: 1;
+  padding: 12px 14px;
+  text-align: center;
+  transition: background .2s;
+}
+.pcard-kpi-item:hover { background: rgba(255,255,255,.03); }
+
+.pcard-kpi-sep {
+  width: 1px;
+  background: rgba(255,255,255,.06);
+  flex-shrink: 0;
+  margin: 10px 0;
+}
+
+.pcard-kpi-val {
+  font-family: 'Manrope', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  color: rgba(255,255,255,.75);
+  line-height: 1;
+  margin-bottom: 5px;
+  animation: numberTick .5s cubic-bezier(.16,1,.3,1) both;
+}
+.pcard-kv-upd { color: #34d399 !important; }
+
+.pcard-kpi-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: rgba(255,255,255,.22);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+/* ── Override old progress wrap (hidden now) ── */
+.pcard-prog-wrap { display: none !important; }
+
+/* ── Footer chips row ── */
+.pcard-footer {
+  padding: 12px 22px !important;
+}
+.pcard-chips {
+  display: flex !important;
+  gap: 6px !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+}
+
+/* Remove old meta section if empty */
+.pcard-meta:empty { display: none !important; }
+.pcard-meta { margin-bottom: 0 !important; }
+
+/* ── Note: push above KPI ── */
+.pcard-note.visible {
+  order: -1;
+  margin-top: 0 !important;
+  margin-bottom: 10px !important;
+}
+
+/* ── Stagger pipeline segments on card entrance ── */
+.pcard:nth-child(1) .pcard-seg { animation: fadeIn .4s ease both; }
+.pcard:nth-child(1) .pcard-seg:nth-child(1) { animation-delay: .05s; }
+.pcard:nth-child(1) .pcard-seg:nth-child(2) { animation-delay: .08s; }
+.pcard:nth-child(1) .pcard-seg:nth-child(3) { animation-delay: .11s; }
+.pcard:nth-child(1) .pcard-seg:nth-child(4) { animation-delay: .14s; }
+.pcard:nth-child(1) .pcard-seg:nth-child(5) { animation-delay: .17s; }
 </style>
 
 </body>
