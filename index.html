@@ -3340,6 +3340,23 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
           <div class="cb"><div class="cb-title">Чеков по часам · <span id="lbl-d3">Период 2</span></div><div style="position:relative;height:200px"><canvas id="cHCd"></canvas></div></div>
         </div>
         <div id="peaks-block"></div>
+
+      </div>
+
+      <!-- WEEKDAY TREND (from daily b1/d1 data) -->
+      <div id="weekday-section">
+        <div class="sh"><div class="sh-num">📅</div><div class="sh-title">По дням недели</div><div class="sh-line"></div></div>
+        <div class="cb" id="weekday-block">
+          <div class="cb-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Выручка и чеки по дням недели — <span id="lbl-wd-b">Период 1</span> vs <span id="lbl-wd-d">Период 2</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px;">
+            <div style="position:relative;height:220px"><canvas id="cWDR"></canvas></div>
+            <div style="position:relative;height:220px"><canvas id="cWDC"></canvas></div>
+          </div>
+          <div id="weekday-best" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;"></div>
+        </div>
       </div>
 
       <!-- ITEMS -->
@@ -4272,6 +4289,8 @@ function runAnalysis() {
   if (Math.abs(ad)>1000) ins.push({ic:'🧾',t:ad>0?`Средний чек вырос на ${fmtM(Math.round(ad))} сум.`:`Средний чек снизился на ${fmtM(Math.round(Math.abs(ad)))} сум — нормально для новой аудитории.`})
   g('ins-block').innerHTML = ins.map(x=>`<div class="ins-row"><div class="ins-ic">${x.ic}</div><div>${x.t}</div></div>`).join('')
 
+  // Always render weekday trend (b1/d1 always available)
+  renderWeekdayTrend()
   g('analytics-wrap').classList.add('visible')
   // Auto-collapse files section after analysis runs
   collapseFilesSection(true)
@@ -4333,6 +4352,149 @@ function restoreFilesCollapseState() {
   const hasAnalytics = g('analytics-wrap') && g('analytics-wrap').classList.contains('visible')
   if (collapsed || hasAnalytics) {
     collapseFilesSection(false)
+  }
+}
+
+
+// ══════════════════════════════════════════════
+// WEEKDAY TREND
+// ══════════════════════════════════════════════
+function renderWeekdayTrend() {
+  const b = S['b1'], d = S['d1']
+  const block = g('weekday-block')
+  if (!block) return
+
+  // Parse date DD.MM.YYYY → weekday index 0=Пн..6=Вс
+  function parseDow(label) {
+    // label could be "05.05.2025" or "05.05.25" or "2025-05-05"
+    let day, mon, year
+    if (label.includes('.')) {
+      const p = label.split('.')
+      day = +p[0]; mon = +p[1] - 1; year = +p[2]
+      if (year < 100) year += 2000
+    } else if (label.includes('-')) {
+      const p = label.split('-')
+      year = +p[0]; mon = +p[1] - 1; day = +p[2]
+    } else return -1
+    const dt = new Date(year, mon, day)
+    return isNaN(dt) ? -1 : (dt.getDay() + 6) % 7 // Mon=0..Sun=6
+  }
+
+  const DAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
+  const COLORS_REV = [
+    'rgba(91,62,245,.75)','rgba(91,62,245,.75)','rgba(91,62,245,.75)',
+    'rgba(91,62,245,.75)','rgba(91,62,245,.75)',
+    'rgba(255,182,39,.8)','rgba(255,99,99,.75)'
+  ]
+  const COLORS_CHK = [
+    'rgba(0,229,163,.65)','rgba(0,229,163,.65)','rgba(0,229,163,.65)',
+    'rgba(0,229,163,.65)','rgba(0,229,163,.65)',
+    'rgba(255,182,39,.75)','rgba(255,99,99,.7)'
+  ]
+
+  function aggregate(src) {
+    const rev = new Array(7).fill(0)
+    const chk = new Array(7).fill(0)
+    const cnt = new Array(7).fill(0)
+    src.rows.forEach(r => {
+      const dow = parseDow(r.label)
+      if (dow < 0) return
+      rev[dow] += r.rev
+      chk[dow] += r.chk
+      cnt[dow]++
+    })
+    return {
+      rev: rev.map((v, i) => cnt[i] ? +(v / cnt[i] / 1e6).toFixed(2) : 0),
+      chk: chk.map((v, i) => cnt[i] ? Math.round(v / cnt[i]) : 0),
+      cnt
+    }
+  }
+
+  const ab = aggregate(b), ad = aggregate(d)
+  const hasData = ab.rev.some(v => v > 0) || ad.rev.some(v => v > 0)
+  if (!hasData) { block.style.display = 'none'; return }
+  block.style.display = 'block'
+
+  if (g('lbl-wd-b')) g('lbl-wd-b').textContent = LABEL_B
+  if (g('lbl-wd-d')) g('lbl-wd-d').textContent = LABEL_D
+
+  const chartOpts = {
+    plugins: {
+      legend: { labels: { color: '#9490b8', font: { size: 11, family: 'monospace' } } },
+      tooltip: { mode: 'index', intersect: false }
+    },
+    scales: {
+      x: { ...xCfg },
+      y: { ...yCfg, ticks: { ...yCfg.ticks, callback: v => v + 'M' } }
+    }
+  }
+
+  // Revenue per weekday
+  mkChart('cWDR', 'bar', {
+    labels: DAYS,
+    datasets: [
+      {
+        label: LABEL_B + ' (млн сум/день)',
+        data: ab.rev,
+        backgroundColor: COLORS_REV.map(c => c.replace('.75', '.45').replace('.8', '.45')),
+        borderColor: COLORS_REV.map(c => c.replace('.75', '1').replace('.8', '1').replace('.65','1')),
+        borderWidth: 1.5,
+        borderRadius: 5,
+      },
+      {
+        label: LABEL_D + ' (млн сум/день)',
+        data: ad.rev,
+        backgroundColor: COLORS_REV,
+        borderRadius: 5,
+      }
+    ]
+  }, chartOpts)
+
+  // Checks per weekday
+  mkChart('cWDC', 'bar', {
+    labels: DAYS,
+    datasets: [
+      {
+        label: LABEL_B + ' (чеков/день)',
+        data: ab.chk,
+        backgroundColor: COLORS_CHK.map(c => c.replace('.65', '.35').replace('.75', '.4').replace('.7', '.35')),
+        borderColor: COLORS_CHK.map(c => c.replace('.65','1').replace('.75','1').replace('.7','1')),
+        borderWidth: 1.5,
+        borderRadius: 5,
+      },
+      {
+        label: LABEL_D + ' (чеков/день)',
+        data: ad.chk,
+        backgroundColor: COLORS_CHK,
+        borderRadius: 5,
+      }
+    ]
+  }, {
+    ...chartOpts,
+    scales: { x: xCfg, y: yCfg }
+  })
+
+  // Best / worst day badges
+  const best = g('weekday-best')
+  if (best) {
+    const maxRevIdx = ad.rev.indexOf(Math.max(...ad.rev.filter(v => v > 0)))
+    const minRevIdx = ad.rev.indexOf(Math.min(...ad.rev.filter(v => v > 0)))
+    const maxChkIdx = ad.chk.indexOf(Math.max(...ad.chk.filter(v => v > 0)))
+
+    const badge = (icon, label, val, color) =>
+      `<div style="display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--brd);border-radius:10px;padding:10px 14px;flex:1;min-width:160px;">
+        <span style="font-size:18px;">${icon}</span>
+        <div>
+          <div style="font-size:9px;font-family:monospace;color:var(--txt3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;">${label}</div>
+          <div style="font-size:14px;font-weight:700;color:${color};">${val}</div>
+        </div>
+      </div>`
+
+    best.innerHTML = [
+      maxRevIdx >= 0 ? badge('🏆', 'Лучший день по выручке', DAYS[maxRevIdx] + ' · ' + ad.rev[maxRevIdx].toFixed(1) + 'M', 'var(--green)') : '',
+      maxChkIdx >= 0 ? badge('👥', 'Больше всего чеков', DAYS[maxChkIdx] + ' · ' + ad.chk[maxChkIdx] + ' чек.', 'var(--cyan)') : '',
+      minRevIdx >= 0 && minRevIdx !== maxRevIdx ? badge('📉', 'Слабый день', DAYS[minRevIdx] + ' · ' + ad.rev[minRevIdx].toFixed(1) + 'M', 'var(--amber)') : '',
+    ].join('')
   }
 }
 
