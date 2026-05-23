@@ -4361,6 +4361,21 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
     <div class="field"><label>Название заведения</label><input type="text" id="proj-name-inp" placeholder="Uzbek Doner" oninput="updateClientLoginPreview()"></div>
     <div class="field"><label>Описание</label><input type="text" id="proj-desc-inp" placeholder="Сеть фастфуда, Ташкент"></div>
     <div class="field"><label>Цвет бренда</label><input type="color" id="proj-color-inp" value="#5b3ef5" style="height:44px;padding:4px;"></div>
+    <div class="field">
+      <label>Фото / логотип проекта</label>
+      <div class="proj-photo-upload" id="proj-photo-upload" onclick="document.getElementById('proj-photo-file').click()">
+        <div class="proj-photo-preview" id="proj-photo-preview">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <span>Нажми или перетащи фото</span>
+          <span class="proj-photo-hint">PNG, JPG · до 2MB</span>
+        </div>
+      </div>
+      <input type="file" id="proj-photo-file" accept="image/*" style="display:none" onchange="previewProjectPhoto(this)">
+      <div class="proj-photo-notice">
+        ⚡ Требует: SQL → <b>ALTER TABLE projects ADD COLUMN IF NOT EXISTS photo_url text;</b><br>
+        + Supabase Storage bucket: <b>project-assets</b> (публичный)
+      </div>
+    </div>
     <div style="border-top:1px solid var(--brd);padding-top:16px;margin-top:4px;">
       <div style="font-size:9px;font-family:Manrope,sans-serif;color:var(--a2);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;">Доступ клиента</div>
       <div class="field"><label>Логин клиента</label><input type="text" id="proj-client-login" placeholder="uzbek_doner" oninput="updateClientLoginPreview()"></div>
@@ -5476,7 +5491,7 @@ function renderProjectGrid() {
 
         <!-- HEAD: icon + name + big % -->
         <div class="pcard-head">
-          <div class="pcard-icon" style="background:${col}1a;border:1px solid ${col}44;color:${col};">${p.name[0]}</div>
+          ${p.photo_url ? `<div class="pcard-icon pcard-icon-photo" style="border:2px solid ${col}55;"><img src="${p.photo_url}" alt="${p.name}" class="pcard-photo-img"></div>` : `<div class="pcard-icon" style="background:${col}1a;border:1px solid ${col}44;color:${col};">${p.name[0]}</div>`}
           <div style="flex:1;min-width:0;">
             <div class="pcard-name">${p.name}</div>
             <div class="pcard-desc">${p.description || 'Нет описания'}</div>
@@ -5512,7 +5527,7 @@ function renderProjectGrid() {
           </div>
         </div>
 
-        ${hasNote ? `<div class="pcard-note visible">💬 ${p.quick_note}</div>` : ''}
+        ${hasNote ? `<div class="pcard-note visible"><span class="pcard-note-text">💬 ${p.quick_note}</span><button class="pcard-note-del" title="Удалить комментарий" onclick="event.stopPropagation();clearQuickNote('${p.id}')">✕</button></div>` : ''}
 
       </div>
 
@@ -5665,13 +5680,29 @@ async function createProject() {
   let clientUserId = null
 
   // Create project record (even if client signup failed - agency can still see it)
+  // Upload photo if selected
+  let photoUrl = null
+  const photoFile = document.getElementById('proj-photo-file')?.files?.[0]
+  if (photoFile) {
+    try {
+      const ext = photoFile.name.split('.').pop()
+      const path = `project-photos/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`
+      const { error: upErr } = await sb.storage.from('project-assets').upload(path, photoFile, { upsert: true })
+      if (!upErr) {
+        const { data: urlData } = sb.storage.from('project-assets').getPublicUrl(path)
+        photoUrl = urlData?.publicUrl || null
+      }
+    } catch(e) { console.warn('Photo upload failed:', e) }
+  }
+
   const { data: proj, error } = await sb.from('projects').insert({
     agency_id: currentUser.id,
     name,
     description: desc,
     brand_color: color,
     client_login: clientEmail,
-    client_user_id: clientUserId
+    client_user_id: clientUserId,
+    ...(photoUrl ? { photo_url: photoUrl } : {})
   }).select().single()
 
   btn.disabled = false
@@ -5687,6 +5718,14 @@ async function createProject() {
   g('proj-client-login').value = ''
   g('proj-client-pass').value = 'dtr2026'
   delete g('proj-client-login').dataset.manual
+  // Reset photo
+  const pf = document.getElementById('proj-photo-file')
+  if (pf) pf.value = ''
+  const pp = document.getElementById('proj-photo-preview')
+  if (pp) pp.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>Нажми или перетащи фото</span><span class="proj-photo-hint">PNG, JPG · до 2MB</span>'
+  if (pp) pp.style.cssText = ''
+  const pu = document.getElementById('proj-photo-upload')
+  if (pu) pu.classList.remove('has-photo')
   alert(credMsg)
   loadProjects()
 }
@@ -8395,6 +8434,58 @@ if (statEl) statObs.observe(statEl, { childList: true, characterData: true, subt
 document.addEventListener('DOMContentLoaded', updateCCProjectCount);
 setTimeout(updateCCProjectCount, 1000);
 setTimeout(updateCCProjectCount, 3000);
+
+// ── DTR: Clear quick note ──
+async function clearQuickNote(projectId) {
+  await sb.from('projects').update({ quick_note: '' }).eq('id', projectId)
+  const p = _allProjects.find(x => x.id === projectId)
+  if (p) p.quick_note = ''
+  renderProjectGrid()
+}
+
+// ── DTR: Preview project photo before upload ──
+function previewProjectPhoto(input) {
+  const file = input.files[0]
+  if (!file) return
+  if (file.size > 2 * 1024 * 1024) {
+    alert('Файл слишком большой. Максимум 2MB.')
+    input.value = ''
+    return
+  }
+  const reader = new FileReader()
+  reader.onload = e => {
+    const preview = document.getElementById('proj-photo-preview')
+    const upload = document.getElementById('proj-photo-upload')
+    if (preview) {
+      preview.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">`
+      preview.style.padding = '0'
+    }
+    if (upload) upload.classList.add('has-photo')
+  }
+  reader.readAsDataURL(file)
+}
+
+// ── DTR: Drag & drop on project photo upload ──
+document.addEventListener('DOMContentLoaded', () => {
+  const zone = document.getElementById('proj-photo-upload')
+  if (!zone) return
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over') })
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'))
+  zone.addEventListener('drop', e => {
+    e.preventDefault()
+    zone.classList.remove('drag-over')
+    const file = e.dataTransfer.files[0]
+    if (file && file.type.startsWith('image/')) {
+      const input = document.getElementById('proj-photo-file')
+      // Create a DataTransfer to assign file to input
+      const dt = new DataTransfer()
+      dt.items.add(file)
+      input.files = dt.files
+      previewProjectPhoto(input)
+    }
+  })
+})
+
 </script>
 
 
@@ -8911,6 +9002,133 @@ setTimeout(updateCCProjectCount, 3000);
 .pcard:nth-child(1) .pcard-seg:nth-child(3) { animation-delay: .11s; }
 .pcard:nth-child(1) .pcard-seg:nth-child(4) { animation-delay: .14s; }
 .pcard:nth-child(1) .pcard-seg:nth-child(5) { animation-delay: .17s; }
+</style>
+
+
+<style id="dtr-photo-note-css">
+/* ═══════════════════════════════════════════════
+   PROJECT PHOTO UPLOAD + NOTE DELETE STYLES
+═══════════════════════════════════════════════ */
+
+/* ── Note delete button ── */
+.pcard-note {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+}
+.pcard-note-text {
+  flex: 1;
+  font-size: 12px;
+  color: rgba(255,255,255,.45);
+  line-height: 1.5;
+}
+.pcard-note-del {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.08);
+  color: rgba(255,255,255,.22);
+  font-size: 11px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all .18s cubic-bezier(.34,1.56,.64,1);
+  line-height: 1;
+}
+.pcard-note-del:hover {
+  background: rgba(248,113,113,.12);
+  border-color: rgba(248,113,113,.3);
+  color: #f87171;
+  transform: scale(1.15);
+}
+.pcard-note-del:active { transform: scale(.9); }
+
+/* ── Card photo avatar ── */
+.pcard-icon-photo {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  background: transparent !important;
+  flex-shrink: 0 !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,.4) !important;
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s ease !important;
+}
+.pcard:hover .pcard-icon-photo {
+  transform: scale(1.1) !important;
+  box-shadow: 0 8px 28px rgba(0,0,0,.6) !important;
+}
+.pcard-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Photo upload zone in modal ── */
+.proj-photo-upload {
+  background: rgba(255,255,255,.03);
+  border: 1.5px dashed rgba(255,255,255,.12);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all .22s cubic-bezier(.16,1,.3,1);
+  overflow: hidden;
+  min-height: 100px;
+}
+.proj-photo-upload:hover,
+.proj-photo-upload.drag-over {
+  border-color: rgba(99,102,241,.5);
+  background: rgba(99,102,241,.06);
+  box-shadow: 0 0 0 4px rgba(99,102,241,.08);
+}
+.proj-photo-upload.has-photo {
+  border-style: solid;
+  border-color: rgba(99,102,241,.35);
+  min-height: 120px;
+}
+.proj-photo-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 22px 16px;
+  text-align: center;
+  color: rgba(255,255,255,.3);
+  font-size: 13px;
+  height: 100%;
+  min-height: 100px;
+  transition: all .2s;
+}
+.proj-photo-hint {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: rgba(255,255,255,.18);
+  letter-spacing: .06em;
+}
+.proj-photo-upload:hover .proj-photo-preview { color: rgba(255,255,255,.5); }
+
+/* ── DB notice in modal (for photo_url column) ── */
+.proj-photo-notice {
+  background: rgba(99,102,241,.07);
+  border: 1px solid rgba(99,102,241,.2);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: rgba(165,180,252,.7);
+  letter-spacing: .03em;
+  line-height: 1.7;
+  margin-top: 6px;
+}
+
+/* Supabase storage notice in modal */
+#proj-photo-upload + input + .proj-photo-notice { display: block; }
 </style>
 
 </body>
