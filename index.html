@@ -5501,16 +5501,43 @@ function renderProjectGrid() {
       <div class="pcard-stripe" style="background:${col};"></div>
       <div class="pcard-body">
 
-        <!-- HEAD: icon + name + big % -->
+        <!-- HEAD: три пилюли — фото · имя+инфо · прогресс -->
         <div class="pcard-head">
-          ${p.photo_url ? `<div class="pcard-icon pcard-icon-photo" style="border:2px solid ${col}55;"><img src="${p.photo_url}" alt="${p.name}" class="pcard-photo-img"></div>` : `<div class="pcard-icon" style="background:${col}1a;border:1px solid ${col}44;color:${col};">${p.name[0]}</div>`}
-          <div style="flex:1;min-width:0;">
-            <div class="pcard-name">${p.name}</div>
-            <div class="pcard-desc">${p.description || 'Нет описания'}</div>
+
+          <!-- Пилюля 1: Фото / буква -->
+          ${p.photo_url
+            ? `<div class="pcard-pill-photo" style="border:1.5px solid ${col}44;"><img src="${p.photo_url}" class="pcard-photo-img" style="width:100%;height:100%;object-fit:cover;"></div>`
+            : `<div class="pcard-pill-photo" style="background:${col}18;border:1.5px solid ${col}44;color:${col};font-size:22px;font-weight:800;">${p.name[0]}</div>`
+          }
+
+          <!-- Пилюля 2: имя + этапы-бар + дней с нами -->
+          <div class="pcard-pill-info">
+            <div>
+              <div class="pcard-name" style="font-size:15px;margin-bottom:2px;">${p.name}</div>
+              <div class="pcard-desc" style="font-size:10px;">${p.description || 'Нет описания'}</div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.22);letter-spacing:.1em;text-transform:uppercase;">Этапы</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.35);">${completed} / 9</span>
+              </div>
+              <div style="height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;margin-bottom:7px;">
+                <div style="width:${pct}%;height:100%;background:${col};border-radius:2px;opacity:.7;transition:width 1.2s ease;"></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:5px;">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.28);">${Math.floor((Date.now()-new Date(p.created_at))/86400000)} дней с нами</span>
+              </div>
+            </div>
           </div>
-          <div class="pcard-pct-hero" style="color:${progColor};">
-            ${pct}%
-            <div class="pcard-pct-sub">прогресс</div>
+
+          <!-- Пилюля 3: % прогресс -->
+          <div class="pcard-pill-pct" style="background:${progColor}11;border:1.5px solid ${progColor}33;">
+            <div style="font-size:24px;font-weight:800;letter-spacing:-.04em;line-height:1;color:${progColor};">${pct}%</div>
+            <div style="width:100%;height:3px;background:${progColor}18;border-radius:2px;overflow:hidden;">
+              <div style="width:${pct}%;height:100%;background:${progColor};border-radius:2px;"></div>
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.1em;text-transform:uppercase;">прогресс</div>
           </div>
         </div>
 
@@ -9557,6 +9584,68 @@ function showSQLHint() {
 .pcard-settings-btn:active {
   transform: rotate(30deg) scale(.96) !important;
 }
+</style>
+
+
+<style id="dtr-pill-head">
+/* ── Pill head system ── */
+.pcard-head {
+  display: flex !important;
+  align-items: stretch !important;
+  gap: 8px !important;
+  margin-bottom: 16px !important;
+}
+
+.pcard-pill-photo {
+  width: 68px !important;
+  min-height: 68px !important;
+  border-radius: 13px !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,.3) !important;
+}
+.pcard:hover .pcard-pill-photo {
+  transform: scale(1.04) !important;
+}
+
+.pcard-pill-info {
+  flex: 1 !important;
+  background: rgba(255,255,255,.03) !important;
+  border: 1px solid rgba(255,255,255,.07) !important;
+  border-radius: 13px !important;
+  padding: 11px 13px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  min-width: 0 !important;
+  gap: 8px !important;
+  transition: border-color .2s !important;
+}
+.pcard:hover .pcard-pill-info {
+  border-color: rgba(255,255,255,.11) !important;
+}
+
+.pcard-pill-pct {
+  width: 74px !important;
+  flex-shrink: 0 !important;
+  border-radius: 13px !important;
+  padding: 11px 12px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  transition: all .25s !important;
+}
+.pcard:hover .pcard-pill-pct {
+  filter: brightness(1.15) !important;
+}
+
+/* Override old pct-hero */
+.pcard-pct-hero { display: none !important; }
 </style>
 
 </body>
