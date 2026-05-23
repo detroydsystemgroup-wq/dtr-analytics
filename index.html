@@ -4362,22 +4362,45 @@ function restoreFilesCollapseState() {
 function renderWeekdayTrend() {
   const b = S['b1'], d = S['d1']
   const block = g('weekday-block')
-  if (!block) return
+  if (!block || !b || !d) return
 
-  // Parse date DD.MM.YYYY → weekday index 0=Пн..6=Вс
+  // Parse date → weekday index 0=Пн..6=Вс
+  // Supports: "05.05.2025", "05.05.25", "2025-05-05", "05 мая 2025", Excel serial number
+  const RU_MONTHS = {янв:0,фев:1,мар:2,апр:3,май:4,мая:4,июн:5,июл:6,авг:7,сен:8,окт:9,ноя:10,дек:11}
   function parseDow(label) {
-    // label could be "05.05.2025" or "05.05.25" or "2025-05-05"
-    let day, mon, year
-    if (label.includes('.')) {
-      const p = label.split('.')
-      day = +p[0]; mon = +p[1] - 1; year = +p[2]
-      if (year < 100) year += 2000
-    } else if (label.includes('-')) {
-      const p = label.split('-')
-      year = +p[0]; mon = +p[1] - 1; day = +p[2]
-    } else return -1
-    const dt = new Date(year, mon, day)
-    return isNaN(dt) ? -1 : (dt.getDay() + 6) % 7 // Mon=0..Sun=6
+    if (!label) return -1
+    const s = String(label).trim()
+    let dt
+
+    // Excel serial number (number like 45000)
+    const num = +s
+    if (!isNaN(num) && num > 40000 && num < 60000) {
+      // Excel date serial → JS Date
+      dt = new Date((num - 25569) * 86400000)
+    }
+    // DD.MM.YYYY or DD.MM.YY
+    else if (s.includes('.')) {
+      const p = s.split('.')
+      if (p.length >= 3) {
+        let y = +p[2]; if (y < 100) y += 2000
+        dt = new Date(y, +p[1] - 1, +p[0])
+      }
+    }
+    // YYYY-MM-DD
+    else if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+      dt = new Date(s.slice(0,10))
+    }
+    // "05 мая 2025" or "05 май 2025"
+    else if (/\d{1,2}\s+[а-яё]+\s+\d{4}/i.test(s)) {
+      const m = s.match(/(\d{1,2})\s+([а-яё]+)\s+(\d{4})/i)
+      if (m) {
+        const mo = RU_MONTHS[m[2].slice(0,3).toLowerCase()]
+        if (mo !== undefined) dt = new Date(+m[3], mo, +m[1])
+      }
+    }
+
+    if (!dt || isNaN(dt)) return -1
+    return (dt.getDay() + 6) % 7 // Mon=0..Sun=6
   }
 
   const DAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
@@ -4411,8 +4434,15 @@ function renderWeekdayTrend() {
   }
 
   const ab = aggregate(b), ad = aggregate(d)
+  console.log('[Weekday] sample labels:', b.rows.slice(0,3).map(r=>r.label))
+  console.log('[Weekday] ab.rev:', ab.rev, 'cnt:', ab.cnt)
   const hasData = ab.rev.some(v => v > 0) || ad.rev.some(v => v > 0)
-  if (!hasData) { block.style.display = 'none'; return }
+  const wdBest = g('weekday-best')
+  if (!hasData) {
+    block.style.display = 'block'
+    if (wdBest) wdBest.innerHTML = '<div style="font-family:monospace;font-size:11px;color:var(--txt3);padding:8px 0;">Не удалось определить дни недели. Формат дат: ' + (b.rows[0]?.label || '—') + '</div>'
+    return
+  }
   block.style.display = 'block'
 
   if (g('lbl-wd-b')) g('lbl-wd-b').textContent = LABEL_B
