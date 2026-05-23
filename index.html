@@ -5,8 +5,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DTR Performance Analytics</title>
-<link rel="preconnect" href="https://fonts.bunny.net">
-<link href="https://fonts.bunny.net/css?family=bebas-neue:400|syne:400,500,600,700,800|dm-sans:300,400,500,600,700|jetbrains-mono:300,400,500,600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -2666,8 +2667,7 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
 </style>
 
 <!-- DTR MASTERCLASS REDESIGN — World-Class Override -->
-<link rel="preconnect" href="https://fonts.bunny.net">
-<link href="https://fonts.bunny.net/css?family=syne:400,500,600,700,800|dm-sans:300,400,500,600,700|jetbrains-mono:300,400,500,600&display=swap" rel="stylesheet">
+
 <style id="dtr-masterclass-override">
 
 /* ═══════════════════════════════════════════════════════════════
@@ -2678,8 +2678,8 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
 
 /* ── Override font stack ── */
 :root {
-  --font-display: 'Syne', sans-serif !important;
-  --font-body: 'DM Sans', sans-serif !important;
+  --font-display: 'Space Grotesk', sans-serif !important;
+  --font-body: 'Inter', sans-serif !important;
   --font-mono: 'JetBrains Mono', monospace !important;
 
   /* ── Richer color palette ── */
@@ -2845,7 +2845,7 @@ body::after {
 }
 
 .auth-wordmark {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 42px !important;
   font-weight: 800 !important;
   background: linear-gradient(135deg, #f0eeff 0%, #a5b4fc 50%, #818cf8 100%) !important;
@@ -2885,7 +2885,7 @@ body::after {
   border-radius: 12px !important;
   padding: 13px 16px !important;
   color: var(--txt) !important;
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 14px !important;
   transition: border-color .2s, box-shadow .2s, background .2s !important;
 }
@@ -2907,7 +2907,7 @@ body::after {
   border: none !important;
   border-radius: 12px !important;
   padding: 14px 22px !important;
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 14px !important;
   font-weight: 600 !important;
   letter-spacing: -.01em !important;
@@ -2955,7 +2955,7 @@ body::after {
   background: linear-gradient(135deg, #6366f1 0%, #7c3aed 100%) !important;
   border-radius: 16px !important;
   padding: 18px 24px !important;
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 15px !important;
   font-weight: 600 !important;
   letter-spacing: -.01em !important;
@@ -2978,7 +2978,7 @@ body::after {
   border: 1px solid rgba(99,102,241,.15) !important;
   border-radius: 10px !important;
   color: rgba(161,159,200,.7) !important;
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 13px !important;
   font-weight: 500 !important;
   padding: 10px 16px !important;
@@ -3003,7 +3003,7 @@ body::after {
 }
 
 .header-wordmark {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 18px !important;
   font-weight: 800 !important;
   letter-spacing: -.03em !important;
@@ -3029,7 +3029,7 @@ body::after {
 }
 
 .logout-btn {
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 12px !important;
   font-weight: 500 !important;
   color: rgba(120,100,255,.45) !important;
@@ -3053,7 +3053,7 @@ body::after {
 }
 
 .dash-title {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 30px !important;
   font-weight: 800 !important;
   letter-spacing: -.04em !important;
@@ -3098,7 +3098,7 @@ body::after {
   margin-bottom: 14px !important;
 }
 .stat-val {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 48px !important;
   font-weight: 800 !important;
   letter-spacing: -.05em !important;
@@ -3146,13 +3146,13 @@ body::after {
 .project-card:hover::after, .pcard:hover::after { opacity: 1 !important; }
 
 .project-name {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 15px !important;
   font-weight: 700 !important;
   letter-spacing: -.02em !important;
 }
 .project-desc {
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 12px !important;
   color: rgba(120,100,255,.5) !important;
   line-height: 1.7 !important;
@@ -3183,7 +3183,7 @@ body::after {
   animation: masterFadeUp .35s cubic-bezier(.16,1,.3,1) both !important;
 }
 .modal-title {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 20px !important;
   font-weight: 700 !important;
   letter-spacing: -.03em !important;
@@ -3213,7 +3213,7 @@ body::after {
   transform: translateX(-2px) !important;
 }
 .pp-name {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 17px !important;
   font-weight: 700 !important;
   letter-spacing: -.03em !important;
@@ -3238,7 +3238,7 @@ body::after {
   padding: 0 44px !important;
 }
 .pp-tab {
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 13px !important;
   font-weight: 500 !important;
   color: rgba(120,100,255,.45) !important;
@@ -3343,7 +3343,7 @@ body::after {
 }
 
 .tracker-stage-name {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 13px !important;
   font-weight: 600 !important;
   letter-spacing: -.01em !important;
@@ -3424,7 +3424,7 @@ body::after {
 }
 
 .ub-name {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 16px !important;
   font-weight: 700 !important;
   letter-spacing: -.02em !important;
@@ -3436,7 +3436,7 @@ body::after {
   opacity: .5 !important;
 }
 .ub-desc {
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 12px !important;
   color: rgba(120,100,255,.5) !important;
   line-height: 1.7 !important;
@@ -3484,7 +3484,7 @@ body::after {
   letter-spacing: .16em !important;
 }
 .drop-cta {
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 12px !important;
   font-weight: 600 !important;
   color: rgba(161,159,200,.7) !important;
@@ -3504,7 +3504,7 @@ body::after {
    ANALYTICS — KPI & Charts
 ══════════════════════════════════ */
 .sh-title {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 22px !important;
   font-weight: 700 !important;
   letter-spacing: -.03em !important;
@@ -3555,7 +3555,7 @@ body::after {
   text-transform: uppercase !important;
 }
 .kpi-v {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 28px !important;
   font-weight: 800 !important;
   letter-spacing: -.04em !important;
@@ -3577,7 +3577,7 @@ body::after {
 }
 .cb:hover { border-color: rgba(99,102,241,.16) !important; }
 .cb-title {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 14px !important;
   font-weight: 600 !important;
   letter-spacing: -.02em !important;
@@ -3606,7 +3606,7 @@ body::after {
   color: rgba(99,102,241,.4) !important;
 }
 .hb-rev {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 52px !important;
   font-weight: 800 !important;
   letter-spacing: -.05em !important;
@@ -3629,7 +3629,7 @@ body::after {
   letter-spacing: .1em !important;
 }
 .ms-v {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 20px !important;
   font-weight: 700 !important;
   letter-spacing: -.03em !important;
@@ -3650,7 +3650,7 @@ body::after {
   opacity: .8 !important;
 }
 .ai-title {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 13px !important;
   font-weight: 600 !important;
   letter-spacing: -.01em !important;
@@ -3668,13 +3668,13 @@ body::after {
 }
 .ai-section:hover { border-left-color: var(--a) !important; }
 .ai-section-title {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 13px !important;
   font-weight: 600 !important;
   letter-spacing: -.01em !important;
 }
 .ai-section-text {
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 13px !important;
   line-height: 1.8 !important;
   color: rgba(161,159,200,.7) !important;
@@ -3686,7 +3686,7 @@ body::after {
   border: 1px solid rgba(99,102,241,.08) !important;
   border-radius: 12px !important;
   padding: 14px 18px !important;
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 13px !important;
   color: rgba(161,159,200,.7) !important;
   line-height: 1.7 !important;
@@ -3723,7 +3723,7 @@ body::after {
 
 /* Section headers */
 .section-title {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 11px !important;
   font-weight: 600 !important;
   color: rgba(99,102,241,.45) !important;
@@ -3754,7 +3754,7 @@ body::after {
   padding: 20px 22px !important;
 }
 .cc-brand {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 20px !important;
   font-weight: 800 !important;
   letter-spacing: -.03em !important;
@@ -3776,7 +3776,7 @@ body::after {
   border-bottom: 1px solid rgba(99,102,241,.08) !important;
 }
 .cc-tab {
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 13px !important;
   font-weight: 500 !important;
   color: rgba(120,100,255,.45) !important;
@@ -3811,7 +3811,7 @@ body::after {
 }
 .cc-kpi-item { }
 .cc-kpi-val {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 26px !important;
   font-weight: 800 !important;
   letter-spacing: -.04em !important;
@@ -3832,7 +3832,7 @@ body::after {
   width: 100% !important;
   background: linear-gradient(135deg, #6366f1 0%, #7c3aed 100%) !important;
   border-radius: 12px !important;
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 13px !important;
   font-weight: 600 !important;
   padding: 12px 18px !important;
@@ -3868,14 +3868,14 @@ body::after {
   background: transparent !important;
   border: none !important;
   outline: none !important;
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 13px !important;
   color: var(--txt) !important;
 }
 .dash-search::placeholder { color: rgba(99,102,241,.3) !important; }
 
 .dfp {
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 12px !important;
   font-weight: 500 !important;
   background: rgba(99,102,241,.06) !important;
@@ -3902,7 +3902,7 @@ body::after {
   border: 1px solid rgba(99,102,241,.1) !important;
   border-radius: 10px !important;
   color: rgba(161,159,200,.7) !important;
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 12px !important;
   padding: 8px 14px !important;
   outline: none !important;
@@ -3919,7 +3919,7 @@ body::after {
   box-shadow: 0 24px 80px rgba(0,0,0,.8), 0 0 60px rgba(99,102,241,.1) !important;
 }
 .global-search-inp {
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 16px !important;
   color: var(--txt) !important;
 }
@@ -3969,7 +3969,7 @@ body::after {
 
 /* Stage status buttons in modal */
 .stage-status-btn {
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 12px !important;
   font-weight: 500 !important;
   background: rgba(99,102,241,.05) !important;
@@ -4000,12 +4000,12 @@ body::after {
   border-radius: 50% !important;
 }
 .tg-step-title {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 13px !important;
   font-weight: 600 !important;
 }
 .tg-step-desc {
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 12px !important;
   color: rgba(161,159,200,.6) !important;
   line-height: 1.6 !important;
@@ -4020,7 +4020,7 @@ body::after {
 
 /* History log */
 .history-text {
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 12px !important;
   color: rgba(161,159,200,.65) !important;
   line-height: 1.6 !important;
@@ -4056,13 +4056,13 @@ body::after {
   padding: 80px 40px !important;
 }
 .empty-title {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 18px !important;
   font-weight: 700 !important;
   letter-spacing: -.02em !important;
 }
 .empty-sub {
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 13px !important;
   color: rgba(120,100,255,.5) !important;
   line-height: 1.7 !important;
@@ -4076,7 +4076,7 @@ body::after {
   border-bottom: 1px solid rgba(124,92,252,.12) !important;
 }
 .smm-hdr-name {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 52px !important;
   font-weight: 800 !important;
   letter-spacing: -.02em !important;
@@ -4099,13 +4099,13 @@ body::after {
   color: rgba(167,139,250,.5) !important;
 }
 .smm-stat-val {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 54px !important;
   letter-spacing: -.03em !important;
   font-weight: 800 !important;
 }
 .smm-metric-val {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 40px !important;
   font-weight: 800 !important;
   letter-spacing: -.03em !important;
@@ -4127,7 +4127,7 @@ body::after {
   color: rgba(167,139,250,.5) !important;
 }
 .smm-sec-title {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 36px !important;
   font-weight: 800 !important;
   letter-spacing: -.03em !important;
@@ -4150,14 +4150,14 @@ body::after {
   border-bottom-color: rgba(124,92,252,.8) !important;
 }
 .smm-run-ai-btn {
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 12px !important;
   font-weight: 600 !important;
   border-radius: 10px !important;
   transition: all .2s cubic-bezier(.16,1,.3,1) !important;
 }
 .smm-save-bar-btn {
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 13px !important;
   font-weight: 600 !important;
   border-radius: 12px !important;
@@ -4166,7 +4166,7 @@ body::after {
   background: rgba(6,6,10,.9) !important;
   border: 1px solid rgba(124,92,252,.12) !important;
   border-radius: 10px !important;
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 14px !important;
   color: rgba(232,230,240,.9) !important;
   transition: border-color .2s, box-shadow .2s !important;
@@ -4204,11 +4204,11 @@ body::after {
 .smm-lb-proj-icon {
   width: 36px !important; height: 36px !important;
   border-radius: 10px !important;
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-weight: 800 !important;
 }
 .smm-lb-proj-name {
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 13px !important;
   font-weight: 600 !important;
 }
@@ -4217,7 +4217,7 @@ body::after {
   font-size: 10px !important;
 }
 .smm-lb-metric-val {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 15px !important;
   font-weight: 700 !important;
   letter-spacing: -.02em !important;
@@ -4235,14 +4235,14 @@ body::after {
   transform: translateY(-3px) !important;
 }
 .ov-card-title {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 13px !important;
   font-weight: 600 !important;
   letter-spacing: -.01em !important;
   color: rgba(161,159,200,.7) !important;
 }
 .ov-big {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 48px !important;
   font-weight: 800 !important;
   letter-spacing: -.05em !important;
@@ -4255,12 +4255,12 @@ body::after {
   letter-spacing: .04em !important;
 }
 .ov-list-name {
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 13px !important;
   font-weight: 500 !important;
 }
 .ov-prog-name {
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 12px !important;
   font-weight: 500 !important;
 }
@@ -4281,7 +4281,7 @@ body::after {
 
 /* ── Auth switch link ── */
 .auth-switch {
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   color: rgba(120,100,255,.4) !important;
   border-top: 1px solid rgba(99,102,241,.08) !important;
 }
@@ -4303,7 +4303,7 @@ body::after {
   border-radius: 20px !important;
 }
 .files-toggle-btn {
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 12px !important;
   background: rgba(99,102,241,.06) !important;
   border: 1px solid rgba(99,102,241,.12) !important;
@@ -4325,7 +4325,7 @@ body::after {
   padding: 22px 30px !important;
 }
 .pp-prog-pct {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 38px !important;
   font-weight: 800 !important;
   letter-spacing: -.06em !important;
@@ -4340,7 +4340,7 @@ body::after {
 
 /* ── Auth title ── */
 .auth-title {
-  font-family: 'Syne', sans-serif !important;
+  font-family: 'Space Grotesk', sans-serif !important;
   font-size: 15px !important;
   font-weight: 600 !important;
   color: rgba(161,159,200,.7) !important;
@@ -4364,7 +4364,7 @@ body::after {
   box-shadow: 0 16px 48px rgba(0,0,0,.6), 0 0 30px rgba(124,92,252,.1) !important;
 }
 .smm-reel-title {
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 11px !important;
   font-weight: 500 !important;
   color: rgba(232,230,240,.85) !important;
@@ -4460,7 +4460,7 @@ body::after {
   background: rgba(99,102,241,.04) !important;
 }
 .dl-goto {
-  font-family: 'DM Sans', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
   font-size: 12px !important;
   background: rgba(99,102,241,.08) !important;
   border: 1px solid rgba(99,102,241,.15) !important;
@@ -4503,18 +4503,17 @@ body::after {
 
 
 <style id="dtr-font-emergency">
-/* Emergency font override — Bunny CDN */
-@import url('https://fonts.bunny.net/css?family=syne:400,500,600,700,800|dm-sans:300,400,500,600,700|jetbrains-mono:300,400,500,600&display=swap');
+/* Clean modern font system */
 
 :root {
-  --font-display: 'Syne', 'SF Pro Display', -apple-system, 'Helvetica Neue', sans-serif !important;
-  --font-body:    'DM Sans', 'SF Pro Text', -apple-system, 'Helvetica Neue', sans-serif !important;
+  --font-display: 'Space Grotesk', -apple-system, 'Helvetica Neue', sans-serif !important;
+  --font-body:    'Inter', -apple-system, 'Helvetica Neue', sans-serif !important;
   --font-mono:    'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace !important;
 }
 
 /* Force apply everywhere */
 body, input, button, select, textarea {
-  font-family: 'DM Sans', 'SF Pro Text', -apple-system, 'Helvetica Neue', sans-serif !important;
+  font-family: 'Inter', 'SF Pro Text', -apple-system, 'Helvetica Neue', sans-serif !important;
 }
 
 .auth-wordmark,
@@ -4546,7 +4545,7 @@ body, input, button, select, textarea {
 .empty-title,
 .smm-lb-metric-val,
 h1, h2, h3, h4 {
-  font-family: 'Syne', 'SF Pro Display', -apple-system, 'Helvetica Neue', sans-serif !important;
+  font-family: 'Space Grotesk', 'SF Pro Display', -apple-system, 'Helvetica Neue', sans-serif !important;
 }
 
 .stat-label,
@@ -4597,6 +4596,83 @@ h1, h2, h3, h4 {
 .dl-day-name,
 code, pre, kbd {
   font-family: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', monospace !important;
+}
+</style>
+
+
+<style id="dtr-numeric-fix">
+/* ── Crisp tabular numbers everywhere ── */
+:root {
+  --font-display: 'Space Grotesk', -apple-system, 'Helvetica Neue', sans-serif !important;
+  --font-body:    'Inter', -apple-system, 'Helvetica Neue', sans-serif !important;
+  --font-mono:    'JetBrains Mono', 'Fira Code', monospace !important;
+}
+
+body {
+  font-family: 'Inter', -apple-system, 'Helvetica Neue', sans-serif !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-rendering: optimizeLegibility !important;
+}
+
+/* Tabular lining numbers for all data displays */
+.stat-val, .kpi-v, .hb-rev, .ov-big, .cc-kpi-val,
+.smm-stat-val, .smm-metric-val, .pp-prog-pct,
+.ms-v, .smm-lb-metric-val, #file-counter {
+  font-family: 'Space Grotesk', -apple-system, sans-serif !important;
+  font-variant-numeric: tabular-nums lining-nums !important;
+  font-feature-settings: "tnum" 1, "lnum" 1 !important;
+  letter-spacing: -0.04em !important;
+}
+
+/* Headings and display text */
+.auth-wordmark, .header-wordmark, .dash-title,
+.project-name, .modal-title, .pp-name,
+.tracker-stage-name, .ub-name, .sh-title,
+.cb-title, .ai-title, .ai-section-title,
+.smm-hdr-name, .smm-sec-title,
+.ov-card-title, .cc-brand, .empty-title,
+.smm-lb-proj-name, h1, h2, h3, h4 {
+  font-family: 'Space Grotesk', -apple-system, sans-serif !important;
+  font-variant-numeric: normal !important;
+}
+
+/* All buttons */
+button, .btn-primary, .btn-ghost, .go-btn,
+.dfp, .pp-tab, .cc-tab, .smm-nav-item,
+.smm-run-ai-btn, .smm-save-bar-btn {
+  font-family: 'Inter', -apple-system, sans-serif !important;
+  font-weight: 500 !important;
+}
+
+/* Mono elements */
+.stat-label, .kpi-l, .kpi-s, .sh-num,
+.ub-num, .ub-step, .drop-per, .drop-hint,
+.auth-logo-tag, .auth-sub, .ms-l, .ai-sub,
+.pp-desc, .pp-pct-mini, .pp-prog-label,
+.tracker-badge, .tracker-edit-btn, .tracker-link-chip,
+.history-time, .badge-active, .user-pill,
+.cc-kpi-lbl, .cc-brand-sub, .global-search-esc,
+.smm-stat-lbl, .smm-metric-code, .smm-block-title,
+.smm-reel-er, .smm-lb-proj-period, .smm-input-lbl,
+.ov-sub, .ov-prog-pct, .field label,
+.hb-tag, .hb-day, .dl-day-name,
+code, pre, kbd, .font-mono {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+/* Percentages and metrics — super sharp */
+.smm-stat-delta, .ssd-up, .ssd-down,
+.smm-lb-metric-val, .pp-pct-mini,
+.ov-prog-pct, .tracker-badge {
+  font-variant-numeric: tabular-nums lining-nums !important;
+  font-feature-settings: "tnum" 1 !important;
+}
+
+/* Inputs */
+input, select, textarea {
+  font-family: 'Inter', -apple-system, sans-serif !important;
 }
 </style>
 
