@@ -790,6 +790,38 @@ input[type=file] { display: none; }
 }
 .go-btn:disabled { opacity: .25; cursor: not-allowed; }
 
+
+/* ── Files collapsible section ── */
+.files-toggle-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg3); border: 1px solid var(--brd);
+  border-radius: var(--r-md); padding: 12px 18px;
+  margin-bottom: 10px; cursor: default;
+  font-family: var(--font-body); font-size: 13px; font-weight: 500; color: var(--txt2);
+  animation: fadeIn .3s ease both;
+}
+.files-toggle-count {
+  font-family: var(--font-mono); font-size: 10px; color: var(--a2);
+  background: rgba(91,95,199,.1); border: 1px solid rgba(91,95,199,.2);
+  padding: 2px 8px; border-radius: 20px;
+}
+.files-toggle-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--bg4); border: 1px solid var(--brd);
+  border-radius: var(--r-xs); padding: 6px 12px;
+  font-family: var(--font-body); font-size: 12px; font-weight: 500; color: var(--txt2);
+  cursor: pointer; transition: all .18s;
+}
+.files-toggle-btn:hover { border-color: var(--brd2); color: var(--txt); background: var(--bg5); }
+.files-section {
+  overflow: hidden;
+  transition: max-height .4s cubic-bezier(.16,1,.3,1), opacity .3s ease;
+  max-height: 2000px; opacity: 1;
+}
+.files-section.collapsed {
+  max-height: 0; opacity: 0; pointer-events: none;
+}
+
 .analytics-wrap { display:none; margin-top:28px; animation:fadeIn .35s ease both; }
 .analytics-wrap.visible { display:block; }
 
@@ -3049,6 +3081,20 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
       </div>
     </div>
 
+    <!-- UPLOAD BLOCKS (collapsible) -->
+    <div class="files-toggle-bar" id="files-toggle-bar" style="display:none;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <span>Загруженные файлы</span>
+        <span class="files-toggle-count" id="files-toggle-count"></span>
+      </div>
+      <button class="files-toggle-btn" id="files-toggle-btn" onclick="toggleFilesSection()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" id="files-toggle-icon"><path d="M6 9l6 6 6-6"/></svg>
+        <span id="files-toggle-label">Показать файлы</span>
+      </button>
+    </div>
+
+    <div class="files-section" id="files-section">
     <!-- UPLOAD BLOCKS -->
     <div class="upload-grid">
 
@@ -3229,6 +3275,7 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       Запустить анализ
     </button>
+    </div><!-- /files-section -->
 
     <!-- ANALYTICS OUTPUT -->
     <div class="analytics-wrap" id="analytics-wrap">
@@ -3865,6 +3912,11 @@ async function openReport(id) {
   g('file-counter').textContent = '0'
   g('go-btn').disabled = true
   g('analytics-wrap').classList.remove('visible')
+  // Reset files section state for new report
+  if (g('files-section')) g('files-section').classList.remove('collapsed')
+  if (g('files-toggle-bar')) g('files-toggle-bar').style.display = 'none'
+  if (g('files-toggle-label')) g('files-toggle-label').textContent = 'Показать файлы'
+  if (g('files-toggle-icon')) g('files-toggle-icon').style.transform = ''
   showPage('page-report')
 
   // Load existing files if report has data
@@ -3889,6 +3941,8 @@ async function openReport(id) {
       g('go-btn').disabled = false
       // Auto-run analysis when files are loaded from DB
       setTimeout(() => runAnalysis(), 300)
+    } else {
+      restoreFilesCollapseState()
     }
   }
 }
@@ -3965,6 +4019,7 @@ function updateCounter() {
   const n = Object.keys(S).length
   set('file-counter', n)
   g('go-btn').disabled = !(S['b1'] && S['d1'])
+  updateFilesToggleCount()
 }
 
 function buildLabel(meta) {
@@ -4218,7 +4273,67 @@ function runAnalysis() {
   g('ins-block').innerHTML = ins.map(x=>`<div class="ins-row"><div class="ins-ic">${x.ic}</div><div>${x.t}</div></div>`).join('')
 
   g('analytics-wrap').classList.add('visible')
+  // Auto-collapse files section after analysis runs
+  collapseFilesSection(true)
   setTimeout(()=>g('analytics-wrap').scrollIntoView({behavior:'smooth',block:'start'}),100)
+}
+
+
+// ── FILES SECTION COLLAPSE ──────────────────────
+function collapseFilesSection(save) {
+  const sec = g('files-section')
+  const bar = g('files-toggle-bar')
+  const lbl = g('files-toggle-label')
+  const icon = g('files-toggle-icon')
+  if (!sec) return
+  sec.classList.add('collapsed')
+  if (bar) bar.style.display = 'flex'
+  if (lbl) lbl.textContent = 'Показать файлы'
+  if (icon) icon.style.transform = ''
+  updateFilesToggleCount()
+  if (save && currentReport) {
+    try { localStorage.setItem('files_collapsed_' + currentReport.id, '1') } catch(e) {}
+  }
+}
+
+function expandFilesSection() {
+  const sec = g('files-section')
+  const lbl = g('files-toggle-label')
+  const icon = g('files-toggle-icon')
+  if (!sec) return
+  sec.classList.remove('collapsed')
+  if (lbl) lbl.textContent = 'Скрыть файлы'
+  if (icon) icon.style.transform = 'rotate(180deg)'
+  if (currentReport) {
+    try { localStorage.removeItem('files_collapsed_' + currentReport.id) } catch(e) {}
+  }
+}
+
+function toggleFilesSection() {
+  const sec = g('files-section')
+  if (!sec) return
+  if (sec.classList.contains('collapsed')) {
+    expandFilesSection()
+  } else {
+    collapseFilesSection(true)
+  }
+}
+
+function updateFilesToggleCount() {
+  const count = g('file-counter') ? parseInt(g('file-counter').textContent) || 0 : 0
+  const el = g('files-toggle-count')
+  if (el) el.textContent = count > 0 ? count + '/10 файлов' : ''
+}
+
+function restoreFilesCollapseState() {
+  if (!currentReport) return
+  let collapsed = false
+  try { collapsed = !!localStorage.getItem('files_collapsed_' + currentReport.id) } catch(e) {}
+  // Also collapse if analytics are already visible
+  const hasAnalytics = g('analytics-wrap') && g('analytics-wrap').classList.contains('visible')
+  if (collapsed || hasAnalytics) {
+    collapseFilesSection(false)
+  }
 }
 
 // ══════════════════════════════════════════════
