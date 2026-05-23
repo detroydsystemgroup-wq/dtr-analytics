@@ -1493,6 +1493,203 @@ input[type=file] { display: none; }
 /* Smooth SVG color transitions everywhere */
 svg { transition: stroke .2s, fill .2s, opacity .2s; }
 
+/* ══════════════════════════════════════════════
+   PASSPORT — Client Profile Page
+══════════════════════════════════════════════ */
+.passport-nav {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  background: var(--bg3); border: 1px solid var(--brd);
+  border-radius: var(--r-lg); padding: 6px;
+  margin-bottom: 28px; position: sticky; top: 60px; z-index: 50;
+  backdrop-filter: blur(20px);
+}
+.passport-tab {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border-radius: var(--r-sm);
+  font-family: var(--font-body); font-size: 12px; font-weight: 500;
+  color: var(--txt3); cursor: pointer; transition: all .18s;
+  background: transparent; border: none; white-space: nowrap;
+}
+.passport-tab:hover { color: var(--txt2); background: var(--bg4); }
+.passport-tab.pt-active { background: var(--bg5); color: var(--txt); }
+.passport-section { display: none; animation: fadeUp .3s cubic-bezier(.16,1,.3,1) both; }
+.passport-section.ps-active { display: block; }
+.ps-card {
+  background: var(--bg3); border: 1px solid var(--brd);
+  border-radius: var(--r-lg); padding: 28px 32px;
+  margin-bottom: 16px; position: relative; overflow: hidden;
+}
+.ps-card::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0;
+  height: 2px; opacity: 0; transition: opacity .3s;
+}
+.ps-card.pc-basic::before   { background: var(--a2); }
+.ps-card.pc-brand::before   { background: var(--pink); }
+.ps-card.pc-audience::before { background: var(--cyan); }
+.ps-card.pc-comp::before    { background: var(--amber); }
+.ps-card.pc-kpi::before     { background: var(--green); }
+.ps-card.pc-media::before   { background: var(--red); }
+.ps-card.pc-notes::before   { background: var(--txt2); }
+.ps-card:hover::before { opacity: 1; }
+.ps-card-head {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px;
+}
+.ps-card-title {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--font-display); font-size: 16px; font-weight: 700; letter-spacing: -.02em;
+}
+.ps-card-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0;
+}
+.ps-edit-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--bg4); border: 1px solid var(--brd);
+  border-radius: var(--r-xs); padding: 7px 14px;
+  font-family: var(--font-body); font-size: 12px; font-weight: 500;
+  color: var(--txt2); cursor: pointer; transition: all .15s;
+}
+.ps-edit-btn:hover { border-color: var(--brd2); color: var(--txt); background: var(--bg5); }
+.ps-save-btn {
+  display: flex; align-items: center; gap: 6px; background: var(--a); border: none;
+  border-radius: var(--r-xs); padding: 7px 16px;
+  font-family: var(--font-body); font-size: 12px; font-weight: 600;
+  color: #fff; cursor: pointer; transition: all .15s; box-shadow: var(--shadow-sm);
+}
+.ps-save-btn:hover { background: #6669d4; }
+.ps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.ps-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.ps-field { display: flex; flex-direction: column; gap: 6px; }
+.ps-field label {
+  font-family: var(--font-mono); font-size: 9px;
+  color: var(--txt3); letter-spacing: .14em; text-transform: uppercase;
+}
+.ps-field input, .ps-field textarea, .ps-field select {
+  background: var(--bg4); border: 1px solid var(--brd);
+  border-radius: var(--r-sm); padding: 10px 13px;
+  color: var(--txt); font-family: var(--font-body); font-size: 13px;
+  outline: none; transition: border-color .2s, box-shadow .2s; resize: none;
+}
+.ps-field input:focus, .ps-field textarea:focus {
+  border-color: var(--a2); box-shadow: 0 0 0 3px rgba(91,95,199,.1);
+}
+.ps-field input::placeholder, .ps-field textarea::placeholder { color: var(--txt3); }
+.ps-field.full { grid-column: 1/-1; }
+.ps-view-field { margin-bottom: 14px; }
+.ps-view-label {
+  font-family: var(--font-mono); font-size: 9px; color: var(--txt3);
+  letter-spacing: .14em; text-transform: uppercase; margin-bottom: 4px;
+}
+.ps-view-val { font-size: 13px; color: var(--txt); line-height: 1.6; }
+.ps-view-val.empty { color: var(--txt3); font-style: italic; }
+.ps-view-link { color: var(--a2); text-decoration: none; font-size: 13px; }
+.ps-view-link:hover { color: var(--a3); text-decoration: underline; }
+.ps-tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.ps-tag {
+  font-family: var(--font-mono); font-size: 10px; padding: 3px 10px;
+  border-radius: 20px; background: var(--bg5); color: var(--txt2); border: 1px solid var(--brd);
+}
+.ps-tag.ps-tag-danger { background: rgba(248,113,113,.08); color: var(--red); border-color: rgba(248,113,113,.2); }
+.ps-tag.ps-tag-key { background: rgba(91,95,199,.1); color: var(--a2); border-color: rgba(91,95,199,.2); }
+.tone-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+.tone-btn {
+  padding: 10px 8px; border: 1px solid var(--brd); border-radius: var(--r-sm);
+  background: var(--bg4); text-align: center; cursor: pointer; transition: all .15s;
+  font-family: var(--font-body); font-size: 12px; color: var(--txt2);
+}
+.tone-btn:hover { border-color: var(--brd2); color: var(--txt); }
+.tone-btn.tb-active { border-color: rgba(91,95,199,.45); background: rgba(91,95,199,.12); color: var(--a2); }
+.persona-list { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
+.persona-card {
+  background: var(--bg4); border: 1px solid var(--brd);
+  border-radius: var(--r-md); padding: 18px; position: relative; transition: border-color .2s;
+}
+.persona-card:hover { border-color: var(--brd2); }
+.persona-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; background: var(--bg5); margin-bottom: 12px;
+}
+.persona-name { font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: -.01em; margin-bottom: 4px; }
+.persona-age { font-family: var(--font-mono); font-size: 10px; color: var(--a2); margin-bottom: 10px; }
+.persona-item { font-size: 12px; color: var(--txt2); line-height: 1.5; margin-bottom: 5px; }
+.persona-del-btn {
+  position: absolute; top: 12px; right: 12px;
+  background: transparent; border: none; cursor: pointer;
+  color: var(--txt3); padding: 4px; border-radius: 6px; transition: all .15s;
+}
+.persona-del-btn:hover { color: var(--red); background: rgba(248,113,113,.08); }
+.comp-list { display: flex; flex-direction: column; gap: 10px; }
+.comp-card {
+  background: var(--bg4); border: 1px solid var(--brd);
+  border-radius: var(--r-md); padding: 16px 18px;
+  display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 14px; align-items: start;
+}
+.comp-card:hover { border-color: var(--brd2); }
+.comp-name { font-family: var(--font-display); font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+.comp-link { font-family: var(--font-mono); font-size: 10px; color: var(--a2); }
+.comp-label { font-family: var(--font-mono); font-size: 9px; color: var(--txt3); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 3px; }
+.comp-strong { font-size: 11px; color: var(--green); line-height: 1.5; }
+.comp-weak { font-size: 11px; color: var(--red); line-height: 1.5; }
+.kpi-passport-list { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
+.kpi-passport-card {
+  background: var(--bg4); border: 1px solid var(--brd);
+  border-radius: var(--r-md); padding: 18px; position: relative; overflow: hidden;
+}
+.kpi-passport-card:hover { border-color: var(--green); }
+.kpi-passport-card::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--green);
+}
+.kpi-goal { font-family: var(--font-display); font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+.kpi-deadline-tag {
+  display: inline-flex; font-family: var(--font-mono); font-size: 10px;
+  padding: 2px 8px; border-radius: 20px; background: rgba(74,222,128,.08); color: var(--green); margin-bottom: 10px;
+}
+.kpi-vals { display: flex; gap: 20px; }
+.kpi-val-num { font-family: var(--font-display); font-size: 20px; font-weight: 800; }
+.kpi-val-lbl { font-family: var(--font-mono); font-size: 9px; color: var(--txt3); letter-spacing: .1em; text-transform: uppercase; margin-top: 2px; }
+.note-list { display: flex; flex-direction: column; }
+.note-item { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--brd); }
+.note-item:last-child { border-bottom: none; }
+.note-dot-col { display: flex; flex-direction: column; align-items: center; padding-top: 3px; }
+.note-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--a); flex-shrink: 0; }
+.note-line { width: 1px; flex: 1; background: var(--brd); margin: 5px 0; min-height: 20px; }
+.note-body { flex: 1; }
+.note-author { font-family: var(--font-mono); font-size: 10px; color: var(--a2); margin-bottom: 4px; }
+.note-text { font-size: 13px; color: var(--txt2); line-height: 1.6; white-space: pre-wrap; }
+.note-date { font-family: var(--font-mono); font-size: 10px; color: var(--txt3); margin-top: 5px; }
+.ps-add-btn {
+  display: flex; align-items: center; gap: 7px; width: 100%; padding: 12px;
+  background: var(--bg4); border: 1px dashed var(--brd2);
+  border-radius: var(--r-md); color: var(--txt3);
+  font-family: var(--font-body); font-size: 12px;
+  cursor: pointer; transition: all .18s; justify-content: center; margin-top: 10px;
+}
+.ps-add-btn:hover { border-color: var(--a); color: var(--a2); background: rgba(91,95,199,.05); }
+.social-chip {
+  display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px;
+  border-radius: 20px; background: var(--bg5); border: 1px solid var(--brd);
+  font-family: var(--font-mono); font-size: 11px; color: var(--txt2); text-decoration: none; transition: all .15s;
+}
+.social-chip:hover { border-color: var(--brd2); color: var(--txt); }
+.color-swatches { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+.color-swatch {
+  width: 32px; height: 32px; border-radius: 8px;
+  border: 2px solid rgba(255,255,255,.1); cursor: pointer; transition: transform .15s; position: relative;
+}
+.color-swatch:hover { transform: scale(1.15); }
+.color-swatch-input {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.ps-empty { text-align: center; padding: 40px 20px; }
+.ps-empty-icon { font-size: 32px; margin-bottom: 12px; opacity: .3; }
+.ps-empty-text { font-size: 13px; color: var(--txt3); }
+@media (max-width: 900px) {
+  .ps-grid, .ps-grid-3, .persona-list, .kpi-passport-list { grid-template-columns: 1fr; }
+  .comp-card { grid-template-columns: 1fr; }
+  .passport-nav { top: 52px; }
+}
+
 </style>
 </head>
 <body>
@@ -1606,10 +1803,16 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
           <div class="project-big-desc" id="proj-desc">—</div>
         </div>
       </div>
-      <button class="btn-primary agency-only" style="width:auto;padding:11px 22px;" onclick="openCreateReport()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Новый отчёт
-      </button>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-ghost" onclick="openPassport()" style="gap:7px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M8 10h8M8 14h5"/><circle cx="17" cy="14" r="3"/></svg>
+          Паспорт
+        </button>
+        <button class="btn-primary agency-only" style="width:auto;padding:11px 22px;" onclick="openCreateReport()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Новый отчёт
+        </button>
+      </div>
     </div>
     <!-- ── TRACKER ── -->
     <div class="tracker-wrap">
@@ -1642,6 +1845,368 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
     <div class="reports-section">
       <div class="section-head"><div class="section-title">Отчёты</div></div>
       <div id="reports-list"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     PAGE: PASSPORT
+═══════════════════════════════════════════ -->
+<div class="page" id="page-passport">
+  <header class="app-header">
+    <div class="header-logo">
+      <div style="font-family:Manrope,sans-serif;font-size:10px;color:var(--txt3);letter-spacing:.12em;text-transform:uppercase;">DTR Analytics</div>
+    </div>
+    <div class="header-right">
+      <div class="user-pill"><div style="width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s ease infinite;"></div><span id="header-user-pp">—</span></div>
+      <button class="logout-btn" onclick="doLogout()">Выйти</button>
+    </div>
+  </header>
+  <div class="app-main">
+    <div class="back-btn" onclick="showPage('page-project')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Назад к проекту
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px;">
+      <div id="pp-icon" style="width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;"></div>
+      <div>
+        <div style="font-family:Manrope,sans-serif;font-size:10px;color:var(--txt3);letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px;">Паспорт клиента</div>
+        <div style="font-family:Manrope,sans-serif;font-size:26px;font-weight:800;letter-spacing:-.03em;" id="pp-title">—</div>
+      </div>
+    </div>
+
+    <!-- Tab nav -->
+    <div class="passport-nav" id="passport-nav">
+      <button class="passport-tab pt-active" onclick="switchPassportTab('basic',this)">🪪 Профиль</button>
+      <button class="passport-tab" onclick="switchPassportTab('brand',this)">🧠 Бренд</button>
+      <button class="passport-tab" onclick="switchPassportTab('audience',this)">🎯 Аудитория</button>
+      <button class="passport-tab" onclick="switchPassportTab('competitors',this)">📊 Конкуренты</button>
+      <button class="passport-tab" onclick="switchPassportTab('kpi',this)">🏆 KPI</button>
+      <button class="passport-tab" onclick="switchPassportTab('media',this)">📸 Медиа</button>
+      <button class="passport-tab" onclick="switchPassportTab('notes',this)">💬 Заметки</button>
+    </div>
+
+    <!-- SECTION: Профиль -->
+    <div class="passport-section ps-active" id="ps-basic">
+      <div class="ps-card pc-basic">
+        <div class="ps-card-head">
+          <div class="ps-card-title">
+            <div class="ps-card-icon" style="background:rgba(91,95,199,.12);">🪪</div>
+            Профиль заведения
+          </div>
+          <div style="display:flex;gap:8px;" id="basic-btns">
+            <button class="ps-edit-btn agency-only" onclick="psEdit('basic')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Редактировать
+            </button>
+          </div>
+        </div>
+        <!-- VIEW -->
+        <div id="basic-view">
+          <div class="ps-grid">
+            <div><div class="ps-view-label">Название</div><div class="ps-view-val" id="bv-name">—</div></div>
+            <div><div class="ps-view-label">Категория</div><div class="ps-view-val" id="bv-category">—</div></div>
+            <div><div class="ps-view-label">Адрес</div><div class="ps-view-val" id="bv-address">—</div></div>
+            <div><div class="ps-view-label">Телефон</div><div class="ps-view-val" id="bv-phone">—</div></div>
+            <div><div class="ps-view-label">Email</div><div class="ps-view-val" id="bv-email">—</div></div>
+            <div><div class="ps-view-label">Сайт</div><div class="ps-view-val" id="bv-website">—</div></div>
+            <div><div class="ps-view-label">Режим работы</div><div class="ps-view-val" id="bv-hours">—</div></div>
+            <div>
+              <div class="ps-view-label">Соцсети</div>
+              <div id="bv-socials" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;"></div>
+            </div>
+          </div>
+        </div>
+        <!-- EDIT -->
+        <div id="basic-edit" style="display:none;">
+          <div class="ps-grid">
+            <div class="ps-field"><label>Название</label><input type="text" id="be-name" placeholder="Uzbek Doner"></div>
+            <div class="ps-field"><label>Категория</label><input type="text" id="be-category" placeholder="Фастфуд, стритфуд"></div>
+            <div class="ps-field full"><label>Адрес</label><input type="text" id="be-address" placeholder="г. Ташкент, ул. Амира Темура, 15"></div>
+            <div class="ps-field"><label>Телефон</label><input type="tel" id="be-phone" placeholder="+998 90 123 45 67"></div>
+            <div class="ps-field"><label>Email</label><input type="email" id="be-email" placeholder="info@uzbekdoner.uz"></div>
+            <div class="ps-field"><label>Сайт</label><input type="url" id="be-website" placeholder="https://uzbekdoner.uz"></div>
+            <div class="ps-field"><label>Instagram</label><input type="text" id="be-instagram" placeholder="@uzbekdoner"></div>
+            <div class="ps-field"><label>Telegram</label><input type="text" id="be-telegram" placeholder="@uzbekdoner_bot"></div>
+            <div class="ps-field full"><label>Режим работы</label><input type="text" id="be-hours" placeholder="Пн–Вс 10:00 – 22:00"></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:18px;">
+            <button class="btn-ghost" onclick="psCancel('basic')">Отмена</button>
+            <button class="ps-save-btn" onclick="psSave('basic')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Сохранить
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: Бренд -->
+    <div class="passport-section" id="ps-brand">
+      <div class="ps-card pc-brand">
+        <div class="ps-card-head">
+          <div class="ps-card-title">
+            <div class="ps-card-icon" style="background:rgba(192,132,252,.12);">🧠</div>
+            Профиль бренда
+          </div>
+          <button class="ps-edit-btn agency-only" onclick="psEdit('brand')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Редактировать
+          </button>
+        </div>
+        <div id="brand-view">
+          <div class="ps-grid">
+            <div>
+              <div class="ps-view-label">Тон голоса</div>
+              <div class="ps-view-val" id="brv-tone">—</div>
+            </div>
+            <div>
+              <div class="ps-view-label">Цветовая палитра</div>
+              <div class="color-swatches" id="brv-colors"></div>
+            </div>
+            <div class="full">
+              <div class="ps-view-label">Ключевые месседжи</div>
+              <div class="ps-tag-list" id="brv-messages"></div>
+            </div>
+            <div class="full">
+              <div class="ps-view-label">Запрещённые слова / темы</div>
+              <div class="ps-tag-list" id="brv-forbidden"></div>
+            </div>
+            <div class="full">
+              <div class="ps-view-label">Заметки по стилю</div>
+              <div class="ps-view-val" id="brv-style">—</div>
+            </div>
+          </div>
+        </div>
+        <div id="brand-edit" style="display:none;">
+          <div style="margin-bottom:18px;">
+            <div class="ps-view-label" style="margin-bottom:10px;">Тон голоса</div>
+            <div class="tone-grid">
+              <button class="tone-btn" data-tone="Дружелюбный" onclick="selectTone(this)">😊 Дружелюбный</button>
+              <button class="tone-btn" data-tone="Профессиональный" onclick="selectTone(this)">💼 Профессиональный</button>
+              <button class="tone-btn" data-tone="Дерзкий" onclick="selectTone(this)">🔥 Дерзкий</button>
+              <button class="tone-btn" data-tone="Молодёжный" onclick="selectTone(this)">⚡ Молодёжный</button>
+              <button class="tone-btn" data-tone="Семейный" onclick="selectTone(this)">🏠 Семейный</button>
+              <button class="tone-btn" data-tone="Премиальный" onclick="selectTone(this)">✨ Премиальный</button>
+            </div>
+          </div>
+          <div class="ps-grid">
+            <div class="ps-field full"><label>Ключевые месседжи (через запятую)</label><input type="text" id="bre-messages" placeholder="Вкусно и быстро, Свежие продукты, Доступные цены"></div>
+            <div class="ps-field full"><label>Запрещённые слова/темы (через запятую)</label><input type="text" id="bre-forbidden" placeholder="дёшево, скидка, акция, распродажа"></div>
+            <div class="ps-field full"><label>Цвета бренда (hex через запятую)</label><input type="text" id="bre-colors" placeholder="#e63c2f, #1a1a1a, #ffffff"></div>
+            <div class="ps-field full"><label>Заметки по стилю съёмки и подачи</label><textarea id="bre-style" rows="3" placeholder="Тёплые цвета, натуральный свет, еда крупным планом..."></textarea></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:18px;">
+            <button class="btn-ghost" onclick="psCancel('brand')">Отмена</button>
+            <button class="ps-save-btn" onclick="psSave('brand')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Сохранить
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: Аудитория -->
+    <div class="passport-section" id="ps-audience">
+      <div class="ps-card pc-audience">
+        <div class="ps-card-head">
+          <div class="ps-card-title">
+            <div class="ps-card-icon" style="background:rgba(56,189,248,.12);">🎯</div>
+            Портреты аудитории
+          </div>
+          <button class="ps-edit-btn agency-only" onclick="openAddPersona()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Добавить персонаж
+          </button>
+        </div>
+        <div class="persona-list" id="persona-list">
+          <div class="ps-empty"><div class="ps-empty-icon">🎯</div><div class="ps-empty-text">Персонажи ещё не добавлены</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: Конкуренты -->
+    <div class="passport-section" id="ps-competitors">
+      <div class="ps-card pc-comp">
+        <div class="ps-card-head">
+          <div class="ps-card-title">
+            <div class="ps-card-icon" style="background:rgba(245,158,11,.12);">📊</div>
+            Конкурентная карта
+          </div>
+          <button class="ps-edit-btn agency-only" onclick="openAddCompetitor()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Добавить конкурента
+          </button>
+        </div>
+        <div class="comp-list" id="comp-list">
+          <div class="ps-empty"><div class="ps-empty-icon">📊</div><div class="ps-empty-text">Конкуренты ещё не добавлены</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: KPI -->
+    <div class="passport-section" id="ps-kpi">
+      <div class="ps-card pc-kpi">
+        <div class="ps-card-head">
+          <div class="ps-card-title">
+            <div class="ps-card-icon" style="background:rgba(74,222,128,.12);">🏆</div>
+            Цели и KPI
+          </div>
+          <button class="ps-edit-btn agency-only" onclick="openAddKPI()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Добавить цель
+          </button>
+        </div>
+        <div class="kpi-passport-list" id="kpi-passport-list">
+          <div class="ps-empty" style="grid-column:1/-1;"><div class="ps-empty-icon">🏆</div><div class="ps-empty-text">Цели ещё не добавлены</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: Медиа -->
+    <div class="passport-section" id="ps-media">
+      <div class="ps-card pc-media">
+        <div class="ps-card-head">
+          <div class="ps-card-title">
+            <div class="ps-card-icon" style="background:rgba(248,113,113,.12);">📸</div>
+            Медиа-библиотека
+          </div>
+          <button class="ps-edit-btn agency-only" onclick="psEdit('media')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Редактировать
+          </button>
+        </div>
+        <div id="media-view">
+          <div class="ps-grid">
+            <div>
+              <div class="ps-view-label">Папка с фото</div>
+              <div id="mv-photo">—</div>
+            </div>
+            <div>
+              <div class="ps-view-label">Папка с видео</div>
+              <div id="mv-video">—</div>
+            </div>
+            <div>
+              <div class="ps-view-label">Референсы стиля</div>
+              <div id="mv-refs">—</div>
+            </div>
+            <div>
+              <div class="ps-view-label">Дополнительные ресурсы</div>
+              <div id="mv-extra">—</div>
+            </div>
+            <div class="full">
+              <div class="ps-view-label">Стиль съёмки / что нельзя снимать</div>
+              <div class="ps-view-val" id="mv-rules">—</div>
+            </div>
+          </div>
+        </div>
+        <div id="media-edit" style="display:none;">
+          <div class="ps-grid">
+            <div class="ps-field"><label>Папка с фото (ссылка)</label><input type="url" id="me-photo" placeholder="https://drive.google.com/..."></div>
+            <div class="ps-field"><label>Папка с видео (ссылка)</label><input type="url" id="me-video" placeholder="https://drive.google.com/..."></div>
+            <div class="ps-field"><label>Референсы стиля</label><input type="url" id="me-refs" placeholder="https://pinterest.com/..."></div>
+            <div class="ps-field"><label>Дополнительные ресурсы</label><input type="url" id="me-extra" placeholder="https://..."></div>
+            <div class="ps-field full"><label>Правила и запреты при съёмке</label><textarea id="me-rules" rows="3" placeholder="Не снимать кухню, не показывать упаковку конкурентов..."></textarea></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:18px;">
+            <button class="btn-ghost" onclick="psCancel('media')">Отмена</button>
+            <button class="ps-save-btn" onclick="psSave('media')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Сохранить
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: Заметки -->
+    <div class="passport-section" id="ps-notes">
+      <div class="ps-card pc-notes">
+        <div class="ps-card-head">
+          <div class="ps-card-title">
+            <div class="ps-card-icon" style="background:rgba(136,136,136,.12);">💬</div>
+            Внутренние заметки
+          </div>
+          <button class="ps-edit-btn agency-only" onclick="openAddNote()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Добавить заметку
+          </button>
+        </div>
+        <div class="note-list" id="note-list">
+          <div class="ps-empty"><div class="ps-empty-icon">💬</div><div class="ps-empty-text">Заметки появятся здесь</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:60px;"></div>
+  </div>
+</div>
+
+<!-- MODAL: Добавить персонаж -->
+<div class="modal-overlay" id="modal-persona">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-title">🎯 Добавить персонаж</div>
+    <div class="ps-grid">
+      <div class="ps-field"><label>Имя персонажа</label><input type="text" id="pn-name" placeholder="Офисный Алишер"></div>
+      <div class="ps-field"><label>Возраст</label><input type="text" id="pn-age" placeholder="28–35 лет"></div>
+      <div class="ps-field full"><label>Боль / проблема</label><input type="text" id="pn-pain" placeholder="Мало времени на обед, хочет быстро и вкусно"></div>
+      <div class="ps-field full"><label>Мотивация / что ценит</label><input type="text" id="pn-motivation" placeholder="Скорость, качество, предсказуемость вкуса"></div>
+      <div class="ps-field full"><label>Поведение (откуда узнаёт, как выбирает)</label><input type="text" id="pn-behavior" placeholder="Ищет в Instagram, читает отзывы, лоялен к привычным местам"></div>
+      <div class="ps-field"><label>Эмодзи-аватар</label><input type="text" id="pn-emoji" placeholder="👨‍💼" maxlength="4"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-persona')">Отмена</button>
+      <button class="btn-primary" style="flex:1;" onclick="addPersona()">Добавить</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Добавить конкурента -->
+<div class="modal-overlay" id="modal-competitor">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-title">📊 Добавить конкурента</div>
+    <div class="ps-grid">
+      <div class="ps-field"><label>Название</label><input type="text" id="co-name" placeholder="Doner House"></div>
+      <div class="ps-field"><label>Instagram</label><input type="text" id="co-instagram" placeholder="@donerhouse_tash"></div>
+      <div class="ps-field full"><label>Сильные стороны</label><input type="text" id="co-strong" placeholder="Быстрая доставка, активный контент"></div>
+      <div class="ps-field full"><label>Слабые стороны</label><input type="text" id="co-weak" placeholder="Высокие цены, слабый визуал"></div>
+      <div class="ps-field full"><label>Примечание</label><input type="text" id="co-note" placeholder="Основной конкурент в Чиланзаре"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-competitor')">Отмена</button>
+      <button class="btn-primary" style="flex:1;" onclick="addCompetitor()">Добавить</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Добавить KPI -->
+<div class="modal-overlay" id="modal-kpi">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-title">🏆 Добавить цель</div>
+    <div class="ps-grid">
+      <div class="ps-field full"><label>Цель</label><input type="text" id="ki-goal" placeholder="Увеличить выручку на 20%"></div>
+      <div class="ps-field"><label>Текущий показатель</label><input type="text" id="ki-current" placeholder="5 млн/мес"></div>
+      <div class="ps-field"><label>Целевой показатель</label><input type="text" id="ki-target" placeholder="6 млн/мес"></div>
+      <div class="ps-field"><label>Метрика</label><input type="text" id="ki-metric" placeholder="Выручка/месяц"></div>
+      <div class="ps-field"><label>Срок</label><input type="date" id="ki-deadline"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-kpi')">Отмена</button>
+      <button class="btn-primary" style="flex:1;" onclick="addKPI()">Добавить</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Добавить заметку -->
+<div class="modal-overlay" id="modal-note">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-title">💬 Добавить заметку</div>
+    <div class="ps-field" style="margin-bottom:14px;"><label>Заметка</label><textarea id="nt-text" rows="4" style="background:var(--bg4);border:1px solid var(--brd);border-radius:var(--r-sm);padding:11px 14px;color:var(--txt);font-family:Manrope,sans-serif;font-size:13px;outline:none;resize:vertical;width:100%;" placeholder="Клиент просил не использовать тёмные фоны. Встреча 15 мая..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-note')">Отмена</button>
+      <button class="btn-primary" style="flex:1;" onclick="addNote()">Добавить</button>
     </div>
   </div>
 </div>
@@ -3162,6 +3727,407 @@ async function saveStage() {
 
   closeModal('modal-stage')
   loadTracker()
+}
+
+
+// ══════════════════════════════════════════════
+// PASSPORT
+// ══════════════════════════════════════════════
+// SQL: CREATE TABLE IF NOT EXISTS client_passports (
+//   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+//   project_id uuid REFERENCES projects(id) ON DELETE CASCADE UNIQUE,
+//   basic jsonb DEFAULT '{}', brand jsonb DEFAULT '{}',
+//   audience jsonb DEFAULT '[]', competitors jsonb DEFAULT '[]',
+//   kpi jsonb DEFAULT '[]', media jsonb DEFAULT '{}',
+//   notes jsonb DEFAULT '[]',
+//   updated_at timestamptz DEFAULT now(), updated_by uuid
+// );
+// ALTER TABLE client_passports ENABLE ROW LEVEL SECURITY;
+// CREATE POLICY "allow_all_passport" ON client_passports FOR ALL USING (true) WITH CHECK (true);
+
+let passportData = { basic:{}, brand:{}, audience:[], competitors:[], kpi:[], media:{}, notes:[] }
+let selectedTone = ''
+
+async function openPassport() {
+  // sync header user name
+  const name = currentUser.user_metadata?.login_name || currentUser.email.split('@')[0]
+  set('header-user-pp', name)
+  // set icon + title
+  const p = currentProject
+  if (p) {
+    const pi = g('pp-icon')
+    pi.style.cssText = `background:${p.brand_color}22;border:1px solid ${p.brand_color}44;color:${p.brand_color};`
+    pi.textContent = p.name[0]
+    set('pp-title', p.name)
+  }
+  showPage('page-passport')
+  switchPassportTab('basic', document.querySelector('.passport-tab'))
+  await loadPassport()
+}
+
+async function loadPassport() {
+  const { data } = await sb.from('client_passports')
+    .select('*').eq('project_id', currentProject.id).single()
+  if (data) {
+    passportData = {
+      basic: data.basic || {},
+      brand: data.brand || {},
+      audience: data.audience || [],
+      competitors: data.competitors || [],
+      kpi: data.kpi || [],
+      media: data.media || {},
+      notes: data.notes || []
+    }
+  }
+  renderPassportAll()
+  // hide agency-only if client
+  if (_isClientCache) {
+    document.querySelectorAll('#page-passport .agency-only').forEach(el => el.style.display = 'none')
+  }
+}
+
+function renderPassportAll() {
+  renderBasic(); renderBrand(); renderAudience();
+  renderCompetitors(); renderKPI(); renderMedia(); renderNotes();
+}
+
+function switchPassportTab(id, btn) {
+  document.querySelectorAll('.passport-tab').forEach(t => t.classList.remove('pt-active'))
+  document.querySelectorAll('.passport-section').forEach(s => s.classList.remove('ps-active'))
+  if (btn) btn.classList.add('pt-active')
+  const sec = g('ps-' + id)
+  if (sec) sec.classList.add('ps-active')
+}
+
+// ── Section: edit/cancel helpers ──
+function psEdit(sec) {
+  g(sec + '-view').style.display = 'none'
+  g(sec + '-edit').style.display = 'block'
+  // fill edit fields from passportData
+  if (sec === 'basic') {
+    const b = passportData.basic
+    setVal('be-name', b.name); setVal('be-category', b.category)
+    setVal('be-address', b.address); setVal('be-phone', b.phone)
+    setVal('be-email', b.email); setVal('be-website', b.website)
+    setVal('be-instagram', b.instagram); setVal('be-telegram', b.telegram)
+    setVal('be-hours', b.hours)
+  }
+  if (sec === 'brand') {
+    const b = passportData.brand
+    selectedTone = b.tone || ''
+    document.querySelectorAll('.tone-btn').forEach(btn => {
+      btn.classList.toggle('tb-active', btn.dataset.tone === selectedTone)
+    })
+    setVal('bre-messages', (b.messages || []).join(', '))
+    setVal('bre-forbidden', (b.forbidden || []).join(', '))
+    setVal('bre-colors', (b.colors || []).join(', '))
+    setVal('bre-style', b.style)
+  }
+  if (sec === 'media') {
+    const m = passportData.media
+    setVal('me-photo', m.photo); setVal('me-video', m.video)
+    setVal('me-refs', m.refs); setVal('me-extra', m.extra)
+    setVal('me-rules', m.rules)
+  }
+}
+
+function psCancel(sec) {
+  g(sec + '-view').style.display = 'block'
+  g(sec + '-edit').style.display = 'none'
+}
+
+async function psSave(sec) {
+  if (sec === 'basic') {
+    passportData.basic = {
+      name: getVal('be-name'), category: getVal('be-category'),
+      address: getVal('be-address'), phone: getVal('be-phone'),
+      email: getVal('be-email'), website: getVal('be-website'),
+      instagram: getVal('be-instagram'), telegram: getVal('be-telegram'),
+      hours: getVal('be-hours')
+    }
+    renderBasic(); psCancel('basic')
+  }
+  if (sec === 'brand') {
+    passportData.brand = {
+      tone: selectedTone,
+      messages: getVal('bre-messages').split(',').map(s=>s.trim()).filter(Boolean),
+      forbidden: getVal('bre-forbidden').split(',').map(s=>s.trim()).filter(Boolean),
+      colors: getVal('bre-colors').split(',').map(s=>s.trim()).filter(Boolean),
+      style: getVal('bre-style')
+    }
+    renderBrand(); psCancel('brand')
+  }
+  if (sec === 'media') {
+    passportData.media = {
+      photo: getVal('me-photo'), video: getVal('me-video'),
+      refs: getVal('me-refs'), extra: getVal('me-extra'),
+      rules: getVal('me-rules')
+    }
+    renderMedia(); psCancel('media')
+  }
+  await savePassport()
+}
+
+async function savePassport() {
+  const payload = {
+    project_id: currentProject.id,
+    basic: passportData.basic,
+    brand: passportData.brand,
+    audience: passportData.audience,
+    competitors: passportData.competitors,
+    kpi: passportData.kpi,
+    media: passportData.media,
+    notes: passportData.notes,
+    updated_at: new Date().toISOString(),
+    updated_by: currentUser.id
+  }
+  const { data: existing } = await sb.from('client_passports')
+    .select('id').eq('project_id', currentProject.id).single()
+  if (existing) {
+    await sb.from('client_passports').update(payload).eq('id', existing.id)
+  } else {
+    await sb.from('client_passports').insert(payload)
+  }
+}
+
+// ── RENDER helpers ──
+function setVal(id, v) { const el = g(id); if (el) el.value = v || ''; }
+function getVal(id) { const el = g(id); return el ? el.value.trim() : ''; }
+function viewVal(id, v, isLink) {
+  const el = g(id); if (!el) return
+  if (!v) { el.innerHTML = '<span class="empty">Не заполнено</span>'; el.className='ps-view-val empty'; return }
+  el.className = 'ps-view-val'
+  el.innerHTML = isLink
+    ? `<a href="${v}" target="_blank" class="ps-view-link">${v}</a>`
+    : v
+}
+
+function renderBasic() {
+  const b = passportData.basic
+  viewVal('bv-name', b.name); viewVal('bv-category', b.category)
+  viewVal('bv-address', b.address); viewVal('bv-phone', b.phone)
+  viewVal('bv-email', b.email); viewVal('bv-website', b.website, true)
+  viewVal('bv-hours', b.hours)
+  const socials = g('bv-socials'); if (!socials) return
+  const chips = []
+  if (b.instagram) chips.push(`<a href="https://instagram.com/${b.instagram.replace('@','')}" target="_blank" class="social-chip">📷 ${b.instagram}</a>`)
+  if (b.telegram) chips.push(`<a href="https://t.me/${b.telegram.replace('@','')}" target="_blank" class="social-chip">✈️ ${b.telegram}</a>`)
+  socials.innerHTML = chips.join('') || '<span style="color:var(--txt3);font-size:12px;">Не заполнено</span>'
+}
+
+function renderBrand() {
+  const b = passportData.brand
+  viewVal('brv-tone', b.tone || '')
+  const colors = g('brv-colors'); if (colors) {
+    colors.innerHTML = (b.colors||[]).length
+      ? (b.colors).map(c => `<div class="color-swatch" style="background:${c};" title="${c}"></div>`).join('')
+      : '<span style="color:var(--txt3);font-size:12px;">Не заполнено</span>'
+  }
+  const msgs = g('brv-messages'); if (msgs) {
+    msgs.innerHTML = (b.messages||[]).length
+      ? b.messages.map(m=>`<span class="ps-tag ps-tag-key">${m}</span>`).join('')
+      : '<span style="color:var(--txt3);font-size:12px;">Не заполнено</span>'
+  }
+  const forb = g('brv-forbidden'); if (forb) {
+    forb.innerHTML = (b.forbidden||[]).length
+      ? b.forbidden.map(f=>`<span class="ps-tag ps-tag-danger">🚫 ${f}</span>`).join('')
+      : '<span style="color:var(--txt3);font-size:12px;">Не заполнено</span>'
+  }
+  viewVal('brv-style', b.style)
+}
+
+function renderAudience() {
+  const list = g('persona-list'); if (!list) return
+  const personas = passportData.audience
+  if (!personas.length) {
+    list.innerHTML = '<div class="ps-empty" style="grid-column:1/-1;"><div class="ps-empty-icon">🎯</div><div class="ps-empty-text">Персонажи ещё не добавлены</div></div>'; return
+  }
+  const hideBtn = _isClientCache
+  list.innerHTML = personas.map((p, i) => `
+    <div class="persona-card">
+      ${!hideBtn ? `<button class="persona-del-btn" onclick="deletePersona(${i})">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+      </button>` : ''}
+      <div class="persona-avatar">${p.emoji || '👤'}</div>
+      <div class="persona-name">${p.name}</div>
+      <div class="persona-age">${p.age}</div>
+      <div class="persona-item"><span>Боль: </span>${p.pain}</div>
+      <div class="persona-item"><span>Ценит: </span>${p.motivation}</div>
+      ${p.behavior ? `<div class="persona-item"><span>Поведение: </span>${p.behavior}</div>` : ''}
+    </div>`).join('')
+}
+
+function renderCompetitors() {
+  const list = g('comp-list'); if (!list) return
+  const comps = passportData.competitors
+  if (!comps.length) {
+    list.innerHTML = '<div class="ps-empty"><div class="ps-empty-icon">📊</div><div class="ps-empty-text">Конкуренты ещё не добавлены</div></div>'; return
+  }
+  const hideBtn = _isClientCache
+  list.innerHTML = comps.map((c, i) => `
+    <div class="comp-card">
+      <div>
+        <div class="comp-name">${c.name}</div>
+        ${c.instagram ? `<div class="comp-link">📷 ${c.instagram}</div>` : ''}
+        ${c.note ? `<div style="font-size:11px;color:var(--txt3);margin-top:4px;">${c.note}</div>` : ''}
+      </div>
+      <div>
+        <div class="comp-label">Сильные стороны</div>
+        <div class="comp-strong">${c.strong || '—'}</div>
+      </div>
+      <div>
+        <div class="comp-label">Слабые стороны</div>
+        <div class="comp-weak">${c.weak || '—'}</div>
+      </div>
+      ${!hideBtn ? `<button class="persona-del-btn" onclick="deleteCompetitor(${i})">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+      </button>` : '<div></div>'}
+    </div>`).join('')
+}
+
+function renderKPI() {
+  const list = g('kpi-passport-list'); if (!list) return
+  const kpis = passportData.kpi
+  if (!kpis.length) {
+    list.innerHTML = '<div class="ps-empty" style="grid-column:1/-1;"><div class="ps-empty-icon">🏆</div><div class="ps-empty-text">Цели ещё не добавлены</div></div>'; return
+  }
+  const hideBtn = _isClientCache
+  list.innerHTML = kpis.map((k, i) => {
+    const dl = k.deadline ? new Date(k.deadline).toLocaleDateString('ru-RU', {day:'numeric',month:'long',year:'numeric'}) : null
+    return `<div class="kpi-passport-card">
+      ${!hideBtn ? `<button class="persona-del-btn" style="position:absolute;top:10px;right:10px;" onclick="deleteKPI(${i})">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+      </button>` : ''}
+      <div class="kpi-goal">${k.goal}</div>
+      ${dl ? `<div class="kpi-deadline-tag">📅 ${dl}</div>` : ''}
+      <div class="kpi-vals">
+        <div class="kpi-val-block">
+          <div class="kpi-val-num" style="color:var(--txt3);">${k.current || '—'}</div>
+          <div class="kpi-val-lbl">Сейчас</div>
+        </div>
+        <div style="font-size:20px;color:var(--txt3);align-self:center;">→</div>
+        <div class="kpi-val-block">
+          <div class="kpi-val-num" style="color:var(--green);">${k.target || '—'}</div>
+          <div class="kpi-val-lbl">Цель</div>
+        </div>
+      </div>
+      ${k.metric ? `<div style="font-family:Manrope,sans-serif;font-size:10px;color:var(--txt3);margin-top:8px;">${k.metric}</div>` : ''}
+    </div>`
+  }).join('')
+}
+
+function renderMedia() {
+  const m = passportData.media
+  const linkOrDash = (v) => v ? `<a href="${v}" target="_blank" class="ps-view-link">${v.length>40?v.slice(0,40)+'...':v}</a>` : '<span style="color:var(--txt3);font-size:12px;">Не заполнено</span>'
+  const mv = g('mv-photo'); if(mv) mv.innerHTML = linkOrDash(m.photo)
+  const mvv = g('mv-video'); if(mvv) mvv.innerHTML = linkOrDash(m.video)
+  const mvr = g('mv-refs'); if(mvr) mvr.innerHTML = linkOrDash(m.refs)
+  const mve = g('mv-extra'); if(mve) mve.innerHTML = linkOrDash(m.extra)
+  viewVal('mv-rules', m.rules)
+}
+
+function renderNotes() {
+  const list = g('note-list'); if (!list) return
+  const notes = passportData.notes
+  if (!notes.length) {
+    list.innerHTML = '<div class="ps-empty"><div class="ps-empty-icon">💬</div><div class="ps-empty-text">Заметки появятся здесь</div></div>'; return
+  }
+  const hideBtn = _isClientCache
+  list.innerHTML = notes.map((n, i) => {
+    const d = new Date(n.date)
+    return `<div class="note-item">
+      <div class="note-dot-col">
+        <div class="note-dot"></div>
+        ${i < notes.length-1 ? '<div class="note-line"></div>' : ''}
+      </div>
+      <div class="note-body">
+        <div class="note-author">${n.author || 'DTR Agency'}</div>
+        <div class="note-text">${n.text}</div>
+        <div class="note-date">${d.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})} · ${d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}</div>
+      </div>
+      ${!hideBtn ? `<button class="persona-del-btn" onclick="deleteNote(${i})">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+      </button>` : ''}
+    </div>`
+  }).join('')
+}
+
+// ── Tone ──
+function selectTone(btn) {
+  selectedTone = btn.dataset.tone
+  document.querySelectorAll('.tone-btn').forEach(b => b.classList.toggle('tb-active', b === btn))
+}
+
+// ── Persona ──
+function openAddPersona() { g('modal-persona').classList.add('open'); g('pn-name').focus(); }
+async function addPersona() {
+  const name = getVal('pn-name'); if (!name) return
+  passportData.audience.push({
+    name, age: getVal('pn-age'), pain: getVal('pn-pain'),
+    motivation: getVal('pn-motivation'), behavior: getVal('pn-behavior'),
+    emoji: getVal('pn-emoji') || '👤'
+  })
+  ;['pn-name','pn-age','pn-pain','pn-motivation','pn-behavior','pn-emoji'].forEach(id => setVal(id,''))
+  closeModal('modal-persona')
+  renderAudience()
+  await savePassport()
+}
+async function deletePersona(i) {
+  if (!confirm('Удалить этот персонаж?')) return
+  passportData.audience.splice(i, 1)
+  renderAudience(); await savePassport()
+}
+
+// ── Competitor ──
+function openAddCompetitor() { g('modal-competitor').classList.add('open'); g('co-name').focus(); }
+async function addCompetitor() {
+  const name = getVal('co-name'); if (!name) return
+  passportData.competitors.push({
+    name, instagram: getVal('co-instagram'),
+    strong: getVal('co-strong'), weak: getVal('co-weak'), note: getVal('co-note')
+  })
+  ;['co-name','co-instagram','co-strong','co-weak','co-note'].forEach(id => setVal(id,''))
+  closeModal('modal-competitor')
+  renderCompetitors(); await savePassport()
+}
+async function deleteCompetitor(i) {
+  if (!confirm('Удалить конкурента?')) return
+  passportData.competitors.splice(i, 1)
+  renderCompetitors(); await savePassport()
+}
+
+// ── KPI ──
+function openAddKPI() { g('modal-kpi').classList.add('open'); g('ki-goal').focus(); }
+async function addKPI() {
+  const goal = getVal('ki-goal'); if (!goal) return
+  passportData.kpi.push({
+    goal, current: getVal('ki-current'), target: getVal('ki-target'),
+    metric: getVal('ki-metric'), deadline: getVal('ki-deadline')
+  })
+  ;['ki-goal','ki-current','ki-target','ki-metric','ki-deadline'].forEach(id => setVal(id,''))
+  closeModal('modal-kpi')
+  renderKPI(); await savePassport()
+}
+async function deleteKPI(i) {
+  if (!confirm('Удалить эту цель?')) return
+  passportData.kpi.splice(i, 1)
+  renderKPI(); await savePassport()
+}
+
+// ── Notes ──
+function openAddNote() { g('modal-note').classList.add('open'); g('nt-text').focus(); }
+async function addNote() {
+  const text = getVal('nt-text'); if (!text) return
+  const name = currentUser.user_metadata?.login_name || currentUser.email.split('@')[0]
+  passportData.notes.unshift({ text, author: name, date: new Date().toISOString() })
+  setVal('nt-text', '')
+  closeModal('modal-note')
+  renderNotes(); await savePassport()
+}
+async function deleteNote(i) {
+  if (!confirm('Удалить заметку?')) return
+  passportData.notes.splice(i, 1)
+  renderNotes(); await savePassport()
 }
 
 // ══════════════════════════════════════════════
