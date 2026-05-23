@@ -1804,7 +1804,7 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
         </div>
       </div>
       <div style="display:flex;gap:10px;">
-        <button class="btn-ghost" onclick="openPassport()" style="gap:7px;">
+        <button class="btn-ghost agency-only" onclick="openPassport()" style="gap:7px;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M8 10h8M8 14h5"/><circle cx="17" cy="14" r="3"/></svg>
           Паспорт
         </button>
@@ -1895,12 +1895,7 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
             <div class="ps-card-icon" style="background:rgba(91,95,199,.12);">🪪</div>
             Профиль заведения
           </div>
-          <div style="display:flex;gap:8px;" id="basic-btns">
-            <button class="ps-edit-btn agency-only" onclick="psEdit('basic')">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-              Редактировать
-            </button>
-          </div>
+
         </div>
         <!-- VIEW -->
         <div id="basic-view">
@@ -1931,8 +1926,7 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
             <div class="ps-field"><label>Telegram</label><input type="text" id="be-telegram" placeholder="@uzbekdoner_bot"></div>
             <div class="ps-field full"><label>Режим работы</label><input type="text" id="be-hours" placeholder="Пн–Вс 10:00 – 22:00"></div>
           </div>
-          <div style="display:flex;gap:8px;margin-top:18px;">
-            <button class="btn-ghost" onclick="psCancel('basic')">Отмена</button>
+          <div style="display:flex;justify-content:flex-end;margin-top:18px;">
             <button class="ps-save-btn" onclick="psSave('basic')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
               Сохранить
@@ -1950,10 +1944,7 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
             <div class="ps-card-icon" style="background:rgba(192,132,252,.12);">🧠</div>
             Профиль бренда
           </div>
-          <button class="ps-edit-btn agency-only" onclick="psEdit('brand')">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            Редактировать
-          </button>
+
         </div>
         <div id="brand-view">
           <div class="ps-grid">
@@ -1997,8 +1988,7 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
             <div class="ps-field full"><label>Цвета бренда (hex через запятую)</label><input type="text" id="bre-colors" placeholder="#e63c2f, #1a1a1a, #ffffff"></div>
             <div class="ps-field full"><label>Заметки по стилю съёмки и подачи</label><textarea id="bre-style" rows="3" placeholder="Тёплые цвета, натуральный свет, еда крупным планом..."></textarea></div>
           </div>
-          <div style="display:flex;gap:8px;margin-top:18px;">
-            <button class="btn-ghost" onclick="psCancel('brand')">Отмена</button>
+          <div style="display:flex;justify-content:flex-end;margin-top:18px;">
             <button class="ps-save-btn" onclick="psSave('brand')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
               Сохранить
@@ -2073,10 +2063,7 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
             <div class="ps-card-icon" style="background:rgba(248,113,113,.12);">📸</div>
             Медиа-библиотека
           </div>
-          <button class="ps-edit-btn agency-only" onclick="psEdit('media')">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            Редактировать
-          </button>
+
         </div>
         <div id="media-view">
           <div class="ps-grid">
@@ -2110,8 +2097,7 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
             <div class="ps-field"><label>Дополнительные ресурсы</label><input type="url" id="me-extra" placeholder="https://..."></div>
             <div class="ps-field full"><label>Правила и запреты при съёмке</label><textarea id="me-rules" rows="3" placeholder="Не снимать кухню, не показывать упаковку конкурентов..."></textarea></div>
           </div>
-          <div style="display:flex;gap:8px;margin-top:18px;">
-            <button class="btn-ghost" onclick="psCancel('media')">Отмена</button>
+          <div style="display:flex;justify-content:flex-end;margin-top:18px;">
             <button class="ps-save-btn" onclick="psSave('media')">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
               Сохранить
@@ -3780,9 +3766,14 @@ async function loadPassport() {
     }
   }
   renderPassportAll()
-  // hide agency-only if client
+  // For client: hide edit controls
   if (_isClientCache) {
     document.querySelectorAll('#page-passport .agency-only').forEach(el => el.style.display = 'none')
+  } else {
+    // For agency: auto-open edit mode on all static sections
+    psEdit('basic')
+    psEdit('brand')
+    psEdit('media')
   }
 }
 
@@ -3797,6 +3788,10 @@ function switchPassportTab(id, btn) {
   if (btn) btn.classList.add('pt-active')
   const sec = g('ps-' + id)
   if (sec) sec.classList.add('ps-active')
+  // Auto-open edit mode for agency on static sections
+  if (!_isClientCache && (id === 'basic' || id === 'brand' || id === 'media')) {
+    psEdit(id)
+  }
 }
 
 // ── Section: edit/cancel helpers ──
@@ -3845,7 +3840,6 @@ async function psSave(sec) {
       instagram: getVal('be-instagram'), telegram: getVal('be-telegram'),
       hours: getVal('be-hours')
     }
-    renderBasic(); psCancel('basic')
   }
   if (sec === 'brand') {
     passportData.brand = {
@@ -3855,7 +3849,6 @@ async function psSave(sec) {
       colors: getVal('bre-colors').split(',').map(s=>s.trim()).filter(Boolean),
       style: getVal('bre-style')
     }
-    renderBrand(); psCancel('brand')
   }
   if (sec === 'media') {
     passportData.media = {
@@ -3863,9 +3856,16 @@ async function psSave(sec) {
       refs: getVal('me-refs'), extra: getVal('me-extra'),
       rules: getVal('me-rules')
     }
-    renderMedia(); psCancel('media')
   }
   await savePassport()
+  // Show inline saved confirmation
+  const btn = document.querySelector(`[onclick="psSave('${sec}')"]`)
+  if (btn) {
+    const orig = btn.innerHTML
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Сохранено!'
+    btn.style.background = 'var(--green)'
+    setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; }, 1800)
+  }
 }
 
 async function savePassport() {
