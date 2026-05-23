@@ -2249,9 +2249,10 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
 .smm-metrics-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; }
 .smm-metric-card {
   background:var(--smm-bg4); border:1px solid var(--smm-brd);
-  border-radius:10px; padding:18px; position:relative; overflow:hidden; text-align:center;
-  transition:border-color .2s, transform .2s;
+  border-radius:10px; padding:18px; position:relative; overflow:hidden;
+  transition:border-color .3s, transform .2s, box-shadow .3s;
 }
+.smm-metric-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.3); }
 .smm-metric-card:hover { border-color:var(--smm-brd2); transform:translateY(-2px); }
 .smm-metric-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
 .smm-metric-code {
@@ -3260,13 +3261,23 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
             <option value="10000">до 10 000</option>
             <option value="30000">10 000 – 30 000</option>
             <option value="50000" selected>30 000 – 50 000</option>
-            <option value="100000">50 000 – 100 000</option>
-            <option value="150000">100 000+</option>
+            <option value="70000">50 000 – 70 000</option>
+            <option value="100000">70 000 – 100 000</option>
+            <option value="150000">100 000 – 150 000</option>
           </select>
         </div>
       </div>
 
       <div class="smm-metrics-grid" id="smm-metrics-grid"></div>
+
+      <!-- vs Market block -->
+      <div style="margin-top:20px;background:var(--smm-bg2);border:1px solid var(--smm-brd);border-radius:14px;padding:20px 24px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+          <div style="width:6px;height:6px;border-radius:50%;background:var(--smm-accent2);"></div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--smm-accent2);letter-spacing:.14em;text-transform:uppercase;">Позиция относительно рынка</div>
+        </div>
+        <div id="smm-vs-market"></div>
+      </div>
 
       <!-- Section 03: Контент -->
       <div class="smm-sec-heading" style="margin-top:36px;">
@@ -7016,12 +7027,33 @@ function cpToggleBlock(type) {
 let currentSMMReport = null
 let smmData = { metrics:{}, prev:{}, goals:{}, reels:[], rubrics:[] }
 
+// Нормы Instagram-метрик для кафе и ресторанов 2025
+// Источник: DTR 2.0 — точные нормы по диапазонам подписчиков
+// Формат: { red: [min,max], yellow: [min,max], green: min }
 const SMM_BENCHMARKS = {
-  10000:  { er:[3,5],    lr:[2,4],    tr:[0.2,0.5], shr:[0.5,1.5], sr:[0.3,1] },
-  30000:  { er:[2,4],    lr:[1.5,3],  tr:[0.15,0.4],shr:[0.4,1.2], sr:[0.2,0.8] },
-  50000:  { er:[1.5,3],  lr:[1,2.5],  tr:[0.1,0.35],shr:[0.3,1],   sr:[0.15,0.6] },
-  100000: { er:[1,2.5],  lr:[0.8,2],  tr:[0.08,0.3],shr:[0.2,0.8], sr:[0.1,0.5] },
-  150000: { er:[0.8,2],  lr:[0.6,1.5],tr:[0.05,0.2],shr:[0.15,0.6],sr:[0.08,0.4] },
+  10000:  { er:{r:[0,3],    y:[3,5],    g:5},    lr:{r:[0,1],   y:[1,2],    g:2},   tr:{r:[0,0.1], y:[0.1,0.3],g:0.3}, shr:{r:[0,0.4],y:[0.4,1],  g:1},   sr:{r:[0,0.3],y:[0.3,0.6],g:0.6}, vr:{r:[0,25],  y:[25,45], g:45}  },
+  30000:  { er:{r:[0,2.5],  y:[2.5,4],  g:4},    lr:{r:[0,0.9], y:[0.9,1.8],g:1.8}, tr:{r:[0,0.08],y:[0.08,0.25],g:0.25},shr:{r:[0,0.3],y:[0.3,0.8],g:0.8}, sr:{r:[0,0.2],y:[0.2,0.5],g:0.5}, vr:{r:[0,15],  y:[15,30], g:30}  },
+  50000:  { er:{r:[0,2],    y:[2,3.2],  g:3.2},  lr:{r:[0,0.8], y:[0.8,1.5],g:1.5}, tr:{r:[0,0.06],y:[0.06,0.2],g:0.2}, shr:{r:[0,0.25],y:[0.25,0.7],g:0.7},sr:{r:[0,0.15],y:[0.15,0.45],g:0.45},vr:{r:[0,10],  y:[10,25], g:25}  },
+  70000:  { er:{r:[0,1.8],  y:[1.8,3],  g:3},    lr:{r:[0,0.7], y:[0.7,1.3],g:1.3}, tr:{r:[0,0.05],y:[0.05,0.17],g:0.17},shr:{r:[0,0.2], y:[0.2,0.6], g:0.6}, sr:{r:[0,0.1],y:[0.1,0.4], g:0.4},  vr:{r:[0,8],   y:[8,20],  g:20}  },
+  100000: { er:{r:[0,1.6],  y:[1.6,2.5],g:2.5},  lr:{r:[0,0.6], y:[0.6,1.1],g:1.1}, tr:{r:[0,0.04],y:[0.04,0.15],g:0.15},shr:{r:[0,0.18],y:[0.18,0.55],g:0.55},sr:{r:[0,0.09],y:[0.09,0.35],g:0.35},vr:{r:[0,7],   y:[7,18],  g:18}  },
+  150000: { er:{r:[0,1.4],  y:[1.4,2.2],g:2.2},  lr:{r:[0,0.5], y:[0.5,1],  g:1},   tr:{r:[0,0.03],y:[0.03,0.12],g:0.12},shr:{r:[0,0.15],y:[0.15,0.5], g:0.5}, sr:{r:[0,0.08],y:[0.08,0.3], g:0.3},  vr:{r:[0,6],   y:[6,15],  g:15}  },
+}
+
+// Helper: get zone for a value
+function getSMMZone(val, bench) {
+  if (!val || !bench) return 'none'
+  if (val >= bench.g) return 'green'
+  if (val >= bench.y[0]) return 'yellow'
+  return 'red'
+}
+function getSMMZoneColor(zone) {
+  return zone === 'green' ? 'var(--smm-green)' : zone === 'yellow' ? 'var(--smm-amber)' : zone === 'red' ? 'var(--smm-red)' : 'var(--smm-muted)'
+}
+function getSMMZoneLabel(zone) {
+  return zone === 'green' ? '✅ Выше нормы' : zone === 'yellow' ? '🟡 Норма' : zone === 'red' ? '🔴 Ниже нормы' : ''
+}
+function getSMMZoneEmoji(zone) {
+  return zone === 'green' ? '🟢' : zone === 'yellow' ? '🟡' : zone === 'red' ? '🔴' : '⚪'
 }
 const SMM_PALETTES = [
   {a:'#a78bfa',bg:'rgba(124,92,252,.08)',bd:'rgba(124,92,252,.25)'},
@@ -7232,30 +7264,127 @@ function renderSMMMetrics() {
   const m = smmData.metrics, p = smmData.prev, go = smmData.goals
   const bKey = +(g('smm-bench-sel')?.value || 50000)
   const bench = SMM_BENCHMARKS[bKey] || SMM_BENCHMARKS[50000]
+
   const mets = [
-    { code:'ER', val:m.er, prev:p.er, goal:go.er, range:bench.er, color:'var(--smm-accent2)', top:'var(--smm-accent)' },
-    { code:'LR', val:m.lr, prev:p.lr, goal:go.lr, range:bench.lr, color:'var(--smm-cyan)', top:'var(--smm-cyan)' },
-    { code:'TR', val:m.tr, prev:p.tr, goal:go.tr, range:bench.tr, color:'var(--smm-amber)', top:'var(--smm-amber)' },
-    { code:'SHR',val:m.shr,prev:p.shr,goal:go.shr,range:bench.shr,color:'var(--smm-pink)', top:'var(--smm-pink)' },
-    { code:'SR', val:m.sr, prev:p.sr, goal:go.sr, range:bench.sr, color:'var(--smm-green)', top:'var(--smm-green)' },
+    { code:'ER',  label:'Вовлечённость',    val:m.er,  prev:p.er,  goal:go.er,  b:bench.er,  color:'var(--smm-accent2)', top:'var(--smm-accent)', desc:'Лайки+комм+сохр / охват' },
+    { code:'LR',  label:'Лайки',            val:m.lr,  prev:p.lr,  goal:go.lr,  b:bench.lr,  color:'var(--smm-cyan)',    top:'var(--smm-cyan)',   desc:'Лайки / охват' },
+    { code:'C/R', label:'Комментарии',      val:m.tr,  prev:p.tr,  goal:go.tr,  b:bench.tr,  color:'var(--smm-amber)',   top:'var(--smm-amber)',  desc:'Комментарии / охват' },
+    { code:'SH/R',label:'Репосты',          val:m.shr, prev:p.shr, goal:go.shr, b:bench.shr, color:'var(--smm-pink)',    top:'var(--smm-pink)',   desc:'Репосты / охват' },
+    { code:'SR',  label:'Сохранения',       val:m.sr,  prev:p.sr,  goal:go.sr,  b:bench.sr,  color:'var(--smm-green)',   top:'var(--smm-green)',  desc:'Сохранения / охват' },
   ]
+
   grid.innerHTML = mets.map(met => {
-    const inBench = met.val >= met.range[0]
-    const aboveBench = met.val >= met.range[1]
-    const sCol = aboveBench ? 'var(--smm-green)' : inBench ? 'var(--smm-amber)' : 'var(--smm-red)'
-    const sTxt = aboveBench ? '✓ Отлично' : inBench ? '~ Норма' : met.val > 0 ? '↓ Ниже нормы' : ''
+    const zone = getSMMZone(met.val, met.b)
+    const zoneCol = getSMMZoneColor(zone)
+    const zoneLabel = getSMMZoneLabel(zone)
     const pd = (met.val && met.prev) ? ((met.val-met.prev)/met.prev*100).toFixed(1) : null
     const gp = (met.goal && met.val) ? Math.min((met.val/met.goal)*100,100).toFixed(0) : null
-    return `<div class="smm-metric-card">
-      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:${met.top};"></div>
-      <div class="smm-metric-code">${met.code}</div>
-      <div class="smm-metric-val" style="color:${met.color};">${met.val ? met.val.toFixed(2)+'%' : '—'}</div>
-      ${pd !== null ? `<div style="font-family:'JetBrains Mono',monospace;font-size:10px;margin-top:4px;color:${+pd>=0?'var(--smm-green)':'var(--smm-red)'}">${+pd>=0?'+':''}${pd}%</div>` : ''}
-      ${sTxt ? `<div class="smm-metric-status" style="color:${sCol};">${sTxt}</div>` : ''}
-      ${gp ? `<div style="margin-top:8px;height:2px;background:rgba(255,255,255,.08);border-radius:1px;overflow:hidden;"><div style="height:100%;width:${gp}%;background:${met.color};transition:width 1s;"></div></div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--smm-muted);margin-top:3px;">Цель: ${gp}%</div>` : ''}
-      <div class="smm-metric-bm">Норма: ${met.range[0]}–${met.range[1]}%</div>
+
+    // Gauge bar: 3 zones
+    const maxVal = met.b ? met.b.g * 1.5 : 10
+    const redW = met.b ? (met.b.y[0]/maxVal*100).toFixed(1) : 33
+    const yelW = met.b ? ((met.b.g - met.b.y[0])/maxVal*100).toFixed(1) : 34
+    const valPct = met.val ? Math.min(met.val/maxVal*100, 100).toFixed(1) : 0
+
+    return `<div class="smm-metric-card" style="border-color:${zone !== 'none' ? (zone==='green'?'rgba(74,222,128,.25)':zone==='yellow'?'rgba(251,191,36,.2)':'rgba(248,113,113,.25)') : 'var(--smm-brd)'};">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:${zoneCol};border-radius:2px 2px 0 0;"></div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;">
+        <div>
+          <div class="smm-metric-code">${met.code}</div>
+          <div style="font-size:9px;color:var(--smm-muted);font-family:'JetBrains Mono',monospace;margin-top:1px;">${met.label}</div>
+        </div>
+        ${zone !== 'none' ? `<div style="font-size:15px;" title="${zoneLabel}">${getSMMZoneEmoji(zone)}</div>` : ''}
+      </div>
+      <div class="smm-metric-val" style="color:${met.val ? zoneCol : 'var(--smm-muted)'};">${met.val ? met.val.toFixed(2)+'%' : '—'}</div>
+      ${pd !== null ? `<div style="font-family:'JetBrains Mono',monospace;font-size:10px;margin-top:3px;color:${+pd>=0?'var(--smm-green)':'var(--smm-red)'}">${+pd>=0?'▲':'▼'} ${Math.abs(pd)}% к пред.</div>` : ''}
+      ${zone !== 'none' ? `<div style="font-size:10px;font-weight:600;color:${zoneCol};margin-top:4px;">${zoneLabel}</div>` : ''}
+
+      <!-- Gauge: 3-zone bar -->
+      <div style="margin-top:10px;margin-bottom:2px;">
+        <div style="display:flex;height:4px;border-radius:3px;overflow:hidden;gap:1px;">
+          <div style="flex:${redW};background:rgba(248,113,113,.4);"></div>
+          <div style="flex:${yelW};background:rgba(251,191,36,.4);"></div>
+          <div style="flex:${100-parseFloat(redW)-parseFloat(yelW)};background:rgba(74,222,128,.4);"></div>
+        </div>
+        ${met.val ? `<div style="position:relative;height:0;">
+          <div style="position:absolute;top:-7px;left:${valPct}%;transform:translateX(-50%);width:2px;height:10px;background:${zoneCol};border-radius:1px;"></div>
+        </div>` : ''}
+      </div>
+      <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--smm-muted);margin-top:6px;">
+        <span>${met.b ? met.b.y[0]+'%' : ''}</span>
+        <span>норма</span>
+        <span>${met.b ? met.b.g+'%' : ''}+</span>
+      </div>
+
+      ${gp ? `<div style="margin-top:8px;"><div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="font-size:9px;color:var(--smm-muted);font-family:'JetBrains Mono';">Цель</span><span style="font-size:9px;color:var(--smm-accent2);font-family:'JetBrains Mono';">${gp}%</span></div><div style="height:2px;background:rgba(255,255,255,.08);border-radius:1px;overflow:hidden;"><div style="height:100%;width:${gp}%;background:${met.color};transition:width 1s;"></div></div></div>` : ''}
     </div>`
   }).join('')
+
+  // Render vs market section
+  renderVsMarket(bench, m, p)
+}
+
+function renderVsMarket(bench, m, p) {
+  const el = g('smm-vs-market')
+  if (!el) return
+
+  const METRIC_NAMES = { er:'ER', lr:'LR', tr:'C/R', shr:'SH/R', sr:'SR' }
+  const METRIC_LABELS = { er:'Вовлечённость', lr:'Лайки', tr:'Комментарии', shr:'Репосты', sr:'Сохранения' }
+  const metKeys = ['er','lr','tr','shr','sr']
+
+  const zones = metKeys.map(k => ({
+    key: k, name: METRIC_NAMES[k], label: METRIC_LABELS[k],
+    val: m[k], prev: p[k], b: bench[k],
+    zone: getSMMZone(m[k], bench[k])
+  }))
+
+  const green = zones.filter(z => z.zone === 'green').length
+  const yellow = zones.filter(z => z.zone === 'yellow').length
+  const red = zones.filter(z => z.zone === 'red').length
+  const total = zones.filter(z => z.zone !== 'none').length
+
+  const scorePct = total ? Math.round((green * 100 + yellow * 50) / (total * 100) * 100) : 0
+  const scoreLabel = scorePct >= 80 ? 'Отличный результат' : scorePct >= 50 ? 'Хороший результат' : scorePct >= 30 ? 'Есть точки роста' : 'Требует внимания'
+  const scoreColor = scorePct >= 80 ? 'var(--smm-green)' : scorePct >= 50 ? 'var(--smm-accent2)' : scorePct >= 30 ? 'var(--smm-amber)' : 'var(--smm-red)'
+
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;gap:20px;margin-bottom:20px;">
+      <div style="flex-shrink:0;text-align:center;">
+        <div style="font-family:var(--bebas);font-size:52px;color:${scoreColor};line-height:1;">${scorePct}</div>
+        <div style="font-size:9px;color:var(--smm-muted);font-family:'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;">/ 100</div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:600;color:var(--smm-text);margin-bottom:4px;">${scoreLabel}</div>
+        <div style="display:flex;gap:12px;font-family:'JetBrains Mono',monospace;font-size:11px;">
+          <span style="color:var(--smm-green);">🟢 ${green} выше нормы</span>
+          <span style="color:var(--smm-amber);">🟡 ${yellow} норма</span>
+          <span style="color:var(--smm-red);">🔴 ${red} ниже нормы</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      ${zones.filter(z=>z.zone!=='none').map(z => {
+        const zCol = getSMMZoneColor(z.zone)
+        const pd = (z.val && z.prev) ? ((z.val-z.prev)/z.prev*100).toFixed(1) : null
+        const normRange = z.b ? z.b.y[0]+'% – '+z.b.g+'%+' : '—'
+        return `<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--smm-bg4);border-radius:8px;border-left:3px solid ${zCol};">
+          <div style="font-size:16px;">${getSMMZoneEmoji(z.zone)}</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:baseline;gap:8px;">
+              <span style="font-size:12px;font-weight:600;color:var(--smm-text);">${z.name}</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--smm-muted);">${z.label}</span>
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--smm-muted);margin-top:2px;">Норма для вашего размера: ${normRange}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-family:var(--bebas);font-size:22px;color:${zCol};">${z.val ? z.val.toFixed(2)+'%' : '—'}</div>
+            ${pd !== null ? `<div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:${+pd>=0?'var(--smm-green)':'var(--smm-red)'};">${+pd>=0?'▲':'▼'} ${Math.abs(pd)}%</div>` : ''}
+          </div>
+        </div>`
+      }).join('')}
+    </div>
+  `
 }
 
 function renderSMMReelsGrid() {
@@ -7412,12 +7541,27 @@ async function runSMMAnalysis() {
   const dStr=(a,b,u='%')=>a?`${a}${u}${b?(' ('+(((a-b)/b)*100).toFixed(1)+'%)'):''}` : '—'
   const topReel=[...smmData.reels].sort((a,b2)=>b2.er-a.er)[0]
   const topRub=[...smmData.rubrics].sort((a,b2)=>b2.er-a.er)[0]
-  const prompt=`Ты — старший SMM-аналитик агентства DeTroyd. Клиент: ${currentProject.name}. Период: ${currentSMMReport.period_label}.
-ДАННЫЕ: Охват (Reels) ${dStr(m.reels_reach,null,'')}, Просмотры Reels ${dStr(m.reels_views,null,'')}, Прирост ${m.followers||0} подписчиков.
-Метрики: ER ${dStr(m.er,p.er)} LR ${dStr(m.lr,p.lr)} TR ${dStr(m.tr,p.tr)} SHR ${dStr(m.shr,p.shr)} SR ${dStr(m.sr,p.sr)}
+  const bKey = +(g('smm-bench-sel')?.value || 50000)
+  const bench = SMM_BENCHMARKS[bKey] || SMM_BENCHMARKS[50000]
+  const zoneText = k => { const z = getSMMZone(m[k], bench[k]); return getSMMZoneLabel(z) || '—' }
+  const normText = k => bench[k] ? `норма ${bench[k].y[0]}–${bench[k].g}%` : ''
+
+  const prompt=`Ты — старший SMM-аналитик агентства DeTroyd для кафе и ресторанов. Пиши конкретно, без воды.
+Клиент: ${currentProject.name}. Период: ${currentSMMReport.period_label}.
+
+МЕТРИКИ vs НОРМЫ РЫНКА:
+• ER: ${m.er||'—'}% → ${zoneText('er')} (${normText('er')})
+• LR: ${m.lr||'—'}% → ${zoneText('lr')} (${normText('lr')})
+• C/R: ${m.tr||'—'}% → ${zoneText('tr')} (${normText('tr')})
+• SH/R: ${m.shr||'—'}% → ${zoneText('shr')} (${normText('shr')})
+• SR: ${m.sr||'—'}% → ${zoneText('sr')} (${normText('sr')})
+
+ДИНАМИКА: ER ${dStr(m.er,p.er)} | LR ${dStr(m.lr,p.lr)} | C/R ${dStr(m.tr,p.tr)}
+ОХВАТ: Reels ${dStr(m.reels_reach,null,'')} | Просмотры ${dStr(m.reels_views,null,'')} | Прирост +${m.followers||0} подписчиков
 ${topReel?('Лучший Reel: "'+topReel.title+'", ER '+topReel.er+'%'):''}
 ${topRub?('Лучшая рубрика: "'+topRub.name+'", ER '+topRub.er+'%'):''}
-Напиши анализ по разделам:
+
+Напиши экспертный анализ — используй данные о нормах чтобы объяснить что значат цифры:
 ## 🎯 Главный вывод
 ## 📈 Что сработало
 ## ⚠️ Что просело
