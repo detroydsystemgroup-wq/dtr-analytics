@@ -10172,6 +10172,8 @@ function renderTracker() {
   if (g('tracker-pct')) g('tracker-pct').textContent = pct + '%'
   if (g('tracker-bar')) g('tracker-bar').style.width = pct + '%'
   updateProjMiniProgress(pct)
+  // ── McKinsey mini stats ──
+  ppUpdateMiniStats(completed, 9 - completed - trackerData.filter(s => s.status === 'active').length, trackerData)
   if (g('tracker-stages-label')) g('tracker-stages-label').textContent =
     completed === 0 ? 'Проект ещё не начат' :
     completed === 9 ? '🎉 Все этапы завершены' :
@@ -16182,103 +16184,61 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 
 
 </style>
-<script id="dtr-pp-mckinsey-js">
-// ══════════════════════════════════════════════════════
-// PROJECT PAGE — McKinsey enhancements
-// Hooks into existing renderTracker to add mini stats
-// ══════════════════════════════════════════════════════
 
-// Patch renderTracker to also fill mini stats
-var _origRenderTracker = typeof renderTracker === 'function' ? renderTracker : null;
 
-function renderTracker() {
-  if (_origRenderTracker) _origRenderTracker.apply(this, arguments);
-  ppFillMiniStats();
-}
 
-function ppFillMiniStats() {
-  if (typeof _currentProject === 'undefined' || !_currentProject) return;
-  var pid = _currentProject.id;
-  var stages = typeof _allStages !== 'undefined'
-    ? _allStages.filter(function(s){ return s.project_id === pid; })
-    : [];
-
-  var done    = stages.filter(function(s){ return s.status === 'completed'; }).length;
-  var active  = stages.filter(function(s){ return s.status === 'active'; }).length;
-  var pending = 9 - done - active;
+<script id="dtr-pp-mini-stats">
+// McKinsey mini stats — called from inside renderTracker
+function ppUpdateMiniStats(done, pending, trackerData) {
+  var active = trackerData ? trackerData.filter(function(s){ return s.status === 'active'; }).length : 0;
+  var pend = Math.max(0, 9 - done - active);
 
   var setEl = function(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
   setEl('pp-mini-done',    done);
   setEl('pp-mini-active',  active);
-  setEl('pp-mini-pending', Math.max(0, pending));
+  setEl('pp-mini-pending', pend);
 
   // Next deadline
   var today = new Date(); today.setHours(0,0,0,0);
   var MONTHS = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
-  var upcoming = stages
+  var upcoming = (trackerData || [])
     .filter(function(s){ return s.deadline && s.status !== 'completed'; })
     .map(function(s){ return new Date(s.deadline); })
     .filter(function(d){ return d >= today; })
-    .sort(function(a,b){ return a-b; });
+    .sort(function(a,b){ return a - b; });
 
   var dlEl = document.getElementById('pp-mini-deadline');
   if (dlEl) {
     if (upcoming.length) {
       var dl = upcoming[0];
       var diff = Math.ceil((dl - today) / 86400000);
-      if (diff === 0) { dlEl.textContent = 'Сегодня'; dlEl.style.color = '#fbbf24'; }
-      else if (diff === 1) { dlEl.textContent = 'Завтра'; dlEl.style.color = '#fbbf24'; }
-      else if (diff <= 7) { dlEl.textContent = 'Через ' + diff + 'д'; dlEl.style.color = '#fbbf24'; }
-      else { dlEl.textContent = dl.getDate() + ' ' + MONTHS[dl.getMonth()]; dlEl.style.color = '#818cf8'; }
+      var txt, col;
+      if (diff === 0)      { txt = 'Сегодня'; col = '#fbbf24'; }
+      else if (diff === 1) { txt = 'Завтра';  col = '#fbbf24'; }
+      else if (diff <= 7)  { txt = 'Через ' + diff + 'д'; col = '#fbbf24'; }
+      else { txt = dl.getDate() + ' ' + MONTHS[dl.getMonth()]; col = '#818cf8'; }
+      dlEl.textContent = txt; dlEl.style.color = col;
     } else {
       dlEl.textContent = '—'; dlEl.style.color = 'rgba(91,95,199,.3)';
     }
   }
 
-  // Pipeline visual
+  // Pipeline visual segments
   var pipeEl = document.getElementById('tracker-pipe-visual');
-  if (pipeEl) {
-    var col = (_currentProject && _currentProject.brand_color) || '#5b5fc7';
-    var segs = '';
+  if (pipeEl && trackerData) {
+    var col = (typeof currentProject !== 'undefined' && currentProject && currentProject.brand_color) ? currentProject.brand_color : '#5b5fc7';
+    var html = '';
     for (var i = 0; i < 9; i++) {
-      var st = stages.find(function(s){ return s.stage_index === i; });
+      var st = trackerData.find(function(s){ return s.stage_index === i; });
       var status = st ? st.status : 'pending';
-      var bg, h;
-      if (status === 'completed') { bg = col; h = '8px'; }
-      else if (status === 'active') { bg = col + '77'; h = '12px'; }
-      else { bg = 'rgba(91,95,199,.1)'; h = '8px'; }
-      segs += '<div style="flex:1;height:' + h + ';border-radius:4px;background:' + bg + ';transition:all .4s;align-self:center;' +
-        (status==='active' ? 'box-shadow:0 0 8px ' + col + '66;' : '') + '"></div>';
+      var bg = status === 'completed' ? col : status === 'active' ? col + '66' : 'rgba(91,95,199,.1)';
+      var h  = status === 'active' ? '12px' : '8px';
+      var glow = status === 'active' ? 'box-shadow:0 0 8px ' + col + '55;' : '';
+      html += '<div style="flex:1;height:' + h + ';border-radius:4px;background:' + bg + ';transition:all .4s;align-self:center;' + glow + '"></div>';
     }
-    pipeEl.innerHTML = segs;
+    pipeEl.innerHTML = html;
   }
-
-  // Add stage number labels to tracker dots
-  setTimeout(function() {
-    var dots = document.querySelectorAll('.tracker-dot');
-    dots.forEach(function(dot, i) {
-      if (!dot.querySelector('.tracker-stage-num')) {
-        var num = document.createElement('div');
-        num.className = 'tracker-stage-num';
-        num.style.cssText = 'font-family:JetBrains Mono,monospace;font-size:7px;color:rgba(91,95,199,.3);letter-spacing:.04em;margin-top:3px;text-align:center;';
-        num.textContent = String(i + 1).padStart(2, '0');
-        dot.parentNode && dot.parentNode.appendChild(num);
-      }
-    });
-  }, 100);
 }
-
-// Also call on tab switch
-document.addEventListener('DOMContentLoaded', function() {
-  // Intercept pp tab switch
-  var origSwitch = typeof switchPPTab === 'function' ? switchPPTab : null;
-  if (origSwitch) {
-    window.switchPPTab = function(tab, btn) {
-      origSwitch(tab, btn);
-      if (tab === 'tracker') setTimeout(ppFillMiniStats, 50);
-    };
-  }
-});
 </script>
 
 </body>
