@@ -7176,12 +7176,14 @@ canvas {
 @keyframes cph-dot { 0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,.3)} 60%{box-shadow:0 0 0 6px rgba(52,211,153,0)} }
 
 /* ── Base ── */
-#page-client, .cph-wrap {
+#page-client {
   background: #09090f !important;
-  min-height: 100vh !important;
+  -webkit-font-smoothing: antialiased !important;
+}
+#page-client.active, #page-client.active .cph-wrap {
   display: flex !important;
   flex-direction: column !important;
-  -webkit-font-smoothing: antialiased !important;
+  min-height: 100vh !important;
 }
 
 /* ── Top bar — thin, unobtrusive ── */
@@ -7677,6 +7679,203 @@ canvas {
   letter-spacing: .06em !important;
 }
 </style>
+
+<style id="dtr-login-v3">
+/* ════════════════════════════════════════════
+   LOGIN v3 — Lines only. No boxes, no cards.
+   Typography + strokes = premium restraint.
+════════════════════════════════════════════ */
+
+@keyframes lo-up   { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+@keyframes lo-line { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+@keyframes lo-blink{ 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* ── Root ── */
+#page-login {
+  background: #09090f !important;
+  min-height: 100vh !important;
+  display: flex !important;
+  -webkit-font-smoothing: antialiased !important;
+}
+.lo-root {
+  display: flex !important;
+  width: 100% !important;
+  min-height: 100vh !important;
+  align-items: center !important;
+  padding: 0 10vw !important;
+  justify-content: space-between !important;
+  gap: 80px !important;
+}
+
+/* ════ LEFT — Identity ════ */
+.lo-identity {
+  flex: 1 !important;
+  animation: lo-up .7s cubic-bezier(.16,1,.3,1) both !important;
+}
+.lo-system-name {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: clamp(40px, 5.5vw, 72px) !important;
+  font-weight: 700 !important;
+  letter-spacing: -.03em !important;
+  line-height: .95 !important;
+  color: #ffffff !important;
+  margin-bottom: 20px !important;
+}
+.lo-company-name {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 11px !important;
+  font-weight: 400 !important;
+  color: rgba(255,255,255,.2) !important;
+  letter-spacing: .18em !important;
+  text-transform: uppercase !important;
+}
+
+/* Thin vertical separator between left and right */
+.lo-root::before {
+  content: '' !important;
+  width: 1px !important;
+  align-self: stretch !important;
+  background: rgba(255,255,255,.06) !important;
+  flex-shrink: 0 !important;
+  margin: 80px 0 !important;
+}
+
+/* ════ RIGHT — Form ════ */
+.lo-form {
+  flex: 0 0 360px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+  animation: lo-up .7s .1s cubic-bezier(.16,1,.3,1) both !important;
+}
+
+/* ── Field ── */
+.lo-field {
+  margin-bottom: 40px !important;
+  position: relative !important;
+}
+.lo-field-label {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important;
+  font-weight: 500 !important;
+  color: rgba(255,255,255,.2) !important;
+  letter-spacing: .22em !important;
+  margin-bottom: 14px !important;
+}
+/* The line — replaces input box */
+.lo-field-line {
+  height: 1px !important;
+  background: rgba(255,255,255,.1) !important;
+  position: relative !important;
+  margin-bottom: 0 !important;
+  transition: background .2s !important;
+}
+.lo-field:focus-within .lo-field-line {
+  background: rgba(255,255,255,.5) !important;
+}
+/* Active underline accent */
+.lo-field-line::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 0; left: 0 !important;
+  height: 1px !important;
+  width: 0 !important;
+  background: #ffffff !important;
+  transition: width .35s cubic-bezier(.16,1,.3,1) !important;
+}
+.lo-field:focus-within .lo-field-line::after {
+  width: 100% !important;
+}
+/* Input — invisible, sits on top of line */
+.lo-input {
+  display: block !important;
+  width: 100% !important;
+  padding: 12px 0 !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  color: #ffffff !important;
+  letter-spacing: -.01em !important;
+  position: relative !important;
+  z-index: 1 !important;
+  margin-top: -1px !important;
+}
+.lo-input::placeholder {
+  color: rgba(255,255,255,.15) !important;
+  font-weight: 300 !important;
+}
+
+/* ── Submit — line + text + arrow ── */
+.lo-submit {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  margin-top: 16px !important;
+  cursor: pointer !important;
+  padding: 20px 0 !important;
+  border-top: 1px solid rgba(255,255,255,.08) !important;
+  transition: all .2s !important;
+  user-select: none !important;
+}
+.lo-submit:hover .lo-submit-text { color: #ffffff !important; }
+.lo-submit:hover .lo-submit-arrow { transform: translateX(4px) !important; opacity: 1 !important; }
+.lo-submit:hover .lo-submit-line { width: 40px !important; background: rgba(255,255,255,.5) !important; }
+
+.lo-submit-line {
+  height: 1px !important;
+  width: 24px !important;
+  background: rgba(255,255,255,.25) !important;
+  flex-shrink: 0 !important;
+  transition: all .25s !important;
+}
+.lo-submit-text {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  letter-spacing: .22em !important;
+  color: rgba(255,255,255,.45) !important;
+  transition: color .2s !important;
+  flex: 1 !important;
+}
+.lo-submit-arrow {
+  font-size: 18px !important;
+  color: rgba(255,255,255,.3) !important;
+  transition: all .25s cubic-bezier(.16,1,.3,1) !important;
+  opacity: .6 !important;
+  line-height: 1 !important;
+}
+
+/* ── Error ── */
+.lo-err {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  color: #f87171 !important;
+  letter-spacing: .08em !important;
+  padding-bottom: 20px !important;
+  border-bottom: 1px solid rgba(248,113,113,.2) !important;
+  margin-bottom: 32px !important;
+}
+
+/* ── Spinner inside submit ── */
+.lo-submit .spinner {
+  width: 12px !important; height: 12px !important;
+  border: 1.5px solid rgba(255,255,255,.2) !important;
+  border-top-color: #fff !important;
+  border-radius: 50% !important;
+  animation: spin .7s linear infinite !important;
+  display: inline-block !important;
+}
+
+@media (max-width: 768px) {
+  .lo-root { flex-direction: column; padding: 60px 32px; justify-content: center; }
+  .lo-root::before { display: none; }
+  .lo-identity { flex: 0; text-align: center; }
+  .lo-form { flex: 0 0 auto; width: 100%; }
+}
+</style>
 </head>
 <body>
 
@@ -7684,22 +7883,41 @@ canvas {
      PAGE: LOGIN
 ═══════════════════════════════════════════ -->
 <div class="page active" id="page-login">
-  <div class="auth-wrap">
-    <div class="auth-card">
-      <div class="auth-logo-tag">DeTroyd System Group</div>
-      <div class="auth-wordmark">DTR Analytics</div>
-      <div class="auth-sub">Revenue Intelligence Platform</div>
-      <h2 class="auth-title">Войти в систему</h2>
-      <div id="login-err" class="err-box" style="display:none"></div>
-      <div class="field"><label>Логин</label><input type="text" id="login-login" placeholder="uzbek_doner" autocomplete="username"></div>
-      <div class="field"><label>Пароль</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"></div>
-      <button class="btn-primary" onclick="doLogin()" id="btn-login">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-        Войти
-      </button>
-      <div class="auth-switch" style="color:var(--txt3);font-size:11px;">DeTroyd System Group · Revenue Intelligence</div>
+  <div class="lo-root">
+
+    <!-- Left: identity -->
+    <div class="lo-identity">
+      <div class="lo-system-name">DETROYD<br>SMART SYSTEM</div>
+      <div class="lo-company-name">DeTroyd System Group</div>
     </div>
+
+    <!-- Right: form -->
+    <div class="lo-form">
+      <div id="login-err" class="lo-err" style="display:none"></div>
+
+      <div class="lo-field">
+        <div class="lo-field-label">ЛОГИН</div>
+        <div class="lo-field-line"></div>
+        <input class="lo-input" type="text" id="login-login" placeholder="ваш_логин" autocomplete="username" spellcheck="false">
+      </div>
+
+      <div class="lo-field">
+        <div class="lo-field-label">ПАРОЛЬ</div>
+        <div class="lo-field-line"></div>
+        <input class="lo-input" type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
+      </div>
+
+      <div class="lo-submit" onclick="doLogin()" id="btn-login">
+        <div class="lo-submit-line"></div>
+        <div class="lo-submit-text">ВОЙТИ</div>
+        <div class="lo-submit-arrow">→</div>
+      </div>
+
+    </div>
+
   </div>
+</div>
+
 </div>
 
 <!-- ═══════════════════════════════════════════
@@ -10501,7 +10719,7 @@ async function doLogin() {
   const email = login.includes('@') ? login : login + '@' + AGENCY_DOMAIN
   const btn = g('btn-login')
   btn.disabled = true
-  btn.innerHTML = '<span class="spinner"></span>Входим...'
+  btn.querySelector('.lo-submit-text').textContent = 'ВХОДИМ...'; btn.querySelector('.lo-submit-arrow').textContent = ''
   const { data, error } = await sb.auth.signInWithPassword({ email, password: pass })
   if (error) {
     g('login-err').textContent = 'Неверный логин или пароль'
