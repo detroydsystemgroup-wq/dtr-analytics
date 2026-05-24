@@ -7159,6 +7159,530 @@ canvas {
   transition: color .3s !important;
 }
 </style>
+<style id="dtr-client-premium-v1">
+/* ═══════════════════════════════════════════════════════════════
+   CLIENT PAGE — Premium Experience
+   Philosophy: Это лицо компании. Каждый пиксель — доверие.
+   Структура: Ambient hero → живой прогресс → этапы → отчёты
+═══════════════════════════════════════════════════════════════ */
+
+@keyframes cp-fade-up   { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+@keyframes cp-fade-in   { from{opacity:0} to{opacity:1} }
+@keyframes cp-scale-in  { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:scale(1)} }
+@keyframes cp-ring-spin { from{stroke-dashoffset:var(--dash-start)} to{stroke-dashoffset:var(--dash-end)} }
+@keyframes cp-glow-pulse{ 0%,100%{opacity:.5;transform:scale(1)} 50%{opacity:.9;transform:scale(1.06)} }
+@keyframes cp-scan      { 0%{transform:translateX(-100%)} 100%{transform:translateX(300%)} }
+@keyframes cp-breathe   { 0%,100%{box-shadow:0 0 0 0 rgba(91,95,199,.4)} 50%{box-shadow:0 0 0 10px rgba(91,95,199,0)} }
+@keyframes cp-connector { from{width:0} to{width:100%} }
+@keyframes cp-dot-pop   { 0%{transform:scale(0)} 70%{transform:scale(1.2)} 100%{transform:scale(1)} }
+@keyframes cp-ticker    { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+@keyframes cp-shimmer   { 0%{background-position:-400px 0} 100%{background-position:400px 0} }
+
+/* ── Page base ── */
+#page-client {
+  background: #07070c !important;
+  min-height: 100vh !important;
+  overflow-x: hidden !important;
+}
+
+/* ════════════════════════════════
+   HEADER
+════════════════════════════════ */
+.cp-header {
+  position: sticky !important; top: 0 !important; z-index: 100 !important;
+  display: flex !important; align-items: center !important; justify-content: space-between !important;
+  padding: 0 40px !important; height: 58px !important;
+  background: rgba(7,7,12,.92) !important;
+  backdrop-filter: blur(40px) saturate(1.8) !important;
+  border-bottom: 1px solid rgba(91,95,199,.1) !important;
+}
+.cp-header-brand { display: flex !important; align-items: center !important; gap: 10px !important; }
+.cp-header-dot {
+  width: 8px !important; height: 8px !important; border-radius: 50% !important;
+  background: #34d399 !important;
+  box-shadow: 0 0 8px #34d39977 !important;
+  animation: cp-glow-pulse 2.5s ease infinite !important;
+}
+.cp-header-name {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 15px !important; font-weight: 700 !important;
+  letter-spacing: -.02em !important; color: #eeedf8 !important;
+}
+.cp-logout-btn {
+  display: flex !important; align-items: center !important; gap: 7px !important;
+  padding: 7px 16px !important; border-radius: 9px !important;
+  border: 1px solid rgba(255,255,255,.07) !important;
+  background: transparent !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 12px !important; font-weight: 500 !important;
+  color: rgba(120,118,160,.55) !important;
+  cursor: pointer !important; transition: all .2s !important;
+}
+.cp-logout-btn:hover { color: #f87171 !important; border-color: rgba(248,113,113,.25) !important; background: rgba(248,113,113,.05) !important; }
+
+/* ════════════════════════════════
+   HERO — Ambient flagship block
+════════════════════════════════ */
+.cp-hero {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 64px 56px 56px !important;
+  background: transparent !important;
+  border-bottom: none !important;
+  gap: 40px !important;
+  overflow: hidden !important;
+}
+/* Ambient background glow */
+.cp-hero::before {
+  content: '' !important;
+  position: absolute !important;
+  top: -80px; left: -80px !important;
+  width: 500px; height: 500px !important;
+  background: radial-gradient(ellipse at center, rgba(91,95,199,.12) 0%, transparent 70%) !important;
+  pointer-events: none !important;
+  animation: cp-glow-pulse 5s ease-in-out infinite !important;
+}
+.cp-hero::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 0; left: 0; right: 0; height: 1px !important;
+  background: linear-gradient(90deg, transparent, rgba(91,95,199,.2), rgba(34,211,238,.15), rgba(91,95,199,.2), transparent) !important;
+}
+.cp-hero-inner {
+  flex: 1 !important; position: relative; z-index: 1 !important;
+}
+.cp-hero-greeting {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important; color: rgba(91,95,199,.55) !important;
+  letter-spacing: .24em !important; text-transform: uppercase !important;
+  margin-bottom: 14px !important;
+  display: flex !important; align-items: center !important; gap: 8px !important;
+  animation: cp-fade-up .5s cubic-bezier(.16,1,.3,1) both !important;
+}
+.cp-hero-greeting::before {
+  content: '' !important;
+  display: inline-block !important;
+  width: 20px; height: 1px !important;
+  background: rgba(91,95,199,.4) !important;
+}
+.cp-hero-title {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 52px !important; font-weight: 800 !important;
+  letter-spacing: -.05em !important; line-height: 1.0 !important;
+  background: linear-gradient(135deg, #eeedf8 0%, #a5a8e8 50%, #22d3ee 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  margin-bottom: 12px !important;
+  animation: cp-fade-up .5s .06s cubic-bezier(.16,1,.3,1) both !important;
+}
+.cp-hero-desc {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 15px !important; color: rgba(120,118,160,.6) !important;
+  line-height: 1.5 !important;
+  animation: cp-fade-up .5s .12s cubic-bezier(.16,1,.3,1) both !important;
+}
+
+/* ── Ring — large, premium ── */
+.cp-progress-ring-wrap {
+  flex-shrink: 0 !important;
+  position: relative !important;
+  width: 160px !important; height: 160px !important;
+  animation: cp-scale-in .7s .2s cubic-bezier(.16,1,.3,1) both !important;
+  z-index: 1 !important;
+}
+.cp-ring-svg {
+  width: 160px !important; height: 160px !important;
+  transform: rotate(-90deg) !important;
+  filter: drop-shadow(0 0 18px rgba(91,95,199,.25)) !important;
+}
+.cp-ring-track {
+  fill: none !important;
+  stroke: rgba(91,95,199,.1) !important;
+  stroke-width: 7 !important;
+}
+.cp-ring-fill {
+  fill: none !important;
+  stroke: url(#cpGradient) !important;
+  stroke-width: 7 !important;
+  stroke-linecap: round !important;
+  stroke-dasharray: 408 !important;
+  stroke-dashoffset: 408 !important;
+  transition: stroke-dashoffset 1.6s cubic-bezier(.16,1,.3,1) !important;
+}
+.cp-ring-center {
+  position: absolute !important; inset: 0 !important;
+  display: flex !important; flex-direction: column !important;
+  align-items: center !important; justify-content: center !important;
+}
+.cp-ring-pct {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 36px !important; font-weight: 800 !important;
+  letter-spacing: -.06em !important; line-height: 1 !important;
+  color: #eeedf8 !important;
+  font-variant-numeric: tabular-nums !important;
+}
+.cp-ring-lbl {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important; color: rgba(91,95,199,.4) !important;
+  letter-spacing: .16em !important; text-transform: uppercase !important;
+  margin-top: 3px !important;
+}
+
+/* ════════════════════════════════
+   STATUS BAR
+════════════════════════════════ */
+.cp-status-bar {
+  display: flex !important; align-items: center !important; gap: 12px !important;
+  padding: 14px 56px !important;
+  background: rgba(91,95,199,.04) !important;
+  border-top: 1px solid rgba(91,95,199,.08) !important;
+  border-bottom: 1px solid rgba(91,95,199,.08) !important;
+}
+.cp-status-dot {
+  width: 7px !important; height: 7px !important; border-radius: 50% !important;
+  background: #34d399 !important;
+  box-shadow: 0 0 6px #34d39966 !important;
+  animation: cp-glow-pulse 2s ease infinite !important;
+  flex-shrink: 0 !important;
+}
+.cp-status-dot.inactive { background: rgba(120,118,160,.3) !important; animation: none !important; box-shadow: none !important; }
+.cp-status-text {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 11px !important; color: rgba(161,159,200,.6) !important;
+  letter-spacing: .06em !important;
+  animation: cp-ticker .4s cubic-bezier(.16,1,.3,1) both !important;
+}
+
+/* ════════════════════════════════
+   STAGES TIMELINE
+════════════════════════════════ */
+.cp-stages-wrap {
+  padding: 36px 56px 40px !important;
+  overflow-x: auto !important;
+  scrollbar-width: none !important;
+  border-bottom: 1px solid rgba(91,95,199,.06) !important;
+}
+.cp-stages-wrap::-webkit-scrollbar { display: none !important; }
+.cp-stages-scroll {
+  display: flex !important; gap: 0 !important; min-width: max-content !important;
+  position: relative !important;
+}
+
+/* Stage item */
+.cp-stage-item {
+  display: flex !important; flex-direction: column !important;
+  align-items: center !important; position: relative !important;
+  width: 110px !important;
+  animation: cp-fade-up .4s cubic-bezier(.16,1,.3,1) both !important;
+}
+/* Connector line */
+.cp-stage-item:not(:last-child)::after {
+  content: '' !important;
+  position: absolute !important;
+  top: 18px; left: calc(50% + 18px) !important;
+  width: calc(100% - 36px) !important; height: 1px !important;
+  background: rgba(91,95,199,.12) !important;
+  transition: background .6s ease !important;
+}
+.cp-stage-item.s-done:not(:last-child)::after {
+  background: linear-gradient(90deg, rgba(91,95,199,.6), rgba(34,211,238,.4)) !important;
+}
+.cp-stage-item.s-active:not(:last-child)::after {
+  background: rgba(91,95,199,.25) !important;
+}
+
+/* Stage dot */
+.cp-stage-dot {
+  width: 36px !important; height: 36px !important;
+  border-radius: 50% !important;
+  border: 1.5px solid rgba(91,95,199,.15) !important;
+  background: rgba(10,10,18,.9) !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  margin-bottom: 12px !important; position: relative !important; z-index: 1 !important;
+  transition: all .35s cubic-bezier(.16,1,.3,1) !important;
+  flex-shrink: 0 !important;
+  font-size: 14px !important;
+}
+.cp-stage-item.s-done .cp-stage-dot {
+  background: rgba(91,95,199,.15) !important;
+  border-color: rgba(91,95,199,.45) !important;
+  box-shadow: 0 0 16px rgba(91,95,199,.25) !important;
+  animation: cp-dot-pop .4s cubic-bezier(.16,1,.3,1) both !important;
+}
+.cp-stage-item.s-active .cp-stage-dot {
+  background: rgba(91,95,199,.1) !important;
+  border-color: rgba(91,95,199,.7) !important;
+  border-width: 2px !important;
+  box-shadow: 0 0 0 6px rgba(91,95,199,.1), 0 0 24px rgba(91,95,199,.3) !important;
+  animation: cp-breathe 3s ease infinite !important;
+}
+/* Checkmark for done */
+.cp-stage-item.s-done .cp-stage-dot::after {
+  content: '' !important;
+  position: absolute !important;
+  width: 10px !important; height: 10px !important;
+  background: rgba(91,95,199,.9) !important;
+  border-radius: 50% !important;
+}
+/* Active pulsing dot */
+.cp-stage-item.s-active .cp-stage-dot::after {
+  content: '' !important;
+  position: absolute !important;
+  width: 8px !important; height: 8px !important;
+  background: #7b7fd4 !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 10px rgba(91,95,199,.8) !important;
+}
+
+/* Stage label */
+.cp-stage-label {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important; text-align: center !important;
+  color: rgba(120,118,160,.3) !important;
+  letter-spacing: .03em !important; line-height: 1.45 !important;
+  max-width: 88px !important;
+}
+.cp-stage-item.s-done  .cp-stage-label { color: rgba(161,159,200,.55) !important; }
+.cp-stage-item.s-active .cp-stage-label {
+  color: #a5a8e8 !important; font-weight: 600 !important;
+  font-family: 'Inter', sans-serif !important;
+}
+
+/* Stage number badge */
+.cp-stage-num {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 8px !important; color: rgba(91,95,199,.3) !important;
+  margin-bottom: 5px !important; letter-spacing: .06em !important;
+}
+
+/* ════════════════════════════════
+   STATS STRIP
+════════════════════════════════ */
+.cp-stats-strip {
+  display: flex !important; align-items: stretch !important;
+  padding: 0 56px !important;
+  border-bottom: 1px solid rgba(91,95,199,.06) !important;
+  background: rgba(10,10,18,.6) !important;
+}
+.cp-stat-item {
+  flex: 1 !important; display: flex !important; flex-direction: column !important;
+  align-items: center !important; justify-content: center !important;
+  padding: 22px 12px !important; gap: 4px !important;
+  border-right: 1px solid rgba(91,95,199,.06) !important;
+  animation: cp-fade-up .4s cubic-bezier(.16,1,.3,1) both !important;
+}
+.cp-stat-item:last-child { border-right: none !important; }
+.cp-stat-val {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 28px !important; font-weight: 800 !important;
+  letter-spacing: -.04em !important; line-height: 1 !important;
+  font-variant-numeric: tabular-nums !important;
+}
+.cp-stat-lbl {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important; color: rgba(91,95,199,.35) !important;
+  letter-spacing: .16em !important; text-transform: uppercase !important;
+}
+
+/* ════════════════════════════════
+   REPORTS SECTION
+════════════════════════════════ */
+.cp-reports-section {
+  padding: 40px 56px 0 !important;
+}
+.cp-section-title {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important; font-weight: 400 !important;
+  color: rgba(91,95,199,.38) !important;
+  text-transform: uppercase !important;
+  letter-spacing: .22em !important;
+  margin-bottom: 20px !important;
+  display: flex !important; align-items: center !important; gap: 12px !important;
+}
+.cp-section-title::after {
+  content: '' !important; flex: 1 !important; height: 1px !important;
+  background: linear-gradient(90deg, rgba(91,95,199,.15), transparent) !important;
+}
+.cp-report-blocks { display: flex !important; flex-direction: column !important; gap: 10px !important; }
+
+/* Report block card */
+.cp-report-block {
+  display: flex !important; align-items: center !important; gap: 20px !important;
+  background: rgba(13,13,20,.97) !important;
+  border: 1px solid rgba(91,95,199,.1) !important;
+  border-radius: 16px !important;
+  padding: 22px 24px !important;
+  cursor: pointer !important;
+  transition: all .25s cubic-bezier(.16,1,.3,1) !important;
+  margin-bottom: 0 !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.cp-report-block::before {
+  content: '' !important;
+  position: absolute !important; top: 0; left: 0; right: 0; height: 1px !important;
+  background: linear-gradient(90deg, transparent, rgba(91,95,199,.2), transparent) !important;
+  opacity: 0 !important; transition: opacity .25s !important;
+}
+.cp-report-block:hover {
+  border-color: rgba(91,95,199,.26) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 40px rgba(0,0,0,.4), 0 0 20px rgba(91,95,199,.07) !important;
+}
+.cp-report-block:hover::before { opacity: 1 !important; }
+.cp-report-block.cp-active {
+  border-color: rgba(91,95,199,.35) !important;
+  background: rgba(91,95,199,.05) !important;
+  border-radius: 16px 16px 0 0 !important;
+  margin-bottom: 0 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+.cp-block-icon {
+  width: 50px !important; height: 50px !important;
+  border-radius: 13px !important;
+  background: rgba(91,95,199,.08) !important;
+  border: 1px solid rgba(91,95,199,.2) !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  flex-shrink: 0 !important;
+  transition: transform .22s cubic-bezier(.16,1,.3,1) !important;
+}
+.cp-report-block:hover .cp-block-icon { transform: scale(1.06) !important; }
+.cp-block-text { flex: 1 !important; }
+.cp-block-title {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 16px !important; font-weight: 700 !important;
+  letter-spacing: -.02em !important; color: #eeedf8 !important;
+  margin-bottom: 4px !important;
+}
+.cp-block-sub {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important; color: rgba(91,95,199,.38) !important;
+  letter-spacing: .04em !important;
+}
+.cp-block-arrow {
+  width: 34px !important; height: 34px !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  border-radius: 9px !important;
+  background: rgba(91,95,199,.07) !important;
+  border: 1px solid rgba(91,95,199,.15) !important;
+  color: rgba(91,95,199,.45) !important;
+  transition: all .3s cubic-bezier(.16,1,.3,1) !important;
+  flex-shrink: 0 !important;
+}
+.cp-report-block.cp-active .cp-block-arrow {
+  transform: rotate(180deg) !important;
+  background: rgba(91,95,199,.15) !important;
+  border-color: rgba(91,95,199,.3) !important;
+  color: #7b7fd4 !important;
+}
+
+/* Reports dropdown panel */
+.cp-months-panel {
+  background: rgba(10,10,18,.98) !important;
+  border: 1px solid rgba(91,95,199,.2) !important;
+  border-top: none !important;
+  border-radius: 0 0 16px 16px !important;
+  padding: 20px 24px !important;
+  margin-bottom: 0 !important;
+  display: none !important;
+}
+.cp-months-panel.cp-open {
+  display: block !important;
+  animation: cp-fade-up .3s cubic-bezier(.16,1,.3,1) both !important;
+}
+.cp-months-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 8px !important;
+}
+.cp-month-chip {
+  padding: 14px 10px !important;
+  border-radius: 11px !important;
+  background: rgba(91,95,199,.04) !important;
+  border: 1px solid rgba(91,95,199,.09) !important;
+  text-align: center !important;
+  transition: all .2s cubic-bezier(.16,1,.3,1) !important;
+  position: relative !important;
+}
+.cp-month-chip.has-report {
+  cursor: pointer !important;
+  border-color: rgba(91,95,199,.22) !important;
+  background: rgba(91,95,199,.07) !important;
+}
+.cp-month-chip.has-report:hover {
+  border-color: rgba(91,95,199,.45) !important;
+  background: rgba(91,95,199,.13) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 18px rgba(0,0,0,.35) !important;
+}
+.cp-month-chip.no-report { opacity: .28 !important; cursor: default !important; }
+.cp-month-name {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 13px !important; font-weight: 600 !important;
+  letter-spacing: -.01em !important; color: #eeedf8 !important;
+  margin-bottom: 5px !important;
+}
+.cp-month-dot {
+  width: 5px !important; height: 5px !important; border-radius: 50% !important;
+  background: #7b7fd4 !important; margin: 0 auto !important; display: none !important;
+  box-shadow: 0 0 6px rgba(91,95,199,.6) !important;
+}
+.cp-month-chip.has-report .cp-month-dot { display: block !important; }
+.cp-month-badge {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important; color: rgba(91,95,199,.5) !important;
+  letter-spacing: .06em !important; margin-top: 4px !important; display: none !important;
+}
+.cp-month-chip.has-report .cp-month-badge { display: block !important; }
+
+/* Report item chips (inside opened panel) */
+.cp-report-item {
+  display: flex !important; align-items: center !important; gap: 12px !important;
+  padding: 12px 14px !important;
+  background: rgba(91,95,199,.05) !important;
+  border: 1px solid rgba(91,95,199,.1) !important;
+  border-radius: 10px !important;
+  margin-bottom: 7px !important;
+  cursor: pointer !important;
+  transition: all .18s !important;
+}
+.cp-report-item:hover { background: rgba(91,95,199,.1) !important; border-color: rgba(91,95,199,.25) !important; }
+.cp-report-item-title {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 13px !important; font-weight: 600 !important; color: #eeedf8 !important; flex: 1 !important;
+}
+.cp-report-item-date {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important; color: rgba(91,95,199,.38) !important;
+}
+.cp-report-item-arrow {
+  color: rgba(91,95,199,.45) !important;
+  transition: transform .18s !important;
+}
+.cp-report-item:hover .cp-report-item-arrow { transform: translateX(3px) !important; }
+
+/* Stagger animations */
+.cp-stage-item:nth-child(1){animation-delay:.02s}
+.cp-stage-item:nth-child(2){animation-delay:.05s}
+.cp-stage-item:nth-child(3){animation-delay:.08s}
+.cp-stage-item:nth-child(4){animation-delay:.11s}
+.cp-stage-item:nth-child(5){animation-delay:.14s}
+.cp-stage-item:nth-child(6){animation-delay:.17s}
+.cp-stage-item:nth-child(7){animation-delay:.20s}
+.cp-stage-item:nth-child(8){animation-delay:.23s}
+.cp-stage-item:nth-child(9){animation-delay:.26s}
+.cp-stat-item:nth-child(1){animation-delay:.06s}
+.cp-stat-item:nth-child(2){animation-delay:.10s}
+.cp-stat-item:nth-child(3){animation-delay:.14s}
+.cp-stat-item:nth-child(4){animation-delay:.18s}
+.cp-report-block:nth-child(1){animation:cp-fade-up .4s .1s cubic-bezier(.16,1,.3,1) both}
+.cp-report-block:nth-child(2){animation:cp-fade-up .4s .16s cubic-bezier(.16,1,.3,1) both}
+</style>
+
 </head>
 <body>
 
@@ -7850,9 +8374,16 @@ canvas {
       <div class="cp-hero-desc" id="cp-project-desc">—</div>
     </div>
     <div class="cp-progress-ring-wrap">
-      <svg class="cp-ring-svg" viewBox="0 0 120 120">
-        <circle class="cp-ring-track" cx="60" cy="60" r="50"/>
-        <circle class="cp-ring-fill" id="cp-ring-fill" cx="60" cy="60" r="50" stroke-dasharray="314" stroke-dashoffset="314"/>
+      <svg class="cp-ring-svg" viewBox="0 0 160 160">
+        <defs>
+          <linearGradient id="cpGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%"   stop-color="#5b5fc7"/>
+            <stop offset="50%"  stop-color="#7b7fd4"/>
+            <stop offset="100%" stop-color="#22d3ee"/>
+          </linearGradient>
+        </defs>
+        <circle class="cp-ring-track" cx="80" cy="80" r="65"/>
+        <circle class="cp-ring-fill" id="cp-ring-fill" cx="80" cy="80" r="65" stroke-dasharray="408" stroke-dashoffset="408"/>
       </svg>
       <div class="cp-ring-center">
         <div class="cp-ring-pct" id="cp-ring-pct">0%</div>
@@ -7863,6 +8394,25 @@ canvas {
   <div class="cp-status-bar">
     <div class="cp-status-dot" id="cp-status-dot-el"></div>
     <span class="cp-status-text" id="cp-status-text">Загрузка...</span>
+  </div>
+  <!-- Stats strip -->
+  <div class="cp-stats-strip" id="cp-stats-strip">
+    <div class="cp-stat-item">
+      <div class="cp-stat-val" id="cp-stat-done" style="color:#7b7fd4;">—</div>
+      <div class="cp-stat-lbl">Завершено</div>
+    </div>
+    <div class="cp-stat-item">
+      <div class="cp-stat-val" id="cp-stat-active" style="color:#34d399;">—</div>
+      <div class="cp-stat-lbl">В работе</div>
+    </div>
+    <div class="cp-stat-item">
+      <div class="cp-stat-val" id="cp-stat-left" style="color:rgba(91,95,199,.45);">—</div>
+      <div class="cp-stat-lbl">Осталось</div>
+    </div>
+    <div class="cp-stat-item">
+      <div class="cp-stat-val" id="cp-stat-reports" style="color:#22d3ee;">—</div>
+      <div class="cp-stat-lbl">Отчётов</div>
+    </div>
   </div>
   <div class="cp-stages-wrap">
     <div class="cp-stages-scroll" id="cp-stages-scroll"></div>
@@ -12392,11 +12942,21 @@ async function cpLoadTracker() {
   const total = 9
   const pct = Math.round((completed / total) * 100)
 
-  // Ring
-  const circumference = 314
+  // Ring — r=65, circumference=408
+  const circumference = 408
   const offset = circumference - (circumference * pct / 100)
   if (g('cp-ring-fill')) g('cp-ring-fill').style.strokeDashoffset = offset
   if (g('cp-ring-pct')) g('cp-ring-pct').textContent = pct + '%'
+  // Fill stats strip — use arr (already loaded above), not redeclare stages
+  var doneC = arr.filter(s => s.status === 'completed').length
+  var actC  = arr.filter(s => s.status === 'active').length
+  var leftC = 9 - doneC - actC
+  if (g('cp-stat-done'))    g('cp-stat-done').textContent    = doneC
+  if (g('cp-stat-active'))  g('cp-stat-active').textContent  = actC
+  if (g('cp-stat-left'))    g('cp-stat-left').textContent    = Math.max(0, leftC)
+  // Report count
+  const cpReportTotal = (window._cpSMMReports ? window._cpSMMReports.length : 0) + (window._cpPerfReports ? window._cpPerfReports.length : 0)
+  if (g('cp-stat-reports')) g('cp-stat-reports').textContent = cpReportTotal || '—'
 
   // Status
   const activeStage = arr.find(s => s.status === 'active')
