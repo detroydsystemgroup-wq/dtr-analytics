@@ -23559,6 +23559,28 @@ function runNewBlocks() {
   display: none !important;
 }
 </style>
+
+<style id="dtr-stop-pulse">
+/* Убрать все анимации с карточек превью — стоят статично */
+.ppv-comp-item,
+.ppv-kpi-item,
+.ppv-persona-mini,
+.ppv-note-item,
+.ppv-msg-tag,
+.ppv-forbidden-tag,
+.ppv-venue-card,
+.ppv-brand-card,
+.ppv-media-card {
+  animation: none !important;
+  transition: background .15s !important;
+}
+/* Только bar-fill может иметь ширину-transition — не анимацию */
+.ov2-health-row-bar,
+.ppv-comp-item *,
+.ppv-kpi-item * {
+  animation: none !important;
+}
+</style>
 </body>
 </html>
 <!-- DTR Passport Sidebar Logic -->
@@ -24388,9 +24410,53 @@ function ppUpdateProgress() {
 }
 
 /* ── Sync preview when passport data loads ── */
+
+function ppFillInputsFromData(pd) {
+  function setInput(id, val) { var e = document.getElementById(id); if (e && val !== undefined && val !== null) e.value = val; }
+  if (!pd) return;
+  if (pd.basic) {
+    setInput('be-name', pd.basic.name);
+    setInput('be-category', pd.basic.category);
+    setInput('be-address', pd.basic.address);
+    setInput('be-phone', pd.basic.phone);
+    setInput('be-email', pd.basic.email);
+    setInput('be-website', pd.basic.website);
+    setInput('be-instagram', pd.basic.instagram);
+    setInput('be-telegram', pd.basic.telegram);
+    setInput('be-hours', pd.basic.hours);
+  }
+  if (pd.brand) {
+    setInput('bre-messages', Array.isArray(pd.brand.messages) ? pd.brand.messages.join(', ') : pd.brand.messages);
+    setInput('bre-forbidden', Array.isArray(pd.brand.forbidden) ? pd.brand.forbidden.join(', ') : pd.brand.forbidden);
+    setInput('bre-colors', Array.isArray(pd.brand.colors) ? pd.brand.colors.join(', ') : pd.brand.colors);
+    setInput('bre-style', pd.brand.style);
+    if (pd.brand.tone) {
+      document.querySelectorAll('.pp-tone-btn').forEach(function(b) {
+        b.classList.toggle('pp-tone-active', b.getAttribute('data-tone') === pd.brand.tone);
+      });
+    }
+  }
+  if (pd.media) {
+    setInput('me-photo', pd.media.photo);
+    setInput('me-video', pd.media.video);
+    setInput('me-refs', pd.media.refs);
+    setInput('me-extra', pd.media.extra);
+    setInput('me-rules', pd.media.rules);
+  }
+}
+
 function ppSyncFromPassportData() {
   var pd = typeof passportData !== 'undefined' ? passportData : null;
   if (!pd) return;
+  // Hash check — skip re-render if data hasn't changed
+  var pdHash = JSON.stringify(pd);
+  if (window._ppLastHash === pdHash) {
+    // Data unchanged — only update live form preview, not static lists
+    ppFillInputsFromData(pd);
+    window.ppLive();
+    return;
+  }
+  window._ppLastHash = pdHash;
   function setInput(id, val) { var e = el(id); if (e && val) e.value = val; }
   if (pd.basic) {
     setInput('be-name', pd.basic.name);
@@ -24468,13 +24534,16 @@ var _ppSyncDone = false;
 var _ppInterval = setInterval(function() {
   var page = document.getElementById('page-passport');
   if (page && page.classList.contains('active')) {
-    ppSyncFromPassportData();
+    // Only ppLive() for form inputs — NO re-render of static lists
     window.ppLive();
-    if (typeof passportData !== 'undefined' && Object.keys(passportData).length) {
-      if (!_ppSyncDone) { ppSyncFromPassportData(); _ppSyncDone = true; }
+    // One-time sync of audience/competitors/kpi/notes from DB
+    if (!_ppSyncDone && typeof passportData !== 'undefined' && Object.keys(passportData).length > 0) {
+      ppSyncFromPassportData();
+      _ppSyncDone = true;
+      clearInterval(_ppInterval); // STOP polling after first sync
     }
   }
-}, 800);
+}, 600);
 
 // Also override psSave to re-sync after save
 var _origPsSave = window.psSave;
