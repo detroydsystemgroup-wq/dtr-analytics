@@ -7683,6 +7683,250 @@ canvas {
 .cp-report-block:nth-child(2){animation:cp-fade-up .4s .16s cubic-bezier(.16,1,.3,1) both}
 </style>
 
+<style id="dtr-client-hero-v2">
+/* ════════════════════════════════════════════════
+   CLIENT HERO v2 — Full-width premium experience
+════════════════════════════════════════════════ */
+@keyframes cph-fade-up  { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+@keyframes cph-fade-in  { from{opacity:0} to{opacity:1} }
+@keyframes cph-glow     { 0%,100%{opacity:.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.05)} }
+@keyframes cph-pulse    { 0%,100%{box-shadow:0 0 0 0 rgba(91,95,199,.5)} 60%{box-shadow:0 0 0 10px rgba(91,95,199,0)} }
+@keyframes cph-scanline { 0%{transform:translateY(-100%)} 100%{transform:translateY(100vh)} }
+@keyframes cph-live     { 0%,100%{opacity:1} 50%{opacity:.3} }
+@keyframes cph-title-in { from{opacity:0;transform:translateY(24px);filter:blur(6px)} to{opacity:1;transform:translateY(0);filter:blur(0)} }
+@keyframes cph-greeting { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
+
+/* ── Wrapper ── */
+.cph-wrap {
+  position: relative !important;
+  width: 100% !important;
+  min-height: 100vh !important;
+  background: #07070c !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+/* ── Particle canvas ── */
+.cph-canvas {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  opacity: .55 !important;
+  pointer-events: none !important;
+}
+
+/* ── Grid overlay ── */
+.cph-grid {
+  position: absolute !important;
+  inset: 0 !important;
+  background-image:
+    linear-gradient(rgba(91,95,199,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(91,95,199,.04) 1px, transparent 1px) !important;
+  background-size: 60px 60px !important;
+  pointer-events: none !important;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%) !important;
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%) !important;
+}
+
+/* ── Ambient glows ── */
+.cph-wrap::before {
+  content: '' !important;
+  position: absolute !important;
+  top: -120px; left: -80px !important;
+  width: 600px; height: 600px !important;
+  background: radial-gradient(circle, rgba(91,95,199,.14) 0%, transparent 65%) !important;
+  pointer-events: none !important;
+  animation: cph-glow 6s ease-in-out infinite !important;
+}
+.cph-wrap::after {
+  content: '' !important;
+  position: absolute !important;
+  top: 10%; right: -100px !important;
+  width: 500px; height: 500px !important;
+  background: radial-gradient(circle, rgba(34,211,238,.07) 0%, transparent 65%) !important;
+  pointer-events: none !important;
+  animation: cph-glow 8s 2s ease-in-out infinite !important;
+}
+
+/* ── Top bar ── */
+.cph-topbar {
+  position: relative !important; z-index: 10 !important;
+  display: flex !important; align-items: center !important; justify-content: space-between !important;
+  padding: 24px 52px !important;
+  border-bottom: 1px solid rgba(91,95,199,.08) !important;
+  background: rgba(7,7,12,.6) !important;
+  backdrop-filter: blur(20px) !important;
+}
+.cph-topbar-left { display: flex !important; align-items: center !important; gap: 14px !important; }
+.cph-live-badge {
+  display: flex !important; align-items: center !important; gap: 6px !important;
+  background: rgba(52,211,153,.08) !important;
+  border: 1px solid rgba(52,211,153,.2) !important;
+  border-radius: 20px !important; padding: 4px 10px !important;
+}
+.cph-live-dot {
+  width: 6px !important; height: 6px !important; border-radius: 50% !important;
+  background: #34d399 !important;
+  box-shadow: 0 0 6px #34d39988 !important;
+  animation: cph-live 1.5s ease infinite !important;
+}
+.cph-live-txt {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important; font-weight: 600 !important;
+  color: #34d399 !important; letter-spacing: .2em !important;
+}
+.cph-brand-name {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 15px !important; font-weight: 700 !important;
+  letter-spacing: -.02em !important; color: rgba(200,198,230,.7) !important;
+}
+.cph-logout {
+  display: flex !important; align-items: center !important; gap: 7px !important;
+  padding: 8px 16px !important; border-radius: 10px !important;
+  border: 1px solid rgba(255,255,255,.07) !important;
+  background: rgba(255,255,255,.03) !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 12px !important; font-weight: 500 !important;
+  color: rgba(120,118,160,.5) !important;
+  cursor: pointer !important; transition: all .2s !important;
+}
+.cph-logout:hover { color: #f87171 !important; border-color: rgba(248,113,113,.25) !important; background: rgba(248,113,113,.05) !important; }
+
+/* ── Hero body ── */
+.cph-body {
+  position: relative !important; z-index: 5 !important;
+  display: flex !important; align-items: center !important; justify-content: space-between !important;
+  padding: 72px 52px 60px !important;
+  flex: 1 !important; gap: 60px !important;
+}
+
+/* ── Left: text ── */
+.cph-left { flex: 1 !important; }
+.cph-greeting {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 11px !important; color: rgba(91,95,199,.55) !important;
+  letter-spacing: .3em !important; text-transform: uppercase !important;
+  margin-bottom: 18px !important; display: flex !important; align-items: center !important; gap: 10px !important;
+  animation: cph-greeting .6s .1s cubic-bezier(.16,1,.3,1) both !important;
+}
+.cph-greeting::before {
+  content: '' !important; display: inline-block !important;
+  width: 24px !important; height: 1px !important; background: rgba(91,95,199,.4) !important;
+}
+.cph-title {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 72px !important; font-weight: 800 !important;
+  letter-spacing: -.06em !important; line-height: .95 !important;
+  background: linear-gradient(135deg, #ffffff 0%, #c8c6f0 35%, #7b7fd4 65%, #22d3ee 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  margin: 0 0 18px !important;
+  animation: cph-title-in .7s .15s cubic-bezier(.16,1,.3,1) both !important;
+}
+.cph-desc {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 16px !important; color: rgba(120,118,160,.6) !important;
+  line-height: 1.5 !important; margin-bottom: 28px !important;
+  animation: cph-fade-up .6s .25s cubic-bezier(.16,1,.3,1) both !important;
+}
+.cph-pills {
+  display: flex !important; flex-wrap: wrap !important; gap: 8px !important;
+  animation: cph-fade-up .6s .35s cubic-bezier(.16,1,.3,1) both !important;
+}
+.cph-pill {
+  display: flex !important; align-items: center !important; gap: 6px !important;
+  padding: 6px 14px !important; border-radius: 20px !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important; letter-spacing: .04em !important;
+  transition: all .2s !important;
+}
+
+/* ── Right: ring ── */
+.cph-ring-wrap {
+  flex-shrink: 0 !important;
+  position: relative !important;
+  width: 220px !important; height: 220px !important;
+  animation: cph-fade-in .8s .2s both !important;
+}
+.cph-ring-svg { width: 100% !important; height: 100% !important; }
+.cph-ring-fill { transition: stroke-dashoffset 1.8s cubic-bezier(.16,1,.3,1) !important; }
+.cph-ring-center {
+  position: absolute !important; inset: 0 !important;
+  display: flex !important; flex-direction: column !important;
+  align-items: center !important; justify-content: center !important;
+}
+.cph-ring-pct {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 46px !important; font-weight: 800 !important;
+  letter-spacing: -.06em !important; line-height: 1 !important;
+  background: linear-gradient(135deg, #ffffff, #a5a8e8) !important;
+  -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  font-variant-numeric: tabular-nums !important;
+}
+.cph-ring-sub {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important; color: rgba(91,95,199,.4) !important;
+  letter-spacing: .18em !important; text-transform: uppercase !important; margin-top: 4px !important;
+}
+.cph-ring-steps {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 14px !important; font-weight: 600 !important;
+  color: rgba(161,159,200,.5) !important; margin-top: 6px !important;
+  letter-spacing: -.02em !important;
+}
+
+/* ── Bottom bar ── */
+.cph-bottom {
+  position: relative !important; z-index: 5 !important;
+  display: flex !important; align-items: center !important; justify-content: space-between !important;
+  padding: 18px 52px !important;
+  background: rgba(7,7,12,.7) !important;
+  backdrop-filter: blur(16px) !important;
+  border-top: 1px solid rgba(91,95,199,.1) !important;
+}
+.cph-status-row { display: flex !important; align-items: center !important; gap: 10px !important; }
+.cph-status-dot {
+  width: 8px !important; height: 8px !important; border-radius: 50% !important;
+  background: #34d399 !important; box-shadow: 0 0 8px #34d39977 !important;
+  animation: cph-pulse 2.5s ease infinite !important; flex-shrink: 0 !important;
+}
+.cph-status-dot.inactive { background: rgba(120,118,160,.3) !important; animation: none !important; box-shadow: none !important; }
+.cph-status-txt {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 11px !important; color: rgba(161,159,200,.55) !important; letter-spacing: .04em !important;
+}
+.cph-mini-stats { display: flex !important; align-items: center !important; gap: 20px !important; }
+.cph-ms { display: flex !important; align-items: baseline !important; gap: 5px !important; }
+.cph-ms-val {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 20px !important; font-weight: 700 !important;
+  letter-spacing: -.03em !important; color: #7b7fd4 !important;
+  font-variant-numeric: tabular-nums !important;
+}
+.cph-ms-val.cph-green { color: #34d399 !important; }
+.cph-ms-val.cph-dim   { color: rgba(91,95,199,.4) !important; }
+.cph-ms-val.cph-cyan  { color: #22d3ee !important; }
+.cph-ms-lbl {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important; color: rgba(91,95,199,.32) !important;
+  letter-spacing: .1em !important; text-transform: uppercase !important;
+}
+.cph-ms-sep { width: 1px !important; height: 20px !important; background: rgba(91,95,199,.1) !important; }
+
+/* ── Content below hero ── */
+.cp-stages-wrap,
+.cp-next-step,
+.cp-activity-feed,
+.cp-roi-strip,
+.cp-smm-metrics,
+.cp-focus-card,
+.cp-milestone,
+.cp-reports-section { position: relative !important; z-index: 1 !important; }
+</style>
 </head>
 <body>
 
@@ -8357,63 +8601,97 @@ canvas {
      PAGE: CLIENT PORTAL
 ═══════════════════════════════════════════ -->
 <div class="page" id="page-client">
-  <header class="cp-header">
-    <div class="cp-header-brand">
-      <div class="cp-header-dot"></div>
-      <span class="cp-header-name" id="cp-brand-name">—</span>
+
+  <!-- ══ PREMIUM HERO ══ -->
+  <div class="cph-wrap" id="cph-wrap">
+
+    <!-- Particle canvas -->
+    <canvas class="cph-canvas" id="cph-canvas"></canvas>
+
+    <!-- Grid overlay -->
+    <div class="cph-grid"></div>
+
+    <!-- Top bar -->
+    <div class="cph-topbar">
+      <div class="cph-topbar-left">
+        <div class="cph-live-badge">
+          <span class="cph-live-dot"></span>
+          <span class="cph-live-txt">LIVE</span>
+        </div>
+        <div class="cph-brand-name" id="cp-brand-name">—</div>
+      </div>
+      <button class="cph-logout" onclick="doLogout()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Выйти
+      </button>
     </div>
-    <button class="cp-logout-btn" onclick="doLogout()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-      Выйти
-    </button>
-  </header>
-  <div class="cp-hero">
-    <div class="cp-hero-inner">
-      <div class="cp-hero-greeting" id="cp-greeting">Добро пожаловать</div>
-      <div class="cp-hero-title" id="cp-project-title">—</div>
-      <div class="cp-hero-desc" id="cp-project-desc">—</div>
+
+    <!-- Hero body -->
+    <div class="cph-body">
+      <div class="cph-left">
+        <div class="cph-greeting" id="cp-greeting">Доброе утро</div>
+        <h1 class="cph-title" id="cp-project-title">—</h1>
+        <div class="cph-desc" id="cp-project-desc">—</div>
+        <div class="cph-pills" id="cph-pills">
+          <!-- filled by JS -->
+        </div>
+      </div>
+      <div class="cph-right">
+        <!-- Big ring -->
+        <div class="cph-ring-wrap">
+          <svg class="cph-ring-svg" viewBox="0 0 200 200">
+            <defs>
+              <linearGradient id="cpGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%"   stop-color="#5b5fc7"/>
+                <stop offset="50%"  stop-color="#7b7fd4"/>
+                <stop offset="100%" stop-color="#22d3ee"/>
+              </linearGradient>
+              <filter id="cpGlow">
+                <feGaussianBlur stdDeviation="3" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <!-- Track -->
+            <circle cx="100" cy="100" r="82" fill="none" stroke="rgba(91,95,199,.1)" stroke-width="8"/>
+            <!-- Tick marks -->
+            <circle cx="100" cy="100" r="82" fill="none" stroke="rgba(91,95,199,.06)" stroke-width="8"
+              stroke-dasharray="2 20.5" stroke-dashoffset="0"/>
+            <!-- Fill -->
+            <circle class="cph-ring-fill" id="cp-ring-fill"
+              cx="100" cy="100" r="82" fill="none"
+              stroke="url(#cpGradient)" stroke-width="8"
+              stroke-linecap="round"
+              stroke-dasharray="515" stroke-dashoffset="515"
+              filter="url(#cpGlow)"
+              transform="rotate(-90 100 100)"/>
+          </svg>
+          <div class="cph-ring-center">
+            <div class="cph-ring-pct" id="cp-ring-pct">0%</div>
+            <div class="cph-ring-sub">выполнено</div>
+            <div class="cph-ring-steps" id="cph-ring-steps">0 / 9</div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="cp-progress-ring-wrap">
-      <svg class="cp-ring-svg" viewBox="0 0 160 160">
-        <defs>
-          <linearGradient id="cpGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%"   stop-color="#5b5fc7"/>
-            <stop offset="50%"  stop-color="#7b7fd4"/>
-            <stop offset="100%" stop-color="#22d3ee"/>
-          </linearGradient>
-        </defs>
-        <circle class="cp-ring-track" cx="80" cy="80" r="65"/>
-        <circle class="cp-ring-fill" id="cp-ring-fill" cx="80" cy="80" r="65" stroke-dasharray="408" stroke-dashoffset="408"/>
-      </svg>
-      <div class="cp-ring-center">
-        <div class="cp-ring-pct" id="cp-ring-pct">0%</div>
-        <div class="cp-ring-lbl">готово</div>
+
+    <!-- Bottom bar -->
+    <div class="cph-bottom">
+      <div class="cph-status-row">
+        <div class="cph-status-dot" id="cp-status-dot-el"></div>
+        <span class="cph-status-txt" id="cp-status-text">Загрузка...</span>
+      </div>
+      <div class="cph-mini-stats">
+        <div class="cph-ms"><span class="cph-ms-val" id="cp-stat-done">—</span><span class="cph-ms-lbl">завершено</span></div>
+        <div class="cph-ms-sep"></div>
+        <div class="cph-ms"><span class="cph-ms-val cph-green" id="cp-stat-active">—</span><span class="cph-ms-lbl">в работе</span></div>
+        <div class="cph-ms-sep"></div>
+        <div class="cph-ms"><span class="cph-ms-val cph-dim" id="cp-stat-left">—</span><span class="cph-ms-lbl">осталось</span></div>
+        <div class="cph-ms-sep"></div>
+        <div class="cph-ms"><span class="cph-ms-val cph-cyan" id="cp-stat-reports">—</span><span class="cph-ms-lbl">отчётов</span></div>
       </div>
     </div>
   </div>
-  <div class="cp-status-bar">
-    <div class="cp-status-dot" id="cp-status-dot-el"></div>
-    <span class="cp-status-text" id="cp-status-text">Загрузка...</span>
-  </div>
-  <!-- Stats strip -->
-  <div class="cp-stats-strip" id="cp-stats-strip">
-    <div class="cp-stat-item">
-      <div class="cp-stat-val" id="cp-stat-done" style="color:#7b7fd4;">—</div>
-      <div class="cp-stat-lbl">Завершено</div>
-    </div>
-    <div class="cp-stat-item">
-      <div class="cp-stat-val" id="cp-stat-active" style="color:#34d399;">—</div>
-      <div class="cp-stat-lbl">В работе</div>
-    </div>
-    <div class="cp-stat-item">
-      <div class="cp-stat-val" id="cp-stat-left" style="color:rgba(91,95,199,.45);">—</div>
-      <div class="cp-stat-lbl">Осталось</div>
-    </div>
-    <div class="cp-stat-item">
-      <div class="cp-stat-val" id="cp-stat-reports" style="color:#22d3ee;">—</div>
-      <div class="cp-stat-lbl">Отчётов</div>
-    </div>
-  </div>
+
 <!-- NEXT STEP CARD -->
 <div class="cp-next-step" id="cp-next-step" style="display:none;">
   <div class="cp-next-label">СЛЕДУЮЩИЙ ШАГ</div>
@@ -13240,10 +13518,11 @@ async function cpLoadTracker() {
   const pct = Math.round((completed / total) * 100)
 
   // Ring — r=65, circumference=408
-  const circumference = 408
+  const circumference = 515
   const offset = circumference - (circumference * pct / 100)
-  if (g('cp-ring-fill')) g('cp-ring-fill').style.strokeDashoffset = offset
+  if (g('cp-ring-fill')) { g('cp-ring-fill').style.strokeDashoffset = offset; g('cp-ring-fill').style.strokeDasharray = 515; }
   if (g('cp-ring-pct')) g('cp-ring-pct').textContent = pct + '%'
+  if (g('cph-ring-steps')) g('cph-ring-steps').textContent = doneC + ' / ' + 9
   // Fill stats strip — use arr (already loaded above), not redeclare stages
   var doneC = arr.filter(s => s.status === 'completed').length
   var actC  = arr.filter(s => s.status === 'active').length
@@ -24728,6 +25007,115 @@ async function cpRenderMilestone(project) {
 }
 </script>
 
+<script id="dtr-client-hero-particles">
+// ── Particle system for client hero ──
+(function() {
+  function initParticles() {
+    var canvas = document.getElementById('cph-canvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var W, H, particles = [], lines = [];
+    var mouse = { x: -9999, y: -9999 };
+
+    function resize() {
+      var wrap = document.getElementById('cph-wrap');
+      if (!wrap) return;
+      W = canvas.width  = wrap.offsetWidth;
+      H = canvas.height = wrap.offsetHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Create particles
+    function mkParticle() {
+      return {
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - .5) * .3, vy: (Math.random() - .5) * .3,
+        r: Math.random() * 1.5 + .5,
+        alpha: Math.random() * .5 + .1,
+        color: Math.random() > .6 ? '#7b7fd4' : Math.random() > .5 ? '#22d3ee' : '#5b5fc7',
+      };
+    }
+    for (var i = 0; i < 80; i++) particles.push(mkParticle());
+
+    canvas.addEventListener('mousemove', function(e) {
+      var r = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - r.left;
+      mouse.y = e.clientY - r.top;
+    });
+    canvas.addEventListener('mouseleave', function() { mouse.x = -9999; mouse.y = -9999; });
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      particles.forEach(function(p) {
+        // Mouse repel
+        var dx = p.x - mouse.x, dy = p.y - mouse.y;
+        var dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 100) {
+          p.vx += dx/dist * .06;
+          p.vy += dy/dist * .06;
+        }
+        p.vx *= .98; p.vy *= .98;
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+        if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.alpha;
+        ctx.fill();
+      });
+
+      // Connect nearby particles
+      ctx.lineWidth = .5;
+      for (var i = 0; i < particles.length; i++) {
+        for (var j = i+1; j < particles.length; j++) {
+          var dx = particles[i].x - particles[j].x;
+          var dy = particles[i].y - particles[j].y;
+          var d  = Math.sqrt(dx*dx + dy*dy);
+          if (d < 120) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = '#5b5fc7';
+            ctx.globalAlpha = (1 - d/120) * .15;
+            ctx.stroke();
+          }
+        }
+      }
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(draw);
+    }
+    draw();
+  }
+
+  // Init when page-client shown
+  var _origShow = window.showClientPortal;
+  window.showClientPortal = function(project) {
+    var r = _origShow.apply(this, arguments);
+    setTimeout(initParticles, 100);
+    // Add pills
+    cpFillPills(project);
+    return r;
+  };
+
+  function cpFillPills(project) {
+    var el = document.getElementById('cph-pills');
+    if (!el) return;
+    var pills = [
+      { label: 'SMM Агентство', color: '#7b7fd4', bg: 'rgba(91,95,199,.1)' },
+      { label: project.description || 'Ресторан', color: '#22d3ee', bg: 'rgba(34,211,238,.07)' },
+    ];
+    if (project.brand_color) pills.push({ label: 'Premium', color: project.brand_color, bg: project.brand_color + '18' });
+    el.innerHTML = pills.map(function(p) {
+      return '<div class="cph-pill" style="background:' + p.bg + ';border:1px solid ' + p.color + '28;color:' + p.color + ';">'
+        + '<span style="width:5px;height:5px;border-radius:50%;background:' + p.color + ';display:inline-block;"></span>'
+        + p.label + '</div>';
+    }).join('');
+  }
+})();
+</script>
 </body>
 </html>
 <!-- DTR Passport Sidebar Logic -->
