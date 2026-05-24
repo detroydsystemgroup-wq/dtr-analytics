@@ -5482,6 +5482,494 @@ input, select, textarea {
 }
 </style>
 
+<style id="dtr-project-page-mckinsey">
+/* ════════════════════════════════════════════════════════════
+   PROJECT PAGE — McKinsey Premium Report
+   Philosophy: A consulting deliverable, not a dashboard.
+   Every stage feels like a chapter in a strategic report.
+════════════════════════════════════════════════════════════ */
+
+@keyframes ppIn     { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+@keyframes ppSlideL { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
+@keyframes ppPulse  { 0%,100%{box-shadow:0 0 0 0 rgba(91,95,199,.5)} 50%{box-shadow:0 0 0 8px rgba(91,95,199,0)} }
+@keyframes ppScan   { 0%{transform:translateX(-100%)} 100%{transform:translateX(300%)} }
+@keyframes ppGlow   { 0%,100%{opacity:.5} 50%{opacity:1} }
+@keyframes ppBarFill{ from{width:0} to{width:var(--w)} }
+@keyframes ppConnector { from{height:0} to{height:100%} }
+
+/* ══ HEADER ══ */
+.pp-header {
+  background: rgba(6,6,10,.95) !important;
+  backdrop-filter: blur(40px) saturate(2) !important;
+  border-bottom: 1px solid rgba(91,95,199,.12) !important;
+  height: 64px !important;
+  padding: 0 48px !important;
+}
+.pp-back-btn {
+  width: 36px !important; height: 36px !important;
+  border-radius: 9px !important;
+  border: 1px solid rgba(91,95,199,.18) !important;
+  background: rgba(91,95,199,.06) !important;
+  color: rgba(161,159,200,.6) !important;
+  transition: all .2s cubic-bezier(.34,1.56,.64,1) !important;
+}
+.pp-back-btn:hover {
+  background: rgba(91,95,199,.14) !important;
+  border-color: rgba(91,95,199,.35) !important;
+  color: #a5a8e8 !important;
+  transform: translateX(-2px) !important;
+}
+.pp-icon { border-radius: 12px !important; box-shadow: 0 4px 20px rgba(0,0,0,.5) !important; }
+.pp-name {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 18px !important; font-weight: 700 !important;
+  letter-spacing: -.03em !important;
+}
+.pp-desc {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important; color: rgba(91,95,199,.4) !important;
+  letter-spacing: .06em !important;
+}
+
+/* ══ PROGRESS MINI ══ */
+.pp-progress-mini {
+  width: 120px !important; height: 3px !important;
+  background: rgba(91,95,199,.12) !important; border-radius: 3px !important;
+}
+.pp-progress-bar-mini {
+  background: linear-gradient(90deg, #5b5fc7, #7b7fd4, #22d3ee) !important;
+  border-radius: 3px !important;
+}
+.pp-pct-mini {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 13px !important; font-weight: 700 !important;
+  color: #7b7fd4 !important; letter-spacing: -.02em !important;
+}
+
+/* ══ TABS BAR ══ */
+.pp-tabs-bar {
+  background: rgba(6,6,10,.92) !important;
+  backdrop-filter: blur(24px) !important;
+  border-bottom: 1px solid rgba(91,95,199,.08) !important;
+  height: 52px !important; padding: 0 48px !important;
+}
+.pp-tab {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 13px !important; font-weight: 500 !important;
+  color: rgba(120,100,200,.45) !important;
+  border-radius: 8px !important; padding: 7px 16px !important;
+  transition: all .18s !important;
+}
+.pp-tab:hover { color: rgba(200,198,230,.8) !important; background: rgba(91,95,199,.07) !important; }
+.pp-tab.pp-tab-active {
+  color: #f0eeff !important;
+  background: rgba(91,95,199,.12) !important;
+}
+.pp-tab.pp-tab-active::after {
+  background: linear-gradient(90deg, #5b5fc7, #a5a8e8) !important;
+  height: 2px !important; border-radius: 2px !important;
+}
+.pp-tab-count {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important; border-radius: 20px !important;
+  background: rgba(91,95,199,.1) !important; color: rgba(91,95,199,.5) !important;
+}
+.pp-tab-count.has-items {
+  background: rgba(91,95,199,.18) !important; color: #7b7fd4 !important;
+}
+
+/* Telegram button */
+.tg-status-btn {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 12px !important; font-weight: 500 !important;
+  border-radius: 9px !important; padding: 8px 14px !important;
+  border: 1px solid rgba(42,171,238,.2) !important;
+  background: rgba(42,171,238,.07) !important;
+  color: rgba(42,171,238,.8) !important;
+  transition: all .2s !important;
+}
+.tg-status-btn:hover { background: rgba(42,171,238,.14) !important; border-color: rgba(42,171,238,.35) !important; }
+
+/* New report button */
+.pp-new-report-btn {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 13px !important; font-weight: 600 !important;
+  border-radius: 10px !important; padding: 9px 18px !important;
+  background: linear-gradient(135deg, #5b5fc7, #7c3aed) !important;
+  border: none !important; color: #fff !important;
+  box-shadow: 0 4px 16px rgba(91,95,199,.3), inset 0 1px 0 rgba(255,255,255,.15) !important;
+  transition: all .22s cubic-bezier(.16,1,.3,1) !important;
+}
+.pp-new-report-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 28px rgba(91,95,199,.45) !important;
+}
+
+/* ══ PROGRESS CARD — Flagship ══ */
+.pp-progress-card {
+  background: rgba(10,10,16,.96) !important;
+  border: 1px solid rgba(91,95,199,.12) !important;
+  border-radius: 20px !important;
+  padding: 28px 36px !important;
+  position: relative !important; overflow: hidden !important;
+  animation: ppIn .5s cubic-bezier(.16,1,.3,1) both !important;
+}
+.pp-progress-card::before {
+  content: '' !important; position: absolute !important;
+  top: 0 !important; left: 0 !important; right: 0 !important; height: 2px !important;
+  background: linear-gradient(90deg, #5b5fc7, #7b7fd4, #22d3ee, #7b7fd4) !important;
+  background-size: 200% !important;
+  animation: ppGlow 3s ease-in-out infinite !important;
+}
+/* Scan shimmer */
+.pp-progress-card::after {
+  content: '' !important; position: absolute !important;
+  top: 0 !important; left: 0 !important; width: 30% !important; height: 100% !important;
+  background: linear-gradient(90deg, transparent, rgba(91,95,199,.04), transparent) !important;
+  animation: ppScan 4s ease-in-out infinite !important; pointer-events: none !important;
+}
+
+.pp-prog-pct {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 64px !important; font-weight: 800 !important;
+  letter-spacing: -.07em !important; line-height: 1 !important;
+  background: linear-gradient(135deg, #f0eeff 0%, #7b7fd4 60%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  font-variant-numeric: tabular-nums !important;
+}
+.pp-prog-label {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important; color: rgba(91,95,199,.38) !important;
+  letter-spacing: .16em !important; text-transform: uppercase !important;
+  margin-top: 6px !important;
+}
+
+/* Progress bar in card */
+.pp-prog-bar-wrap {
+  flex: 1 !important; height: 8px !important;
+  background: rgba(91,95,199,.1) !important; border-radius: 8px !important; overflow: hidden !important;
+}
+.pp-prog-bar-fill {
+  height: 100% !important; border-radius: 8px !important;
+  background: linear-gradient(90deg, #5b5fc7, #7b7fd4, #22d3ee) !important;
+  transition: width 1.4s cubic-bezier(.16,1,.3,1) !important;
+  position: relative !important; overflow: hidden !important;
+}
+.pp-prog-bar-fill::after {
+  content: '' !important; position: absolute !important;
+  top: 0 !important; left: -50% !important; width: 50% !important; height: 100% !important;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.3), transparent) !important;
+  animation: ppScan 2s ease-in-out infinite !important;
+}
+
+/* Pipeline mini segments */
+.pp-pipe-mini {
+  display: flex !important; gap: 3px !important; align-items: center !important;
+}
+.pp-pipe-seg {
+  flex: 1 !important; height: 5px !important; border-radius: 3px !important;
+  transition: all .3s !important;
+}
+
+/* Stage mini stats */
+.pp-stage-mini-stat {
+  display: flex !important; flex-direction: column !important;
+  align-items: center !important; gap: 3px !important;
+}
+.pp-stage-mini-val {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 22px !important; font-weight: 700 !important;
+  letter-spacing: -.04em !important; line-height: 1 !important;
+  font-variant-numeric: tabular-nums !important;
+}
+.pp-stage-mini-lbl {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important; color: rgba(91,95,199,.38) !important;
+  letter-spacing: .12em !important; text-transform: uppercase !important;
+}
+
+/* ══ TRACKER — Premium McKinsey Report Style ══ */
+.tracker-bar-track {
+  height: 4px !important;
+  background: rgba(91,95,199,.1) !important;
+  border-radius: 4px !important; overflow: hidden !important;
+  margin: 20px 0 32px !important;
+}
+.tracker-bar-fill {
+  height: 100% !important; border-radius: 4px !important;
+  background: linear-gradient(90deg, #5b5fc7, #7b7fd4, #22d3ee) !important;
+  transition: width 1.2s cubic-bezier(.16,1,.3,1) !important;
+  position: relative !important; overflow: hidden !important;
+}
+.tracker-bar-fill::after {
+  content: '' !important; position: absolute !important;
+  top: 0 !important; left: -50% !important; width: 50% !important; height: 100% !important;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent) !important;
+  animation: ppScan 1.8s ease-in-out infinite !important;
+}
+.tracker-stages-label {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important; color: rgba(91,95,199,.4) !important;
+  letter-spacing: .18em !important; text-transform: uppercase !important;
+  margin-bottom: 16px !important;
+}
+
+/* Stage row */
+.tracker-stage {
+  display: flex !important; gap: 18px !important;
+  margin-bottom: 0 !important;
+  animation: ppSlideL .4s cubic-bezier(.16,1,.3,1) both !important;
+}
+.tracker-stage:nth-child(1){animation-delay:.03s}
+.tracker-stage:nth-child(2){animation-delay:.06s}
+.tracker-stage:nth-child(3){animation-delay:.09s}
+.tracker-stage:nth-child(4){animation-delay:.12s}
+.tracker-stage:nth-child(5){animation-delay:.15s}
+.tracker-stage:nth-child(6){animation-delay:.18s}
+.tracker-stage:nth-child(7){animation-delay:.21s}
+.tracker-stage:nth-child(8){animation-delay:.24s}
+.tracker-stage:nth-child(9){animation-delay:.27s}
+
+/* Left timeline column */
+.tracker-stage-left {
+  display: flex !important; flex-direction: column !important;
+  align-items: center !important; padding-top: 2px !important;
+  width: 44px !important; flex-shrink: 0 !important;
+}
+
+/* Dot */
+.tracker-dot {
+  width: 40px !important; height: 40px !important;
+  border-radius: 50% !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  font-size: 16px !important; flex-shrink: 0 !important;
+  transition: all .3s cubic-bezier(.16,1,.3,1) !important;
+  position: relative !important; z-index: 1 !important;
+}
+.tracker-dot.t-done {
+  background: rgba(52,211,153,.1) !important;
+  border: 1.5px solid rgba(52,211,153,.4) !important;
+  color: #34d399 !important;
+  box-shadow: 0 0 16px rgba(52,211,153,.2) !important;
+}
+.tracker-dot.t-active {
+  background: rgba(91,95,199,.15) !important;
+  border: 2px solid rgba(91,95,199,.6) !important;
+  color: #7b7fd4 !important;
+  box-shadow: 0 0 0 6px rgba(91,95,199,.08), 0 0 24px rgba(91,95,199,.25) !important;
+  animation: ppPulse 3s ease-in-out infinite !important;
+}
+.tracker-dot.t-pending {
+  background: rgba(91,95,199,.04) !important;
+  border: 1.5px solid rgba(91,95,199,.1) !important;
+  color: rgba(120,100,200,.3) !important;
+}
+
+/* Stage number badge */
+.tracker-stage-num {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 8px !important; color: rgba(91,95,199,.3) !important;
+  letter-spacing: .08em !important; margin-top: 4px !important;
+}
+
+/* Connector line */
+.tracker-connector {
+  flex: 1 !important; width: 1.5px !important;
+  background: rgba(91,95,199,.08) !important;
+  margin: 4px 0 !important; min-height: 24px !important;
+  border-radius: 2px !important;
+  transition: background .4s !important;
+}
+.tracker-connector.t-done { background: rgba(52,211,153,.2) !important; }
+
+/* Stage card */
+.tracker-stage-card {
+  flex: 1 !important;
+  background: rgba(10,10,16,.92) !important;
+  border: 1px solid rgba(91,95,199,.08) !important;
+  border-radius: 16px !important;
+  padding: 18px 22px !important;
+  margin-bottom: 10px !important;
+  position: relative !important; overflow: hidden !important;
+  transition: all .25s cubic-bezier(.16,1,.3,1) !important;
+}
+.tracker-stage-card::before {
+  content: '' !important; position: absolute !important;
+  top: 0 !important; left: 0 !important; right: 0 !important; height: 2px !important;
+  opacity: 0 !important; transition: opacity .25s !important;
+  border-radius: 16px 16px 0 0 !important;
+}
+.tracker-stage-card:hover {
+  border-color: rgba(91,95,199,.2) !important;
+  transform: translateX(4px) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,.3), 0 0 16px rgba(91,95,199,.06) !important;
+}
+.tracker-stage-card:hover::before { opacity: 1 !important; }
+
+.tracker-stage-card.t-done {
+  background: rgba(52,211,153,.03) !important;
+  border-color: rgba(52,211,153,.12) !important;
+}
+.tracker-stage-card.t-done::before { background: rgba(52,211,153,.5) !important; }
+.tracker-stage-card.t-done:hover { border-color: rgba(52,211,153,.22) !important; }
+
+.tracker-stage-card.t-active {
+  background: rgba(91,95,199,.05) !important;
+  border-color: rgba(91,95,199,.22) !important;
+  box-shadow: 0 0 30px rgba(91,95,199,.08) !important;
+}
+.tracker-stage-card.t-active::before {
+  background: linear-gradient(90deg, #5b5fc7, #7b7fd4, #22d3ee) !important;
+  opacity: 1 !important;
+}
+
+/* Stage head */
+.tracker-stage-head {
+  display: flex !important; align-items: center !important;
+  justify-content: space-between !important; gap: 12px !important;
+  margin-bottom: 0 !important;
+}
+.tracker-stage-name-wrap {
+  display: flex !important; align-items: center !important; gap: 10px !important;
+  flex: 1 !important; min-width: 0 !important;
+}
+.tracker-stage-icon { font-size: 18px !important; flex-shrink: 0 !important; }
+.tracker-stage-name {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 15px !important; font-weight: 600 !important;
+  letter-spacing: -.02em !important; color: #f0eeff !important;
+}
+.tracker-stage-name.t-done { color: rgba(240,238,255,.6) !important; }
+.tracker-stage-name.t-pending { color: rgba(200,198,230,.4) !important; font-weight: 400 !important; }
+
+/* Badge */
+.tracker-badge {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important; font-weight: 500 !important;
+  letter-spacing: .06em !important; padding: 5px 12px !important;
+  border-radius: 8px !important; flex-shrink: 0 !important;
+}
+.tracker-badge.t-done {
+  background: rgba(52,211,153,.1) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(52,211,153,.2) !important;
+}
+.tracker-badge.t-active {
+  background: rgba(91,95,199,.15) !important;
+  color: #7b7fd4 !important;
+  border: 1px solid rgba(91,95,199,.3) !important;
+}
+.tracker-badge.t-pending {
+  background: rgba(91,95,199,.05) !important;
+  color: rgba(91,95,199,.3) !important;
+  border: 1px solid rgba(91,95,199,.1) !important;
+}
+
+/* Edit button */
+.tracker-edit-btn {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 12px !important; font-weight: 500 !important;
+  background: rgba(91,95,199,.08) !important;
+  border: 1px solid rgba(91,95,199,.18) !important;
+  border-radius: 8px !important; padding: 7px 14px !important;
+  color: rgba(91,95,199,.6) !important;
+  transition: all .2s !important; cursor: pointer !important;
+}
+.tracker-edit-btn:hover {
+  background: rgba(91,95,199,.16) !important;
+  border-color: rgba(91,95,199,.35) !important;
+  color: #7b7fd4 !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Stage body — details */
+.tracker-stage-body { margin-top: 14px !important; }
+
+/* Completed date chip */
+.tracker-done-chip {
+  display: inline-flex !important; align-items: center !important; gap: 5px !important;
+  font-family: 'JetBrains Mono', monospace !important; font-size: 10px !important;
+  color: rgba(52,211,153,.6) !important;
+  background: rgba(52,211,153,.06) !important;
+  border: 1px solid rgba(52,211,153,.15) !important;
+  border-radius: 7px !important; padding: 4px 10px !important;
+}
+
+/* Note chip */
+.tracker-note-chip {
+  display: inline-flex !important; align-items: center !important; gap: 6px !important;
+  font-family: 'Inter', sans-serif !important; font-size: 12px !important;
+  color: rgba(161,159,200,.55) !important;
+  background: rgba(91,95,199,.04) !important;
+  border-radius: 8px !important; padding: 6px 12px !important;
+  border: 1px solid rgba(91,95,199,.08) !important;
+  margin-top: 8px !important; width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Link chip */
+.tracker-link-chip {
+  display: inline-flex !important; align-items: center !important; gap: 6px !important;
+  font-family: 'JetBrains Mono', monospace !important; font-size: 11px !important;
+  color: #7b7fd4 !important;
+  background: rgba(91,95,199,.08) !important;
+  border: 1px solid rgba(91,95,199,.2) !important;
+  border-radius: 8px !important; padding: 6px 12px !important;
+  text-decoration: none !important; transition: all .18s !important;
+  margin-top: 8px !important;
+}
+.tracker-link-chip:hover {
+  background: rgba(91,95,199,.16) !important;
+  border-color: rgba(91,95,199,.38) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Deadline chip */
+.tracker-deadline-chip {
+  display: inline-flex !important; align-items: center !important; gap: 6px !important;
+  font-family: 'JetBrains Mono', monospace !important; font-size: 10px !important;
+  border-radius: 7px !important; padding: 4px 10px !important;
+  border: 1px solid !important; margin-top: 8px !important;
+}
+
+/* ══ STAGE SECTION HEADER (агрегат) ══ */
+.pp-stage-section-label {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important; letter-spacing: .2em !important;
+  text-transform: uppercase !important; color: rgba(91,95,199,.35) !important;
+  display: flex !important; align-items: center !important; gap: 10px !important;
+  margin: 24px 0 16px !important;
+}
+.pp-stage-section-label::after {
+  content: '' !important; flex: 1 !important; height: 1px !important;
+  background: rgba(91,95,199,.08) !important;
+}
+
+/* ══ REPORT CARDS in Отчёты tab ══ */
+.report-card {
+  background: rgba(10,10,16,.92) !important;
+  border: 1px solid rgba(91,95,199,.09) !important;
+  border-radius: 14px !important; padding: 16px 22px !important;
+  margin-bottom: 8px !important; cursor: pointer !important;
+  transition: all .2s cubic-bezier(.16,1,.3,1) !important;
+  animation: ppIn .3s cubic-bezier(.16,1,.3,1) both !important;
+}
+.report-card:hover {
+  border-color: rgba(91,95,199,.24) !important;
+  background: rgba(91,95,199,.04) !important;
+  transform: translateX(4px) !important;
+  box-shadow: 0 6px 24px rgba(0,0,0,.3) !important;
+}
+
+/* ══ MAIN CONTENT AREA ══ */
+.pp-main { padding: 32px 48px !important; }
+
+/* ══ APP-MAIN TAB CONTENT OVERRIDE ══ */
+#page-project .app-main { padding: 0 !important; }
+</style>
+
 </head>
 <body>
 
@@ -6047,19 +6535,53 @@ input, select, textarea {
 
   <div class="pp-body">
 
-    <!-- TAB: TRACKER -->
+    <!-- TAB: TRACKER — McKinsey Premium -->
     <div id="pp-tab-tracker">
-      <div class="pp-progress-card">
-        <div class="pp-prog-left">
+
+      <!-- ── HERO PROGRESS CARD ── -->
+      <div class="pp-progress-card" style="display:flex;align-items:center;gap:36px;margin-bottom:28px;">
+
+        <!-- Big % -->
+        <div style="flex-shrink:0;text-align:center;">
           <div class="pp-prog-pct" id="tracker-pct">0%</div>
-          <div class="pp-prog-label" id="tracker-stages-label">Загрузка...</div>
+          <div class="pp-prog-label" id="tracker-stages-label">из 9 этапов</div>
         </div>
-        <div class="pp-prog-right">
-          <div class="tracker-bar-track" style="flex:1;">
+
+        <!-- Bar + stats -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:14px;">
+          <!-- Pipeline visual -->
+          <div id="tracker-pipe-visual" style="display:flex;gap:4px;height:8px;"></div>
+          <!-- Full progress bar -->
+          <div class="tracker-bar-track" style="height:4px;">
             <div class="tracker-bar-fill" id="tracker-bar" style="width:0%"></div>
           </div>
+          <!-- Stage mini stats -->
+          <div style="display:flex;gap:0;background:rgba(91,95,199,.04);border:1px solid rgba(91,95,199,.08);border-radius:12px;overflow:hidden;">
+            <div class="pp-stage-mini-stat" style="flex:1;padding:12px;border-right:1px solid rgba(91,95,199,.07);">
+              <div class="pp-stage-mini-val" id="pp-mini-done" style="color:#34d399;">0</div>
+              <div class="pp-stage-mini-lbl">Завершено</div>
+            </div>
+            <div class="pp-stage-mini-stat" style="flex:1;padding:12px;border-right:1px solid rgba(91,95,199,.07);">
+              <div class="pp-stage-mini-val" id="pp-mini-active" style="color:#7b7fd4;">0</div>
+              <div class="pp-stage-mini-lbl">В работе</div>
+            </div>
+            <div class="pp-stage-mini-stat" style="flex:1;padding:12px;border-right:1px solid rgba(91,95,199,.07);">
+              <div class="pp-stage-mini-val" id="pp-mini-pending" style="color:rgba(91,95,199,.35);">0</div>
+              <div class="pp-stage-mini-lbl">Ожидают</div>
+            </div>
+            <div class="pp-stage-mini-stat" style="flex:1;padding:12px;">
+              <div class="pp-stage-mini-val" id="pp-mini-deadline" style="color:#fbbf24;font-size:14px;">—</div>
+              <div class="pp-stage-mini-lbl">Ближ. дедлайн</div>
+            </div>
+          </div>
         </div>
+
       </div>
+
+      <!-- ── STAGES SECTION LABEL ── -->
+      <div class="pp-stage-section-label">Этапы проекта · 9 шагов</div>
+
+      <!-- ── TRACKER TIMELINE ── -->
       <div class="tracker-timeline" id="tracker-timeline"></div>
     </div>
 
@@ -7967,6 +8489,119 @@ async function loadActivityFeed() {
 // ══════════════════════════════════════════════
 // OVERVIEW / SUMMARY
 // ══════════════════════════════════════════════
+async function loadOverview() {
+  const grid = g('overview-grid')
+  if (!grid) return
+  if (!_allProjects.length) { grid.innerHTML = '<div class="activity-loading">Нет проектов</div>'; return }
+
+  const today = new Date(); today.setHours(0,0,0,0)
+
+  // Progress leaderboard
+  const progList = _allProjects.map(p => ({
+    ...p,
+    prog: getProjectProgress(p.id)
+  })).sort((a,b) => b.prog.pct - a.prog.pct)
+
+  // Overdue count
+  const overdueProjs = _allProjects.filter(p => isProjectOverdue(p.id))
+
+  // Stages stats
+  const totalStages = _allProjects.length * 9
+  const completedStages = _allStages.filter(s => s.status === 'completed').length
+  const activeStages = _allStages.filter(s => s.status === 'active').length
+  const globalPct = totalStages ? Math.round(completedStages / totalStages * 100) : 0
+
+  // Next deadlines
+  const allDeadlines = _allStages
+    .filter(s => s.deadline && s.status !== 'completed' && new Date(s.deadline) >= today)
+    .sort((a,b) => new Date(a.deadline) - new Date(b.deadline))
+    .slice(0, 5)
+    .map(s => {
+      const proj = _allProjects.find(p => p.id === s.project_id)
+      const stage = STAGES[s.stage_index]
+      const dl = new Date(s.deadline)
+      const diff = Math.ceil((dl - today) / 86400000)
+      return { ...s, proj, stage, diff }
+    }).filter(s => s.proj && s.stage)
+
+  const MONTHS_SH = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек']
+
+  grid.innerHTML = `
+    <!-- Card 1: Global progress -->
+    <div class="ov-card">
+      <div class="ov-card-title">Общий прогресс агентства</div>
+      <div class="ov-big" style="color:var(--a2);">${globalPct}%</div>
+      <div class="ov-sub">${completedStages} из ${totalStages} этапов завершено · ${activeStages} в работе</div>
+      <div style="margin-top:16px;height:4px;background:var(--bg5);border-radius:4px;overflow:hidden;">
+        <div style="width:${globalPct}%;height:100%;background:var(--a2);border-radius:4px;transition:width 1s ease;"></div>
+      </div>
+      <div style="display:flex;gap:16px;margin-top:14px;">
+        <div><div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--green);">${_allProjects.filter(p=>getProjectProgress(p.id).pct===100).length}</div><div style="font-size:11px;color:var(--txt3);">Завершены</div></div>
+        <div><div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--red);">${overdueProjs.length}</div><div style="font-size:11px;color:var(--txt3);">Просрочены</div></div>
+        <div><div style="font-family:var(--font-display);font-size:22px;font-weight:800;color:var(--cyan);">${_allProjects.length}</div><div style="font-size:11px;color:var(--txt3);">Проектов</div></div>
+      </div>
+    </div>
+
+    <!-- Card 2: Progress leaderboard -->
+    <div class="ov-card">
+      <div class="ov-card-title">Прогресс по проектам</div>
+      <div class="ov-list">
+        ${progList.slice(0,6).map(p => {
+          const col = p.brand_color || '#5b5fc7'
+          const progColor = p.prog.pct >= 80 ? '#4ade80' : p.prog.pct >= 40 ? col : '#f59e0b'
+          return `<div class="ov-progress-row">
+            <div class="ov-prog-hdr">
+              <span class="ov-prog-name" onclick="openProject('${p.id}')">${p.name}</span>
+              <span class="ov-prog-pct" style="color:${progColor};">${p.prog.pct}%</span>
+            </div>
+            <div class="ov-prog-bar">
+              <div class="ov-prog-fill" style="width:${p.prog.pct}%;background:${progColor};"></div>
+            </div>
+          </div>`
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- Card 3: Nearest deadlines -->
+    <div class="ov-card">
+      <div class="ov-card-title">Ближайшие дедлайны</div>
+      ${allDeadlines.length ? `<div class="ov-list">
+        ${allDeadlines.map(s => {
+          const dlColor = s.diff <= 0 ? 'var(--red)' : s.diff <= 3 ? 'var(--amber)' : 'var(--txt2)'
+          const dlText = s.diff === 0 ? 'Сегодня' : s.diff === 1 ? 'Завтра' : `Через ${s.diff}д`
+          const col = s.proj.brand_color || '#5b5fc7'
+          return `<div class="ov-list-item" onclick="openProject('${s.proj.id}')">
+            <div>
+              <div class="ov-list-name">${s.stage.icon} ${s.stage.name}</div>
+              <div class="ov-list-sub" style="color:${col};">● ${s.proj.name}</div>
+            </div>
+            <div class="ov-list-val" style="color:${dlColor};font-size:13px;">${dlText}</div>
+          </div>`
+        }).join('')}
+      </div>` : '<div style="padding:20px;text-align:center;font-family:var(--font-mono);font-size:11px;color:var(--txt3);">Дедлайнов нет 🎉</div>'}
+    </div>
+
+    <!-- Card 4: Overdue projects -->
+    <div class="ov-card">
+      <div class="ov-card-title">Требуют внимания</div>
+      ${overdueProjs.length ? `<div class="ov-list">
+        ${overdueProjs.slice(0,5).map(p => {
+          const col = p.brand_color || '#5b5fc7'
+          const prog = getProjectProgress(p.id)
+          return `<div class="ov-list-item" onclick="openProject('${p.id}')">
+            <div>
+              <div class="ov-list-name">${p.name}</div>
+              <div class="ov-list-sub">⚠️ Просрочен · ${prog.pct}% выполнено</div>
+            </div>
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--red);box-shadow:0 0 6px rgba(248,113,113,.5);"></div>
+          </div>`
+        }).join('')}
+      </div>` : '<div style="padding:20px;text-align:center;font-size:28px;">✅<div style="font-family:var(--font-mono);font-size:11px;color:var(--txt3);margin-top:8px;">Всё в порядке!</div></div>'}
+    </div>
+  `
+}
+
+
 // ══════════════════════════════════════════════
 // SMM LEADERBOARD
 // ══════════════════════════════════════════════
@@ -8458,6 +9093,73 @@ function renderProjectGrid() {
       </div>
     </div>`
   }).join('')
+}
+
+function renderDeadlinePanel() {
+  const panel = g('deadline-panel')
+  if (!panel) return
+  const today = new Date(); today.setHours(0,0,0,0)
+  const MONTHS_SH = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек']
+  const DAYS_RU = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб']
+
+  // Collect all stages with deadlines
+  const items = []
+  _allStages.forEach(s => {
+    if (!s.deadline) return
+    const proj = _allProjects.find(p => p.id === s.project_id)
+    if (!proj) return
+    const stageObj = STAGES[s.stage_index] || { name: 'Этап ' + s.stage_index, icon: '•' }
+    items.push({
+      date: new Date(s.deadline),
+      stageName: stageObj.name,
+      projectName: proj.name,
+      projectId: proj.id,
+      projectColor: proj.brand_color || '#5b5fc7',
+      status: s.status,
+      diffDays: Math.ceil((new Date(s.deadline) - today) / 86400000)
+    })
+  })
+  items.sort((a,b) => a.date - b.date)
+
+  if (!items.length) {
+    panel.innerHTML = '<div class="dl-empty">📅 Дедлайнов пока нет<br><span style="opacity:.5;font-size:10px;margin-top:6px;display:block;">Добавь дедлайны к этапам проектов</span></div>'
+    return
+  }
+
+  // Group by: overdue, today, this week, next week, later
+  const groups = [
+    { key: 'overdue', label: '🔴 Просрочено', items: items.filter(i => i.diffDays < 0 && i.status !== 'completed') },
+    { key: 'today', label: '🟡 Сегодня', items: items.filter(i => i.diffDays === 0 && i.status !== 'completed') },
+    { key: 'week', label: '📅 На этой неделе', items: items.filter(i => i.diffDays > 0 && i.diffDays <= 7 && i.status !== 'completed') },
+    { key: 'later', label: '🗓 Позже', items: items.filter(i => i.diffDays > 7 && i.status !== 'completed') },
+    { key: 'done', label: '✅ Выполнено', items: items.filter(i => i.status === 'completed') },
+  ].filter(g => g.items.length)
+
+  panel.innerHTML = groups.map(gr => `
+    <div class="dl-week-group">
+      <div class="dl-week-title">${gr.label} · ${gr.items.length}</div>
+      ${gr.items.map(it => {
+        const dotCls = it.diffDays < 0 ? 'overdue' : it.diffDays === 0 ? 'today' : it.diffDays <= 7 ? 'soon' : 'future'
+        const statusBadge = it.status === 'completed'
+          ? '<span class="dl-status-badge pcc-green">Выполнен</span>'
+          : it.status === 'active'
+          ? '<span class="dl-status-badge pcc-cyan">В работе</span>'
+          : '<span class="dl-status-badge pcc-amber">Ожидает</span>'
+        return `<div class="dl-item">
+          <div class="dl-date-col">
+            <div class="dl-date-day" style="color:${it.diffDays<0?'var(--red)':it.diffDays===0?'var(--amber)':'var(--txt)'};">${it.date.getDate()}</div>
+            <div class="dl-date-mon">${MONTHS_SH[it.date.getMonth()]} · ${DAYS_RU[it.date.getDay()]}</div>
+          </div>
+          <div class="dl-dot ${dotCls}"></div>
+          <div class="dl-info">
+            <div class="dl-stage">${it.stageName}</div>
+            <div class="dl-project" style="color:${it.projectColor};">● ${it.projectName}</div>
+          </div>
+          ${statusBadge}
+          <button class="dl-goto" onclick="openProject('${it.projectId}')">Открыть →</button>
+        </div>`
+      }).join('')}
+    </div>`).join('')
 }
 
 function switchDashTab(tab, btn) {
@@ -15480,5 +16182,104 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 
 
 </style>
+<script id="dtr-pp-mckinsey-js">
+// ══════════════════════════════════════════════════════
+// PROJECT PAGE — McKinsey enhancements
+// Hooks into existing renderTracker to add mini stats
+// ══════════════════════════════════════════════════════
+
+// Patch renderTracker to also fill mini stats
+var _origRenderTracker = typeof renderTracker === 'function' ? renderTracker : null;
+
+function renderTracker() {
+  if (_origRenderTracker) _origRenderTracker.apply(this, arguments);
+  ppFillMiniStats();
+}
+
+function ppFillMiniStats() {
+  if (typeof _currentProject === 'undefined' || !_currentProject) return;
+  var pid = _currentProject.id;
+  var stages = typeof _allStages !== 'undefined'
+    ? _allStages.filter(function(s){ return s.project_id === pid; })
+    : [];
+
+  var done    = stages.filter(function(s){ return s.status === 'completed'; }).length;
+  var active  = stages.filter(function(s){ return s.status === 'active'; }).length;
+  var pending = 9 - done - active;
+
+  var setEl = function(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
+  setEl('pp-mini-done',    done);
+  setEl('pp-mini-active',  active);
+  setEl('pp-mini-pending', Math.max(0, pending));
+
+  // Next deadline
+  var today = new Date(); today.setHours(0,0,0,0);
+  var MONTHS = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+  var upcoming = stages
+    .filter(function(s){ return s.deadline && s.status !== 'completed'; })
+    .map(function(s){ return new Date(s.deadline); })
+    .filter(function(d){ return d >= today; })
+    .sort(function(a,b){ return a-b; });
+
+  var dlEl = document.getElementById('pp-mini-deadline');
+  if (dlEl) {
+    if (upcoming.length) {
+      var dl = upcoming[0];
+      var diff = Math.ceil((dl - today) / 86400000);
+      if (diff === 0) { dlEl.textContent = 'Сегодня'; dlEl.style.color = '#fbbf24'; }
+      else if (diff === 1) { dlEl.textContent = 'Завтра'; dlEl.style.color = '#fbbf24'; }
+      else if (diff <= 7) { dlEl.textContent = 'Через ' + diff + 'д'; dlEl.style.color = '#fbbf24'; }
+      else { dlEl.textContent = dl.getDate() + ' ' + MONTHS[dl.getMonth()]; dlEl.style.color = '#818cf8'; }
+    } else {
+      dlEl.textContent = '—'; dlEl.style.color = 'rgba(91,95,199,.3)';
+    }
+  }
+
+  // Pipeline visual
+  var pipeEl = document.getElementById('tracker-pipe-visual');
+  if (pipeEl) {
+    var col = (_currentProject && _currentProject.brand_color) || '#5b5fc7';
+    var segs = '';
+    for (var i = 0; i < 9; i++) {
+      var st = stages.find(function(s){ return s.stage_index === i; });
+      var status = st ? st.status : 'pending';
+      var bg, h;
+      if (status === 'completed') { bg = col; h = '8px'; }
+      else if (status === 'active') { bg = col + '77'; h = '12px'; }
+      else { bg = 'rgba(91,95,199,.1)'; h = '8px'; }
+      segs += '<div style="flex:1;height:' + h + ';border-radius:4px;background:' + bg + ';transition:all .4s;align-self:center;' +
+        (status==='active' ? 'box-shadow:0 0 8px ' + col + '66;' : '') + '"></div>';
+    }
+    pipeEl.innerHTML = segs;
+  }
+
+  // Add stage number labels to tracker dots
+  setTimeout(function() {
+    var dots = document.querySelectorAll('.tracker-dot');
+    dots.forEach(function(dot, i) {
+      if (!dot.querySelector('.tracker-stage-num')) {
+        var num = document.createElement('div');
+        num.className = 'tracker-stage-num';
+        num.style.cssText = 'font-family:JetBrains Mono,monospace;font-size:7px;color:rgba(91,95,199,.3);letter-spacing:.04em;margin-top:3px;text-align:center;';
+        num.textContent = String(i + 1).padStart(2, '0');
+        dot.parentNode && dot.parentNode.appendChild(num);
+      }
+    });
+  }, 100);
+}
+
+// Also call on tab switch
+document.addEventListener('DOMContentLoaded', function() {
+  // Intercept pp tab switch
+  var origSwitch = typeof switchPPTab === 'function' ? switchPPTab : null;
+  if (origSwitch) {
+    window.switchPPTab = function(tab, btn) {
+      origSwitch(tab, btn);
+      if (tab === 'tracker') setTimeout(ppFillMiniStats, 50);
+    };
+  }
+});
+</script>
+
 </body>
 </html>
