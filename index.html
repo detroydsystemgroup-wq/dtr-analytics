@@ -8338,406 +8338,457 @@ canvas {
      PAGE: PASSPORT
 ═══════════════════════════════════════════ -->
 <div class="page" id="page-passport">
-  <header class="app-header">
-    <div class="header-logo">
-      <div style="font-family:Manrope,sans-serif;font-size:10px;color:var(--txt3);letter-spacing:.12em;text-transform:uppercase;">DTR Analytics</div>
-    </div>
-    <div class="header-right">
-      <div class="user-pill"><div style="width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s ease infinite;"></div><span id="header-user-pp">—</span></div>
-      <button class="logout-btn" onclick="doLogout()">Выйти</button>
-    </div>
-  </header>
-  <div class="app-main pp-app-main">
-    <!-- ── HEADER ── -->
-    <div class="pp-header">
-      <div class="back-btn" onclick="goBackToProject()">
+  <header class="app-header pp-app-header">
+    <div style="display:flex;align-items:center;gap:16px;">
+      <div class="back-btn" onclick="goBackToProject()" style="margin:0;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
         Назад к проекту
       </div>
-      <div class="pp-title-row">
-        <div id="pp-icon" class="pp-avatar"></div>
-        <div class="pp-title-info">
-          <div class="pp-label-tag">Паспорт клиента</div>
-          <div class="pp-name" id="pp-title">—</div>
-          <div class="pp-meta-row">
-            <span class="pp-meta-chip" id="pp-category-chip">—</span>
-          </div>
-        </div>
+      <div class="pp-header-divider"></div>
+      <div id="pp-icon" class="pp-hdr-avatar"></div>
+      <div>
+        <div class="pp-hdr-label">Паспорт клиента</div>
+        <div class="pp-hdr-name" id="pp-title">—</div>
       </div>
     </div>
-
-    <!-- ── TWO-COLUMN SHELL ── -->
-    <div class="pp-layout">
-
-      <!-- LEFT: Tab content -->
-      <div class="pp-main-col">
-
-        <!-- Tab nav -->
-        <div class="passport-nav" id="passport-nav">
-      <button class="passport-tab pt-active" onclick="switchPassportTab('basic',this)">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="13" y2="13"/></svg>
-        Профиль
-      </button>
-      <button class="passport-tab" onclick="switchPassportTab('brand',this)">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-        Бренд
-      </button>
-      <button class="passport-tab" onclick="switchPassportTab('audience',this)">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-        Аудитория
-      </button>
-      <button class="passport-tab" onclick="switchPassportTab('competitors',this)">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        Конкуренты
-      </button>
-      <button class="passport-tab" onclick="switchPassportTab('kpi',this)">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-        KPI
-      </button>
-      <button class="passport-tab" onclick="switchPassportTab('media',this)">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        Медиа
-      </button>
-      <button class="passport-tab" onclick="switchPassportTab('notes',this)">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-        Заметки
-      </button>
-    </div>
-
-    <!-- SECTION: Профиль -->
-    <div class="passport-section ps-active" id="ps-basic">
-      <div class="ps-card pc-basic">
-        <div class="ps-card-head">
-          <div class="ps-card-title">
-            <div class="ps-card-icon" style="background:rgba(91,95,199,.12);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="13" y2="13"/></svg></div>
-            Профиль заведения
-          </div>
-
-        </div>
-        <!-- VIEW -->
-        <div id="basic-view">
-          <div class="ps-grid">
-            <div><div class="ps-view-label">Название</div><div class="ps-view-val" id="bv-name">—</div></div>
-            <div><div class="ps-view-label">Категория</div><div class="ps-view-val" id="bv-category">—</div></div>
-            <div><div class="ps-view-label">Адрес</div><div class="ps-view-val" id="bv-address">—</div></div>
-            <div><div class="ps-view-label">Телефон</div><div class="ps-view-val" id="bv-phone">—</div></div>
-            <div><div class="ps-view-label">Email</div><div class="ps-view-val" id="bv-email">—</div></div>
-            <div><div class="ps-view-label">Сайт</div><div class="ps-view-val" id="bv-website">—</div></div>
-            <div><div class="ps-view-label">Режим работы</div><div class="ps-view-val" id="bv-hours">—</div></div>
-            <div>
-              <div class="ps-view-label">Соцсети</div>
-              <div id="bv-socials" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;"></div>
-            </div>
-          </div>
-        </div>
-        <!-- EDIT -->
-        <div id="basic-edit" style="display:none;">
-          <div class="ps-grid">
-            <div class="ps-field"><label>Название</label><input type="text" id="be-name" placeholder="Uzbek Doner"></div>
-            <div class="ps-field"><label>Категория</label><input type="text" id="be-category" placeholder="Фастфуд, стритфуд"></div>
-            <div class="ps-field full"><label>Адрес</label><input type="text" id="be-address" placeholder="г. Ташкент, ул. Амира Темура, 15"></div>
-            <div class="ps-field"><label>Телефон</label><input type="tel" id="be-phone" placeholder="+998 90 123 45 67"></div>
-            <div class="ps-field"><label>Email</label><input type="email" id="be-email" placeholder="info@uzbekdoner.uz"></div>
-            <div class="ps-field"><label>Сайт</label><input type="url" id="be-website" placeholder="https://uzbekdoner.uz"></div>
-            <div class="ps-field"><label>Instagram</label><input type="text" id="be-instagram" placeholder="@uzbekdoner"></div>
-            <div class="ps-field"><label>Telegram</label><input type="text" id="be-telegram" placeholder="@uzbekdoner_bot"></div>
-            <div class="ps-field full"><label>Режим работы</label><input type="text" id="be-hours" placeholder="Пн–Вс 10:00 – 22:00"></div>
-          </div>
-          <div style="display:flex;justify-content:flex-end;margin-top:18px;">
-            <button class="ps-save-btn" onclick="psSave('basic')">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Сохранить
-            </button>
-          </div>
-        </div>
+    <div class="pp-hdr-right">
+      <div class="pp-hdr-right">
+        <div class="user-pill"><div style="width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s ease infinite;"></div><span id="header-user-pp">—</span></div>
+        <button class="logout-btn" onclick="doLogout()">Выйти</button>
       </div>
     </div>
+  </header>
 
-    <!-- SECTION: Бренд -->
-    <div class="passport-section" id="ps-brand">
-      <div class="ps-card pc-brand">
-        <div class="ps-card-head">
-          <div class="ps-card-title">
-            <div class="ps-card-icon" style="background:rgba(192,132,252,.12);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="1.8" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
-            Профиль бренда
-          </div>
+  <!-- ── SPLIT LAYOUT ── -->
+  <div class="pp-split-shell">
 
+    <!-- ══ LEFT: Tab nav + Forms ══ -->
+    <div class="pp-split-left">
+
+      <nav class="pp-tab-nav" id="passport-nav">
+        <button class="pp-tab pp-tab-active" data-tab="basic" onclick="ppTab('basic',this)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="13" y2="13"/></svg>
+          Профиль
+        </button>
+        <button class="pp-tab" data-tab="brand" onclick="ppTab('brand',this)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          Бренд
+        </button>
+        <button class="pp-tab" data-tab="audience" onclick="ppTab('audience',this)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          Аудитория
+        </button>
+        <button class="pp-tab" data-tab="competitors" onclick="ppTab('competitors',this)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Конкуренты
+        </button>
+        <button class="pp-tab" data-tab="kpi" onclick="ppTab('kpi',this)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          KPI
+        </button>
+        <button class="pp-tab" data-tab="media" onclick="ppTab('media',this)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Медиа
+        </button>
+        <button class="pp-tab" data-tab="notes" onclick="ppTab('notes',this)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          Заметки
+        </button>
+        <!-- progress pill -->
+        <div class="pp-tab-progress-pill" id="pp-progress-pill">
+          <div class="pp-tpp-bar" id="pp-tpp-bar" style="width:0%"></div>
+          <span id="pp-tpp-label">0 / 7</span>
         </div>
-        <div id="brand-view">
-          <div class="ps-grid">
-            <div>
-              <div class="ps-view-label">Тон голоса</div>
-              <div class="ps-view-val" id="brv-tone">—</div>
+      </nav>
+
+      <!-- ══ FORM PANELS ══ -->
+
+      <!-- BASIC -->
+      <div class="pp-form-panel pp-fp-active" id="ppf-basic">
+        <div class="pp-form-group">
+          <div class="pp-form-section-label">Основная информация</div>
+          <div class="pp-form-row">
+            <div class="pp-field">
+              <label>Название</label>
+              <input id="be-name" type="text" placeholder="Safia Coffee" oninput="ppLive()">
             </div>
-            <div>
-              <div class="ps-view-label">Цветовая палитра</div>
-              <div class="color-swatches" id="brv-colors"></div>
+            <div class="pp-field">
+              <label>Категория</label>
+              <input id="be-category" type="text" placeholder="Кофейня, кафе" oninput="ppLive()">
             </div>
-            <div class="full">
-              <div class="ps-view-label">Ключевые месседжи</div>
-              <div class="ps-tag-list" id="brv-messages"></div>
+          </div>
+          <div class="pp-field">
+            <label>Адрес</label>
+            <input id="be-address" type="text" placeholder="г. Ташкент, ул. Амира Темура, 15" oninput="ppLive()">
+          </div>
+        </div>
+        <div class="pp-form-group">
+          <div class="pp-form-section-label">Контакты</div>
+          <div class="pp-form-row">
+            <div class="pp-field">
+              <label>Телефон</label>
+              <input id="be-phone" type="tel" placeholder="+998 90 123 45 67" oninput="ppLive()">
             </div>
-            <div class="full">
-              <div class="ps-view-label">Запрещённые слова / темы</div>
-              <div class="ps-tag-list" id="brv-forbidden"></div>
+            <div class="pp-field">
+              <label>Email</label>
+              <input id="be-email" type="email" placeholder="info@safia.uz" oninput="ppLive()">
             </div>
-            <div class="full">
-              <div class="ps-view-label">Заметки по стилю</div>
-              <div class="ps-view-val" id="brv-style">—</div>
+          </div>
+          <div class="pp-field">
+            <label>Сайт</label>
+            <input id="be-website" type="url" placeholder="https://safia.uz" oninput="ppLive()">
+          </div>
+        </div>
+        <div class="pp-form-group">
+          <div class="pp-form-section-label">Социальные сети</div>
+          <div class="pp-form-row">
+            <div class="pp-field">
+              <label>Instagram</label>
+              <input id="be-instagram" type="text" placeholder="@safia_coffee" oninput="ppLive()">
+            </div>
+            <div class="pp-field">
+              <label>Telegram</label>
+              <input id="be-telegram" type="text" placeholder="@safia_bot" oninput="ppLive()">
             </div>
           </div>
         </div>
-        <div id="brand-edit" style="display:none;">
-          <div style="margin-bottom:18px;">
-            <div class="ps-view-label" style="margin-bottom:10px;">Тон голоса</div>
-            <div class="tone-grid">
-              <button class="tone-btn" data-tone="Дружелюбный" onclick="selectTone(this)">Дружелюбный</button>
-              <button class="tone-btn" data-tone="Профессиональный" onclick="selectTone(this)">Профессиональный</button>
-              <button class="tone-btn" data-tone="Дерзкий" onclick="selectTone(this)">Дерзкий</button>
-              <button class="tone-btn" data-tone="Молодёжный" onclick="selectTone(this)">Молодёжный</button>
-              <button class="tone-btn" data-tone="Семейный" onclick="selectTone(this)">Семейный</button>
-              <button class="tone-btn" data-tone="Премиальный" onclick="selectTone(this)">Премиальный</button>
-            </div>
-          </div>
-          <div class="ps-grid">
-            <div class="ps-field full"><label>Ключевые месседжи (через запятую)</label><input type="text" id="bre-messages" placeholder="Вкусно и быстро, Свежие продукты, Доступные цены"></div>
-            <div class="ps-field full"><label>Запрещённые слова/темы (через запятую)</label><input type="text" id="bre-forbidden" placeholder="дёшево, скидка, акция, распродажа"></div>
-            <div class="ps-field full"><label>Цвета бренда (hex через запятую)</label><input type="text" id="bre-colors" placeholder="#e63c2f, #1a1a1a, #ffffff"></div>
-            <div class="ps-field full"><label>Заметки по стилю съёмки и подачи</label><textarea id="bre-style" rows="3" placeholder="Тёплые цвета, натуральный свет, еда крупным планом..."></textarea></div>
-          </div>
-          <div style="display:flex;justify-content:flex-end;margin-top:18px;">
-            <button class="ps-save-btn" onclick="psSave('brand')">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Сохранить
-            </button>
+        <div class="pp-form-group">
+          <div class="pp-form-section-label">Режим работы</div>
+          <div class="pp-field">
+            <label>Часы работы</label>
+            <input id="be-hours" type="text" placeholder="Пн–Вс 08:00 – 23:00" oninput="ppLive()">
           </div>
         </div>
+        <button class="pp-save-btn" onclick="psSave('basic')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Сохранить профиль
+        </button>
       </div>
-    </div>
 
-    <!-- SECTION: Аудитория -->
-    <div class="passport-section" id="ps-audience">
-      <div class="ps-card pc-audience">
-        <div class="ps-card-head">
-          <div class="ps-card-title">
-            <div class="ps-card-icon" style="background:rgba(56,189,248,.12);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
-            Портреты аудитории
+      <!-- BRAND -->
+      <div class="pp-form-panel" id="ppf-brand">
+        <div class="pp-form-group">
+          <div class="pp-form-section-label">Тон голоса бренда</div>
+          <div class="pp-tone-grid">
+            <button class="pp-tone-btn" data-tone="Дружелюбный" onclick="ppSelectTone(this)">Дружелюбный</button>
+            <button class="pp-tone-btn" data-tone="Профессиональный" onclick="ppSelectTone(this)">Профессиональный</button>
+            <button class="pp-tone-btn" data-tone="Дерзкий" onclick="ppSelectTone(this)">Дерзкий</button>
+            <button class="pp-tone-btn" data-tone="Молодёжный" onclick="ppSelectTone(this)">Молодёжный</button>
+            <button class="pp-tone-btn" data-tone="Семейный" onclick="ppSelectTone(this)">Семейный</button>
+            <button class="pp-tone-btn" data-tone="Премиальный" onclick="ppSelectTone(this)">Премиальный</button>
           </div>
-          <button class="ps-edit-btn agency-only" onclick="openAddPersona()">
+        </div>
+        <div class="pp-form-group">
+          <div class="pp-form-section-label">Содержание</div>
+          <div class="pp-field">
+            <label>Ключевые месседжи (через запятую)</label>
+            <input id="bre-messages" type="text" placeholder="Вкусно и быстро, Свежие продукты" oninput="ppLive()">
+          </div>
+          <div class="pp-field">
+            <label>Запрещённые слова и темы (через запятую)</label>
+            <input id="bre-forbidden" type="text" placeholder="дёшево, акция, распродажа" oninput="ppLive()">
+          </div>
+        </div>
+        <div class="pp-form-group">
+          <div class="pp-form-section-label">Визуал</div>
+          <div class="pp-field">
+            <label>Цвета бренда (hex через запятую)</label>
+            <input id="bre-colors" type="text" placeholder="#e63c2f, #1a1a1a, #ffffff" oninput="ppLive()">
+          </div>
+          <div class="pp-field">
+            <label>Стиль съёмки и подачи</label>
+            <textarea id="bre-style" rows="3" placeholder="Тёплые цвета, натуральный свет, еда крупным планом..." oninput="ppLive()"></textarea>
+          </div>
+        </div>
+        <button class="pp-save-btn" onclick="psSave('brand')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Сохранить бренд
+        </button>
+      </div>
+
+      <!-- AUDIENCE -->
+      <div class="pp-form-panel" id="ppf-audience">
+        <div class="pp-form-group">
+          <div class="pp-form-section-label">Портреты аудитории</div>
+          <div class="persona-list" id="persona-list">
+            <div class="pp-empty-state">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".3"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              <span>Персонажи не добавлены</span>
+            </div>
+          </div>
+          <button class="pp-add-item-btn agency-only" onclick="openAddPersona()">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Добавить персонаж
           </button>
         </div>
-        <div class="persona-list" id="persona-list">
-          <div class="ps-empty"><div class="ps-empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".3"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div><div class="ps-empty-text">Персонажи ещё не добавлены</div></div>
-        </div>
       </div>
-    </div>
 
-    <!-- SECTION: Конкуренты -->
-    <div class="passport-section" id="ps-competitors">
-      <div class="ps-card pc-comp">
-        <div class="ps-card-head">
-          <div class="ps-card-title">
-            <div class="ps-card-icon" style="background:rgba(245,158,11,.12);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
-            Конкурентная карта
+      <!-- COMPETITORS -->
+      <div class="pp-form-panel" id="ppf-competitors">
+        <div class="pp-form-group">
+          <div class="pp-form-section-label">Конкурентная карта</div>
+          <div class="comp-list" id="comp-list">
+            <div class="pp-empty-state">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".3"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              <span>Конкуренты не добавлены</span>
+            </div>
           </div>
-          <button class="ps-edit-btn agency-only" onclick="openAddCompetitor()">
+          <button class="pp-add-item-btn agency-only" onclick="openAddCompetitor()">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Добавить конкурента
           </button>
         </div>
-        <div class="comp-list" id="comp-list">
-          <div class="ps-empty"><div class="ps-empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".3"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><div class="ps-empty-text">Конкуренты ещё не добавлены</div></div>
-        </div>
       </div>
-    </div>
 
-    <!-- SECTION: KPI -->
-    <div class="passport-section" id="ps-kpi">
-      <div class="ps-card pc-kpi">
-        <div class="ps-card-head">
-          <div class="ps-card-title">
-            <div class="ps-card-icon" style="background:rgba(74,222,128,.12);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
-            Цели и KPI
+      <!-- KPI -->
+      <div class="pp-form-panel" id="ppf-kpi">
+        <div class="pp-form-group">
+          <div class="pp-form-section-label">Цели и KPI проекта</div>
+          <div class="kpi-passport-list" id="kpi-passport-list">
+            <div class="pp-empty-state" style="grid-column:1/-1;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".3"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+              <span>Цели не добавлены</span>
+            </div>
           </div>
-          <button class="ps-edit-btn agency-only" onclick="openAddKPI()">
+          <button class="pp-add-item-btn agency-only" onclick="openAddKPI()">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Добавить цель
           </button>
         </div>
-        <div class="kpi-passport-list" id="kpi-passport-list">
-          <div class="ps-empty" style="grid-column:1/-1;"><div class="ps-empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".3"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div><div class="ps-empty-text">Цели ещё не добавлены</div></div>
-        </div>
       </div>
-    </div>
 
-    <!-- SECTION: Медиа -->
-    <div class="passport-section" id="ps-media">
-      <div class="ps-card pc-media">
-        <div class="ps-card-head">
-          <div class="ps-card-title">
-            <div class="ps-card-icon" style="background:rgba(248,113,113,.12);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
-            Медиа-библиотека
+      <!-- MEDIA -->
+      <div class="pp-form-panel" id="ppf-media">
+        <div class="pp-form-group">
+          <div class="pp-form-section-label">Медиа-ресурсы</div>
+          <div class="pp-form-row">
+            <div class="pp-field">
+              <label>Папка с фото (Google Drive)</label>
+              <input id="me-photo" type="url" placeholder="https://drive.google.com/..." oninput="ppLive()">
+            </div>
+            <div class="pp-field">
+              <label>Папка с видео</label>
+              <input id="me-video" type="url" placeholder="https://drive.google.com/..." oninput="ppLive()">
+            </div>
           </div>
-
-        </div>
-        <div id="media-view">
-          <div class="ps-grid">
-            <div>
-              <div class="ps-view-label">Папка с фото</div>
-              <div id="mv-photo">—</div>
+          <div class="pp-form-row">
+            <div class="pp-field">
+              <label>Референсы стиля (Pinterest)</label>
+              <input id="me-refs" type="url" placeholder="https://pinterest.com/..." oninput="ppLive()">
             </div>
-            <div>
-              <div class="ps-view-label">Папка с видео</div>
-              <div id="mv-video">—</div>
+            <div class="pp-field">
+              <label>Доп. ресурсы</label>
+              <input id="me-extra" type="url" placeholder="https://..." oninput="ppLive()">
             </div>
-            <div>
-              <div class="ps-view-label">Референсы стиля</div>
-              <div id="mv-refs">—</div>
-            </div>
-            <div>
-              <div class="ps-view-label">Дополнительные ресурсы</div>
-              <div id="mv-extra">—</div>
-            </div>
-            <div class="full">
-              <div class="ps-view-label">Стиль съёмки / что нельзя снимать</div>
-              <div class="ps-view-val" id="mv-rules">—</div>
-            </div>
+          </div>
+          <div class="pp-field">
+            <label>Правила и запреты при съёмке</label>
+            <textarea id="me-rules" rows="4" placeholder="Не снимать кухню, избегать тёмных фонов..." oninput="ppLive()"></textarea>
           </div>
         </div>
-        <div id="media-edit" style="display:none;">
-          <div class="ps-grid">
-            <div class="ps-field"><label>Папка с фото (ссылка)</label><input type="url" id="me-photo" placeholder="https://drive.google.com/..."></div>
-            <div class="ps-field"><label>Папка с видео (ссылка)</label><input type="url" id="me-video" placeholder="https://drive.google.com/..."></div>
-            <div class="ps-field"><label>Референсы стиля</label><input type="url" id="me-refs" placeholder="https://pinterest.com/..."></div>
-            <div class="ps-field"><label>Дополнительные ресурсы</label><input type="url" id="me-extra" placeholder="https://..."></div>
-            <div class="ps-field full"><label>Правила и запреты при съёмке</label><textarea id="me-rules" rows="3" placeholder="Не снимать кухню, не показывать упаковку конкурентов..."></textarea></div>
-          </div>
-          <div style="display:flex;justify-content:flex-end;margin-top:18px;">
-            <button class="ps-save-btn" onclick="psSave('media')">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Сохранить
-            </button>
-          </div>
-        </div>
+        <button class="pp-save-btn" onclick="psSave('media')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Сохранить медиа
+        </button>
       </div>
-    </div>
 
-    <!-- SECTION: Заметки -->
-    <div class="passport-section" id="ps-notes">
-      <div class="ps-card pc-notes">
-        <div class="ps-card-head">
-          <div class="ps-card-title">
-            <div class="ps-card-icon" style="background:rgba(136,136,136,.12);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.8" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-            Внутренние заметки
+      <!-- NOTES -->
+      <div class="pp-form-panel" id="ppf-notes">
+        <div class="pp-form-group">
+          <div class="pp-form-section-label">Внутренние заметки команды</div>
+          <div class="note-list" id="note-list">
+            <div class="pp-empty-state">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".3"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              <span>Заметки появятся здесь</span>
+            </div>
           </div>
-          <button class="ps-edit-btn agency-only" onclick="openAddNote()">
+          <button class="pp-add-item-btn agency-only" onclick="openAddNote()">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Добавить заметку
           </button>
         </div>
-        <div class="note-list" id="note-list">
-          <div class="ps-empty"><div class="ps-empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".3"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><div class="ps-empty-text">Заметки появятся здесь</div></div>
+      </div>
+
+    </div><!-- /pp-split-left -->
+
+    <!-- ══ RIGHT: Live Preview ══ -->
+    <div class="pp-split-right">
+      <div class="pp-preview-header">
+        <span class="pp-preview-label">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+          Предпросмотр · обновляется в реальном времени
+        </span>
+        <span class="pp-preview-tab-label" id="pp-preview-tab-label">Профиль</span>
+      </div>
+
+      <!-- PREVIEW: Профиль -->
+      <div class="pp-preview-panel pp-pv-active" id="ppv-basic">
+        <div class="ppv-venue-card">
+          <div class="ppv-venue-top">
+            <div class="ppv-venue-avatar" id="ppv-avatar">S</div>
+            <div>
+              <div class="ppv-venue-name" id="ppv-name">Название заведения</div>
+              <div class="ppv-venue-cat" id="ppv-category">Категория · Город</div>
+            </div>
+          </div>
+          <div class="ppv-divider"></div>
+          <div class="ppv-venue-body">
+            <div class="ppv-info-row" id="ppv-address-row">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span id="ppv-address">—</span>
+            </div>
+            <div class="ppv-info-row" id="ppv-phone-row">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.63a19.79 19.79 0 01-3.07-8.67A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.91a16 16 0 006.16 6.16l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+              <span id="ppv-phone">—</span>
+            </div>
+            <div class="ppv-info-row" id="ppv-email-row">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              <span id="ppv-email">—</span>
+            </div>
+            <div class="ppv-info-row" id="ppv-site-row">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+              <span id="ppv-site">—</span>
+            </div>
+          </div>
+          <div class="ppv-divider"></div>
+          <div class="ppv-socials-row">
+            <div class="ppv-social-chip" id="ppv-ig-chip">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+              <span id="ppv-ig">Instagram</span>
+            </div>
+            <div class="ppv-social-chip" id="ppv-tg-chip">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              <span id="ppv-tg">Telegram</span>
+            </div>
+          </div>
+          <div class="ppv-divider"></div>
+          <div class="ppv-hours-row">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span id="ppv-hours">—</span>
+          </div>
         </div>
       </div>
-    </div>
 
-        <div style="height:60px;"></div>
-      </div><!-- /pp-main-col -->
-
-      <!-- RIGHT: Sticky project brief sidebar -->
-      <aside class="pp-sidebar">
-
-        <!-- Project Identity -->
-        <div class="pp-sb-card">
-          <div class="pp-sb-title">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
-            Проект
+      <!-- PREVIEW: Бренд -->
+      <div class="pp-preview-panel" id="ppv-brand">
+        <div class="ppv-brand-card">
+          <div class="ppv-brand-section">
+            <div class="ppv-bsec-label">Тон голоса</div>
+            <div class="ppv-tone-badge" id="ppv-tone-badge">Не выбран</div>
           </div>
-          <div class="pp-sb-project-name" id="pp-sb-name">—</div>
-          <div class="pp-sb-project-cat" id="pp-sb-category">—</div>
-        </div>
-
-        <!-- Completion checklist -->
-        <div class="pp-sb-card">
-          <div class="pp-sb-title">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-            Заполненность паспорта
+          <div class="ppv-brand-section">
+            <div class="ppv-bsec-label">Цвета бренда</div>
+            <div class="ppv-palette" id="ppv-palette">
+              <div class="ppv-palette-empty">Hex-коды не добавлены</div>
+            </div>
           </div>
-          <div class="pp-sb-progress-bar-wrap">
-            <div class="pp-sb-progress-bar" id="pp-sb-progress" style="width:0%"></div>
+          <div class="ppv-brand-section">
+            <div class="ppv-bsec-label">Ключевые месседжи</div>
+            <div class="ppv-messages-list" id="ppv-messages">
+              <div class="ppv-tag-empty">Добавьте месседжи →</div>
+            </div>
           </div>
-          <div class="pp-sb-progress-label" id="pp-sb-progress-label">Рассчитывается...</div>
-          <div class="pp-sb-checklist" id="pp-sb-checklist">
-            <div class="pp-sb-check-item" data-tab="basic">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Профиль заведения</span>
+          <div class="ppv-brand-section">
+            <div class="ppv-bsec-label">⛔ Запрещённые темы</div>
+            <div class="ppv-forbidden-list" id="ppv-forbidden">
+              <div class="ppv-tag-empty">Добавьте запреты →</div>
             </div>
-            <div class="pp-sb-check-item" data-tab="brand">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Бренд и тон голоса</span>
-            </div>
-            <div class="pp-sb-check-item" data-tab="audience">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Портреты аудитории</span>
-            </div>
-            <div class="pp-sb-check-item" data-tab="competitors">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Конкурентная карта</span>
-            </div>
-            <div class="pp-sb-check-item" data-tab="kpi">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Цели и KPI</span>
-            </div>
-            <div class="pp-sb-check-item" data-tab="media">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Медиа-библиотека</span>
-            </div>
-            <div class="pp-sb-check-item" data-tab="notes">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Заметки команды</span>
-            </div>
+          </div>
+          <div class="ppv-brand-section" id="ppv-style-section">
+            <div class="ppv-bsec-label">Стиль контента</div>
+            <div class="ppv-style-quote" id="ppv-style">—</div>
           </div>
         </div>
+      </div>
 
-        <!-- Quick nav guide -->
-        <div class="pp-sb-card">
-          <div class="pp-sb-title">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-            Быстрый старт
+      <!-- PREVIEW: Аудитория -->
+      <div class="pp-preview-panel" id="ppv-audience">
+        <div class="ppv-audience-header">
+          <div class="ppv-bsec-label">Портреты целевой аудитории</div>
+        </div>
+        <div class="ppv-persona-grid" id="ppv-persona-grid">
+          <div class="ppv-empty-preview">Добавьте персонажей в форме слева</div>
+        </div>
+      </div>
+
+      <!-- PREVIEW: Конкуренты -->
+      <div class="pp-preview-panel" id="ppv-competitors">
+        <div class="ppv-comp-header">
+          <div class="ppv-bsec-label">Конкурентная карта рынка</div>
+        </div>
+        <div class="ppv-comp-list" id="ppv-comp-list">
+          <div class="ppv-empty-preview">Добавьте конкурентов в форме слева</div>
+        </div>
+      </div>
+
+      <!-- PREVIEW: KPI -->
+      <div class="pp-preview-panel" id="ppv-kpi">
+        <div class="ppv-kpi-header">
+          <div class="ppv-bsec-label">Цели и ключевые показатели</div>
+        </div>
+        <div class="ppv-kpi-grid" id="ppv-kpi-grid">
+          <div class="ppv-empty-preview">Добавьте цели в форме слева</div>
+        </div>
+      </div>
+
+      <!-- PREVIEW: Медиа -->
+      <div class="pp-preview-panel" id="ppv-media">
+        <div class="ppv-media-card">
+          <div class="ppv-brand-section">
+            <div class="ppv-bsec-label">Медиа-хаб проекта</div>
           </div>
-          <div class="pp-sb-guide">
-            <div class="pp-sb-guide-step">
-              <span class="pp-sb-step-num">1</span>
-              <span>Заполни <b>Профиль</b> — название, контакты, соцсети</span>
+          <div class="ppv-media-links" id="ppv-media-links">
+            <div class="ppv-media-link-item" id="ppv-ml-photo">
+              <div class="ppv-ml-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </div>
+              <div class="ppv-ml-info">
+                <div class="ppv-ml-label">Фотографии</div>
+                <div class="ppv-ml-url" id="ppv-ml-photo-url">Ссылка не добавлена</div>
+              </div>
+              <div class="ppv-ml-status" id="ppv-ml-photo-status"></div>
             </div>
-            <div class="pp-sb-guide-step">
-              <span class="pp-sb-step-num">2</span>
-              <span>Укажи <b>Бренд</b> — тон голоса и запрещённые темы</span>
+            <div class="ppv-media-link-item" id="ppv-ml-video">
+              <div class="ppv-ml-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+              </div>
+              <div class="ppv-ml-info">
+                <div class="ppv-ml-label">Видео</div>
+                <div class="ppv-ml-url" id="ppv-ml-video-url">Ссылка не добавлена</div>
+              </div>
+              <div class="ppv-ml-status" id="ppv-ml-video-status"></div>
             </div>
-            <div class="pp-sb-guide-step">
-              <span class="pp-sb-step-num">3</span>
-              <span>Добавь <b>Аудиторию</b> — минимум 2 персонажа</span>
+            <div class="ppv-media-link-item" id="ppv-ml-refs">
+              <div class="ppv-ml-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+              </div>
+              <div class="ppv-ml-info">
+                <div class="ppv-ml-label">Референсы</div>
+                <div class="ppv-ml-url" id="ppv-ml-refs-url">Ссылка не добавлена</div>
+              </div>
+              <div class="ppv-ml-status" id="ppv-ml-refs-status"></div>
             </div>
-            <div class="pp-sb-guide-step">
-              <span class="pp-sb-step-num">4</span>
-              <span>Занеси <b>KPI</b> — согласованные цели с клиентом</span>
-            </div>
+          </div>
+          <div class="ppv-brand-section" id="ppv-rules-section">
+            <div class="ppv-bsec-label">Правила съёмки</div>
+            <div class="ppv-rules-text" id="ppv-rules-text">Правила не заданы</div>
           </div>
         </div>
+      </div>
 
-        <!-- Last update -->
-        <div class="pp-sb-last-update" id="pp-sb-last-update">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          Последнее обновление: —
+      <!-- PREVIEW: Заметки -->
+      <div class="pp-preview-panel" id="ppv-notes">
+        <div class="ppv-notes-header">
+          <div class="ppv-bsec-label">Внутренний лог команды</div>
         </div>
+        <div class="ppv-notes-list" id="ppv-notes-list">
+          <div class="ppv-empty-preview">Заметки команды появятся здесь</div>
+        </div>
+      </div>
 
-      </aside><!-- /pp-sidebar -->
+    </div><!-- /pp-split-right -->
 
-    </div><!-- /pp-layout -->
-
-  </div>
+  </div><!-- /pp-split-shell -->
 </div>
 
 <!-- MODAL: Добавить персонаж -->
@@ -22210,5 +22261,865 @@ function runNewBlocks() {
       }, 100);
     }
   });
+})();
+</script>
+<style id="dtr-passport-split-v1">
+/* ═══════════════════════════════════════════════════════════════
+   PASSPORT SPLIT EDITOR — "Live Preview" McKinsey Brief
+   Left: structured forms | Right: live rendered passport doc
+═══════════════════════════════════════════════════════════════ */
+
+/* ── HEADER ── */
+.pp-app-header {
+  height: 52px !important;
+  padding: 0 32px !important;
+}
+.pp-hdr-avatar {
+  width: 32px !important; height: 32px !important;
+  border-radius: 9px !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  font-family: 'Sora','Manrope',sans-serif !important;
+  font-size: 14px !important; font-weight: 800 !important;
+  flex-shrink: 0 !important;
+}
+.pp-hdr-label {
+  font-family: 'JetBrains Mono',monospace !important;
+  font-size: 8px !important; color: rgba(129,140,248,.45) !important;
+  letter-spacing: .2em !important; text-transform: uppercase !important;
+}
+.pp-hdr-name {
+  font-family: 'Sora','Manrope',sans-serif !important;
+  font-size: 15px !important; font-weight: 700 !important;
+  letter-spacing: -.03em !important; color: #f1f1f5 !important;
+  line-height: 1.2 !important;
+}
+.pp-header-divider {
+  width: 1px !important; height: 24px !important;
+  background: rgba(255,255,255,.08) !important;
+}
+.pp-hdr-right { display: flex !important; align-items: center !important; gap: 8px !important; }
+
+/* ── SPLIT SHELL ── */
+.pp-split-shell {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  height: calc(100vh - 52px) !important;
+  overflow: hidden !important;
+}
+
+/* ══ LEFT COLUMN ══ */
+.pp-split-left {
+  display: flex !important;
+  flex-direction: column !important;
+  border-right: 1px solid rgba(255,255,255,.06) !important;
+  background: #08080f !important;
+  overflow: hidden !important;
+}
+
+/* Tab nav */
+.pp-tab-nav {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0 !important;
+  padding: 0 20px !important;
+  border-bottom: 1px solid rgba(255,255,255,.06) !important;
+  background: #06060b !important;
+  flex-shrink: 0 !important;
+  overflow-x: auto !important;
+  scrollbar-width: none !important;
+}
+.pp-tab-nav::-webkit-scrollbar { display: none !important; }
+
+.pp-tab {
+  display: flex !important; align-items: center !important; gap: 7px !important;
+  padding: 14px 16px !important;
+  font-family: var(--font-body,'Manrope',sans-serif) !important;
+  font-size: 12px !important; font-weight: 500 !important;
+  color: rgba(255,255,255,.28) !important;
+  background: transparent !important; border: none !important;
+  border-bottom: 2px solid transparent !important;
+  cursor: pointer !important; transition: all .18s !important;
+  white-space: nowrap !important; position: relative !important; bottom: -1px !important;
+}
+.pp-tab:hover { color: rgba(255,255,255,.65) !important; }
+.pp-tab svg { opacity: .55 !important; transition: opacity .18s !important; }
+.pp-tab.pp-tab-active {
+  color: #f1f1f5 !important;
+  border-bottom-color: #818cf8 !important;
+  font-weight: 600 !important;
+}
+.pp-tab.pp-tab-active svg { opacity: 1 !important; stroke: #a5b4fc !important; }
+
+/* Progress pill in nav */
+.pp-tab-progress-pill {
+  margin-left: auto !important;
+  flex-shrink: 0 !important;
+  display: flex !important; align-items: center !important; gap: 8px !important;
+  padding: 5px 10px 5px 4px !important;
+  background: rgba(255,255,255,.04) !important;
+  border: 1px solid rgba(255,255,255,.07) !important;
+  border-radius: 20px !important;
+  min-width: 80px !important;
+}
+.pp-tpp-bar {
+  height: 4px !important;
+  background: linear-gradient(90deg,#5b5fc7,#818cf8) !important;
+  border-radius: 99px !important;
+  transition: width .8s cubic-bezier(.16,1,.3,1) !important;
+  min-width: 0 !important;
+}
+#pp-tpp-label {
+  font-family: 'JetBrains Mono',monospace !important;
+  font-size: 9px !important; color: rgba(255,255,255,.3) !important;
+  white-space: nowrap !important; flex-shrink: 0 !important;
+}
+
+/* Form panels */
+.pp-form-panel {
+  display: none !important;
+  flex: 1 !important; overflow-y: auto !important;
+  padding: 24px 28px !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(255,255,255,.06) transparent !important;
+}
+.pp-form-panel.pp-fp-active { display: flex !important; flex-direction: column !important; gap: 0 !important; }
+
+.pp-form-group {
+  margin-bottom: 24px !important;
+  padding-bottom: 24px !important;
+  border-bottom: 1px solid rgba(255,255,255,.05) !important;
+}
+.pp-form-group:last-of-type { border-bottom: none !important; }
+
+.pp-form-section-label {
+  font-family: 'JetBrains Mono',monospace !important;
+  font-size: 9px !important; color: rgba(255,255,255,.22) !important;
+  letter-spacing: .22em !important; text-transform: uppercase !important;
+  margin-bottom: 14px !important;
+}
+
+.pp-form-row {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 12px !important; margin-bottom: 12px !important;
+}
+
+.pp-field {
+  display: flex !important; flex-direction: column !important; gap: 7px !important;
+  margin-bottom: 12px !important;
+}
+.pp-field:last-child { margin-bottom: 0 !important; }
+.pp-field label {
+  font-family: 'JetBrains Mono',monospace !important;
+  font-size: 9px !important; color: rgba(255,255,255,.28) !important;
+  letter-spacing: .18em !important; text-transform: uppercase !important;
+}
+.pp-field input, .pp-field textarea, .pp-field select {
+  background: rgba(255,255,255,.04) !important;
+  border: 1px solid rgba(255,255,255,.09) !important;
+  border-radius: 10px !important; padding: 11px 14px !important;
+  color: #f1f1f5 !important;
+  font-family: var(--font-body,'Manrope',sans-serif) !important;
+  font-size: 13px !important; font-weight: 400 !important;
+  outline: none !important; transition: all .18s !important;
+  resize: none !important; width: 100% !important; box-sizing: border-box !important;
+}
+.pp-field input:focus, .pp-field textarea:focus {
+  border-color: rgba(129,140,248,.5) !important;
+  background: rgba(91,95,199,.06) !important;
+  box-shadow: 0 0 0 3px rgba(91,95,199,.08) !important;
+}
+.pp-field input::placeholder, .pp-field textarea::placeholder {
+  color: rgba(255,255,255,.15) !important; font-style: italic !important;
+}
+
+/* Tone grid */
+.pp-tone-grid {
+  display: grid !important; grid-template-columns: repeat(3,1fr) !important; gap: 8px !important;
+}
+.pp-tone-btn {
+  padding: 10px !important; border: 1px solid rgba(255,255,255,.08) !important;
+  border-radius: 10px !important; background: rgba(255,255,255,.03) !important;
+  font-family: var(--font-body,'Manrope',sans-serif) !important;
+  font-size: 12px !important; font-weight: 500 !important;
+  color: rgba(255,255,255,.38) !important; cursor: pointer !important;
+  transition: all .18s !important; text-align: center !important;
+}
+.pp-tone-btn:hover { border-color: rgba(255,255,255,.18) !important; color: rgba(255,255,255,.75) !important; }
+.pp-tone-btn.pp-tone-active {
+  border-color: rgba(129,140,248,.45) !important;
+  background: rgba(91,95,199,.15) !important; color: #c7d2fe !important; font-weight: 600 !important;
+}
+
+/* Add item btn */
+.pp-add-item-btn {
+  display: flex !important; align-items: center !important; gap: 8px !important;
+  padding: 12px !important; margin-top: 12px !important;
+  background: rgba(255,255,255,.03) !important;
+  border: 1px dashed rgba(255,255,255,.1) !important;
+  border-radius: 10px !important; color: rgba(255,255,255,.3) !important;
+  font-family: var(--font-body,'Manrope',sans-serif) !important;
+  font-size: 12px !important; font-weight: 500 !important;
+  cursor: pointer !important; transition: all .18s !important; justify-content: center !important; width: 100% !important;
+}
+.pp-add-item-btn:hover { border-color: rgba(129,140,248,.4) !important; color: rgba(129,140,248,.8) !important; background: rgba(91,95,199,.05) !important; }
+
+/* Save btn */
+.pp-save-btn {
+  display: inline-flex !important; align-items: center !important; gap: 8px !important;
+  padding: 12px 22px !important; margin-top: 8px !important;
+  background: rgba(91,95,199,.18) !important;
+  border: 1px solid rgba(129,140,248,.32) !important;
+  border-radius: 12px !important;
+  font-family: 'Sora',var(--font-body,'Manrope',sans-serif) !important;
+  font-size: 13px !important; font-weight: 600 !important; color: #c7d2fe !important;
+  cursor: pointer !important; transition: all .2s cubic-bezier(.16,1,.3,1) !important;
+  align-self: flex-end !important;
+}
+.pp-save-btn:hover {
+  background: rgba(91,95,199,.3) !important;
+  border-color: rgba(129,140,248,.55) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 16px rgba(91,95,199,.25) !important;
+}
+
+/* Empty state inside form panel */
+.pp-empty-state {
+  display: flex !important; align-items: center !important; gap: 10px !important;
+  padding: 20px !important; color: rgba(255,255,255,.2) !important;
+  font-family: var(--font-body,'Manrope',sans-serif) !important;
+  font-size: 12px !important;
+}
+.pp-empty-state svg { flex-shrink: 0 !important; }
+
+/* ══ RIGHT COLUMN — LIVE PREVIEW ══ */
+.pp-split-right {
+  display: flex !important; flex-direction: column !important;
+  background: #06060b !important; overflow: hidden !important;
+}
+
+.pp-preview-header {
+  display: flex !important; align-items: center !important; justify-content: space-between !important;
+  padding: 12px 28px !important;
+  border-bottom: 1px solid rgba(255,255,255,.06) !important;
+  background: #08080f !important; flex-shrink: 0 !important;
+}
+.pp-preview-label {
+  font-family: 'JetBrains Mono',monospace !important;
+  font-size: 9px !important; color: rgba(255,255,255,.2) !important;
+  letter-spacing: .14em !important; text-transform: uppercase !important;
+  display: flex !important; align-items: center !important; gap: 7px !important;
+}
+.pp-preview-label svg { color: #34d399 !important; stroke: #34d399 !important; animation: dotPulse 2s infinite !important; }
+.pp-preview-tab-label {
+  font-family: 'JetBrains Mono',monospace !important;
+  font-size: 10px !important; color: rgba(129,140,248,.55) !important;
+  letter-spacing: .1em !important; text-transform: uppercase !important;
+}
+
+.pp-preview-panel {
+  display: none !important; flex: 1 !important;
+  overflow-y: auto !important; padding: 28px !important;
+  scrollbar-width: thin !important; scrollbar-color: rgba(255,255,255,.06) transparent !important;
+  animation: fadeUp .3s cubic-bezier(.16,1,.3,1) both !important;
+}
+.pp-preview-panel.pp-pv-active { display: block !important; }
+
+/* ── VENUE CARD preview ── */
+.ppv-venue-card {
+  background: #0d0d18 !important;
+  border: 1px solid rgba(255,255,255,.09) !important;
+  border-radius: 20px !important; overflow: hidden !important;
+  max-width: 480px !important; margin: 0 auto !important;
+}
+.ppv-venue-top {
+  display: flex !important; align-items: center !important; gap: 16px !important;
+  padding: 28px 28px 24px !important;
+}
+.ppv-venue-avatar {
+  width: 56px !important; height: 56px !important; border-radius: 14px !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  font-family: 'Sora','Manrope',sans-serif !important;
+  font-size: 24px !important; font-weight: 800 !important; flex-shrink: 0 !important;
+  background: rgba(91,95,199,.2) !important; color: #818cf8 !important;
+  border: 1px solid rgba(129,140,248,.25) !important;
+  transition: all .3s !important;
+}
+.ppv-venue-name {
+  font-family: 'Sora','Manrope',sans-serif !important;
+  font-size: 22px !important; font-weight: 800 !important;
+  letter-spacing: -.04em !important; color: #f1f1f5 !important; line-height: 1.1 !important;
+  transition: all .2s !important;
+}
+.ppv-venue-cat {
+  font-family: 'JetBrains Mono',monospace !important;
+  font-size: 10px !important; color: rgba(255,255,255,.35) !important;
+  margin-top: 4px !important; letter-spacing: .06em !important;
+  transition: all .2s !important;
+}
+.ppv-divider {
+  height: 1px !important; background: rgba(255,255,255,.06) !important; margin: 0 !important;
+}
+.ppv-venue-body {
+  padding: 18px 28px !important; display: flex !important; flex-direction: column !important; gap: 10px !important;
+}
+.ppv-info-row {
+  display: flex !important; align-items: center !important; gap: 12px !important;
+  font-family: var(--font-body,'Manrope',sans-serif) !important;
+  font-size: 13px !important; color: rgba(255,255,255,.72) !important;
+  transition: color .2s !important;
+}
+.ppv-info-row svg { color: rgba(255,255,255,.28) !important; stroke: rgba(255,255,255,.28) !important; flex-shrink: 0 !important; }
+.ppv-info-row.ppv-empty { color: rgba(255,255,255,.15) !important; font-style: italic !important; font-size: 12px !important; }
+.ppv-socials-row {
+  display: flex !important; gap: 10px !important; padding: 16px 28px !important;
+}
+.ppv-social-chip {
+  display: inline-flex !important; align-items: center !important; gap: 7px !important;
+  padding: 7px 14px !important; border-radius: 8px !important;
+  background: rgba(255,255,255,.05) !important; border: 1px solid rgba(255,255,255,.09) !important;
+  font-family: 'JetBrains Mono',monospace !important;
+  font-size: 11px !important; color: rgba(255,255,255,.5) !important;
+  transition: all .2s !important;
+}
+.ppv-social-chip.ppv-filled { color: rgba(129,140,248,.85) !important; border-color: rgba(129,140,248,.2) !important; background: rgba(91,95,199,.1) !important; }
+.ppv-hours-row {
+  display: flex !important; align-items: center !important; gap: 10px !important;
+  padding: 14px 28px !important;
+  font-family: 'JetBrains Mono',monospace !important;
+  font-size: 12px !important; color: rgba(255,255,255,.5) !important;
+  background: rgba(255,255,255,.02) !important; transition: color .2s !important;
+}
+.ppv-hours-row svg { color: rgba(255,255,255,.3) !important; stroke: rgba(255,255,255,.3) !important; }
+
+/* ── BRAND CARD preview ── */
+.ppv-brand-card {
+  background: #0d0d18 !important;
+  border: 1px solid rgba(255,255,255,.09) !important;
+  border-radius: 20px !important; overflow: hidden !important;
+  max-width: 480px !important; margin: 0 auto !important;
+}
+.ppv-brand-section {
+  padding: 18px 24px !important;
+  border-bottom: 1px solid rgba(255,255,255,.05) !important;
+}
+.ppv-brand-section:last-child { border-bottom: none !important; }
+.ppv-bsec-label {
+  font-family: 'JetBrains Mono',monospace !important;
+  font-size: 9px !important; color: rgba(255,255,255,.22) !important;
+  letter-spacing: .2em !important; text-transform: uppercase !important;
+  margin-bottom: 10px !important;
+}
+.ppv-tone-badge {
+  display: inline-flex !important; align-items: center !important;
+  padding: 7px 16px !important; border-radius: 8px !important;
+  background: rgba(91,95,199,.15) !important; border: 1px solid rgba(129,140,248,.25) !important;
+  color: #c7d2fe !important; font-family: var(--font-body,'Manrope',sans-serif) !important;
+  font-size: 13px !important; font-weight: 600 !important; letter-spacing: -.01em !important;
+  transition: all .3s !important;
+}
+.ppv-tone-badge.empty { color: rgba(255,255,255,.2) !important; background: rgba(255,255,255,.03) !important; border-color: rgba(255,255,255,.07) !important; font-style: italic !important; }
+.ppv-palette {
+  display: flex !important; gap: 8px !important; flex-wrap: wrap !important;
+}
+.ppv-palette-swatch {
+  width: 32px !important; height: 32px !important; border-radius: 8px !important;
+  border: 1.5px solid rgba(255,255,255,.15) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,.3) !important;
+  position: relative !important; overflow: hidden !important;
+}
+.ppv-palette-empty {
+  font-family: 'JetBrains Mono',monospace !important;
+  font-size: 11px !important; color: rgba(255,255,255,.2) !important; font-style: italic !important;
+}
+.ppv-messages-list, .ppv-forbidden-list {
+  display: flex !important; flex-wrap: wrap !important; gap: 6px !important;
+}
+.ppv-msg-tag {
+  font-family: var(--font-body,'Manrope',sans-serif) !important;
+  font-size: 12px !important; font-weight: 500 !important;
+  padding: 5px 12px !important; border-radius: 7px !important;
+  background: rgba(129,140,248,.12) !important;
+  border: 1px solid rgba(129,140,248,.22) !important;
+  color: rgba(165,180,252,.85) !important;
+  animation: fadeUp .25s cubic-bezier(.16,1,.3,1) both !important;
+}
+.ppv-forbidden-tag {
+  font-family: 'JetBrains Mono',monospace !important;
+  font-size: 11px !important; padding: 4px 10px !important; border-radius: 7px !important;
+  background: rgba(248,113,113,.09) !important;
+  border: 1px solid rgba(248,113,113,.2) !important;
+  color: rgba(248,113,113,.75) !important; text-decoration: line-through !important;
+  animation: fadeUp .25s cubic-bezier(.16,1,.3,1) both !important;
+}
+.ppv-tag-empty {
+  font-family: 'JetBrains Mono',monospace !important;
+  font-size: 11px !important; color: rgba(255,255,255,.15) !important; font-style: italic !important;
+}
+.ppv-style-quote {
+  font-family: var(--font-body,'Manrope',sans-serif) !important;
+  font-size: 13px !important; color: rgba(255,255,255,.6) !important;
+  line-height: 1.7 !important; padding-left: 14px !important;
+  border-left: 2px solid rgba(129,140,248,.3) !important;
+  font-style: italic !important;
+}
+
+/* ── MEDIA preview ── */
+.ppv-media-card {
+  background: #0d0d18 !important;
+  border: 1px solid rgba(255,255,255,.09) !important;
+  border-radius: 20px !important; overflow: hidden !important;
+  max-width: 480px !important; margin: 0 auto !important;
+}
+.ppv-media-links { display: flex !important; flex-direction: column !important; }
+.ppv-media-link-item {
+  display: flex !important; align-items: center !important; gap: 14px !important;
+  padding: 14px 24px !important; border-bottom: 1px solid rgba(255,255,255,.05) !important;
+  transition: background .15s !important;
+}
+.ppv-media-link-item:hover { background: rgba(255,255,255,.025) !important; }
+.ppv-ml-icon {
+  width: 34px !important; height: 34px !important; border-radius: 9px !important;
+  background: rgba(255,255,255,.06) !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+.ppv-ml-icon svg { color: rgba(255,255,255,.35) !important; stroke: rgba(255,255,255,.35) !important; }
+.ppv-ml-label {
+  font-family: 'JetBrains Mono',monospace !important;
+  font-size: 9px !important; color: rgba(255,255,255,.25) !important;
+  letter-spacing: .14em !important; text-transform: uppercase !important; margin-bottom: 3px !important;
+}
+.ppv-ml-url {
+  font-family: 'JetBrains Mono',monospace !important;
+  font-size: 11px !important; color: rgba(255,255,255,.35) !important;
+  white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;
+  max-width: 220px !important;
+}
+.ppv-ml-url.ppv-filled { color: rgba(129,140,248,.75) !important; }
+.ppv-ml-status {
+  margin-left: auto !important; flex-shrink: 0 !important;
+  width: 8px !important; height: 8px !important; border-radius: 50% !important;
+  background: rgba(255,255,255,.1) !important;
+}
+.ppv-ml-status.ppv-ok { background: #34d399 !important; box-shadow: 0 0 6px rgba(52,211,153,.4) !important; }
+.ppv-rules-text {
+  font-family: var(--font-body,'Manrope',sans-serif) !important;
+  font-size: 13px !important; color: rgba(255,255,255,.55) !important;
+  line-height: 1.7 !important; white-space: pre-wrap !important;
+}
+
+/* ── Audience / Competitors / KPI / Notes previews ── */
+.ppv-empty-preview {
+  font-family: 'JetBrains Mono',monospace !important;
+  font-size: 11px !important; color: rgba(255,255,255,.18) !important;
+  text-align: center !important; padding: 60px 20px !important;
+  letter-spacing: .06em !important;
+}
+.ppv-audience-header, .ppv-comp-header, .ppv-kpi-header, .ppv-notes-header {
+  margin-bottom: 16px !important;
+}
+.ppv-persona-grid {
+  display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 12px !important;
+}
+.ppv-persona-mini {
+  background: #0d0d18 !important; border: 1px solid rgba(255,255,255,.09) !important;
+  border-radius: 14px !important; padding: 16px !important;
+  animation: cardEntrance .35s cubic-bezier(.16,1,.3,1) both !important;
+}
+.ppv-persona-mini-name {
+  font-family: 'Sora','Manrope',sans-serif !important;
+  font-size: 14px !important; font-weight: 700 !important; letter-spacing: -.02em !important;
+  color: #f1f1f5 !important; margin-bottom: 3px !important;
+}
+.ppv-persona-mini-age {
+  font-family: 'JetBrains Mono',monospace !important;
+  font-size: 10px !important; color: rgba(56,189,248,.65) !important;
+  margin-bottom: 10px !important;
+}
+.ppv-persona-mini-attr {
+  font-size: 11px !important; color: rgba(255,255,255,.45) !important;
+  line-height: 1.6 !important; margin-bottom: 4px !important;
+}
+.ppv-comp-item {
+  background: #0d0d18 !important; border: 1px solid rgba(255,255,255,.09) !important;
+  border-left: 3px solid rgba(245,158,11,.45) !important;
+  border-radius: 12px !important; padding: 14px 18px !important;
+  margin-bottom: 8px !important;
+  animation: cardEntrance .35s cubic-bezier(.16,1,.3,1) both !important;
+}
+.ppv-comp-name {
+  font-family: 'Sora','Manrope',sans-serif !important;
+  font-size: 14px !important; font-weight: 700 !important; color: #f1f1f5 !important;
+  margin-bottom: 8px !important;
+}
+.ppv-comp-cols { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+.ppv-comp-col-lbl {
+  font-family: 'JetBrains Mono',monospace !important;
+  font-size: 9px !important; letter-spacing: .14em !important; text-transform: uppercase !important;
+  margin-bottom: 4px !important;
+}
+.ppv-comp-strong-lbl { color: rgba(52,211,153,.5) !important; }
+.ppv-comp-weak-lbl   { color: rgba(248,113,113,.5) !important; }
+.ppv-comp-col-val { font-size: 12px !important; line-height: 1.5 !important; }
+.ppv-comp-col-val.s { color: rgba(52,211,153,.75) !important; }
+.ppv-comp-col-val.w { color: rgba(248,113,113,.75) !important; }
+
+.ppv-kpi-item {
+  background: #0d0d18 !important; border: 1px solid rgba(255,255,255,.09) !important;
+  border-left: 3px solid rgba(52,211,153,.45) !important;
+  border-radius: 12px !important; padding: 14px 18px !important;
+  margin-bottom: 8px !important;
+  animation: cardEntrance .35s cubic-bezier(.16,1,.3,1) both !important;
+}
+.ppv-kpi-goal {
+  font-family: 'Sora','Manrope',sans-serif !important;
+  font-size: 14px !important; font-weight: 700 !important; color: #f1f1f5 !important;
+  margin-bottom: 10px !important;
+}
+.ppv-kpi-nums { display: flex !important; gap: 20px !important; }
+.ppv-kpi-num-val {
+  font-family: 'Sora','Space Grotesk',sans-serif !important;
+  font-size: 18px !important; font-weight: 800 !important;
+  letter-spacing: -.04em !important; color: #f1f1f5 !important;
+  font-variant-numeric: tabular-nums !important;
+}
+.ppv-kpi-num-lbl {
+  font-family: 'JetBrains Mono',monospace !important;
+  font-size: 9px !important; color: rgba(255,255,255,.25) !important;
+  letter-spacing: .12em !important; text-transform: uppercase !important;
+  margin-top: 3px !important;
+}
+.ppv-note-item {
+  display: flex !important; gap: 12px !important;
+  padding: 12px 0 !important;
+  border-bottom: 1px solid rgba(255,255,255,.05) !important;
+  animation: slideInLeft .3s cubic-bezier(.16,1,.3,1) both !important;
+}
+.ppv-note-dot {
+  width: 8px !important; height: 8px !important; border-radius: 50% !important;
+  background: rgba(129,140,248,.5) !important;
+  flex-shrink: 0 !important; margin-top: 5px !important;
+}
+.ppv-note-text { font-size: 13px !important; color: rgba(255,255,255,.6) !important; line-height: 1.6 !important; }
+.ppv-note-time { font-family: 'JetBrains Mono',monospace !important; font-size: 10px !important; color: rgba(255,255,255,.2) !important; margin-top: 4px !important; }
+</style>
+
+<script id="dtr-passport-split-js">
+(function() {
+
+/* ── Tab switcher ── */
+window.ppTab = function(tab, btn) {
+  // Left panels
+  document.querySelectorAll('.pp-form-panel').forEach(function(el) { el.classList.remove('pp-fp-active'); });
+  var fp = document.getElementById('ppf-' + tab);
+  if (fp) fp.classList.add('pp-fp-active');
+  // Right panels
+  document.querySelectorAll('.pp-preview-panel').forEach(function(el) { el.classList.remove('pp-pv-active'); });
+  var pv = document.getElementById('ppv-' + tab);
+  if (pv) pv.classList.add('pp-pv-active');
+  // Tabs
+  document.querySelectorAll('.pp-tab').forEach(function(t) { t.classList.remove('pp-tab-active'); });
+  if (btn) btn.classList.add('pp-tab-active');
+  // Preview label
+  var lblEl = document.getElementById('pp-preview-tab-label');
+  if (lblEl && btn) lblEl.textContent = btn.textContent.trim();
+  // Sync old passport system tab awareness
+  if (window.ppLive) window.ppLive();
+};
+
+/* ── Tone selector ── */
+window.ppSelectTone = function(btn) {
+  document.querySelectorAll('.pp-tone-btn').forEach(function(b) { b.classList.remove('pp-tone-active'); });
+  btn.classList.add('pp-tone-active');
+  // sync old selectTone if needed
+  if (window.selectTone) window.selectTone(btn);
+  window.ppLive();
+};
+
+/* ── LIVE PREVIEW ENGINE ── */
+window.ppLive = function() {
+  ppUpdateBasic();
+  ppUpdateBrand();
+  ppUpdateMedia();
+  ppUpdateProgress();
+};
+
+function v(id) { var el = document.getElementById(id); return el ? (el.value || el.textContent || '').trim() : ''; }
+function el(id) { return document.getElementById(id); }
+
+function ppUpdateBasic() {
+  var name    = v('be-name');
+  var cat     = v('be-category');
+  var addr    = v('be-address');
+  var phone   = v('be-phone');
+  var email   = v('be-email');
+  var site    = v('be-website');
+  var ig      = v('be-instagram');
+  var tg      = v('be-telegram');
+  var hours   = v('be-hours');
+  var proj    = typeof currentProject !== 'undefined' ? currentProject : null;
+  var color   = proj ? proj.brand_color : '#818cf8';
+
+  // Avatar in preview
+  var ava = el('ppv-avatar');
+  if (ava) {
+    ava.textContent = name ? name[0].toUpperCase() : (proj ? proj.name[0] : 'S');
+    ava.style.background = color + '20';
+    ava.style.color = color;
+    ava.style.borderColor = color + '40';
+  }
+  // Venue name
+  setText('ppv-name', name || 'Название заведения', !name);
+  // Category + city
+  var catCity = [cat, addr ? addr.split(',')[0] : ''].filter(Boolean).join(' · ');
+  setText('ppv-category', catCity || 'Категория · Город', !catCity);
+  // Info rows
+  setInfoRow('ppv-address', addr);
+  setInfoRow('ppv-phone', phone);
+  setInfoRow('ppv-email', email);
+  setInfoRow('ppv-site', site ? site.replace(/^https?:\/\//, '') : '');
+  // Socials
+  setChip('ppv-ig', ig || 'Instagram', !!ig, el('ppv-ig-chip'));
+  setChip('ppv-tg', tg || 'Telegram', !!tg, el('ppv-tg-chip'));
+  // Hours
+  var hEl = el('ppv-hours');
+  if (hEl) { hEl.textContent = hours || 'Часы работы не указаны'; hEl.style.color = hours ? 'rgba(255,255,255,.55)' : 'rgba(255,255,255,.18)'; }
+  // Header avatar sync
+  var hdrAva = el('pp-icon'); if (hdrAva && proj) { hdrAva.textContent = proj.name[0]; }
+}
+
+function setText(id, text, isEmpty) {
+  var e = el(id);
+  if (!e) return;
+  e.textContent = text;
+  if (isEmpty) { e.style.color = 'rgba(255,255,255,.18)'; e.style.fontStyle = 'italic'; }
+  else { e.style.color = ''; e.style.fontStyle = ''; }
+}
+function setInfoRow(id, val) {
+  var e = el(id);
+  if (!e) return;
+  e.textContent = val || '—';
+  e.className = 'ppv-info-row' + (val ? '' : ' ppv-empty');
+}
+function setChip(id, text, filled, chipEl) {
+  var e = el(id); if (!e) return;
+  e.textContent = text;
+  if (chipEl) chipEl.classList.toggle('ppv-filled', filled);
+}
+
+function ppUpdateBrand() {
+  // Tone
+  var toneBtn = document.querySelector('.pp-tone-btn.pp-tone-active');
+  var tone = toneBtn ? toneBtn.getAttribute('data-tone') : '';
+  var toneBadge = el('ppv-tone-badge');
+  if (toneBadge) {
+    toneBadge.textContent = tone || 'Не выбран';
+    toneBadge.classList.toggle('empty', !tone);
+  }
+  // Colors
+  var colorsRaw = v('bre-colors');
+  var palette = el('ppv-palette');
+  if (palette) {
+    if (colorsRaw) {
+      var cols = colorsRaw.split(',').map(function(c){ return c.trim(); }).filter(Boolean).slice(0,8);
+      palette.innerHTML = cols.map(function(c) {
+        var hex = c.startsWith('#') ? c : '#' + c;
+        return '<div class="ppv-palette-swatch" style="background:' + hex + ';"></div>';
+      }).join('');
+    } else {
+      palette.innerHTML = '<div class="ppv-palette-empty">Добавьте hex-коды в поле слева</div>';
+    }
+  }
+  // Messages
+  var msgs = v('bre-messages');
+  var msgList = el('ppv-messages');
+  if (msgList) {
+    if (msgs) {
+      msgList.innerHTML = msgs.split(',').map(function(m){ m = m.trim(); return m ? '<span class="ppv-msg-tag">' + m + '</span>' : ''; }).join('');
+    } else {
+      msgList.innerHTML = '<div class="ppv-tag-empty">Месседжи появятся здесь</div>';
+    }
+  }
+  // Forbidden
+  var forb = v('bre-forbidden');
+  var forbList = el('ppv-forbidden');
+  if (forbList) {
+    if (forb) {
+      forbList.innerHTML = forb.split(',').map(function(f){ f = f.trim(); return f ? '<span class="ppv-forbidden-tag">' + f + '</span>' : ''; }).join('');
+    } else {
+      forbList.innerHTML = '<div class="ppv-tag-empty">Запрещённые слова появятся здесь</div>';
+    }
+  }
+  // Style
+  var style = v('bre-style');
+  var styleEl = el('ppv-style');
+  if (styleEl) { styleEl.textContent = style || '—'; styleEl.style.color = style ? '' : 'rgba(255,255,255,.2)'; }
+}
+
+function ppUpdateMedia() {
+  setMediaLink('ppv-ml-photo-url', 'ppv-ml-photo-status', v('me-photo'));
+  setMediaLink('ppv-ml-video-url', 'ppv-ml-video-status', v('me-video'));
+  setMediaLink('ppv-ml-refs-url',  'ppv-ml-refs-status',  v('me-refs'));
+  var rules = v('me-rules');
+  var rulesEl = el('ppv-rules-text');
+  if (rulesEl) { rulesEl.textContent = rules || 'Правила съёмки не заданы'; rulesEl.style.color = rules ? '' : 'rgba(255,255,255,.2)'; }
+}
+function setMediaLink(urlId, statusId, val) {
+  var urlEl = el(urlId), stEl = el(statusId);
+  if (urlEl) { urlEl.textContent = val ? val.replace(/^https?:\/\//, '') : 'Ссылка не добавлена'; urlEl.classList.toggle('ppv-filled', !!val); }
+  if (stEl) { stEl.classList.toggle('ppv-ok', !!val); }
+}
+
+function ppUpdateProgress() {
+  var pd = typeof passportData !== 'undefined' ? passportData : {};
+  var checks = {
+    basic:       !!(v('be-name') || (pd.basic && pd.basic.name)),
+    brand:       !!(document.querySelector('.pp-tone-btn.pp-tone-active') || (pd.brand && pd.brand.tone)),
+    audience:    !!(pd.audience && pd.audience.length > 0),
+    competitors: !!(pd.competitors && pd.competitors.length > 0),
+    kpi:         !!(pd.kpi && pd.kpi.length > 0),
+    media:       !!(v('me-photo') || (pd.media && pd.media.photo)),
+    notes:       !!(pd.notes && pd.notes.length > 0),
+  };
+  var count = Object.values(checks).filter(Boolean).length;
+  var pct   = Math.round(count / 7 * 100);
+  var bar   = el('pp-tpp-bar');
+  var lbl   = el('pp-tpp-label');
+  if (bar) bar.style.width = pct + '%';
+  if (lbl) lbl.textContent = count + ' / 7';
+}
+
+/* ── Sync preview when passport data loads ── */
+function ppSyncFromPassportData() {
+  var pd = typeof passportData !== 'undefined' ? passportData : null;
+  if (!pd) return;
+  function setInput(id, val) { var e = el(id); if (e && val) e.value = val; }
+  if (pd.basic) {
+    setInput('be-name', pd.basic.name);
+    setInput('be-category', pd.basic.category);
+    setInput('be-address', pd.basic.address);
+    setInput('be-phone', pd.basic.phone);
+    setInput('be-email', pd.basic.email);
+    setInput('be-website', pd.basic.website);
+    setInput('be-instagram', pd.basic.instagram);
+    setInput('be-telegram', pd.basic.telegram);
+    setInput('be-hours', pd.basic.hours);
+  }
+  if (pd.brand) {
+    setInput('bre-messages', Array.isArray(pd.brand.messages) ? pd.brand.messages.join(', ') : pd.brand.messages);
+    setInput('bre-forbidden', Array.isArray(pd.brand.forbidden) ? pd.brand.forbidden.join(', ') : pd.brand.forbidden);
+    setInput('bre-colors', Array.isArray(pd.brand.colors) ? pd.brand.colors.join(', ') : pd.brand.colors);
+    setInput('bre-style', pd.brand.style);
+    if (pd.brand.tone) {
+      document.querySelectorAll('.pp-tone-btn').forEach(function(b) {
+        if (b.getAttribute('data-tone') === pd.brand.tone) b.classList.add('pp-tone-active');
+      });
+    }
+  }
+  if (pd.media) {
+    setInput('me-photo', pd.media.photo);
+    setInput('me-video', pd.media.video);
+    setInput('me-refs', pd.media.refs);
+    setInput('me-extra', pd.media.extra);
+    setInput('me-rules', pd.media.rules);
+  }
+  window.ppLive();
+
+  // Audience / Competitors / KPI / Notes previews
+  if (pd.audience && pd.audience.length) {
+    var grid = el('ppv-persona-grid');
+    if (grid) grid.innerHTML = pd.audience.map(function(p) {
+      return '<div class="ppv-persona-mini">' +
+        '<div class="ppv-persona-mini-name">' + (p.name||'—') + '</div>' +
+        '<div class="ppv-persona-mini-age">' + (p.age||'—') + '</div>' +
+        '<div class="ppv-persona-mini-attr">😟 ' + (p.pain||'') + '</div>' +
+        '<div class="ppv-persona-mini-attr">💡 ' + (p.motivation||'') + '</div>' +
+      '</div>';
+    }).join('');
+  }
+  if (pd.competitors && pd.competitors.length) {
+    var clist = el('ppv-comp-list');
+    if (clist) clist.innerHTML = pd.competitors.map(function(c) {
+      return '<div class="ppv-comp-item"><div class="ppv-comp-name">' + (c.name||'—') + '</div>' +
+        '<div class="ppv-comp-cols">' +
+        '<div><div class="ppv-comp-col-lbl ppv-comp-strong-lbl">Сильные стороны</div><div class="ppv-comp-col-val s">' + (c.strong||'—') + '</div></div>' +
+        '<div><div class="ppv-comp-col-lbl ppv-comp-weak-lbl">Слабые стороны</div><div class="ppv-comp-col-val w">' + (c.weak||'—') + '</div></div>' +
+        '</div></div>';
+    }).join('');
+  }
+  if (pd.kpi && pd.kpi.length) {
+    var kgrid = el('ppv-kpi-grid');
+    if (kgrid) kgrid.innerHTML = pd.kpi.map(function(k) {
+      return '<div class="ppv-kpi-item"><div class="ppv-kpi-goal">' + (k.goal||'—') + '</div>' +
+        '<div class="ppv-kpi-nums">' +
+        '<div><div class="ppv-kpi-num-val">' + (k.current||'—') + '</div><div class="ppv-kpi-num-lbl">Сейчас</div></div>' +
+        '<div><div class="ppv-kpi-num-val" style="color:#34d399;">' + (k.target||'—') + '</div><div class="ppv-kpi-num-lbl">Цель</div></div>' +
+        '</div></div>';
+    }).join('');
+  }
+  if (pd.notes && pd.notes.length) {
+    var nlist = el('ppv-notes-list');
+    if (nlist) nlist.innerHTML = pd.notes.map(function(n) {
+      return '<div class="ppv-note-item"><div class="ppv-note-dot"></div><div><div class="ppv-note-text">' + (n.text||'') + '</div><div class="ppv-note-time">' + (n.author||'') + ' · ' + (n.date||'') + '</div></div></div>';
+    }).join('');
+  }
+}
+
+// Poll for passport data load
+var _ppSyncDone = false;
+var _ppInterval = setInterval(function() {
+  var page = document.getElementById('page-passport');
+  if (page && page.classList.contains('active')) {
+    ppSyncFromPassportData();
+    window.ppLive();
+    if (typeof passportData !== 'undefined' && Object.keys(passportData).length) {
+      if (!_ppSyncDone) { ppSyncFromPassportData(); _ppSyncDone = true; }
+    }
+  }
+}, 800);
+
+// Also override psSave to re-sync after save
+var _origPsSave = window.psSave;
+window.psSave = function(section) {
+  if (_origPsSave) _origPsSave(section);
+  setTimeout(function() { ppSyncFromPassportData(); window.ppLive(); }, 500);
+};
+
+// Override openPassport to reset sync flag
+var _origOpenPassport = window.openPassport;
+window.openPassport = function(proj) {
+  _ppSyncDone = false;
+  if (_origOpenPassport) _origOpenPassport(proj);
+};
+
+// Also sync persona/competitor/kpi/note lists back to preview
+var _origAddPersona = window.addPersona;
+window.addPersona = function() {
+  if (_origAddPersona) _origAddPersona();
+  setTimeout(function() { ppSyncFromPassportData(); }, 400);
+};
+var _origAddCompetitor = window.addCompetitor;
+window.addCompetitor = function() {
+  if (_origAddCompetitor) _origAddCompetitor();
+  setTimeout(function() { ppSyncFromPassportData(); }, 400);
+};
+var _origAddKPI = window.addKPI;
+window.addKPI = function() {
+  if (_origAddKPI) _origAddKPI();
+  setTimeout(function() { ppSyncFromPassportData(); }, 400);
+};
+var _origAddNote = window.addNote;
+window.addNote = function() {
+  if (_origAddNote) _origAddNote();
+  setTimeout(function() { ppSyncFromPassportData(); }, 400);
+};
+
+// Hook switchPassportTab to ppTab if still called from old code
+window.switchPassportTab = function(tab, btn) {
+  var ppBtn = document.querySelector('.pp-tab[data-tab="' + tab + '"]');
+  window.ppTab(tab, ppBtn || btn);
+};
+
 })();
 </script>
