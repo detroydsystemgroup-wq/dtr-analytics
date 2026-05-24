@@ -22439,6 +22439,196 @@ function runNewBlocks() {
   font-size: 11px !important;
 }
 </style>
+
+<style id="dtr-preview-fullsize">
+/* FORCE full-size preview — no margins, no max-width */
+
+.pp-split-right { overflow: hidden !important; display: flex !important; flex-direction: column !important; }
+
+.pp-preview-panel {
+  padding: 0 !important;
+  flex: 1 !important;
+  overflow-y: auto !important;
+  display: none !important;
+}
+.pp-preview-panel.pp-pv-active {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* VENUE CARD — fills everything */
+.ppv-venue-card {
+  max-width: none !important;
+  width: 100% !important;
+  margin: 0 !important;
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  border-radius: 0 !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: none !important;
+  border-top: 1px solid rgba(255,255,255,.07) !important;
+  background: #09090f !important;
+  min-height: 100% !important;
+}
+
+.ppv-venue-top {
+  padding: 48px 52px 40px !important;
+  gap: 28px !important;
+  background: rgba(255,255,255,.02) !important;
+  border-bottom: 1px solid rgba(255,255,255,.06) !important;
+}
+.ppv-venue-avatar {
+  width: 88px !important; height: 88px !important;
+  border-radius: 22px !important;
+  font-size: 40px !important; font-weight: 800 !important;
+  flex-shrink: 0 !important;
+}
+.ppv-venue-name {
+  font-size: 42px !important;
+  letter-spacing: -.06em !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+}
+.ppv-venue-cat {
+  font-size: 15px !important;
+  margin-top: 10px !important;
+  letter-spacing: .06em !important;
+  color: rgba(255,255,255,.3) !important;
+}
+
+.ppv-divider { height: 1px !important; background: rgba(255,255,255,.06) !important; margin: 0 !important; }
+
+.ppv-venue-body {
+  padding: 32px 52px !important;
+  gap: 20px !important;
+  flex: 1 !important;
+}
+.ppv-info-row {
+  font-size: 18px !important;
+  gap: 18px !important;
+  color: rgba(255,255,255,.75) !important;
+}
+.ppv-info-row svg { width: 20px !important; height: 20px !important; opacity: .4 !important; }
+.ppv-info-row.ppv-empty { font-size: 16px !important; color: rgba(255,255,255,.14) !important; }
+
+.ppv-socials-row {
+  padding: 28px 52px !important;
+  gap: 16px !important;
+}
+.ppv-social-chip {
+  flex: 1 !important;
+  justify-content: center !important;
+  padding: 16px 24px !important;
+  font-size: 15px !important;
+  border-radius: 14px !important;
+  gap: 10px !important;
+}
+.ppv-social-chip svg { width: 18px !important; height: 18px !important; }
+
+.ppv-hours-row {
+  padding: 24px 52px !important;
+  font-size: 17px !important;
+  gap: 16px !important;
+  background: rgba(255,255,255,.02) !important;
+  border-top: 1px solid rgba(255,255,255,.06) !important;
+}
+.ppv-hours-row svg { width: 20px !important; height: 20px !important; }
+
+/* BRAND CARD */
+.ppv-brand-card {
+  max-width: none !important; width: 100% !important; margin: 0 !important;
+  flex: 1 !important; display: flex !important; flex-direction: column !important;
+  border-radius: 0 !important; border-left: none !important; border-right: none !important;
+  border-bottom: none !important; border-top: 1px solid rgba(255,255,255,.07) !important;
+  background: #09090f !important;
+}
+.ppv-brand-section { padding: 32px 52px !important; }
+.ppv-bsec-label { font-size: 11px !important; margin-bottom: 18px !important; letter-spacing: .24em !important; }
+.ppv-tone-badge { font-size: 20px !important; padding: 14px 28px !important; border-radius: 12px !important; font-weight: 700 !important; }
+.ppv-palette { gap: 12px !important; }
+.ppv-palette-swatch { width: 52px !important; height: 52px !important; border-radius: 14px !important; }
+.ppv-messages-list, .ppv-forbidden-list { gap: 8px !important; }
+.ppv-msg-tag { font-size: 15px !important; padding: 9px 20px !important; border-radius: 10px !important; }
+.ppv-forbidden-tag { font-size: 14px !important; padding: 8px 18px !important; border-radius: 10px !important; }
+.ppv-style-quote { font-size: 17px !important; line-height: 1.75 !important; padding-left: 22px !important; border-left-width: 3px !important; }
+
+/* MEDIA */
+.ppv-media-card {
+  max-width: none !important; width: 100% !important; margin: 0 !important;
+  flex: 1 !important; border-radius: 0 !important; border-left: none !important;
+  border-right: none !important; border-bottom: none !important;
+  border-top: 1px solid rgba(255,255,255,.07) !important; background: #09090f !important;
+}
+.ppv-media-link-item { padding: 24px 52px !important; gap: 22px !important; }
+.ppv-ml-icon { width: 52px !important; height: 52px !important; border-radius: 14px !important; }
+.ppv-ml-icon svg { width: 24px !important; height: 24px !important; }
+.ppv-ml-label { font-size: 11px !important; margin-bottom: 6px !important; }
+.ppv-ml-url { font-size: 15px !important; max-width: 100% !important; }
+.ppv-ml-status { width: 12px !important; height: 12px !important; }
+.ppv-rules-text { font-size: 16px !important; line-height: 1.75 !important; }
+
+/* AUDIENCE */
+.ppv-persona-grid { grid-template-columns: 1fr 1fr !important; gap: 20px !important; padding: 24px 32px !important; }
+.ppv-persona-mini { padding: 28px !important; border-radius: 18px !important; }
+.ppv-persona-mini-name { font-size: 20px !important; margin-bottom: 6px !important; }
+.ppv-persona-mini-age { font-size: 13px !important; margin-bottom: 18px !important; }
+.ppv-persona-mini-attr { font-size: 14px !important; margin-bottom: 8px !important; }
+
+/* COMPETITORS */
+.ppv-comp-item { padding: 24px 32px !important; margin: 0 0 2px !important; border-radius: 0 !important; border: none !important; border-bottom: 1px solid rgba(255,255,255,.05) !important; border-left: 4px solid rgba(245,158,11,.4) !important; background: rgba(255,255,255,.02) !important; }
+.ppv-comp-name { font-size: 20px !important; margin-bottom: 14px !important; }
+.ppv-comp-cols { gap: 32px !important; }
+.ppv-comp-col-lbl { font-size: 11px !important; margin-bottom: 8px !important; }
+.ppv-comp-col-val { font-size: 15px !important; line-height: 1.6 !important; }
+
+/* KPI */
+.ppv-kpi-item { padding: 28px 36px !important; margin: 0 0 2px !important; border-radius: 0 !important; border: none !important; border-bottom: 1px solid rgba(255,255,255,.05) !important; border-left: 4px solid rgba(52,211,153,.4) !important; background: rgba(255,255,255,.02) !important; }
+.ppv-kpi-goal { font-size: 20px !important; margin-bottom: 18px !important; }
+.ppv-kpi-nums { gap: 48px !important; }
+.ppv-kpi-num-val { font-size: 32px !important; }
+.ppv-kpi-num-lbl { font-size: 11px !important; margin-top: 5px !important; }
+
+/* NOTES */
+.ppv-note-item { padding: 22px 36px !important; gap: 20px !important; border-bottom: 1px solid rgba(255,255,255,.05) !important; }
+.ppv-note-text { font-size: 16px !important; line-height: 1.75 !important; }
+.ppv-note-time { font-size: 12px !important; margin-top: 6px !important; }
+.ppv-note-dot { width: 12px !important; height: 12px !important; margin-top: 5px !important; }
+
+/* Audience/comp/kpi/notes wrap */
+#ppv-audience, #ppv-competitors, #ppv-kpi, #ppv-notes {
+  padding: 0 !important;
+  background: #09090f !important;
+  border-top: 1px solid rgba(255,255,255,.07) !important;
+}
+.ppv-audience-header, .ppv-comp-header, .ppv-kpi-header, .ppv-notes-header {
+  padding: 32px 36px 20px !important;
+  margin-bottom: 0 !important;
+  border-bottom: 1px solid rgba(255,255,255,.06) !important;
+}
+.ppv-audience-header .ppv-bsec-label,
+.ppv-comp-header .ppv-bsec-label,
+.ppv-kpi-header .ppv-bsec-label,
+.ppv-notes-header .ppv-bsec-label { margin-bottom: 0 !important; }
+
+.ppv-persona-grid { padding: 28px 32px !important; }
+.ppv-comp-list, .ppv-kpi-grid, .ppv-notes-list { padding: 0 !important; }
+
+.ppv-empty-preview {
+  font-size: 13px !important;
+  padding: 100px 40px !important;
+  flex: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Preview header */
+.pp-preview-header { padding: 14px 32px !important; }
+.pp-preview-label { font-size: 10px !important; }
+.pp-preview-tab-label { font-size: 11px !important; letter-spacing: .14em !important; }
+</style>
 </body>
 </html>
 <!-- DTR Passport Sidebar Logic -->
