@@ -24531,19 +24531,17 @@ function ppSyncFromPassportData() {
 
 // Poll for passport data load
 var _ppSyncDone = false;
-var _ppInterval = setInterval(function() {
+function _ppPoll() {
   var page = document.getElementById('page-passport');
-  if (page && page.classList.contains('active')) {
-    // Only ppLive() for form inputs — NO re-render of static lists
-    window.ppLive();
-    // One-time sync of audience/competitors/kpi/notes from DB
-    if (!_ppSyncDone && typeof passportData !== 'undefined' && Object.keys(passportData).length > 0) {
-      ppSyncFromPassportData();
-      _ppSyncDone = true;
-      clearInterval(_ppInterval); // STOP polling after first sync
-    }
+  if (!page || !page.classList.contains('active')) return;
+  window.ppLive();
+  if (!_ppSyncDone && typeof passportData !== 'undefined' && Object.keys(passportData).length > 0) {
+    ppSyncFromPassportData();
+    _ppSyncDone = true;
+    clearInterval(_ppInterval);
   }
-}, 600);
+}
+var _ppInterval = setInterval(_ppPoll, 600);
 
 // Also override psSave to re-sync after save
 var _origPsSave = window.psSave;
@@ -24563,22 +24561,22 @@ window.openPassport = function(proj) {
 var _origAddPersona = window.addPersona;
 window.addPersona = function() {
   if (_origAddPersona) _origAddPersona();
-  setTimeout(function() { ppSyncFromPassportData(); }, 400);
+  setTimeout(function() { window._ppLastHash = null; ppSyncFromPassportData(); }, 400);
 };
 var _origAddCompetitor = window.addCompetitor;
 window.addCompetitor = function() {
   if (_origAddCompetitor) _origAddCompetitor();
-  setTimeout(function() { ppSyncFromPassportData(); }, 400);
+  setTimeout(function() { window._ppLastHash = null; ppSyncFromPassportData(); }, 400);
 };
 var _origAddKPI = window.addKPI;
 window.addKPI = function() {
   if (_origAddKPI) _origAddKPI();
-  setTimeout(function() { ppSyncFromPassportData(); }, 400);
+  setTimeout(function() { window._ppLastHash = null; ppSyncFromPassportData(); }, 400);
 };
 var _origAddNote = window.addNote;
 window.addNote = function() {
   if (_origAddNote) _origAddNote();
-  setTimeout(function() { ppSyncFromPassportData(); }, 400);
+  setTimeout(function() { window._ppLastHash = null; ppSyncFromPassportData(); }, 400);
 };
 
 // Hook switchPassportTab to ppTab if still called from old code
