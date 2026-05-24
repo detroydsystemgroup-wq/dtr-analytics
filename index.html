@@ -8615,8 +8615,10 @@ canvas {
     <div class="pp-split-right">
       <div class="pp-preview-header">
         <span class="pp-preview-label">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
-          Предпросмотр · обновляется в реальном времени
+          <span class="pp-live-dot"></span>
+          Предпросмотр
+          <span class="pp-live-separator">·</span>
+          <span class="pp-live-status">обновляется в реальном времени</span>
         </span>
         <span class="pp-preview-tab-label" id="pp-preview-tab-label">Профиль</span>
       </div>
@@ -23421,9 +23423,7 @@ function runNewBlocks() {
 }
 
 /* ══ 6. BACK BUTTON on passport — in the header itself ══ */
-#page-passport .back-btn {
-  display: none !important;   /* убрали из main, теперь в шапке */
-}
+
 
 /* ══ 7. Left col form area — правильный overflow ══ */
 #page-passport .pp-split-left {
@@ -23449,6 +23449,114 @@ function runNewBlocks() {
 #page-smm .app-header {
   height: 60px !important;
   padding: 0 40px !important;
+}
+</style>
+
+<style id="dtr-live-indicator-fix">
+/* ── LIVE INDICATOR — clean dot + label ── */
+#page-passport .pp-preview-header {
+  height: 48px !important;
+  padding: 0 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  border-bottom: 1px solid rgba(255,255,255,.07) !important;
+  background: rgba(8,8,14,.98) !important;
+  flex-shrink: 0 !important;
+}
+
+.pp-preview-label {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  color: rgba(255,255,255,.22) !important;
+  letter-spacing: .12em !important;
+  text-transform: uppercase !important;
+}
+
+/* The live pulsing dot — pure CSS, no SVG */
+.pp-live-dot {
+  width: 7px !important;
+  height: 7px !important;
+  border-radius: 50% !important;
+  background: #34d399 !important;
+  flex-shrink: 0 !important;
+  position: relative !important;
+  animation: none !important; /* kill old dotPulse */
+  box-shadow: 0 0 0 0 rgba(52,211,153,.5) !important;
+  animation: livePing 2.4s ease-in-out infinite !important;
+}
+
+@keyframes livePing {
+  0%   { box-shadow: 0 0 0 0   rgba(52,211,153,.55); }
+  60%  { box-shadow: 0 0 0 5px rgba(52,211,153,.0); }
+  100% { box-shadow: 0 0 0 0   rgba(52,211,153,.0); }
+}
+
+.pp-live-separator {
+  color: rgba(255,255,255,.12) !important;
+  letter-spacing: 0 !important;
+}
+
+.pp-live-status {
+  color: rgba(52,211,153,.45) !important;
+  letter-spacing: .1em !important;
+}
+
+.pp-preview-tab-label {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  color: rgba(129,140,248,.5) !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+  font-weight: 600 !important;
+}
+
+/* Kill old SVG animation */
+.pp-preview-label svg { display: none !important; }
+</style>
+
+<style id="dtr-back-btn-restore">
+/* Кнопка Назад в шапке паспорта */
+#page-passport .pp-app-header .back-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 8px 16px !important;
+  height: 36px !important;
+  background: rgba(255,255,255,.05) !important;
+  border: 1px solid rgba(255,255,255,.1) !important;
+  border-radius: 10px !important;
+  color: rgba(255,255,255,.5) !important;
+  font-family: 'Manrope', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all .18s !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+}
+#page-passport .pp-app-header .back-btn:hover {
+  background: rgba(255,255,255,.09) !important;
+  border-color: rgba(255,255,255,.2) !important;
+  color: rgba(255,255,255,.85) !important;
+  transform: translateX(-2px) !important;
+}
+#page-passport .pp-app-header .back-btn svg {
+  flex-shrink: 0 !important;
+  transition: transform .18s !important;
+}
+#page-passport .pp-app-header .back-btn:hover svg {
+  transform: translateX(-2px) !important;
+}
+
+/* Кнопка Назад в app-main паспорта — скрыть (она в шапке) */
+#page-passport .pp-split-left .back-btn,
+#page-passport .pp-form-panel .back-btn {
+  display: none !important;
 }
 </style>
 </body>
