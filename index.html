@@ -7806,8 +7806,21 @@ canvas {
 
     <!-- TAB: HISTORY -->
     <div id="pp-tab-history" style="display:none;">
-      <div style="background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r-md);padding:4px 18px;">
-        <div class="history-log" id="tracker-history"></div>
+      <div class="hist-shell">
+        <div class="hist-header">
+          <div class="hist-header-left">
+            <div class="hist-title">Журнал активности</div>
+            <div class="hist-subtitle" id="hist-count-label">—</div>
+          </div>
+          <div class="hist-legend">
+            <span class="hist-leg-item"><span class="hist-leg-dot" style="background:#818cf8;"></span>Начат</span>
+            <span class="hist-leg-item"><span class="hist-leg-dot" style="background:#34d399;"></span>Завершён</span>
+            <span class="hist-leg-item"><span class="hist-leg-dot" style="background:#fbbf24;"></span>Возвращён</span>
+          </div>
+        </div>
+        <div class="hist-body">
+          <div class="history-log" id="tracker-history"></div>
+        </div>
       </div>
     </div>
 
@@ -11963,20 +11976,56 @@ function renderHistory(hist) {
   // Also show in history tab
   if (!log) return
   const eventColors = { 'Начат': 'var(--a2)', 'Завершён': 'var(--green)', 'Возвращён в ожидание': 'var(--amber)' }
-  log.innerHTML = hist.map(h => {
+  // Update count label
+  const countLbl = document.getElementById('hist-count-label')
+  if (countLbl) countLbl.textContent = hist.length + ' ' + (hist.length === 1 ? 'событие' : hist.length < 5 ? 'события' : 'событий')
+
+  // Group by date
+  const groups = {}
+  hist.forEach(h => {
     const d = new Date(h.created_at)
-    const stageName = STAGES[h.stage_index]?.name || '—'
-    const col = eventColors[h.event] || 'var(--a2)'
-    return `<div class="history-item">
-      <div class="history-dot" style="background:${col};"></div>
-      <div>
-        <div class="history-text">
-          <b style="color:var(--txt);">${stageName}</b>
-          <span style="color:${col};"> — ${h.event}</span>
+    const dateKey = d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
+    if (!groups[dateKey]) groups[dateKey] = []
+    groups[dateKey].push(h)
+  })
+
+  const eventMeta = {
+    'Начат':                  { col: '#818cf8', bg: 'rgba(129,140,248,.12)', label: 'Начат' },
+    'Завершён':               { col: '#34d399', bg: 'rgba(52,211,153,.12)',  label: 'Завершён' },
+    'Возвращён в ожидание':   { col: '#fbbf24', bg: 'rgba(251,191,36,.12)',  label: 'Возвращён' }
+  }
+
+  log.innerHTML = Object.keys(groups).map((dateKey, gi) => {
+    const items = groups[dateKey]
+    const rows = items.map((h, i) => {
+      const d = new Date(h.created_at)
+      const time = d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+      const stageName = STAGES[h.stage_index]?.name || '—'
+      const stageIcon = STAGES[h.stage_index]?.icon || ''
+      const meta = eventMeta[h.event] || { col: '#818cf8', bg: 'rgba(129,140,248,.12)', label: h.event }
+      const isLast = i === items.length - 1
+
+      return `<div class="hist-row${isLast ? ' hist-row-last' : ''}">
+        <div class="hist-time-col">
+          <span class="hist-time">${time}</span>
         </div>
-        ${h.note ? `<div class="history-text" style="color:var(--txt3);margin-top:2px;">«${h.note}»</div>` : ''}
-        <div class="history-time">${d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })} · ${d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}</div>
-      </div>
+        <div class="hist-line-col">
+          <div class="hist-dot" style="background:${meta.col};box-shadow:0 0 0 3px ${meta.col}22;"></div>
+          ${!isLast ? '<div class="hist-connector"></div>' : ''}
+        </div>
+        <div class="hist-content">
+          <div class="hist-stage-row">
+            <span class="hist-stage-name">${stageIcon ? stageIcon + ' ' : ''}${stageName}</span>
+            <span class="hist-badge" style="background:${meta.bg};color:${meta.col};border:1px solid ${meta.col}33;">${meta.label}</span>
+          </div>
+          ${h.note ? `<div class="hist-note">${h.note}</div>` : ''}
+        </div>
+      </div>`
+    }).join('')
+
+    return `<div class="hist-group">
+      <div class="hist-date-label">${dateKey}</div>
+      <div class="hist-group-body">${rows}</div>
     </div>`
   }).join('')
 }
@@ -24689,3 +24738,179 @@ window.switchPassportTab = function(tab, btn) {
 
 })();
 </script>
+<style id="dtr-history-mckinsey">
+/* ═══════════════════════════════════════════════════════
+   ИСТОРИЯ АКТИВНОСТИ — McKinsey Activity Journal
+   Clean timeline. Data density. Zero noise.
+═══════════════════════════════════════════════════════ */
+
+/* Shell */
+.hist-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: transparent;
+}
+
+/* Header */
+.hist-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 44px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  flex-shrink: 0;
+}
+.hist-header-left { display: flex; flex-direction: column; gap: 4px; }
+.hist-title {
+  font-family: 'Sora','Manrope',sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  color: #f1f1f5;
+}
+.hist-subtitle {
+  font-family: 'JetBrains Mono',monospace;
+  font-size: 10px;
+  color: rgba(255,255,255,.25);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+/* Legend */
+.hist-legend {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.hist-leg-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: 'JetBrains Mono',monospace;
+  font-size: 10px;
+  color: rgba(255,255,255,.3);
+  letter-spacing: .08em;
+}
+.hist-leg-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Body scroll area */
+.hist-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 44px 40px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,.06) transparent;
+}
+
+/* Date group */
+.hist-group { margin-bottom: 32px; }
+.hist-date-label {
+  font-family: 'JetBrains Mono',monospace;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,.22);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  padding-bottom: 16px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.hist-group-body { padding-top: 4px; }
+
+/* Single row */
+.hist-row {
+  display: grid;
+  grid-template-columns: 56px 24px 1fr;
+  gap: 0 18px;
+  align-items: start;
+  position: relative;
+}
+
+/* Time column */
+.hist-time-col {
+  padding-top: 3px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.hist-time {
+  font-family: 'JetBrains Mono',monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,.22);
+  letter-spacing: .04em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Timeline line column */
+.hist-line-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  padding-top: 3px;
+}
+.hist-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  transition: transform .2s;
+}
+.hist-row:hover .hist-dot { transform: scale(1.3); }
+.hist-connector {
+  width: 1px;
+  flex: 1;
+  min-height: 28px;
+  background: rgba(255,255,255,.08);
+  margin: 4px 0;
+}
+
+/* Content column */
+.hist-content {
+  padding-bottom: 24px;
+}
+.hist-row-last .hist-content { padding-bottom: 8px; }
+
+.hist-stage-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 5px;
+  flex-wrap: wrap;
+}
+.hist-stage-name {
+  font-family: 'Sora','Manrope',sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255,255,255,.85);
+  letter-spacing: -.02em;
+  line-height: 1.3;
+}
+.hist-badge {
+  font-family: 'JetBrains Mono',monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  padding: 4px 11px;
+  border-radius: 7px;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+.hist-note {
+  font-family: 'Manrope',sans-serif;
+  font-size: 13px;
+  color: rgba(255,255,255,.35);
+  line-height: 1.6;
+  padding: 8px 14px;
+  background: rgba(255,255,255,.03);
+  border-left: 2px solid rgba(255,255,255,.09);
+  border-radius: 0 6px 6px 0;
+  font-style: italic;
+  margin-top: 6px;
+}
+</style>
