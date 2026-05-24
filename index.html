@@ -10855,6 +10855,10 @@ async function doLogout() {
 
   // Сброс всего состояния приложения
   currentUser = null
+  _dlProjDropdownFilled = false
+  const dlDropdown = document.getElementById('dl-proj-filter')
+  if (dlDropdown) { while (dlDropdown.options.length > 1) dlDropdown.remove(1) }
+  passportData = { basic:{}, brand:{}, audience:[], competitors:[], kpi:[], media:{}, notes:[] }
   currentProject = null
   currentReport = null
   currentSMMReport = null
@@ -13344,9 +13348,13 @@ function viewVal(id, v, isLink) {
   const el = g(id); if (!el) return
   if (!v) { el.innerHTML = '<span class="empty">Не заполнено</span>'; el.className='ps-view-val empty'; return }
   el.className = 'ps-view-val'
-  el.innerHTML = isLink
-    ? `<a href="${v}" target="_blank" class="ps-view-link">${v}</a>`
-    : v
+  if (isLink) {
+    // Only allow http/https links to prevent javascript: XSS
+    const safeHref = /^https?:\/\//i.test(v) ? v : '#'
+    el.innerHTML = `<a href="${esc(safeHref)}" target="_blank" rel="noopener noreferrer" class="ps-view-link">${esc(v)}</a>`
+  } else {
+    el.textContent = v
+  }
 }
 
 function renderBasic() {
@@ -13357,8 +13365,8 @@ function renderBasic() {
   viewVal('bv-hours', b.hours)
   const socials = g('bv-socials'); if (!socials) return
   const chips = []
-  if (b.instagram) chips.push(`<a href="https://instagram.com/${b.instagram.replace('@','')}" target="_blank" class="social-chip">📷 ${b.instagram}</a>`)
-  if (b.telegram) chips.push(`<a href="https://t.me/${b.telegram.replace('@','')}" target="_blank" class="social-chip">✈️ ${b.telegram}</a>`)
+  if (b.instagram) chips.push(`<a href="https://instagram.com/${esc(b.instagram.replace('@',''))}" target="_blank" rel="noopener noreferrer" class="social-chip">📷 ${esc(b.instagram)}</a>`)
+  if (b.telegram) chips.push(`<a href="https://t.me/${esc(b.telegram.replace('@',''))}" target="_blank" rel="noopener noreferrer" class="social-chip">✈️ ${esc(b.telegram)}</a>`)
   socials.innerHTML = chips.join('') || '<span style="color:var(--txt3);font-size:12px;">Не заполнено</span>'
 }
 
@@ -13372,12 +13380,12 @@ function renderBrand() {
   }
   const msgs = g('brv-messages'); if (msgs) {
     msgs.innerHTML = (b.messages||[]).length
-      ? b.messages.map(m=>`<span class="ps-tag ps-tag-key">${m}</span>`).join('')
+      ? b.messages.map(m=>`<span class="ps-tag ps-tag-key">${esc(m)}</span>`).join('')
       : '<span style="color:var(--txt3);font-size:12px;">Не заполнено</span>'
   }
   const forb = g('brv-forbidden'); if (forb) {
     forb.innerHTML = (b.forbidden||[]).length
-      ? b.forbidden.map(f=>`<span class="ps-tag ps-tag-danger">🚫 ${f}</span>`).join('')
+      ? b.forbidden.map(f=>`<span class="ps-tag ps-tag-danger">🚫 ${esc(f)}</span>`).join('')
       : '<span style="color:var(--txt3);font-size:12px;">Не заполнено</span>'
   }
   viewVal('brv-style', b.style)
@@ -13395,12 +13403,12 @@ function renderAudience() {
       ${!hideBtn ? `<button class="persona-del-btn" onclick="deletePersona(${i})">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
       </button>` : ''}
-      <div class="persona-avatar">${p.emoji || '👤'}</div>
-      <div class="persona-name">${p.name}</div>
-      <div class="persona-age">${p.age}</div>
-      <div class="persona-item"><span>Боль: </span>${p.pain}</div>
-      <div class="persona-item"><span>Ценит: </span>${p.motivation}</div>
-      ${p.behavior ? `<div class="persona-item"><span>Поведение: </span>${p.behavior}</div>` : ''}
+      <div class="persona-avatar">${esc(p.emoji || '👤')}</div>
+      <div class="persona-name">${esc(p.name)}</div>
+      <div class="persona-age">${esc(p.age)}</div>
+      <div class="persona-item"><span>Боль: </span>${esc(p.pain)}</div>
+      <div class="persona-item"><span>Ценит: </span>${esc(p.motivation)}</div>
+      ${p.behavior ? `<div class="persona-item"><span>Поведение: </span>${esc(p.behavior)}</div>` : ''}
     </div>`).join('')
 }
 
@@ -13414,17 +13422,17 @@ function renderCompetitors() {
   list.innerHTML = comps.map((c, i) => `
     <div class="comp-card">
       <div>
-        <div class="comp-name">${c.name}</div>
-        ${c.instagram ? `<div class="comp-link">📷 ${c.instagram}</div>` : ''}
-        ${c.note ? `<div style="font-size:11px;color:var(--txt3);margin-top:4px;">${c.note}</div>` : ''}
+        <div class="comp-name">${esc(c.name)}</div>
+        ${c.instagram ? `<div class="comp-link">📷 ${esc(c.instagram)}</div>` : ''}
+        ${c.note ? `<div style="font-size:11px;color:var(--txt3);margin-top:4px;">${esc(c.note)}</div>` : ''}
       </div>
       <div>
         <div class="comp-label">Сильные стороны</div>
-        <div class="comp-strong">${c.strong || '—'}</div>
+        <div class="comp-strong">${esc(c.strong || '—')}</div>
       </div>
       <div>
         <div class="comp-label">Слабые стороны</div>
-        <div class="comp-weak">${c.weak || '—'}</div>
+        <div class="comp-weak">${esc(c.weak || '—')}</div>
       </div>
       ${!hideBtn ? `<button class="persona-del-btn" onclick="deleteCompetitor(${i})">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
@@ -13445,20 +13453,20 @@ function renderKPI() {
       ${!hideBtn ? `<button class="persona-del-btn" style="position:absolute;top:10px;right:10px;" onclick="deleteKPI(${i})">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
       </button>` : ''}
-      <div class="kpi-goal">${k.goal}</div>
+      <div class="kpi-goal">${esc(k.goal)}</div>
       ${dl ? `<div class="kpi-deadline-tag">📅 ${dl}</div>` : ''}
       <div class="kpi-vals">
         <div class="kpi-val-block">
-          <div class="kpi-val-num" style="color:var(--txt3);">${k.current || '—'}</div>
+          <div class="kpi-val-num" style="color:var(--txt3);">${esc(k.current || '—')}</div>
           <div class="kpi-val-lbl">Сейчас</div>
         </div>
         <div style="font-size:20px;color:var(--txt3);align-self:center;">→</div>
         <div class="kpi-val-block">
-          <div class="kpi-val-num" style="color:var(--green);">${k.target || '—'}</div>
+          <div class="kpi-val-num" style="color:var(--green);">${esc(k.target || '—')}</div>
           <div class="kpi-val-lbl">Цель</div>
         </div>
       </div>
-      ${k.metric ? `<div style="font-family:Manrope,sans-serif;font-size:10px;color:var(--txt3);margin-top:8px;">${k.metric}</div>` : ''}
+      ${k.metric ? `<div style="font-family:Manrope,sans-serif;font-size:10px;color:var(--txt3);margin-top:8px;">${esc(k.metric)}</div>` : ''}
     </div>`
   }).join('')
 }
@@ -13488,8 +13496,8 @@ function renderNotes() {
         ${i < notes.length-1 ? '<div class="note-line"></div>' : ''}
       </div>
       <div class="note-body">
-        <div class="note-author">${n.author || 'DTR Agency'}</div>
-        <div class="note-text">${n.text}</div>
+        <div class="note-author">${esc(n.author || 'DTR Agency')}</div>
+        <div class="note-text">${esc(n.text)}</div>
         <div class="note-date">${d.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})} · ${d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}</div>
       </div>
       ${!hideBtn ? `<button class="persona-del-btn" onclick="deleteNote(${i})">
@@ -19207,6 +19215,7 @@ function runNewBlocks() {
     }
 
     // Рекорды: лучший/худший день по каждому периоду
+    if (!b1.rows.length || !d1.rows.length) { var rEl2 = document.getElementById('trend-records'); if (rEl2) rEl2.innerHTML = ''; } else {
     var bestB = b1.rows.reduce(function(m,r){ return r.rev>m.rev?r:m; }, b1.rows[0]);
     var worstB = b1.rows.reduce(function(m,r){ return r.rev<m.rev?r:m; }, b1.rows[0]);
     var bestD = d1.rows.reduce(function(m,r){ return r.rev>m.rev?r:m; }, d1.rows[0]);
@@ -19249,6 +19258,7 @@ function runNewBlocks() {
       +'<div style="height:100%;width:'+x.pct+'%;background:'+x.col+';border-radius:3px;transition:width 1.2s ease;"></div></div>'
       +'</div>';
     }).join('');
+    } // end empty rows guard
   }
 
   // ─────────────────────────────────────────────────────────
