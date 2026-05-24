@@ -10721,6 +10721,8 @@ let _isClientCache = null
 // ══════════════════════════════════════════════
 const g = id => document.getElementById(id)
 const set = (id, v) => { const e = g(id); if (e) e.textContent = v }
+// XSS-safe HTML escape for user-controlled strings injected into innerHTML
+const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')
 const fmt = (n, d=0) => n == null ? '—' : new Intl.NumberFormat('ru-RU', {maximumFractionDigits:d}).format(n)
 const fmtM = n => {
   if (!n && n !== 0) return '—'
@@ -10749,10 +10751,9 @@ function showPage(id) {
   window.scrollTo(0, 0)
 
   if (current && current.id === 'page-login') {
-    // Step 1: show next page underneath (opacity 0)
+    // Логин → другая страница: красивый crossfade
     next.style.opacity = '0'
     next.classList.add('active')
-    // Step 2: crossfade — login fades out, next fades in simultaneously
     requestAnimationFrame(function() {
       requestAnimationFrame(function() {
         current.style.transition = 'opacity .4s ease'
@@ -10764,6 +10765,22 @@ function showPage(id) {
           current.style.cssText = ''
           next.style.cssText = ''
         }, 600)
+      })
+    })
+  } else if (id === 'page-login') {
+    // Logout → страница логина: сбрасываем любые inline-стили со всех страниц
+    // (мог остаться opacity/transition от предыдущего crossfade)
+    document.querySelectorAll('.page').forEach(function(p) {
+      p.style.cssText = ''
+      p.classList.remove('active')
+    })
+    next.classList.add('active')
+    next.style.opacity = '0'
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        next.style.transition = 'opacity .35s ease'
+        next.style.opacity = '1'
+        setTimeout(function() { next.style.cssText = '' }, 400)
       })
     })
   } else {
@@ -10835,7 +10852,31 @@ async function doRegister() {
 
 async function doLogout() {
   await sb.auth.signOut()
+
+  // Сброс всего состояния приложения
   currentUser = null
+  currentProject = null
+  currentReport = null
+  currentSMMReport = null
+  _isClientCache = null
+  trackerData = []
+  editingStageIndex = null
+  selectedStageStatus = 'pending'
+  Object.keys(S).forEach(k => delete S[k])
+  Object.keys(CH).forEach(k => { try { CH[k].destroy() } catch(e){} delete CH[k] })
+  if (trackerChannel) { try { sb.removeChannel(trackerChannel) } catch(e){} trackerChannel = null }
+
+  // Сброс формы логина — кнопка, поля, ошибки
+  const btn = g('btn-login')
+  if (btn) { btn.disabled = false; btn.textContent = 'Войти' }
+  const loginInp = g('login-login')
+  if (loginInp) loginInp.value = ''
+  const passInp = g('login-pass')
+  if (passInp) passInp.value = ''
+  const errBox = g('login-err')
+  if (errBox) { errBox.style.display = 'none'; errBox.textContent = '' }
+
+  // Показываем страницу логина
   showPage('page-login')
 }
 
@@ -11176,7 +11217,7 @@ async function loadActivityFeed() {
               ${evEmoji} <b>${item.stage.name}</b> — ${item.event}
               <span class="act-project-chip" style="background:${col}18;color:${col};">${item.proj.name}</span>
             </div>
-            ${item.note ? `<div class="act-meta">💬 ${item.note}</div>` : ''}
+            ${item.note ? `<div class="act-meta">💬 ${esc(item.note)}</div>` : ''}
             <div class="act-meta">${time}</div>
           </div>
           <button class="act-goto" onclick="openProject('${item.proj.id}')">Открыть →</button>
@@ -11609,8 +11650,8 @@ function renderProjectGrid() {
           <!-- Пилюля 2: имя + этапы-бар + дней с нами -->
           <div class="pcard-pill-info">
             <div>
-              <div class="pcard-name" style="font-size:15px;margin-bottom:2px;">${p.name}</div>
-              <div class="pcard-desc" style="font-size:10px;">${p.description || 'Нет описания'}</div>
+              <div class="pcard-name" style="font-size:15px;margin-bottom:2px;">${esc(p.name)}</div>
+              <div class="pcard-desc" style="font-size:10px;">${esc(p.description || 'Нет описания')}</div>
             </div>
             <div>
               <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
@@ -11662,7 +11703,7 @@ function renderProjectGrid() {
           </div>
         </div>
 
-        ${hasNote ? `<div class="pcard-note visible"><span class="pcard-note-text">💬 ${p.quick_note}</span><button class="pcard-note-del" title="Удалить комментарий" onclick="event.stopPropagation();clearQuickNote('${p.id}')">✕</button></div>` : ''}
+        ${hasNote ? `<div class="pcard-note visible"><span class="pcard-note-text">💬 ${esc(p.quick_note)}</span><button class="pcard-note-del" title="Удалить комментарий" onclick="event.stopPropagation();clearQuickNote('${p.id}')">✕</button></div>` : ''}
 
       </div>
 
@@ -11689,7 +11730,7 @@ function switchDashTab(tab, btn) {
   g('dtab-activity-panel').style.display = tab === 'activity' ? 'block' : 'none'
   g('dtab-overview-panel').style.display = tab === 'overview' ? 'block' : 'none'
   if (tab === 'activity') loadActivityFeed()
-  if (tab === 'overview') { loadOverview(); loadSMMLb(); }
+  if (tab === 'overview') { if (_allProjects.length) { loadOverview(); loadSMMLb(); } else { loadProjects().then(() => { loadOverview(); loadSMMLb(); }) } }
 }
 
 // Quick note modal
@@ -12063,7 +12104,7 @@ function processFile(file, key) {
       if (currentReport) {
         // Refresh session before saving
         const { data: { session } } = await sb.auth.getSession()
-        if (!session) { console.warn('No session - skipping save'); return }
+        if (!session) { console.warn('No session - skipping save'); updateCounter(); return }
         await sb.from('report_files').upsert({
           report_id: currentReport.id,
           template_type: templateType,
@@ -12840,7 +12881,7 @@ ${LABEL_D} (${dD} дн): выручка/день ${fmtM(Math.round(dRD))} | че
     if (!ANTHROPIC_KEY) throw new Error('API ключ не задан. Вставь свой Anthropic ключ в константу ANTHROPIC_KEY в файле.')
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type':'application/json', 'anthropic-dangerous-direct-browser-access':'true' },
+      headers: { 'Content-Type':'application/json', 'x-api-key': ANTHROPIC_KEY, 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
       body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:800, messages:[{role:'user',content:prompt}] })
     })
     if (!resp.ok) throw new Error('HTTP ' + resp.status)
@@ -12939,7 +12980,7 @@ function renderTracker() {
     }
 
     const noteHtml = rec.note
-      ? `<div class="tracker-note-text">💬 ${rec.note}</div>` : ''
+      ? `<div class="tracker-note-text">💬 ${esc(rec.note)}</div>` : ''
 
     const linkHtml = rec.link
       ? `<div style="margin-top:8px;">
@@ -13028,7 +13069,7 @@ function renderHistory(hist) {
             <span class="hist-stage-name">${stageIcon ? stageIcon + ' ' : ''}${stageName}</span>
             <span class="hist-badge" style="background:${meta.bg};color:${meta.col};border:1px solid ${meta.col}33;">${meta.label}</span>
           </div>
-          ${h.note ? `<div class="hist-note">${h.note}</div>` : ''}
+          ${h.note ? `<div class="hist-note">${esc(h.note)}</div>` : ''}
         </div>
       </div>`
     }).join('')
@@ -13582,7 +13623,7 @@ async function cpLoadTracker() {
   const total = 9
   const pct = Math.round((completed / total) * 100)
 
-  // Ring — r=65, circumference=408
+  // Ring — r=82, circumference≈515 (2*π*82)
   const circumference = 515
   const offset = circumference - (circumference * pct / 100)
   if (g('cp-ring-fill')) { g('cp-ring-fill').style.strokeDashoffset = offset; g('cp-ring-fill').style.strokeDasharray = 515; }
@@ -14313,6 +14354,7 @@ ${topRub?('Лучшая рубрика: "'+topRub.name+'", ER '+topRub.er+'%'):'
       method:'POST',headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:900,messages:[{role:'user',content:prompt}]})
     })
+    if(!resp.ok) throw new Error('HTTP ' + resp.status)
     const data=await resp.json()
     if(data.error) throw new Error(data.error.message)
     const text=data.content?.[0]?.text||''
@@ -14967,6 +15009,7 @@ async function saveProjectSettings() {
   // Update local cache for base fields
   const p = _allProjects.find(x => x.id === _psProjectId)
   if (p) { p.name = name; p.description = desc; p.category = category; p.brand_color = color }
+  if (btn) { btn.disabled = false; btn.textContent = 'Сохранить' }
 
   // Step 2: save photo separately (requires photo_url column)
   if (photoUrl) {
@@ -24881,7 +24924,7 @@ async function cpRenderActivityFeed(project) {
       : diff + ' дн. назад';
     return `<div class="cp-act-item">
       <div class="cp-act-dot" style="background:${col};box-shadow:0 0 6px ${col}66;"></div>
-      <div class="cp-act-text">Команда <b>${verb}</b> этап «${stageObj.name}»${h.note ? ` — ${h.note}` : ''}</div>
+      <div class="cp-act-text">Команда <b>${verb}</b> этап «${esc(stageObj.name)}»${h.note ? ` — ${esc(h.note)}` : ''}</div>
       <div class="cp-act-time">${timeStr}</div>
     </div>`;
   }).join('');
