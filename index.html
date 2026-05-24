@@ -8362,13 +8362,34 @@ canvas {
 
     <!-- Tab nav -->
     <div class="passport-nav" id="passport-nav">
-      <button class="passport-tab pt-active" onclick="switchPassportTab('basic',this)">🪪 Профиль</button>
-      <button class="passport-tab" onclick="switchPassportTab('brand',this)">🧠 Бренд</button>
-      <button class="passport-tab" onclick="switchPassportTab('audience',this)">🎯 Аудитория</button>
-      <button class="passport-tab" onclick="switchPassportTab('competitors',this)">📊 Конкуренты</button>
-      <button class="passport-tab" onclick="switchPassportTab('kpi',this)">🏆 KPI</button>
-      <button class="passport-tab" onclick="switchPassportTab('media',this)">📸 Медиа</button>
-      <button class="passport-tab" onclick="switchPassportTab('notes',this)">💬 Заметки</button>
+      <button class="passport-tab pt-active" onclick="switchPassportTab('basic',this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="13" y2="13"/></svg>
+        Профиль
+      </button>
+      <button class="passport-tab" onclick="switchPassportTab('brand',this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        Бренд
+      </button>
+      <button class="passport-tab" onclick="switchPassportTab('audience',this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Аудитория
+      </button>
+      <button class="passport-tab" onclick="switchPassportTab('competitors',this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Конкуренты
+      </button>
+      <button class="passport-tab" onclick="switchPassportTab('kpi',this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        KPI
+      </button>
+      <button class="passport-tab" onclick="switchPassportTab('media',this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Медиа
+      </button>
+      <button class="passport-tab" onclick="switchPassportTab('notes',this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Заметки
+      </button>
     </div>
 
     <!-- SECTION: Профиль -->
@@ -8376,7 +8397,7 @@ canvas {
       <div class="ps-card pc-basic">
         <div class="ps-card-head">
           <div class="ps-card-title">
-            <div class="ps-card-icon" style="background:rgba(91,95,199,.12);">🪪</div>
+            <div class="ps-card-icon" style="background:rgba(91,95,199,.12);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="13" y2="13"/></svg></div>
             Профиль заведения
           </div>
 
@@ -8425,7 +8446,7 @@ canvas {
       <div class="ps-card pc-brand">
         <div class="ps-card-head">
           <div class="ps-card-title">
-            <div class="ps-card-icon" style="background:rgba(192,132,252,.12);">🧠</div>
+            <div class="ps-card-icon" style="background:rgba(192,132,252,.12);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="1.8" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
             Профиль бренда
           </div>
 
@@ -8458,12 +8479,12 @@ canvas {
           <div style="margin-bottom:18px;">
             <div class="ps-view-label" style="margin-bottom:10px;">Тон голоса</div>
             <div class="tone-grid">
-              <button class="tone-btn" data-tone="Дружелюбный" onclick="selectTone(this)">😊 Дружелюбный</button>
-              <button class="tone-btn" data-tone="Профессиональный" onclick="selectTone(this)">💼 Профессиональный</button>
-              <button class="tone-btn" data-tone="Дерзкий" onclick="selectTone(this)">🔥 Дерзкий</button>
-              <button class="tone-btn" data-tone="Молодёжный" onclick="selectTone(this)">⚡ Молодёжный</button>
-              <button class="tone-btn" data-tone="Семейный" onclick="selectTone(this)">🏠 Семейный</button>
-              <button class="tone-btn" data-tone="Премиальный" onclick="selectTone(this)">✨ Премиальный</button>
+              <button class="tone-btn" data-tone="Дружелюбный" onclick="selectTone(this)">Дружелюбный</button>
+              <button class="tone-btn" data-tone="Профессиональный" onclick="selectTone(this)">Профессиональный</button>
+              <button class="tone-btn" data-tone="Дерзкий" onclick="selectTone(this)">Дерзкий</button>
+              <button class="tone-btn" data-tone="Молодёжный" onclick="selectTone(this)">Молодёжный</button>
+              <button class="tone-btn" data-tone="Семейный" onclick="selectTone(this)">Семейный</button>
+              <button class="tone-btn" data-tone="Премиальный" onclick="selectTone(this)">Премиальный</button>
             </div>
           </div>
           <div class="ps-grid">
@@ -8487,7 +8508,7 @@ canvas {
       <div class="ps-card pc-audience">
         <div class="ps-card-head">
           <div class="ps-card-title">
-            <div class="ps-card-icon" style="background:rgba(56,189,248,.12);">🎯</div>
+            <div class="ps-card-icon" style="background:rgba(56,189,248,.12);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
             Портреты аудитории
           </div>
           <button class="ps-edit-btn agency-only" onclick="openAddPersona()">
@@ -8496,7 +8517,7 @@ canvas {
           </button>
         </div>
         <div class="persona-list" id="persona-list">
-          <div class="ps-empty"><div class="ps-empty-icon">🎯</div><div class="ps-empty-text">Персонажи ещё не добавлены</div></div>
+          <div class="ps-empty"><div class="ps-empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".3"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div><div class="ps-empty-text">Персонажи ещё не добавлены</div></div>
         </div>
       </div>
     </div>
@@ -8506,7 +8527,7 @@ canvas {
       <div class="ps-card pc-comp">
         <div class="ps-card-head">
           <div class="ps-card-title">
-            <div class="ps-card-icon" style="background:rgba(245,158,11,.12);">📊</div>
+            <div class="ps-card-icon" style="background:rgba(245,158,11,.12);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
             Конкурентная карта
           </div>
           <button class="ps-edit-btn agency-only" onclick="openAddCompetitor()">
@@ -8515,7 +8536,7 @@ canvas {
           </button>
         </div>
         <div class="comp-list" id="comp-list">
-          <div class="ps-empty"><div class="ps-empty-icon">📊</div><div class="ps-empty-text">Конкуренты ещё не добавлены</div></div>
+          <div class="ps-empty"><div class="ps-empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".3"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><div class="ps-empty-text">Конкуренты ещё не добавлены</div></div>
         </div>
       </div>
     </div>
@@ -8525,7 +8546,7 @@ canvas {
       <div class="ps-card pc-kpi">
         <div class="ps-card-head">
           <div class="ps-card-title">
-            <div class="ps-card-icon" style="background:rgba(74,222,128,.12);">🏆</div>
+            <div class="ps-card-icon" style="background:rgba(74,222,128,.12);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
             Цели и KPI
           </div>
           <button class="ps-edit-btn agency-only" onclick="openAddKPI()">
@@ -8534,7 +8555,7 @@ canvas {
           </button>
         </div>
         <div class="kpi-passport-list" id="kpi-passport-list">
-          <div class="ps-empty" style="grid-column:1/-1;"><div class="ps-empty-icon">🏆</div><div class="ps-empty-text">Цели ещё не добавлены</div></div>
+          <div class="ps-empty" style="grid-column:1/-1;"><div class="ps-empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".3"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div><div class="ps-empty-text">Цели ещё не добавлены</div></div>
         </div>
       </div>
     </div>
@@ -8544,7 +8565,7 @@ canvas {
       <div class="ps-card pc-media">
         <div class="ps-card-head">
           <div class="ps-card-title">
-            <div class="ps-card-icon" style="background:rgba(248,113,113,.12);">📸</div>
+            <div class="ps-card-icon" style="background:rgba(248,113,113,.12);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
             Медиа-библиотека
           </div>
 
@@ -8596,7 +8617,7 @@ canvas {
       <div class="ps-card pc-notes">
         <div class="ps-card-head">
           <div class="ps-card-title">
-            <div class="ps-card-icon" style="background:rgba(136,136,136,.12);">💬</div>
+            <div class="ps-card-icon" style="background:rgba(136,136,136,.12);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.8" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
             Внутренние заметки
           </div>
           <button class="ps-edit-btn agency-only" onclick="openAddNote()">
@@ -8605,7 +8626,7 @@ canvas {
           </button>
         </div>
         <div class="note-list" id="note-list">
-          <div class="ps-empty"><div class="ps-empty-icon">💬</div><div class="ps-empty-text">Заметки появятся здесь</div></div>
+          <div class="ps-empty"><div class="ps-empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".3"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><div class="ps-empty-text">Заметки появятся здесь</div></div>
         </div>
       </div>
     </div>
@@ -8617,7 +8638,7 @@ canvas {
 <!-- MODAL: Добавить персонаж -->
 <div class="modal-overlay" id="modal-persona">
   <div class="modal" style="max-width:500px;">
-    <div class="modal-title">🎯 Добавить персонаж</div>
+    <div class="modal-title">Добавить персонаж</div>
     <div class="ps-grid">
       <div class="ps-field"><label>Имя персонажа</label><input type="text" id="pn-name" placeholder="Офисный Алишер"></div>
       <div class="ps-field"><label>Возраст</label><input type="text" id="pn-age" placeholder="28–35 лет"></div>
@@ -8636,7 +8657,7 @@ canvas {
 <!-- MODAL: Добавить конкурента -->
 <div class="modal-overlay" id="modal-competitor">
   <div class="modal" style="max-width:500px;">
-    <div class="modal-title">📊 Добавить конкурента</div>
+    <div class="modal-title">Добавить конкурента</div>
     <div class="ps-grid">
       <div class="ps-field"><label>Название</label><input type="text" id="co-name" placeholder="Doner House"></div>
       <div class="ps-field"><label>Instagram</label><input type="text" id="co-instagram" placeholder="@donerhouse_tash"></div>
@@ -8654,7 +8675,7 @@ canvas {
 <!-- MODAL: Добавить KPI -->
 <div class="modal-overlay" id="modal-kpi">
   <div class="modal" style="max-width:480px;">
-    <div class="modal-title">🏆 Добавить цель</div>
+    <div class="modal-title">Добавить цель</div>
     <div class="ps-grid">
       <div class="ps-field full"><label>Цель</label><input type="text" id="ki-goal" placeholder="Увеличить выручку на 20%"></div>
       <div class="ps-field"><label>Текущий показатель</label><input type="text" id="ki-current" placeholder="5 млн/мес"></div>
@@ -8672,7 +8693,7 @@ canvas {
 <!-- MODAL: Добавить заметку -->
 <div class="modal-overlay" id="modal-note">
   <div class="modal" style="max-width:480px;">
-    <div class="modal-title">💬 Добавить заметку</div>
+    <div class="modal-title">Добавить заметку</div>
     <div class="ps-field" style="margin-bottom:14px;"><label>Заметка</label><textarea id="nt-text" rows="4" style="background:var(--bg4);border:1px solid var(--brd);border-radius:var(--r-sm);padding:11px 14px;color:var(--txt);font-family:Manrope,sans-serif;font-size:13px;outline:none;resize:vertical;width:100%;" placeholder="Клиент просил не использовать тёмные фоны. Встреча 15 мая..."></textarea></div>
     <div class="modal-footer">
       <button class="btn-ghost" onclick="closeModal('modal-note')">Отмена</button>
@@ -12108,7 +12129,7 @@ function renderAudience() {
   const list = g('persona-list'); if (!list) return
   const personas = passportData.audience
   if (!personas.length) {
-    list.innerHTML = '<div class="ps-empty" style="grid-column:1/-1;"><div class="ps-empty-icon">🎯</div><div class="ps-empty-text">Персонажи ещё не добавлены</div></div>'; return
+    list.innerHTML = '<div class="ps-empty" style="grid-column:1/-1;"><div class="ps-empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".3"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div><div class="ps-empty-text">Персонажи ещё не добавлены</div></div>'; return
   }
   const hideBtn = _isClientCache
   list.innerHTML = personas.map((p, i) => `
@@ -12129,7 +12150,7 @@ function renderCompetitors() {
   const list = g('comp-list'); if (!list) return
   const comps = passportData.competitors
   if (!comps.length) {
-    list.innerHTML = '<div class="ps-empty"><div class="ps-empty-icon">📊</div><div class="ps-empty-text">Конкуренты ещё не добавлены</div></div>'; return
+    list.innerHTML = '<div class="ps-empty"><div class="ps-empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".3"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><div class="ps-empty-text">Конкуренты ещё не добавлены</div></div>'; return
   }
   const hideBtn = _isClientCache
   list.innerHTML = comps.map((c, i) => `
@@ -12157,7 +12178,7 @@ function renderKPI() {
   const list = g('kpi-passport-list'); if (!list) return
   const kpis = passportData.kpi
   if (!kpis.length) {
-    list.innerHTML = '<div class="ps-empty" style="grid-column:1/-1;"><div class="ps-empty-icon">🏆</div><div class="ps-empty-text">Цели ещё не добавлены</div></div>'; return
+    list.innerHTML = '<div class="ps-empty" style="grid-column:1/-1;"><div class="ps-empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".3"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div><div class="ps-empty-text">Цели ещё не добавлены</div></div>'; return
   }
   const hideBtn = _isClientCache
   list.innerHTML = kpis.map((k, i) => {
@@ -12198,7 +12219,7 @@ function renderNotes() {
   const list = g('note-list'); if (!list) return
   const notes = passportData.notes
   if (!notes.length) {
-    list.innerHTML = '<div class="ps-empty"><div class="ps-empty-icon">💬</div><div class="ps-empty-text">Заметки появятся здесь</div></div>'; return
+    list.innerHTML = '<div class="ps-empty"><div class="ps-empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".3"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><div class="ps-empty-text">Заметки появятся здесь</div></div>'; return
   }
   const hideBtn = _isClientCache
   list.innerHTML = notes.map((n, i) => {
@@ -20813,6 +20834,890 @@ function runNewBlocks() {
 
 /* dotPulse animation on title dot — kill it */
 .ov2-health-title-dot { animation: none !important; }
+</style>
+
+<!-- ═══════════════════════════════════════════════════════
+     DTR CLIENT PASSPORT · McKINSEY STRATEGIC BRIEF v2.0
+     "New PM opens → knows everything in 60 seconds"
+═══════════════════════════════════════════════════════ -->
+<style id="dtr-passport-mckinsey-v2">
+/* ═══════════════════════════════════════════════════════════════════
+   DTR CLIENT PASSPORT — McKINSEY STRATEGIC BRIEF v2.0
+   Philosophy: "New PM opens this → knows everything in 60 seconds"
+   Structure: Brief header → Tabbed deep-dives → Clean data entry
+   No decoration. Pure signal.
+═══════════════════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════
+   PAGE LAYOUT
+══════════════════════════════════════════════════════ */
+#page-passport .app-main {
+  padding: 32px 56px !important;
+  max-width: 1200px !important;
+}
+
+/* Back button */
+#page-passport .back-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 9px 16px !important;
+  min-height: 38px !important;
+  background: rgba(255,255,255,.04) !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  border-radius: 10px !important;
+  color: rgba(255,255,255,.4) !important;
+  font-family: var(--font-body,'Manrope',sans-serif) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all .18s !important;
+  margin-bottom: 28px !important;
+}
+#page-passport .back-btn:hover {
+  color: rgba(255,255,255,.75) !important;
+  border-color: rgba(255,255,255,.16) !important;
+  transform: translateX(-2px) !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   PROJECT BRIEF HERO — "60-second brief"
+   New PM reads this FIRST. Must answer:
+   Who? What? Where? Status? Contact?
+══════════════════════════════════════════════════════ */
+#page-passport .pp-hero {
+  background: #0d0d16 !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  border-radius: 20px !important;
+  padding: 28px 32px !important;
+  margin-bottom: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 28px !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+#page-passport .pp-hero::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0; left: 0; right: 0 !important;
+  height: 2px !important;
+  background: linear-gradient(90deg, transparent, rgba(129,140,248,.6), transparent) !important;
+}
+
+#pp-icon {
+  width: 60px !important;
+  height: 60px !important;
+  border-radius: 16px !important;
+  font-size: 26px !important;
+  font-weight: 800 !important;
+  flex-shrink: 0 !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,.4) !important;
+}
+
+/* Title area */
+#page-passport > .app-main > div:nth-child(2) {
+  margin-bottom: 0 !important;
+  flex: 1 !important;
+}
+
+#pp-title {
+  font-family: 'Sora', 'Manrope', sans-serif !important;
+  font-size: 32px !important;
+  font-weight: 800 !important;
+  letter-spacing: -.05em !important;
+  color: #f1f1f5 !important;
+  line-height: 1.1 !important;
+}
+
+/* "ПАСПОРТ КЛИЕНТА" label */
+[style*="Паспорт клиента"] {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important;
+  color: rgba(129,140,248,.55) !important;
+  letter-spacing: .22em !important;
+  text-transform: uppercase !important;
+  margin-bottom: 5px !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   TAB NAVIGATION — McKinsey chapter tabs
+   Clean numbered sections, no clutter
+══════════════════════════════════════════════════════ */
+.passport-nav {
+  display: flex !important;
+  gap: 2px !important;
+  flex-wrap: nowrap !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(255,255,255,.07) !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin-bottom: 32px !important;
+  position: sticky !important;
+  top: 60px !important;
+  z-index: 50 !important;
+  backdrop-filter: blur(32px) !important;
+  background: rgba(6,6,10,.95) !important;
+  box-shadow: none !important;
+}
+
+.passport-tab {
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  padding: 14px 20px !important;
+  min-height: 48px !important;
+  border-radius: 0 !important;
+  font-family: var(--font-body,'Manrope',sans-serif) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: rgba(255,255,255,.32) !important;
+  cursor: pointer !important;
+  transition: all .2s !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 2px solid transparent !important;
+  white-space: nowrap !important;
+  letter-spacing: -.01em !important;
+  position: relative !important;
+  bottom: -1px !important;
+}
+.passport-tab svg { opacity: .6 !important; transition: opacity .2s !important; }
+.passport-tab:hover {
+  color: rgba(255,255,255,.7) !important;
+  background: transparent !important;
+}
+.passport-tab:hover svg { opacity: .9 !important; }
+.passport-tab.pt-active {
+  color: #f1f1f5 !important;
+  border-bottom-color: #818cf8 !important;
+  font-weight: 600 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.passport-tab.pt-active svg {
+  opacity: 1 !important;
+  filter: drop-shadow(0 0 4px rgba(129,140,248,.5)) !important;
+}
+.passport-tab.pt-active svg * { stroke: #a5b4fc !important; }
+
+/* ══════════════════════════════════════════════════════
+   SECTION CARDS — Flat, document-style
+══════════════════════════════════════════════════════ */
+.passport-section {
+  display: none !important;
+  animation: fadeUp .35s cubic-bezier(.16,1,.3,1) both !important;
+}
+.passport-section.ps-active { display: block !important; }
+
+.ps-card {
+  background: #0d0d16 !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  border-radius: 16px !important;
+  padding: 0 !important;
+  margin-bottom: 16px !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transition: border-color .2s !important;
+  box-shadow: none !important;
+}
+.ps-card:hover {
+  border-color: rgba(255,255,255,.13) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Per-section accent — top border stripe */
+.ps-card::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0; left: 0; right: 0 !important;
+  height: 2px !important;
+  opacity: 1 !important;
+  transition: none !important;
+}
+.ps-card.pc-basic::before   { background: rgba(129,140,248,.5) !important; }
+.ps-card.pc-brand::before   { background: rgba(192,132,252,.5) !important; }
+.ps-card.pc-audience::before{ background: rgba(56,189,248,.5)  !important; }
+.ps-card.pc-comp::before    { background: rgba(245,158,11,.5)  !important; }
+.ps-card.pc-kpi::before     { background: rgba(74,222,128,.5)  !important; }
+.ps-card.pc-media::before   { background: rgba(248,113,113,.5) !important; }
+.ps-card.pc-notes::before   { background: rgba(160,160,160,.35)!important; }
+
+/* Card header — section title bar */
+.ps-card-head {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 20px 28px 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.ps-card-title {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  font-family: 'Sora', var(--font-display,'Manrope',sans-serif) !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.03em !important;
+  color: #f1f1f5 !important;
+}
+
+.ps-card-icon {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   FORM LAYOUT — Structured data entry
+   Groups: section divider → label → input
+══════════════════════════════════════════════════════ */
+
+/* View mode */
+#basic-view, #brand-view, #media-view {
+  padding: 24px 28px 28px !important;
+}
+
+.ps-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 0 !important;
+  border: 1px solid rgba(255,255,255,.06) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+.ps-grid > div {
+  padding: 16px 20px !important;
+  border-bottom: 1px solid rgba(255,255,255,.05) !important;
+  border-right: 1px solid rgba(255,255,255,.05) !important;
+  transition: background .15s !important;
+}
+.ps-grid > div:hover { background: rgba(255,255,255,.02) !important; }
+.ps-grid > div:nth-child(even) { border-right: none !important; }
+.ps-grid > div:nth-last-child(-n+2) { border-bottom: none !important; }
+
+.ps-grid-3 {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr 1fr !important;
+  gap: 0 !important;
+  border: 1px solid rgba(255,255,255,.06) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+.ps-grid-3 > div {
+  padding: 16px 20px !important;
+  border-bottom: 1px solid rgba(255,255,255,.05) !important;
+  border-right: 1px solid rgba(255,255,255,.05) !important;
+}
+.ps-grid-3 > div:nth-child(3n) { border-right: none !important; }
+
+/* Labels */
+.ps-view-label {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important;
+  color: rgba(255,255,255,.25) !important;
+  letter-spacing: .2em !important;
+  text-transform: uppercase !important;
+  margin-bottom: 6px !important;
+}
+
+/* Values */
+.ps-view-val {
+  font-family: var(--font-body,'Manrope',sans-serif) !important;
+  font-size: 14px !important;
+  color: rgba(255,255,255,.82) !important;
+  line-height: 1.6 !important;
+  font-weight: 400 !important;
+}
+.ps-view-val.empty {
+  color: rgba(255,255,255,.18) !important;
+  font-style: italic !important;
+  font-size: 13px !important;
+}
+
+.ps-view-link {
+  color: rgba(129,140,248,.8) !important;
+  text-decoration: none !important;
+  font-size: 14px !important;
+  transition: color .15s !important;
+}
+.ps-view-link:hover { color: #a5b4fc !important; }
+
+/* ── EDIT FORM ── */
+#basic-edit, #brand-edit, #media-edit {
+  padding: 24px 28px 28px !important;
+}
+
+/* Section divider inside edit */
+.ps-form-section {
+  margin-bottom: 28px !important;
+}
+.ps-form-section-title {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important;
+  color: rgba(255,255,255,.22) !important;
+  letter-spacing: .22em !important;
+  text-transform: uppercase !important;
+  padding-bottom: 12px !important;
+  border-bottom: 1px solid rgba(255,255,255,.05) !important;
+  margin-bottom: 18px !important;
+}
+
+/* Edit grid */
+#basic-edit .ps-grid,
+#brand-edit .ps-grid,
+#media-edit .ps-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 14px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+}
+#basic-edit .ps-grid > div,
+#brand-edit .ps-grid > div,
+#media-edit .ps-grid > div {
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+#basic-edit .ps-grid > div:hover,
+#brand-edit .ps-grid > div:hover,
+#media-edit .ps-grid > div:hover { background: transparent !important; }
+
+/* Field container */
+.ps-field {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+}
+
+/* Field label — WITH hint system */
+.ps-field label {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important;
+  color: rgba(255,255,255,.3) !important;
+  letter-spacing: .2em !important;
+  text-transform: uppercase !important;
+  padding: 0 0 8px !important;
+  display: block !important;
+}
+
+/* Input — clean, functional */
+.ps-field input,
+.ps-field textarea,
+.ps-field select {
+  background: rgba(255,255,255,.04) !important;
+  border: 1px solid rgba(255,255,255,.1) !important;
+  border-radius: 10px !important;
+  padding: 12px 16px !important;
+  color: #f1f1f5 !important;
+  font-family: var(--font-body,'Manrope',sans-serif) !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  outline: none !important;
+  transition: border-color .18s, background .18s !important;
+  resize: none !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  line-height: 1.5 !important;
+}
+.ps-field input:focus,
+.ps-field textarea:focus {
+  border-color: rgba(129,140,248,.5) !important;
+  background: rgba(91,95,199,.06) !important;
+  box-shadow: 0 0 0 3px rgba(91,95,199,.08) !important;
+}
+.ps-field input::placeholder,
+.ps-field textarea::placeholder {
+  color: rgba(255,255,255,.16) !important;
+  font-style: italic !important;
+}
+.ps-field.full { grid-column: 1 / -1 !important; }
+
+/* Textarea height */
+.ps-field textarea { min-height: 80px !important; }
+
+/* ── EDIT / SAVE BUTTONS ── */
+.ps-edit-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  padding: 9px 18px !important;
+  min-height: 38px !important;
+  background: transparent !important;
+  border: 1px solid rgba(255,255,255,.1) !important;
+  border-radius: 10px !important;
+  font-family: var(--font-body,'Manrope',sans-serif) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: rgba(255,255,255,.42) !important;
+  cursor: pointer !important;
+  transition: all .18s !important;
+}
+.ps-edit-btn:hover {
+  border-color: rgba(255,255,255,.2) !important;
+  color: rgba(255,255,255,.75) !important;
+  background: rgba(255,255,255,.04) !important;
+}
+
+.ps-save-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 12px 24px !important;
+  min-height: 44px !important;
+  background: rgba(91,95,199,.2) !important;
+  border: 1px solid rgba(129,140,248,.35) !important;
+  border-radius: 12px !important;
+  font-family: 'Sora', var(--font-display,'Manrope',sans-serif) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #c7d2fe !important;
+  cursor: pointer !important;
+  transition: all .2s cubic-bezier(.16,1,.3,1) !important;
+  letter-spacing: -.02em !important;
+}
+.ps-save-btn:hover {
+  background: rgba(91,95,199,.35) !important;
+  border-color: rgba(129,140,248,.6) !important;
+  color: #e0e7ff !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 16px rgba(91,95,199,.3) !important;
+}
+
+/* Save row */
+.ps-save-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-top: 24px !important;
+  padding-top: 20px !important;
+  border-top: 1px solid rgba(255,255,255,.05) !important;
+}
+.ps-save-hint {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  color: rgba(255,255,255,.2) !important;
+  letter-spacing: .06em !important;
+}
+
+/* ── ADD BUTTON ── */
+.ps-add-btn {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  padding: 14px 20px !important;
+  min-height: 50px !important;
+  background: rgba(255,255,255,.025) !important;
+  border: 1px dashed rgba(255,255,255,.1) !important;
+  border-radius: 12px !important;
+  color: rgba(255,255,255,.28) !important;
+  font-family: var(--font-body,'Manrope',sans-serif) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all .2s !important;
+  justify-content: center !important;
+  margin-top: 14px !important;
+}
+.ps-add-btn:hover {
+  border-color: rgba(129,140,248,.4) !important;
+  color: rgba(129,140,248,.8) !important;
+  background: rgba(91,95,199,.05) !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   TAGS — Brand voice, keywords
+══════════════════════════════════════════════════════ */
+.ps-tag-list {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  margin-top: 6px !important;
+}
+.ps-tag {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  padding: 4px 12px !important;
+  border-radius: 6px !important;
+  background: rgba(255,255,255,.05) !important;
+  color: rgba(255,255,255,.55) !important;
+  border: 1px solid rgba(255,255,255,.09) !important;
+  letter-spacing: .03em !important;
+}
+.ps-tag.ps-tag-danger {
+  background: rgba(248,113,113,.08) !important;
+  color: rgba(248,113,113,.8) !important;
+  border-color: rgba(248,113,113,.18) !important;
+}
+.ps-tag.ps-tag-key {
+  background: rgba(91,95,199,.1) !important;
+  color: rgba(129,140,248,.85) !important;
+  border-color: rgba(129,140,248,.2) !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   TONE BUTTONS — Brand voice selector
+══════════════════════════════════════════════════════ */
+.tone-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 8px !important;
+}
+.tone-btn {
+  padding: 11px 12px !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  border-radius: 10px !important;
+  background: rgba(255,255,255,.03) !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  transition: all .18s !important;
+  font-family: var(--font-body,'Manrope',sans-serif) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: rgba(255,255,255,.42) !important;
+  letter-spacing: -.01em !important;
+}
+.tone-btn:hover {
+  border-color: rgba(255,255,255,.18) !important;
+  color: rgba(255,255,255,.75) !important;
+  background: rgba(255,255,255,.055) !important;
+}
+.tone-btn.tb-active {
+  border-color: rgba(129,140,248,.4) !important;
+  background: rgba(91,95,199,.14) !important;
+  color: #c7d2fe !important;
+  font-weight: 600 !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   PERSONA CARDS — Audience profiles
+══════════════════════════════════════════════════════ */
+.persona-list {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 12px !important;
+  padding: 24px 28px !important;
+}
+.persona-card {
+  background: rgba(255,255,255,.03) !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  border-radius: 14px !important;
+  padding: 20px !important;
+  transition: border-color .2s !important;
+}
+.persona-card:hover {
+  border-color: rgba(56,189,248,.25) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+.persona-avatar {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 20px !important;
+  background: rgba(255,255,255,.05) !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  margin-bottom: 12px !important;
+}
+.persona-name {
+  font-family: 'Sora', var(--font-display,'Manrope',sans-serif) !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.03em !important;
+  color: #f1f1f5 !important;
+  margin-bottom: 3px !important;
+}
+.persona-age {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  color: rgba(56,189,248,.65) !important;
+  margin-bottom: 14px !important;
+  letter-spacing: .04em !important;
+}
+.persona-item {
+  font-size: 12px !important;
+  color: rgba(255,255,255,.5) !important;
+  line-height: 1.65 !important;
+  margin-bottom: 5px !important;
+}
+.persona-del-btn {
+  position: absolute !important;
+  top: 12px !important; right: 12px !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  color: rgba(255,255,255,.15) !important;
+  padding: 4px !important;
+  border-radius: 6px !important;
+  transition: all .15s !important;
+}
+.persona-del-btn:hover {
+  color: rgba(248,113,113,.7) !important;
+  background: rgba(248,113,113,.07) !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   COMPETITOR CARDS — Competitive intelligence
+══════════════════════════════════════════════════════ */
+.comp-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+  padding: 0 !important;
+}
+.comp-card {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(255,255,255,.05) !important;
+  border-radius: 0 !important;
+  padding: 18px 28px !important;
+  display: grid !important;
+  grid-template-columns: 2fr 1fr 1fr auto !important;
+  gap: 20px !important;
+  align-items: start !important;
+  transition: background .15s !important;
+}
+.comp-card:first-child { border-top: 1px solid rgba(255,255,255,.05) !important; margin-top: 8px !important; }
+.comp-card:last-child { border-bottom: none !important; margin-bottom: 8px !important; }
+.comp-card:hover { background: rgba(255,255,255,.025) !important; }
+
+.comp-name {
+  font-family: 'Sora', var(--font-display,'Manrope',sans-serif) !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.025em !important;
+  color: #f1f1f5 !important;
+  margin-bottom: 3px !important;
+}
+.comp-link {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  color: rgba(129,140,248,.6) !important;
+  text-decoration: none !important;
+}
+.comp-label {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important;
+  color: rgba(255,255,255,.22) !important;
+  letter-spacing: .16em !important;
+  text-transform: uppercase !important;
+  margin-bottom: 5px !important;
+}
+.comp-strong {
+  font-size: 12px !important;
+  color: rgba(52,211,153,.75) !important;
+  line-height: 1.6 !important;
+}
+.comp-weak {
+  font-size: 12px !important;
+  color: rgba(248,113,113,.75) !important;
+  line-height: 1.6 !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   KPI CARDS — Goals & targets
+══════════════════════════════════════════════════════ */
+.kpi-passport-list {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 12px !important;
+  padding: 24px 28px !important;
+}
+.kpi-passport-card {
+  background: rgba(255,255,255,.03) !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  border-left: 3px solid rgba(52,211,153,.4) !important;
+  border-radius: 12px !important;
+  padding: 18px 20px !important;
+  transition: border-color .2s !important;
+}
+.kpi-passport-card::before { display: none !important; }
+.kpi-passport-card:hover {
+  border-color: rgba(52,211,153,.35) !important;
+  border-left-color: rgba(52,211,153,.7) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+.kpi-goal {
+  font-family: 'Sora', var(--font-display,'Manrope',sans-serif) !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.025em !important;
+  color: #f1f1f5 !important;
+  margin-bottom: 10px !important;
+  line-height: 1.4 !important;
+}
+.kpi-deadline-tag {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  padding: 3px 10px !important;
+  border-radius: 6px !important;
+  background: rgba(52,211,153,.08) !important;
+  color: rgba(52,211,153,.7) !important;
+  border: 1px solid rgba(52,211,153,.15) !important;
+  margin-bottom: 14px !important;
+  display: inline-block !important;
+}
+.kpi-vals { display: flex !important; gap: 24px !important; }
+.kpi-val-num {
+  font-family: 'Sora', 'Space Grotesk', sans-serif !important;
+  font-size: 20px !important;
+  font-weight: 800 !important;
+  letter-spacing: -.04em !important;
+  color: #f1f1f5 !important;
+  font-variant-numeric: tabular-nums !important;
+}
+.kpi-val-lbl {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important;
+  color: rgba(255,255,255,.25) !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+  margin-top: 3px !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   NOTES TIMELINE — Internal working notes
+══════════════════════════════════════════════════════ */
+.note-list {
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 20px 28px !important;
+}
+.note-item {
+  display: flex !important;
+  gap: 16px !important;
+  padding: 14px 0 !important;
+  border-bottom: 1px solid rgba(255,255,255,.05) !important;
+  transition: padding-left .15s !important;
+}
+.note-item:last-child { border-bottom: none !important; }
+.note-item:hover { padding-left: 4px !important; }
+.note-dot { width: 8px !important; height: 8px !important; border-radius: 50% !important; background: rgba(129,140,248,.5) !important; flex-shrink: 0 !important; }
+.note-line { width: 1px !important; flex: 1 !important; background: rgba(255,255,255,.05) !important; margin: 5px 0 !important; min-height: 16px !important; }
+.note-author { font-family: 'JetBrains Mono', monospace !important; font-size: 10px !important; color: rgba(129,140,248,.6) !important; margin-bottom: 5px !important; }
+.note-text { font-size: 13px !important; color: rgba(255,255,255,.6) !important; line-height: 1.7 !important; white-space: pre-wrap !important; }
+.note-date { font-family: 'JetBrains Mono', monospace !important; font-size: 10px !important; color: rgba(255,255,255,.2) !important; margin-top: 6px !important; }
+
+/* ══════════════════════════════════════════════════════
+   SOCIAL CHIPS
+══════════════════════════════════════════════════════ */
+.social-chip {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 6px 14px !important;
+  border-radius: 8px !important;
+  background: rgba(255,255,255,.05) !important;
+  border: 1px solid rgba(255,255,255,.09) !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 11px !important;
+  color: rgba(255,255,255,.55) !important;
+  text-decoration: none !important;
+  transition: all .15s !important;
+}
+.social-chip:hover {
+  border-color: rgba(255,255,255,.18) !important;
+  color: rgba(255,255,255,.82) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Color swatches */
+.color-swatch {
+  width: 32px !important; height: 32px !important;
+  border-radius: 8px !important;
+  border: 2px solid rgba(255,255,255,.12) !important;
+  cursor: pointer !important;
+  transition: transform .18s, border-color .18s !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,.3) !important;
+}
+.color-swatch:hover {
+  transform: scale(1.15) !important;
+  border-color: rgba(255,255,255,.35) !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   EMPTY STATE — Minimal, functional
+══════════════════════════════════════════════════════ */
+.ps-empty {
+  text-align: center !important;
+  padding: 48px 24px !important;
+  grid-column: 1 / -1 !important;
+}
+.ps-empty-icon {
+  margin-bottom: 14px !important;
+  display: flex !important;
+  justify-content: center !important;
+  opacity: .25 !important;
+}
+.ps-empty-text {
+  font-family: var(--font-body,'Manrope',sans-serif) !important;
+  font-size: 13px !important;
+  color: rgba(255,255,255,.25) !important;
+  font-weight: 400 !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   MODALS — Clean forms
+══════════════════════════════════════════════════════ */
+.modal {
+  background: #0d0d18 !important;
+  border: 1px solid rgba(129,140,248,.2) !important;
+  border-radius: 20px !important;
+  padding: 32px !important;
+  box-shadow: 0 40px 80px rgba(0,0,0,.7) !important;
+}
+.modal-title {
+  font-family: 'Sora', var(--font-display,'Manrope',sans-serif) !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.04em !important;
+  color: #f1f1f5 !important;
+  margin-bottom: 24px !important;
+}
+.modal .ps-grid {
+  border: none !important;
+  border-radius: 0 !important;
+  gap: 14px !important;
+}
+.modal .ps-grid > div {
+  padding: 0 !important;
+  border: none !important;
+}
+.modal-footer {
+  display: flex !important;
+  gap: 10px !important;
+  margin-top: 24px !important;
+  padding-top: 20px !important;
+  border-top: 1px solid rgba(255,255,255,.06) !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════════ */
+@media (max-width: 960px) {
+  #page-passport .app-main { padding: 24px 24px !important; }
+  .ps-grid { grid-template-columns: 1fr !important; }
+  .ps-grid > div:nth-child(even) { border-right: 1px solid rgba(255,255,255,.05) !important; }
+  .passport-tab { padding: 12px 14px !important; font-size: 12px !important; }
+  .comp-card { grid-template-columns: 1fr !important; }
+  .kpi-passport-list, .persona-list { grid-template-columns: 1fr !important; }
+  .tone-grid { grid-template-columns: repeat(2,1fr) !important; }
+}
+
 </style>
 </body>
 </html>
