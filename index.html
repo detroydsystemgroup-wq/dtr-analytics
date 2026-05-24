@@ -8153,6 +8153,91 @@ input, select, textarea {
         </div>
       </div>
 
+<!-- ① ТРЕНД-ЛИНИЯ 7 ДНЕЙ + ЛУЧШИЙ/ХУДШИЙ ДЕНЬ (из b1/d1) -->
+<div id="sec-trend" style="display:none;">
+  <div class="sh"><div class="sh-num">📈</div><div class="sh-title">Тренд и аномалии</div><div class="sh-line"></div></div>
+  <div class="two">
+    <div class="cb">
+      <div class="cb-title">Скользящее среднее 7 дней</div>
+      <div class="cb-sub" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt2);margin-bottom:10px;">// сглаживает дни-выбросы, показывает реальный тренд</div>
+      <div style="position:relative;height:220px"><canvas id="cTrend"></canvas></div>
+    </div>
+    <div class="cb">
+      <div class="cb-title">Рекорды периода</div>
+      <div id="trend-records" style="display:flex;flex-direction:column;gap:10px;margin-top:6px;"></div>
+    </div>
+  </div>
+  <div class="cb" style="margin-top:14px;">
+    <div class="cb-title">% дней выше среднего базового периода</div>
+    <div id="trend-above-base" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:10px;"></div>
+  </div>
+</div>
+
+<!-- ② КПД ЧАСА — выручка/чек (самый "дорогой" час) из b2/d2 -->
+<div id="sec-hour-kpd" style="display:none;">
+  <div class="sh"><div class="sh-num">💸</div><div class="sh-title">КПД часа — средний чек по часу</div><div class="sh-line"></div></div>
+  <div class="cb">
+    <div class="cb-title">Средний чек по каждому часу</div>
+    <div class="cb-sub" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt2);margin-bottom:10px;">// самые "дорогие" часы — когда гости тратят больше за визит</div>
+    <div style="position:relative;height:220px"><canvas id="cHourAvg"></canvas></div>
+  </div>
+  <div id="hour-kpd-top" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px;"></div>
+</div>
+
+<!-- ③ СМЕЩЕНИЕ ПИКА ТРАФИКА (из b2/d2) -->
+<div id="sec-peak-shift" style="display:none;">
+  <div class="sh"><div class="sh-num">⏱️</div><div class="sh-title">Смещение пика трафика</div><div class="sh-line"></div></div>
+  <div id="peak-shift-inner" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;"></div>
+</div>
+
+<!-- ④ РОТАЦИЯ ПОЗИЦИЙ МЕНЮ (из b3/d3) -->
+<div id="sec-menu-rotation" style="display:none;">
+  <div class="sh"><div class="sh-num">🔄</div><div class="sh-title">Ротация меню между периодами</div><div class="sh-line"></div></div>
+  <div class="two">
+    <div class="cb">
+      <div class="cb-title" style="color:var(--green);">⭐ Новые лидеры</div>
+      <div class="cb-sub" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt2);margin-bottom:10px;">// не были в топ-10 базового, вошли в топ-10 таргета</div>
+      <div id="menu-new-leaders"></div>
+    </div>
+    <div class="cb">
+      <div class="cb-title" style="color:var(--red);">📉 Выпавшие позиции</div>
+      <div class="cb-sub" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt2);margin-bottom:10px;">// были в топ-10 базового, выпали из топ-10 таргета</div>
+      <div id="menu-dropped"></div>
+    </div>
+  </div>
+  <div class="cb" style="margin-top:14px;">
+    <div class="cb-title">Изменение позиции в рейтинге (топ-15 по выручке)</div>
+    <div id="menu-rank-change" style="display:flex;flex-direction:column;gap:6px;margin-top:10px;"></div>
+  </div>
+</div>
+
+<!-- ⑤ ДОХОДНОСТЬ КАНАЛА (из b4/d4) -->
+<div id="sec-channel-revenue" style="display:none;">
+  <div class="sh"><div class="sh-num">📊</div><div class="sh-title">Доходность канала продаж</div><div class="sh-line"></div></div>
+  <div class="cb">
+    <div class="cb-title">Выручка по каналу — <span id="lbl-ch-d">Период 2</span></div>
+    <div style="position:relative;height:200px"><canvas id="cChannelRev"></canvas></div>
+  </div>
+  <div id="channel-revenue-cards" style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:14px;"></div>
+</div>
+
+<!-- ⑥ ДОСТАВКА ПО ВРЕМЕНИ СУТОК (из b4/d4) -->
+<div id="sec-delivery-time" style="display:none;">
+  <div class="sh"><div class="sh-num">🌙</div><div class="sh-title">Доставка по времени суток</div><div class="sh-line"></div></div>
+  <div class="cb">
+    <div class="cb-title">Когда работает каждый канал — <span id="lbl-del-d">Период 2</span></div>
+    <div class="cb-sub" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt2);margin-bottom:10px;">// часы пиковой нагрузки по каждому типу заказа</div>
+    <div id="delivery-time-segs" style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:10px;"></div>
+  </div>
+</div>
+
+<!-- ⑦ ВКЛАД ФИЛИАЛА В ОБЩИЙ РОСТ (из b5/d5) -->
+<div id="sec-branch-contrib" style="display:none;">
+  <div class="sh"><div class="sh-num">🎯</div><div class="sh-title">Вклад филиалов в общий результат</div><div class="sh-line"></div></div>
+  <div id="branch-contrib-inner" style="display:flex;flex-direction:column;gap:8px;"></div>
+</div>
+
+
       <!-- INSIGHTS -->
       <div class="sh"><div class="sh-num">★</div><div class="sh-title">Ключевые выводы</div><div class="sh-line"></div></div>
       <div id="ins-block"></div>
@@ -10276,6 +10361,8 @@ function runAnalysis() {
 
   // Always render weekday trend (b1/d1 always available)
   renderWeekdayTrend()
+  // Run new analytical blocks
+  runNewBlocks()
   g('analytics-wrap').classList.add('visible')
   // Auto-collapse files section after analysis runs
   collapseFilesSection(true)
@@ -16803,6 +16890,433 @@ function rpSMMMetric(label, val, col, bg) {
     + '<div class="rp-metric-lbl">' + label + '</div>'
     + '<div class="rp-metric-val" style="color:' + col + ';">' + val + '</div>'
     + '</div>';
+}
+</script>
+
+<script id="dtr-new-blocks-js">
+// ════════════════════════════════════════════════════════════════
+// НОВЫЕ АНАЛИТИЧЕСКИЕ БЛОКИ — v28+
+// Все формулы проверены:
+//   Средний чек = totalRev / totalChk  (сумма/количество чеков)
+//   Рост % = (D - B) / B * 100
+//   Выручка/день = totalRev / days
+//   Чеков/день = totalChk / days
+// ════════════════════════════════════════════════════════════════
+
+function runNewBlocks() {
+  const b1 = S['b1'], d1 = S['d1'];
+  const b2 = S['b2'], d2 = S['d2'];
+  const b3 = S['b3'], d3 = S['d3'];
+  const b4 = S['b4'], d4 = S['d4'];
+  const b5 = S['b5'], d5 = S['d5'];
+  const fmt = v => new Intl.NumberFormat('ru-RU').format(Math.round(v));
+  const fmtM = v => { if(Math.abs(v)>=1e9) return (v/1e9).toFixed(2)+' млрд'; if(Math.abs(v)>=1e6) return (v/1e6).toFixed(2)+' млн'; return fmt(v); };
+
+  // ─────────────────────────────────────────────────────────
+  // ① ТРЕНД + РЕКОРДЫ + % ДНЕЙ ВЫШЕ БАЗЫ (b1/d1)
+  // ─────────────────────────────────────────────────────────
+  if (b1 && d1) {
+    var el = document.getElementById('sec-trend');
+    if (el) el.style.display = 'block';
+
+    // Скользящее среднее 7 дней
+    var ma7 = function(arr, w) {
+      return arr.map(function(_, i) {
+        var from = Math.max(0, i - Math.floor(w/2));
+        var to = Math.min(arr.length - 1, i + Math.floor(w/2));
+        var sum = 0; for (var j = from; j <= to; j++) sum += arr[j]; return +(sum/(to-from+1)/1e6).toFixed(2);
+      });
+    };
+    var bRevArr = b1.rows.map(function(r){ return r.rev; });
+    var dRevArr = d1.rows.map(function(r){ return r.rev; });
+    var bMA = ma7(bRevArr, 7), dMA = ma7(dRevArr, 7);
+    var bLbl = b1.rows.map(function(r,i){ return i+1; });
+    var dLbl = d1.rows.map(function(r,i){ return i+1; });
+    var maxLen = Math.max(bLbl.length, dLbl.length);
+    var labels = Array.from({length:maxLen}, function(_,i){ return i+1; });
+
+    if (typeof mkChart === 'function') {
+      mkChart('cTrend','line',{labels:labels,datasets:[
+        {label:LABEL_B+' (MA7)', data:bMA, borderColor:'#5a576e', backgroundColor:'transparent', borderWidth:2, pointRadius:0, tension:.4, borderDash:[4,3]},
+        {label:LABEL_D+' (MA7)', data:dMA, borderColor:'#5b3ef5', backgroundColor:'rgba(91,62,245,.08)', borderWidth:2.5, pointRadius:0, tension:.4, fill:true},
+      ]},{plugins:{legend:{labels:{color:'#9490b8',font:{size:11,family:'monospace'}}},tooltip:{mode:'index',intersect:false,callbacks:{label:function(c){ return c.dataset.label+': '+c.parsed.y.toFixed(2)+' млн сум'; }}}},scales:{x:{ticks:{color:'#5a577a',font:{size:9}},grid:{display:false}},y:{ticks:{color:'#5a577a',callback:function(v){return v+'M'}},grid:{color:'rgba(91,62,245,.07)'},border:{display:false}}}});
+    }
+
+    // Рекорды: лучший/худший день по каждому периоду
+    var bestB = b1.rows.reduce(function(m,r){ return r.rev>m.rev?r:m; }, b1.rows[0]);
+    var worstB = b1.rows.reduce(function(m,r){ return r.rev<m.rev?r:m; }, b1.rows[0]);
+    var bestD = d1.rows.reduce(function(m,r){ return r.rev>m.rev?r:m; }, d1.rows[0]);
+    var worstD = d1.rows.reduce(function(m,r){ return r.rev<m.rev?r:m; }, d1.rows[0]);
+    var rEl = document.getElementById('trend-records');
+    if (rEl) rEl.innerHTML = [
+      {ico:'🏆',lbl:'Лучший день — '+LABEL_B,date:bestB.label,val:bestB.rev,col:'#00e5a3'},
+      {ico:'📉',lbl:'Худший день — '+LABEL_B,date:worstB.label,val:worstB.rev,col:'#f87171'},
+      {ico:'🏆',lbl:'Лучший день — '+LABEL_D,date:bestD.label,val:bestD.rev,col:'#5b3ef5'},
+      {ico:'📉',lbl:'Худший день — '+LABEL_D,date:worstD.label,val:worstD.rev,col:'#f040c0'},
+    ].map(function(x){ return '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg3);border:1px solid var(--brd);border-radius:12px;border-left:3px solid '+x.col+';">'
+      +'<span style="font-size:20px;">'+x.ico+'</span>'
+      +'<div style="flex:1;min-width:0;">'
+      +'<div style="font-size:10px;color:var(--txt2);font-family:\'JetBrains Mono\',monospace;margin-bottom:3px;">'+x.lbl+'</div>'
+      +'<div style="font-size:11px;color:var(--txt3);font-family:\'JetBrains Mono\',monospace;margin-bottom:4px;">'+x.date+'</div>'
+      +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:'+x.col+';">'+fmtM(x.val)+' сум</div>'
+      +'</div></div>';
+    }).join('');
+
+    // % дней выше среднего базового периода
+    // База: средняя выручка/день в b1
+    var bAvgDay = b1.meta.totalRev / (b1.meta.days || b1.rows.length);
+    var bAbove = b1.rows.filter(function(r){ return r.rev > bAvgDay; }).length;
+    var dAbove = d1.rows.filter(function(r){ return r.rev > bAvgDay; }).length;
+    var bPctAbove = b1.rows.length ? Math.round(bAbove / b1.rows.length * 100) : 0;
+    var dPctAbove = d1.rows.length ? Math.round(dAbove / d1.rows.length * 100) : 0;
+    var abEl = document.getElementById('trend-above-base');
+    if (abEl) abEl.innerHTML = [
+      {lbl:LABEL_B, above:bAbove, total:b1.rows.length, pct:bPctAbove, col:'#5a576e'},
+      {lbl:LABEL_D, above:dAbove, total:d1.rows.length, pct:dPctAbove, col:'#5b3ef5'},
+    ].map(function(x){ return '<div style="background:var(--bg3);border:1px solid var(--brd);border-radius:14px;padding:20px;position:relative;overflow:hidden;">'
+      +'<div style="position:absolute;top:0;left:0;right:0;height:2px;background:'+x.col+';"></div>'
+      +'<div style="font-size:10px;color:var(--txt2);font-family:\'JetBrains Mono\',monospace;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">'+x.lbl+'</div>'
+      +'<div style="display:flex;align-items:baseline;gap:6px;margin-bottom:6px;">'
+      +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:52px;line-height:1;color:'+x.col+';">'+x.pct+'%</div>'
+      +'<div style="font-size:11px;color:var(--txt2);font-family:\'JetBrains Mono\',monospace;">дней выше базы</div>'
+      +'</div>'
+      +'<div style="font-size:11px;color:var(--txt3);font-family:\'JetBrains Mono\',monospace;margin-bottom:10px;">'+x.above+' из '+x.total+' дней &gt; '+fmtM(bAvgDay)+' сум/день</div>'
+      +'<div style="height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;">'
+      +'<div style="height:100%;width:'+x.pct+'%;background:'+x.col+';border-radius:3px;transition:width 1.2s ease;"></div></div>'
+      +'</div>';
+    }).join('');
+  }
+
+  // ─────────────────────────────────────────────────────────
+  // ② КПД ЧАСА — средний чек по часу (b2/d2)
+  // Формула: avg_check_hour = sum(rev_hour) / sum(chk_hour)
+  // ─────────────────────────────────────────────────────────
+  if (b2 || d2) {
+    var kpdEl = document.getElementById('sec-hour-kpd');
+    if (kpdEl) kpdEl.style.display = 'block';
+    var aggH = function(src) {
+      var m = {};
+      src.rows.forEach(function(r){ if(!m[r.label])m[r.label]={rev:0,chk:0}; m[r.label].rev+=r.rev; m[r.label].chk+=r.chk; });
+      return m;
+    };
+    var srcKPD = d2 || b2;
+    var aggKPD = aggH(srcKPD);
+    var hrsKPD = Object.keys(aggKPD).sort(function(a,b){ return parseInt(a)-parseInt(b); });
+    // avg = rev/chk — только если chk>0 (иначе 0, не показываем)
+    var avgVals = hrsKPD.map(function(h){ var v=aggKPD[h]; return v.chk>0?Math.round(v.rev/v.chk):0; });
+    if (typeof mkChart === 'function') {
+      mkChart('cHourAvg','bar',{labels:hrsKPD.map(function(h){ return h+':00'; }),datasets:[{
+        data:avgVals,
+        backgroundColor:hrsKPD.map(function(h){ var n=parseInt(h); return n>=6&&n<=11?'rgba(255,182,39,.7)':n>=12&&n<=16?'rgba(91,62,245,.7)':n>=17&&n<=22?'rgba(0,229,163,.7)':'rgba(136,135,128,.5)'; }),
+        borderRadius:4
+      }]},{plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){ return 'Ср. чек: '+new Intl.NumberFormat('ru-RU').format(c.parsed.y)+' сум'; }}}},scales:{x:{ticks:{color:'#5a577a',font:{size:9}},grid:{display:false}},y:{ticks:{color:'#5a577a',callback:function(v){ return new Intl.NumberFormat('ru-RU').format(v); }},grid:{color:'rgba(91,62,245,.07)'},border:{display:false}}}});
+    }
+    // Топ-3 самых "дорогих" часа
+    var topHours = hrsKPD
+      .map(function(h){ return {h:h, avg:aggKPD[h].chk>0?Math.round(aggKPD[h].rev/aggKPD[h].chk):0, chk:aggKPD[h].chk, rev:aggKPD[h].rev}; })
+      .filter(function(x){ return x.chk>0; })
+      .sort(function(a,b){ return b.avg-a.avg; }).slice(0,3);
+    var topEl = document.getElementById('hour-kpd-top');
+    var medals = ['🥇','🥈','🥉'];
+    if (topEl) topEl.innerHTML = topHours.map(function(x,i){ return '<div style="background:var(--bg3);border:1px solid var(--brd);border-radius:14px;padding:18px;text-align:center;">'
+      +'<div style="font-size:24px;margin-bottom:8px;">'+medals[i]+'</div>'
+      +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:36px;color:var(--amber);">'+x.h+':00</div>'
+      +'<div style="font-size:10px;color:var(--txt2);font-family:\'JetBrains Mono\',monospace;margin-top:4px;margin-bottom:10px;">самый дорогой час</div>'
+      +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:var(--txt);">'+fmt(x.avg)+' сум</div>'
+      +'<div style="font-size:10px;color:var(--txt3);font-family:\'JetBrains Mono\',monospace;margin-top:3px;">средний чек · '+fmt(x.chk)+' чеков</div>'
+      +'</div>';
+    }).join('');
+  }
+
+  // ─────────────────────────────────────────────────────────
+  // ③ СМЕЩЕНИЕ ПИКА ТРАФИКА (b2/d2)
+  // Пик = час с max(chk). Смещение = peak_D - peak_B (в часах)
+  // ─────────────────────────────────────────────────────────
+  if (b2 && d2) {
+    var psEl = document.getElementById('sec-peak-shift');
+    if (psEl) psEl.style.display = 'block';
+    var aggPS = function(src) {
+      var m = {}; src.rows.forEach(function(r){ if(!m[r.label])m[r.label]={rev:0,chk:0}; m[r.label].rev+=r.rev; m[r.label].chk+=r.chk; }); return m;
+    };
+    var mbPS = aggPS(b2), mdPS = aggPS(d2);
+    var peakByChk = function(m) { return Object.entries(m).reduce(function(best,e){ return e[1].chk>best[1].chk?e:best; }, Object.entries(m)[0]); };
+    var peakByRev = function(m) { return Object.entries(m).reduce(function(best,e){ return e[1].rev>best[1].rev?e:best; }, Object.entries(m)[0]); };
+    var pbB = peakByChk(mbPS), pbD = peakByChk(mdPS);
+    var prB = peakByRev(mbPS), prD = peakByRev(mdPS);
+    var shiftChk = parseInt(pbD[0]) - parseInt(pbB[0]);
+    var shiftRev = parseInt(prD[0]) - parseInt(prB[0]);
+    var psInner = document.getElementById('peak-shift-inner');
+    if (psInner) psInner.innerHTML = [
+      {icon:'👥',title:'Пик трафика (чеки)',
+        bHour:pbB[0]+':00', bVal:fmt(pbB[1].chk)+' чеков',
+        dHour:pbD[0]+':00', dVal:fmt(pbD[1].chk)+' чеков',
+        shift:shiftChk, col:'#5b3ef5'},
+      {icon:'💰',title:'Пик выручки',
+        bHour:prB[0]+':00', bVal:fmtM(prB[1].rev)+' сум',
+        dHour:prD[0]+':00', dVal:fmtM(prD[1].rev)+' сум',
+        shift:shiftRev, col:'#00e5a3'},
+      {icon:'📊',title:'Вывод',
+        bHour:'', bVal:'',
+        dHour:'', dVal:'',
+        shift:null, col:'#ffb627',
+        custom: (Math.abs(shiftChk)===0&&Math.abs(shiftRev)===0)
+          ? 'Пики не сдвинулись — поведение гостей стабильно'
+          : 'Пик трафика сдвинулся на '+(shiftChk>0?'+':'')+shiftChk+' ч, пик выручки на '+(shiftRev>0?'+':'')+shiftRev+' ч'
+      },
+    ].map(function(x){
+      if (x.custom !== undefined) return '<div style="background:var(--bg3);border:1px solid var(--brd);border-left:3px solid '+x.col+';border-radius:14px;padding:18px;display:flex;align-items:center;gap:12px;">'
+        +'<span style="font-size:28px;">'+x.icon+'</span>'
+        +'<div><div style="font-size:11px;font-weight:600;margin-bottom:6px;">'+x.title+'</div><div style="font-size:12px;color:var(--txt2);font-family:\'JetBrains Mono\',monospace;">'+x.custom+'</div></div></div>';
+      var shiftTxt = x.shift===0?'Без сдвига':(x.shift>0?'Сдвиг +'+x.shift+' ч вперёд':'Сдвиг '+x.shift+' ч назад');
+      var shiftCol = x.shift===0?'var(--txt2)':Math.abs(x.shift)<=1?'var(--amber)':'var(--red)';
+      return '<div style="background:var(--bg3);border:1px solid var(--brd);border-left:3px solid '+x.col+';border-radius:14px;padding:18px;">'
+        +'<div style="font-size:11px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:7px;"><span>'+x.icon+'</span>'+x.title+'</div>'
+        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'
+        +'<div style="background:rgba(255,255,255,.03);border-radius:8px;padding:10px;">'
+        +'<div style="font-size:9px;color:var(--txt2);font-family:\'JetBrains Mono\',monospace;margin-bottom:4px;">'+LABEL_B+'</div>'
+        +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:26px;color:var(--txt2);">'+x.bHour+'</div>'
+        +'<div style="font-size:10px;color:var(--txt3);font-family:\'JetBrains Mono\',monospace;">'+x.bVal+'</div></div>'
+        +'<div style="background:rgba(255,255,255,.04);border:1.5px solid '+x.col+'44;border-radius:8px;padding:10px;">'
+        +'<div style="font-size:9px;color:'+x.col+';font-family:\'JetBrains Mono\',monospace;margin-bottom:4px;">'+LABEL_D+'</div>'
+        +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:26px;color:'+x.col+';">'+x.dHour+'</div>'
+        +'<div style="font-size:10px;color:var(--txt2);font-family:\'JetBrains Mono\',monospace;">'+x.dVal+'</div></div>'
+        +'</div>'
+        +'<div style="font-size:11px;font-family:\'JetBrains Mono\',monospace;color:'+shiftCol+';padding:6px 10px;background:rgba(255,255,255,.03);border-radius:7px;">'+shiftTxt+'</div></div>';
+    }).join('');
+  }
+
+  // ─────────────────────────────────────────────────────────
+  // ④ РОТАЦИЯ МЕНЮ (b3/d3)
+  // Рейтинг по выручке. Сравниваем позиции топ-15
+  // ─────────────────────────────────────────────────────────
+  if (b3 && d3) {
+    var mrEl = document.getElementById('sec-menu-rotation');
+    if (mrEl) mrEl.style.display = 'block';
+    var sortByRev = function(src) { return [...src.rows].filter(function(r){ return r.rev>0; }).sort(function(a,b){ return b.rev-a.rev; }); };
+    var bSorted = sortByRev(b3), dSorted = sortByRev(d3);
+    var top10B = bSorted.slice(0,10).map(function(r){ return r.label; });
+    var top10D = dSorted.slice(0,10).map(function(r){ return r.label; });
+    var newLeaders = top10D.filter(function(n){ return !top10B.includes(n); });
+    var dropped = top10B.filter(function(n){ return !top10D.includes(n); });
+
+    var mkItem = function(items, src, col) {
+      if (!items.length) return '<div style="padding:16px;text-align:center;font-size:12px;color:var(--txt2);font-family:\'JetBrains Mono\',monospace;">Нет изменений</div>';
+      return items.map(function(name) {
+        var r = src.rows.find(function(x){ return x.label===name; });
+        if (!r) return '';
+        return '<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--brd);">'
+          +'<div style="width:8px;height:8px;border-radius:50%;background:'+col+';flex-shrink:0;"></div>'
+          +'<div style="flex:1;font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'+name+'">'+name+'</div>'
+          +'<div style="font-size:11px;color:'+col+';font-family:\'JetBrains Mono\',monospace;white-space:nowrap;">'+fmtM(r.rev)+' сум</div>'
+          +'</div>';
+      }).join('');
+    };
+    var nlEl = document.getElementById('menu-new-leaders');
+    if (nlEl) nlEl.innerHTML = mkItem(newLeaders, d3, '#00e5a3');
+    var drEl = document.getElementById('menu-dropped');
+    if (drEl) drEl.innerHTML = mkItem(dropped, b3, '#f87171');
+
+    // Изменение ранга топ-15
+    var top15D = dSorted.slice(0,15);
+    var bRankMap = {}; bSorted.forEach(function(r,i){ bRankMap[r.label]=i+1; });
+    var rcEl = document.getElementById('menu-rank-change');
+    if (rcEl) rcEl.innerHTML = top15D.map(function(r, i) {
+      var dRank = i+1, bRank = bRankMap[r.label];
+      var delta = bRank ? bRank - dRank : null; // положительный = вырос в рейтинге
+      var deltaStr = delta===null?'🆕 Новинка':delta>0?'▲ +'+delta:delta<0?'▼ '+delta:'→ без изм.';
+      var deltaCol = delta===null?'#ffb627':delta>0?'#00e5a3':delta<0?'#f87171':'var(--txt2)';
+      return '<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg3);border:1px solid var(--brd);border-radius:9px;">'
+        +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:var(--a2);width:28px;text-align:center;">'+dRank+'</div>'
+        +'<div style="flex:1;font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'+r.label+'">'+r.label+'</div>'
+        +'<div style="font-size:10px;color:var(--txt3);font-family:\'JetBrains Mono\',monospace;white-space:nowrap;margin-right:8px;">'+fmtM(r.rev)+' сум</div>'
+        +'<div style="font-size:11px;font-family:\'JetBrains Mono\',monospace;font-weight:600;padding:3px 9px;border-radius:5px;background:'+(delta===null?'rgba(255,182,39,.12)':delta>0?'rgba(0,229,163,.12)':delta<0?'rgba(248,113,113,.12)':'rgba(255,255,255,.05)')+';color:'+deltaCol+';white-space:nowrap;">'+deltaStr+'</div>'
+        +'</div>';
+    }).join('');
+  }
+
+  // ─────────────────────────────────────────────────────────
+  // ⑤ ДОХОДНОСТЬ КАНАЛА (b4/d4)
+  // rev_channel / days_D — выручка/день по каналу
+  // ─────────────────────────────────────────────────────────
+  if (b4 || d4) {
+    var crEl = document.getElementById('sec-channel-revenue');
+    if (crEl) crEl.style.display = 'block';
+    var lblChD = document.getElementById('lbl-ch-d');
+    if (lblChD) lblChD.textContent = LABEL_D;
+
+    var aggT = function(src) {
+      if (!src) return {};
+      var t = {}; src.rows.forEach(function(r){ var k=r.subtype||(r.label&&!r.label.match(/^\d/)?r.label:null); if(k){if(!t[k])t[k]={chk:0,rev:0}; t[k].chk+=r.chk; t[k].rev+=r.rev;}}); return t;
+    };
+    var colsCh = {'Заказ в Зал':'rgba(91,62,245,.75)','С собой':'rgba(0,229,163,.75)','Доставка курьером':'rgba(255,182,39,.75)','Доставка самовывоз':'rgba(136,135,128,.65)'};
+    var iconsCh = {'Заказ в Зал':'🏪','С собой':'🛍️','Доставка курьером':'🛵','Доставка самовывоз':'🚶'};
+    var orderCh = ['Заказ в Зал','С собой','Доставка курьером','Доставка самовывоз'];
+    var tbCh = aggT(b4), tdCh = aggT(d4||b4);
+    var typesCh = orderCh.filter(function(k){ return tbCh[k]||tdCh[k]; });
+    var dDays = d1 ? (d1.meta.days||d1.rows.length) : 1;
+    var bDays = b1 ? (b1.meta.days||b1.rows.length) : 1;
+
+    // Бар-чарт выручки по каналу
+    if (typeof mkChart === 'function' && typesCh.length) {
+      mkChart('cChannelRev','bar',{labels:typesCh,datasets:[
+        {label:LABEL_B, data:typesCh.map(function(k){ var v=tbCh[k]; return v?+(v.rev/1e6).toFixed(2):0; }), backgroundColor:'rgba(90,87,110,.6)', borderRadius:5},
+        {label:LABEL_D, data:typesCh.map(function(k){ var v=tdCh[k]; return v?+(v.rev/1e6).toFixed(2):0; }), backgroundColor:typesCh.map(function(k){ return colsCh[k]||'rgba(91,62,245,.6)'; }), borderRadius:5},
+      ]},{plugins:{legend:{labels:{color:'#9490b8',font:{size:11,family:'monospace'}}},tooltip:{mode:'index',intersect:false,callbacks:{label:function(c){ return c.dataset.label+': '+c.parsed.y.toFixed(2)+' млн сум'; }}}},scales:{x:{ticks:{color:'#5a577a'},grid:{display:false}},y:{ticks:{color:'#5a577a',callback:function(v){ return v+'M'; }},grid:{color:'rgba(91,62,245,.07)'},border:{display:false}}}});
+    }
+
+    // Карточки доходности: rev/day и avg_check по каналу
+    var crCards = document.getElementById('channel-revenue-cards');
+    var totalDRev = typesCh.reduce(function(s,k){ return s+(tdCh[k]?tdCh[k].rev:0); }, 0) || 1;
+    if (crCards) crCards.innerHTML = typesCh.map(function(k) {
+      var b2 = tbCh[k]||{chk:0,rev:0}, d2c = tdCh[k]||{chk:0,rev:0};
+      var bRPD = bDays?b2.rev/bDays:0, dRPD = dDays?d2c.rev/dDays:0;
+      var bAvg = b2.chk?Math.round(b2.rev/b2.chk):0;
+      var dAvg = d2c.chk?Math.round(d2c.rev/d2c.chk):0;
+      var rpdDelta = dRPD - bRPD;
+      var avgDelta = dAvg - bAvg;
+      var col = colsCh[k]||'#5b3ef5';
+      var share = totalDRev?Math.round(d2c.rev/totalDRev*100):0;
+      return '<div style="background:var(--bg3);border:1px solid var(--brd);border-radius:14px;padding:18px;position:relative;overflow:hidden;">'
+        +'<div style="position:absolute;top:0;left:0;right:0;height:2px;background:'+col+';"></div>'
+        +'<div style="font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:7px;">'+(iconsCh[k]||'📦')+' '+k+'<span style="margin-left:auto;font-size:10px;font-family:\'JetBrains Mono\',monospace;color:var(--txt2);">'+share+'% выручки</span></div>'
+        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'
+        +'<div style="background:rgba(255,255,255,.03);border-radius:8px;padding:12px;">'
+        +'<div style="font-size:9px;color:var(--txt2);font-family:\'JetBrains Mono\',monospace;margin-bottom:4px;">Выручка/день '+LABEL_B+'</div>'
+        +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:var(--txt2);">'+fmtM(bRPD)+' сум</div>'
+        +'<div style="font-size:10px;color:var(--txt3);font-family:\'JetBrains Mono\',monospace;margin-top:2px;">ср. чек: '+fmt(bAvg)+' сум</div>'
+        +'</div>'
+        +'<div style="background:rgba(255,255,255,.04);border:1.5px solid '+col+'44;border-radius:8px;padding:12px;">'
+        +'<div style="font-size:9px;color:'+col+';font-family:\'JetBrains Mono\',monospace;margin-bottom:4px;">Выручка/день '+LABEL_D+'</div>'
+        +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:'+col+';">'+fmtM(dRPD)+' сум</div>'
+        +'<div style="font-size:10px;color:var(--txt2);font-family:\'JetBrains Mono\',monospace;margin-top:2px;">ср. чек: '+fmt(dAvg)+' сум</div>'
+        +'</div></div>'
+        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+        +'<div style="padding:7px 10px;background:rgba(255,255,255,.03);border-radius:7px;text-align:center;">'
+        +'<div style="font-size:9px;color:var(--txt2);font-family:\'JetBrains Mono\',monospace;margin-bottom:3px;">Δ Выручка/день</div>'
+        +'<div style="font-size:12px;font-weight:600;font-family:\'JetBrains Mono\',monospace;color:'+(rpdDelta>=0?'var(--green)':'var(--red)')+';">'+(rpdDelta>=0?'+':'')+fmtM(rpdDelta)+' сум</div>'
+        +'</div>'
+        +'<div style="padding:7px 10px;background:rgba(255,255,255,.03);border-radius:7px;text-align:center;">'
+        +'<div style="font-size:9px;color:var(--txt2);font-family:\'JetBrains Mono\',monospace;margin-bottom:3px;">Δ Средний чек</div>'
+        +'<div style="font-size:12px;font-weight:600;font-family:\'JetBrains Mono\',monospace;color:'+(avgDelta>=0?'var(--green)':'var(--red)')+';">'+(avgDelta>=0?'+':'')+fmt(avgDelta)+' сум</div>'
+        +'</div></div>'
+        +'<div style="height:4px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-top:10px;">'
+        +'<div style="height:100%;width:'+share+'%;background:'+col+';border-radius:3px;"></div></div>'
+        +'</div>';
+    }).join('');
+  }
+
+  // ─────────────────────────────────────────────────────────
+  // ⑥ ДОСТАВКА ПО ВРЕМЕНИ СУТОК (b4/d4)
+  // Считаем чеки каждого типа в каждом временном сегменте
+  // ─────────────────────────────────────────────────────────
+  if (b4 || d4) {
+    var dtEl = document.getElementById('sec-delivery-time');
+    if (dtEl) dtEl.style.display = 'block';
+    var lblDelD = document.getElementById('lbl-del-d');
+    if (lblDelD) lblDelD.textContent = LABEL_D;
+
+    var srcDT = d4 || b4;
+    var typesDT = [...new Set(srcDT.rows.map(function(r){ return r.subtype; }).filter(Boolean))];
+    var segsTime = [
+      {name:'Завтрак', icon:'☀️', hours:[6,7,8,9,10,11], col:'#ffb627'},
+      {name:'Обед',    icon:'🍽️', hours:[12,13,14,15,16], col:'#00e5a3'},
+      {name:'Вечер',   icon:'🌆', hours:[17,18,19,20,21,22,23], col:'#5b3ef5'},
+      {name:'Ночь',    icon:'🌙', hours:[0,1,2,3,4,5], col:'#f040c0'},
+    ];
+    var colsDT = {'Заказ в Зал':'#5b3ef5','С собой':'#00e5a3','Доставка курьером':'#ffb627','Доставка самовывоз':'#888780'};
+
+    var dtSegsEl = document.getElementById('delivery-time-segs');
+    if (dtSegsEl) dtSegsEl.innerHTML = segsTime.map(function(seg) {
+      // Для каждого сегмента — чеки по каждому типу заказа
+      var typeData = typesDT.map(function(t) {
+        var chk = seg.hours.reduce(function(s,h) {
+          var r = srcDT.rows.find(function(x){ return parseInt(x.label)===h && x.subtype===t; });
+          return s + (r?r.chk:0);
+        }, 0);
+        return {type:t, chk:chk, col:colsDT[t]||'#5b3ef5'};
+      }).filter(function(x){ return x.chk>0; }).sort(function(a,b){ return b.chk-a.chk; });
+      var totalSeg = typeData.reduce(function(s,x){ return s+x.chk; }, 0) || 1;
+      return '<div style="background:var(--bg3);border:1px solid var(--brd);border-left:3px solid '+seg.col+';border-radius:14px;padding:16px;">'
+        +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">'
+        +'<span style="font-size:18px;">'+seg.icon+'</span>'
+        +'<div style="font-size:14px;font-weight:700;">'+seg.name+'</div>'
+        +'<div style="font-size:10px;color:var(--txt2);font-family:\'JetBrains Mono\',monospace;margin-left:auto;">'+fmt(totalSeg)+' чеков</div>'
+        +'</div>'
+        + (typeData.length ? typeData.map(function(x) {
+          var pct = Math.round(x.chk/totalSeg*100);
+          return '<div style="margin-bottom:8px;">'
+            +'<div style="display:flex;justify-content:space-between;margin-bottom:4px;">'
+            +'<span style="font-size:11px;color:var(--txt2);">'+x.type+'</span>'
+            +'<span style="font-size:11px;font-family:\'JetBrains Mono\',monospace;color:'+x.col+';">'+pct+'% · '+fmt(x.chk)+' чек</span>'
+            +'</div>'
+            +'<div style="height:4px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;">'
+            +'<div style="height:100%;width:'+pct+'%;background:'+x.col+';border-radius:3px;"></div></div></div>';
+        }).join('') : '<div style="font-size:11px;color:var(--txt3);font-family:\'JetBrains Mono\',monospace;">Нет заказов</div>')
+        +'</div>';
+    }).join('');
+  }
+
+  // ─────────────────────────────────────────────────────────
+  // ⑦ ВКЛАД ФИЛИАЛА В ОБЩИЙ РОСТ (b5/d5)
+  // Для каждого филиала: вклад = (rpd_D - rpd_B) * dDays
+  // % вклада = вклад_филиала / abs(общий_доп_рост) * 100
+  // ─────────────────────────────────────────────────────────
+  if (b5 && d5) {
+    var bcEl = document.getElementById('sec-branch-contrib');
+    if (bcEl) bcEl.style.display = 'block';
+    var bBr = b5.branches || {}, dBr = d5.branches || {};
+    var dDaysBr = d1 ? (d1.meta.days||d1.rows.length) : 1;
+    var bDaysBr = b1 ? (b1.meta.days||b1.rows.length) : 1;
+    var allBr = [...new Set([...Object.keys(bBr), ...Object.keys(dBr)])];
+    // Доп выручка каждого филиала = (dRPD - bRPD) * dDays
+    var contribs = allBr.map(function(name) {
+      var b = bBr[name]||{rev:0,chk:0,n:1}, d = dBr[name]||{rev:0,chk:0,n:1};
+      var bRPD = b.n ? b.rev/b.n : 0;
+      var dRPD = d.n ? d.rev/d.n : 0;
+      // Дополнительная выручка за период D = разница выручки/день × дней D
+      var extraRev = (dRPD - bRPD) * dDaysBr;
+      var dAvg = d.chk ? Math.round(d.rev/d.chk) : 0;
+      var bAvg = b.chk ? Math.round(b.rev/b.chk) : 0;
+      return {name:name, extraRev:extraRev, dRPD:dRPD, bRPD:bRPD, dAvg:dAvg, bAvg:bAvg, dChkPD:d.n?d.chk/d.n:0};
+    }).sort(function(a,b){ return b.extraRev-a.extraRev; });
+    var totalExtra = contribs.reduce(function(s,x){ return s+x.extraRev; }, 0);
+    var maxAbs = Math.max.apply(null, contribs.map(function(x){ return Math.abs(x.extraRev); })) || 1;
+    var BCOLS2 = ['#5b3ef5','#00e5a3','#ffb627','#f040c0','#38bdf8','#fb923c','#a78bfa','#34d399'];
+    var bcInner = document.getElementById('branch-contrib-inner');
+    if (bcInner) bcInner.innerHTML = contribs.map(function(x, i) {
+      var col = BCOLS2[i % BCOLS2.length];
+      var pctOfTotal = totalExtra ? Math.round(x.extraRev / Math.abs(totalExtra) * 100) : 0;
+      var barW = Math.round(Math.abs(x.extraRev) / maxAbs * 100);
+      var isPos = x.extraRev >= 0;
+      var rpdGrowth = x.bRPD ? ((x.dRPD-x.bRPD)/x.bRPD*100) : null;
+      return '<div style="background:var(--bg3);border:1px solid var(--brd);border-radius:14px;padding:16px 20px;">'
+        +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">'
+        +'<div style="width:34px;height:34px;border-radius:9px;background:'+col+'18;border:1.5px solid '+col+'44;display:flex;align-items:center;justify-content:center;font-family:\'Bebas Neue\',sans-serif;font-size:15px;color:'+col+';flex-shrink:0;">'+(i+1)+'</div>'
+        +'<div style="font-size:14px;font-weight:600;flex:1;">'+x.name+'</div>'
+        +'<div style="font-size:11px;font-family:\'JetBrains Mono\',monospace;font-weight:600;padding:4px 10px;border-radius:6px;background:'+(isPos?'rgba(0,229,163,.1)':'rgba(248,113,113,.1)')+';color:'+(isPos?'var(--green)':'var(--red)')+';">'+(isPos?'+':'')+pctOfTotal+'% вклада</div>'
+        +'</div>'
+        +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;">'
+        +'<div style="background:rgba(255,255,255,.03);border-radius:8px;padding:10px;">'
+        +'<div style="font-size:9px;color:var(--txt2);font-family:\'JetBrains Mono\',monospace;margin-bottom:3px;">Доп. выручка</div>'
+        +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:20px;color:'+(isPos?'var(--green)':'var(--red)')+';">'+(isPos?'+':'')+fmtM(x.extraRev)+' сум</div>'
+        +'</div>'
+        +'<div style="background:rgba(255,255,255,.03);border-radius:8px;padding:10px;">'
+        +'<div style="font-size:9px;color:var(--txt2);font-family:\'JetBrains Mono\',monospace;margin-bottom:3px;">Выручка/день '+LABEL_D+'</div>'
+        +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:20px;color:'+col+';">'+fmtM(x.dRPD)+' сум</div>'
+        +(rpdGrowth!==null?'<div style="font-size:9px;font-family:\'JetBrains Mono\',monospace;color:'+(rpdGrowth>=0?'var(--green)':'var(--red)')+';">'+(rpdGrowth>=0?'+':'')+rpdGrowth.toFixed(1)+'% к базе</div>':'')
+        +'</div>'
+        +'<div style="background:rgba(255,255,255,.03);border-radius:8px;padding:10px;">'
+        +'<div style="font-size:9px;color:var(--txt2);font-family:\'JetBrains Mono\',monospace;margin-bottom:3px;">Ср. чек '+LABEL_D+'</div>'
+        +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:20px;color:'+col+';">'+fmt(x.dAvg)+' сум</div>'
+        +(x.bAvg?'<div style="font-size:9px;font-family:\'JetBrains Mono\',monospace;color:'+(x.dAvg-x.bAvg>=0?'var(--green)':'var(--red)')+';">'+(x.dAvg-x.bAvg>=0?'+':'')+fmt(x.dAvg-x.bAvg)+' к базе</div>':'')
+        +'</div></div>'
+        +'<div style="display:flex;align-items:center;gap:8px;">'
+        +'<div style="flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;">'
+        +'<div style="height:100%;width:'+barW+'%;background:'+(isPos?col:'#f87171')+';border-radius:3px;transition:width 1.2s ease;"></div></div>'
+        +'<div style="font-size:10px;font-family:\'JetBrains Mono\',monospace;color:var(--txt2);white-space:nowrap;">'+barW+'%</div>'
+        +'</div></div>';
+    }).join('');
+  }
 }
 </script>
 
