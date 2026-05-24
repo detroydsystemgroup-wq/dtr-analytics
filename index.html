@@ -10717,13 +10717,13 @@ async function doLogin() {
   const email = login.includes('@') ? login : login + '@' + AGENCY_DOMAIN
   const btn = g('btn-login')
   btn.disabled = true
-  btn.querySelector('.lo-submit-text').textContent = 'ВХОДИМ...'; btn.querySelector('.lo-submit-arrow').textContent = ''
+  btn.textContent = 'Входим...'
   const { data, error } = await sb.auth.signInWithPassword({ email, password: pass })
   if (error) {
     g('login-err').textContent = 'Неверный логин или пароль'
     g('login-err').style.display = 'block'
     btn.disabled = false
-    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>Войти'
+    btn.textContent = 'Войти'
   } else {
     currentUser = data.user
     afterLogin()
