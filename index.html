@@ -105,7 +105,21 @@ body::before {
 @keyframes countUp { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
 
 /* ── PAGES ── */
-.page { display:none; position:relative; z-index:1; }
+.page {
+  display: none !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+.page.active {
+  display: block !important;
+}
+#page-client.active {
+  display: flex !important;
+  flex-direction: column !important;
+}
 .page.active { display:block; animation:fadeIn .3s ease both; }
 
 /* ══════════════════════════════════════════════
@@ -18842,7 +18856,7 @@ textarea:focus {
 /* ══════════════════════════════════════════════════════
    29. PAGE TRANSITIONS
 ══════════════════════════════════════════════════════ */
-.page { animation: fadeIn .25s ease both; }
+.page.active { animation: fadeIn .25s ease both; }
 .page.active { animation: fadeIn .35s ease both; }
 
 .cc-main #dtab-projects-panel,
