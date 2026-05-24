@@ -6186,6 +6186,47 @@ input, select, textarea {
   line-height: 1 !important;
 }
 </style>
+<style id="dtr-metric-extras">
+/* ── Dimmed placeholder ── */
+.rp-metric-chip[style*="opacity:.35"] .rp-metric-lbl { opacity: .6; }
+.rp-metric-chip[style*="opacity:.35"] .rp-metric-val { font-size: 20px !important; }
+
+/* ── No analysis hint ── */
+.rp-no-analysis {
+  flex: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 10px 20px !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  color: rgba(91,95,199,.3) !important;
+  letter-spacing: .06em !important;
+  border-left: 1px solid rgba(91,95,199,.06) !important;
+  cursor: pointer !important;
+  transition: color .2s !important;
+}
+.rp-no-analysis:hover { color: rgba(91,95,199,.6) !important; }
+
+/* ── Metrics strip: 5 chips always equal width ── */
+.rp-metrics-strip { min-height: 60px !important; }
+.rp-metric-chip {
+  min-width: 0 !important;
+  max-width: none !important;
+}
+
+/* ── Value font size by content length ── */
+.rp-metric-val { font-size: 16px !important; }
+
+/* ── Separator dot in period ── */
+.rp-period-vs { margin: 0 6px !important; opacity: .35 !important; }
+
+/* ── Card top — ensure proper layout ── */
+.rp-card-perf .rp-card-top,
+.rp-card-smm  .rp-card-top { 
+  min-height: 72px !important;
+}
+</style>
 </head>
 <body>
 
@@ -9561,8 +9602,6 @@ async function loadReports() {
     var bRev = sm.b_total_rev != null ? sm.b_total_rev : null;
     var dRev = sm.d_total_rev != null ? sm.d_total_rev : null;
 
-    var hasMetrics = growthPct != null || trafficD != null || avgChkD != null;
-
     function fmtPct(v) {
       if (v == null) return '—';
       var sign = v > 0 ? '+' : '';
@@ -9573,23 +9612,31 @@ async function loadReports() {
       var sign = v > 0 ? '+' : '';
       return sign + Math.round(v).toLocaleString('ru-RU');
     }
-    function metricCol(v) {
-      if (v == null) return 'rgba(91,95,199,.35)';
+    function fmtRev(v) {
+      if (v == null) return '—';
+      return Math.round(v).toLocaleString('ru-RU') + ' ₽';
+    }
+    function mCol(v) {
+      if (v == null) return 'rgba(91,95,199,.3)';
       return v > 0 ? '#34d399' : v < 0 ? '#f87171' : '#fbbf24';
     }
-    function metricBg(v) {
-      if (v == null) return 'rgba(91,95,199,.06)';
-      return v > 0 ? 'rgba(52,211,153,.08)' : v < 0 ? 'rgba(248,113,113,.08)' : 'rgba(251,191,36,.08)';
+    function mBg(v) {
+      if (v == null) return 'rgba(91,95,199,.05)';
+      return v > 0 ? 'rgba(52,211,153,.09)' : v < 0 ? 'rgba(248,113,113,.09)' : 'rgba(251,191,36,.08)';
     }
+    function mArrow(v) { return v == null ? '' : v > 0 ? '↑' : v < 0 ? '↓' : '→'; }
 
-    var metricsStrip = hasMetrics
-      ? '<div class="rp-metrics-strip">'
-        + rpMetric('Выручка', fmtPct(growthPct), metricCol(growthPct), metricBg(growthPct), growthPct != null ? (growthPct > 0 ? '↑' : growthPct < 0 ? '↓' : '→') : '')
-        + rpMetric('Трафик', fmtNum(trafficD) + ' гост.', metricCol(trafficD), metricBg(trafficD), trafficD != null ? (trafficD > 0 ? '↑' : '↓') : '')
-        + rpMetric('Ср. чек', fmtNum(avgChkD) + ' ₽', metricCol(avgChkD), metricBg(avgChkD), avgChkD != null ? (avgChkD > 0 ? '↑' : '↓') : '')
-        + (dRev != null ? rpMetric('Выручка (факт)', Math.round(dRev).toLocaleString('ru-RU') + ' ₽', '#818cf8', 'rgba(91,95,199,.08)', '') : '')
-        + '</div>'
-      : '';
+    var hasAnyData = growthPct != null || trafficD != null || avgChkD != null || dRev != null || bRev != null;
+
+    // Always show strip — with data or with placeholders
+    var metricsStrip = '<div class="rp-metrics-strip">'
+      + rpMetricFull('Рост выручки', fmtPct(growthPct), mCol(growthPct), mBg(growthPct), mArrow(growthPct), growthPct != null)
+      + rpMetricFull('Трафик Δ', growthPct != null ? fmtNum(trafficD) + '&nbsp;гост.' : '—', mCol(trafficD), mBg(trafficD), mArrow(trafficD), trafficD != null)
+      + rpMetricFull('Ср. чек Δ', avgChkD != null ? fmtNum(avgChkD) + '&nbsp;₽' : '—', mCol(avgChkD), mBg(avgChkD), mArrow(avgChkD), avgChkD != null)
+      + rpMetricFull('Выручка факт', fmtRev(dRev), '#818cf8', 'rgba(91,95,199,.07)', '', dRev != null)
+      + rpMetricFull('База', fmtRev(bRev), 'rgba(91,95,199,.45)', 'rgba(91,95,199,.05)', '', bRev != null)
+      + (!hasAnyData ? '<div class="rp-no-analysis">Запустите анализ в отчёте чтобы увидеть метрики</div>' : '')
+      + '</div>';
 
     return '<div class="rp-card rp-card-perf" onclick="openReport(\'' + r.id + '\')" style="animation-delay:' + (i*0.05) + 's">'
       + '<div class="rp-card-top">'
@@ -16552,15 +16599,22 @@ function ppUpdateMiniStats(done, pending, trackerData) {
 
 
 <script id="dtr-rp-metric-helpers">
-function rpMetric(label, val, col, bg, arrow) {
-  return '<div class="rp-metric-chip" style="background:' + bg + ';border-color:' + col + '22;">'
+// rpMetricFull — performance metric chip (always shown, dims if no data)
+function rpMetricFull(label, val, col, bg, arrow, hasData) {
+  var opacity = hasData ? '' : 'opacity:.35;';
+  return '<div class="rp-metric-chip" style="' + opacity + 'background:' + bg + ';border-color:' + col + '22;">'
     + '<div class="rp-metric-lbl">' + label + '</div>'
     + '<div class="rp-metric-val" style="color:' + col + ';">'
-    +   (arrow ? '<span class="rp-metric-arrow">' + arrow + '</span>' : '')
+    +   (arrow && hasData ? '<span class="rp-metric-arrow">' + arrow + '</span>' : '')
     +   val
     + '</div>'
     + '</div>';
 }
+// rpMetric — legacy alias
+function rpMetric(label, val, col, bg, arrow) {
+  return rpMetricFull(label, val, col, bg, arrow, val !== '—');
+}
+// rpSMMMetric — SMM metric chip
 function rpSMMMetric(label, val, col, bg) {
   return '<div class="rp-metric-chip" style="background:' + bg + ';border-color:' + col + '22;">'
     + '<div class="rp-metric-lbl">' + label + '</div>'
