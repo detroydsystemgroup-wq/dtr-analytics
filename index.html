@@ -8414,6 +8414,303 @@ canvas {
       <div class="cp-stat-lbl">Отчётов</div>
     </div>
   </div>
+<!-- NEXT STEP CARD -->
+<div class="cp-next-step" id="cp-next-step" style="display:none;">
+  <div class="cp-next-label">СЛЕДУЮЩИЙ ШАГ</div>
+  <div class="cp-next-inner">
+    <div class="cp-next-icon" id="cp-next-icon">🎯</div>
+    <div class="cp-next-body">
+      <div class="cp-next-title" id="cp-next-title">—</div>
+      <div class="cp-next-sub" id="cp-next-sub">—</div>
+    </div>
+    <div class="cp-next-deadline" id="cp-next-deadline"></div>
+  </div>
+</div>
+
+<!-- ACTIVITY FEED (last 5 actions) -->
+<div class="cp-activity-feed" id="cp-activity-feed" style="display:none;">
+  <div class="cp-act-header">
+    <div class="cp-act-title">Активность команды</div>
+    <div class="cp-act-live"><span class="cp-live-dot"></span>Live</div>
+  </div>
+  <div class="cp-act-items" id="cp-act-items"></div>
+</div>
+
+<!-- ROI STRIP (shown if performance report exists) -->
+<div class="cp-roi-strip" id="cp-roi-strip" style="display:none;"></div>
+
+<!-- SMM METRICS SPARKLINE -->
+<div class="cp-smm-metrics" id="cp-smm-metrics" style="display:none;">
+  <div class="cp-smm-metrics-header">
+    <div class="cp-smm-metrics-title">SMM показатели</div>
+    <div class="cp-smm-metrics-period" id="cp-smm-period">—</div>
+  </div>
+  <div class="cp-smm-metrics-grid" id="cp-smm-metrics-grid"></div>
+  <div class="cp-benchmark-row" id="cp-benchmark-row"></div>
+</div>
+
+<!-- FOCUS OF MONTH -->
+<div class="cp-focus-card" id="cp-focus-card" style="display:none;">
+  <div class="cp-focus-accent"></div>
+  <div class="cp-focus-inner">
+    <div class="cp-focus-eyebrow">ФОКУС ЭТОГО МЕСЯЦА</div>
+    <div class="cp-focus-text" id="cp-focus-text">—</div>
+    <div class="cp-focus-tip" id="cp-focus-tip"></div>
+  </div>
+</div>
+
+<!-- MILESTONE BANNER (shown at 50% and 100%) -->
+<div class="cp-milestone" id="cp-milestone" style="display:none;">
+  <div class="cp-milestone-inner" id="cp-milestone-inner"></div>
+</div>
+<br>
+<!-- ═══════════════════════════════════════════ -->
+
+<style id="dtr-client-blocks-v1">
+/* ════════ NEXT STEP ════════ */
+.cp-next-step {
+  margin: 0 56px 0 !important;
+  padding: 20px 24px !important;
+  background: linear-gradient(135deg, rgba(91,95,199,.08), rgba(34,211,238,.04)) !important;
+  border: 1px solid rgba(91,95,199,.2) !important;
+  border-radius: 16px !important;
+  position: relative !important; overflow: hidden !important;
+  animation: cp-fade-up .5s .15s cubic-bezier(.16,1,.3,1) both !important;
+}
+.cp-next-step::before {
+  content: '' !important; position: absolute !important;
+  top: 0; left: 0; right: 0; height: 2px !important;
+  background: linear-gradient(90deg, #5b5fc7, #22d3ee) !important;
+}
+.cp-next-label {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 8px !important; letter-spacing: .22em !important;
+  color: rgba(91,95,199,.5) !important; margin-bottom: 12px !important;
+}
+.cp-next-inner { display: flex !important; align-items: center !important; gap: 16px !important; }
+.cp-next-icon { font-size: 28px !important; flex-shrink: 0 !important; }
+.cp-next-body { flex: 1 !important; min-width: 0 !important; }
+.cp-next-title {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 18px !important; font-weight: 700 !important;
+  letter-spacing: -.02em !important; color: #eeedf8 !important; margin-bottom: 4px !important;
+}
+.cp-next-sub {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important; color: rgba(91,95,199,.45) !important; letter-spacing: .04em !important;
+}
+.cp-next-deadline {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 13px !important; font-weight: 600 !important;
+  color: #fbbf24 !important; flex-shrink: 0 !important;
+  background: rgba(251,191,36,.08) !important;
+  border: 1px solid rgba(251,191,36,.2) !important;
+  border-radius: 8px !important; padding: 6px 12px !important;
+}
+
+/* ════════ ACTIVITY FEED ════════ */
+.cp-activity-feed {
+  margin: 14px 56px 0 !important;
+  background: rgba(10,10,18,.9) !important;
+  border: 1px solid rgba(91,95,199,.1) !important;
+  border-radius: 16px !important; overflow: hidden !important;
+  animation: cp-fade-up .5s .2s cubic-bezier(.16,1,.3,1) both !important;
+}
+.cp-act-header {
+  display: flex !important; align-items: center !important; justify-content: space-between !important;
+  padding: 14px 20px !important;
+  border-bottom: 1px solid rgba(91,95,199,.07) !important;
+  background: rgba(91,95,199,.03) !important;
+}
+.cp-act-title {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 12px !important; font-weight: 600 !important; color: rgba(200,198,230,.7) !important;
+}
+.cp-act-live {
+  display: flex !important; align-items: center !important; gap: 6px !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important; color: #34d399 !important; letter-spacing: .1em !important;
+}
+.cp-live-dot {
+  width: 6px !important; height: 6px !important; border-radius: 50% !important;
+  background: #34d399 !important; box-shadow: 0 0 6px #34d39988 !important;
+  animation: cp-glow-pulse 2s infinite !important;
+}
+.cp-act-item {
+  display: flex !important; align-items: center !important; gap: 12px !important;
+  padding: 11px 20px !important;
+  border-bottom: 1px solid rgba(91,95,199,.05) !important;
+  transition: background .15s !important;
+}
+.cp-act-item:last-child { border-bottom: none !important; }
+.cp-act-item:hover { background: rgba(91,95,199,.04) !important; }
+.cp-act-dot {
+  width: 7px !important; height: 7px !important; border-radius: 50% !important; flex-shrink: 0 !important;
+}
+.cp-act-text {
+  flex: 1 !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 12px !important; color: rgba(161,159,200,.7) !important; line-height: 1.4 !important;
+}
+.cp-act-text b { color: #eeedf8 !important; font-weight: 600 !important; }
+.cp-act-time {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important; color: rgba(91,95,199,.3) !important; flex-shrink: 0 !important;
+}
+
+/* ════════ ROI STRIP ════════ */
+.cp-roi-strip {
+  display: flex !important; align-items: stretch !important;
+  margin: 14px 56px 0 !important;
+  background: linear-gradient(135deg, rgba(52,211,153,.06), rgba(91,95,199,.04)) !important;
+  border: 1px solid rgba(52,211,153,.18) !important;
+  border-radius: 16px !important; overflow: hidden !important;
+  position: relative !important;
+  animation: cp-fade-up .5s .25s cubic-bezier(.16,1,.3,1) both !important;
+}
+.cp-roi-strip::before {
+  content: '' !important; position: absolute !important;
+  top: 0; left: 0; right: 0; height: 1px !important;
+  background: linear-gradient(90deg, transparent, rgba(52,211,153,.4), transparent) !important;
+}
+.cp-roi-item {
+  flex: 1 !important; display: flex !important; flex-direction: column !important;
+  align-items: center !important; justify-content: center !important;
+  padding: 20px 12px !important; gap: 5px !important;
+  border-right: 1px solid rgba(52,211,153,.1) !important;
+  text-align: center !important;
+}
+.cp-roi-item:last-child { border-right: none !important; }
+.cp-roi-val {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 26px !important; font-weight: 800 !important;
+  letter-spacing: -.04em !important; line-height: 1 !important;
+  font-variant-numeric: tabular-nums !important;
+}
+.cp-roi-lbl {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important; color: rgba(91,95,199,.38) !important;
+  letter-spacing: .14em !important; text-transform: uppercase !important;
+}
+.cp-roi-badge {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important; font-weight: 600 !important;
+  padding: 2px 8px !important; border-radius: 6px !important; margin-top: 2px !important;
+}
+
+/* ════════ SMM METRICS ════════ */
+.cp-smm-metrics {
+  margin: 14px 56px 0 !important;
+  background: rgba(10,10,18,.9) !important;
+  border: 1px solid rgba(91,95,199,.1) !important;
+  border-radius: 16px !important; overflow: hidden !important;
+  animation: cp-fade-up .5s .3s cubic-bezier(.16,1,.3,1) both !important;
+}
+.cp-smm-metrics-header {
+  display: flex !important; align-items: center !important; justify-content: space-between !important;
+  padding: 14px 20px !important; border-bottom: 1px solid rgba(91,95,199,.07) !important;
+  background: rgba(91,95,199,.03) !important;
+}
+.cp-smm-metrics-title {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 12px !important; font-weight: 600 !important; color: rgba(200,198,230,.7) !important;
+}
+.cp-smm-metrics-period {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important; color: rgba(91,95,199,.4) !important;
+}
+.cp-smm-metrics-grid {
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr) !important;
+  border-bottom: 1px solid rgba(91,95,199,.06) !important;
+}
+.cp-smm-metric {
+  display: flex !important; flex-direction: column !important;
+  align-items: center !important; padding: 16px 8px !important; gap: 4px !important;
+  border-right: 1px solid rgba(91,95,199,.06) !important; text-align: center !important;
+}
+.cp-smm-metric:last-child { border-right: none !important; }
+.cp-smm-metric-lbl {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important; letter-spacing: .14em !important;
+  text-transform: uppercase !important; color: rgba(91,95,199,.38) !important;
+}
+.cp-smm-metric-val {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 20px !important; font-weight: 700 !important;
+  letter-spacing: -.03em !important; line-height: 1 !important;
+}
+.cp-benchmark-row {
+  display: flex !important; align-items: center !important; gap: 10px !important;
+  padding: 12px 20px !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important; color: rgba(91,95,199,.4) !important; letter-spacing: .04em !important;
+}
+.cp-bench-highlight {
+  background: rgba(52,211,153,.1) !important; color: #34d399 !important;
+  padding: 2px 8px !important; border-radius: 5px !important;
+  font-weight: 600 !important;
+}
+
+/* ════════ FOCUS CARD ════════ */
+.cp-focus-card {
+  margin: 14px 56px 0 !important;
+  background: rgba(10,10,18,.9) !important;
+  border: 1px solid rgba(91,95,199,.12) !important;
+  border-radius: 16px !important; overflow: hidden !important;
+  display: flex !important;
+  animation: cp-fade-up .5s .35s cubic-bezier(.16,1,.3,1) both !important;
+}
+.cp-focus-accent {
+  width: 3px !important; flex-shrink: 0 !important;
+  background: linear-gradient(180deg, #5b5fc7, #22d3ee) !important;
+}
+.cp-focus-inner { padding: 20px 22px !important; flex: 1 !important; }
+.cp-focus-eyebrow {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 8px !important; letter-spacing: .22em !important;
+  color: rgba(91,95,199,.45) !important; margin-bottom: 8px !important;
+}
+.cp-focus-text {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 14px !important; font-weight: 600 !important;
+  color: #eeedf8 !important; line-height: 1.5 !important; margin-bottom: 8px !important;
+}
+.cp-focus-tip {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 12px !important; color: rgba(120,118,160,.55) !important; line-height: 1.5 !important;
+}
+
+/* ════════ MILESTONE ════════ */
+.cp-milestone {
+  margin: 14px 56px 0 !important;
+  border-radius: 16px !important; overflow: hidden !important;
+  animation: cp-scale-in .6s cubic-bezier(.16,1,.3,1) both !important;
+}
+.cp-milestone-inner {
+  padding: 24px 28px !important; text-align: center !important;
+  background: linear-gradient(135deg, rgba(91,95,199,.12), rgba(34,211,238,.06)) !important;
+  border: 1px solid rgba(91,95,199,.25) !important;
+  border-radius: 16px !important; position: relative !important; overflow: hidden !important;
+}
+.cp-milestone-inner::before {
+  content: '' !important; position: absolute !important;
+  top: 0; left: 0; right: 0; height: 2px !important;
+  background: linear-gradient(90deg, #5b5fc7, #a5a8e8, #22d3ee) !important;
+}
+.cp-milestone-emoji { font-size: 36px !important; margin-bottom: 10px !important; }
+.cp-milestone-title {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 20px !important; font-weight: 800 !important; letter-spacing: -.03em !important;
+  color: #eeedf8 !important; margin-bottom: 6px !important;
+}
+.cp-milestone-sub {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 11px !important; color: rgba(91,95,199,.5) !important; letter-spacing: .06em !important;
+}
+</style>
+
+
   <div class="cp-stages-wrap">
     <div class="cp-stages-scroll" id="cp-stages-scroll"></div>
   </div>
@@ -24118,6 +24415,319 @@ function runNewBlocks() {
   grid-template-columns: 2fr 1.5fr 1.5fr auto !important;
 }
 </style>
+<script id="dtr-client-blocks-js">
+// ══════════════════════════════════════════════════════
+// CLIENT PORTAL — New blocks engine
+// ══════════════════════════════════════════════════════
+
+// STAGE TIPS — what each stage means for client
+var CP_STAGE_TIPS = {
+  0: 'Изучаем вашу аудиторию, конкурентов и нишу — это фундамент всей стратегии',
+  1: 'Анализируем конкурентов — что работает у них, чем вы лучше',
+  2: 'Разрабатываем стратегию контента — рубрики, тон, визуальный стиль',
+  3: 'Настраиваем таргетированную рекламу под вашу аудиторию',
+  4: 'Создаём контент-план — что и когда публикуем каждый месяц',
+  5: 'Пишем сценарии для Reels и видео-контента',
+  6: 'Съёмочный день — первый раунд визуального контента',
+  7: 'Второй раунд съёмок для пополнения контент-базы',
+  8: 'Подготавливаем финальный отчёт по результатам работы',
+};
+
+// BENCHMARKS for SMM
+var CP_SMM_BENCH = {
+  er:  { good: 4.0, label: 'Хороший ER для ресторанов: выше 4%' },
+  lr:  { good: 0.8, label: 'Норма лайков: 0.8–1.5% от охвата' },
+  tr:  { good: 0.2, label: 'Норма комментариев: 0.1–0.3%' },
+  shr: { good: 0.5, label: 'Репосты выше 0.5% — вирусный контент' },
+  sr:  { good: 1.0, label: 'Сохранения выше 1% — отличный результат' },
+};
+
+var CP_SMM_COLORS = {
+  er: '#818cf8', lr: '#22d3ee', tr: '#fbbf24', shr: '#e879f9', sr: '#34d399'
+};
+
+// Override showClientPortal to also load new blocks
+var _origShowClientPortal = window.showClientPortal;
+window.showClientPortal = async function(project) {
+  await _origShowClientPortal.call(this, project);
+  await cpLoadNewBlocks(project);
+};
+
+async function cpLoadNewBlocks(project) {
+  await Promise.all([
+    cpRenderNextStep(project),
+    cpRenderActivityFeed(project),
+    cpRenderROIStrip(project),
+    cpRenderSMMMetrics(project),
+    cpRenderFocusCard(project),
+    cpRenderMilestone(project),
+  ]);
+}
+
+// ── 1. NEXT STEP ────────────────────────────────
+async function cpRenderNextStep(project) {
+  const el = g('cp-next-step');
+  if (!el) return;
+  const { data: arr } = await sb.from('project_stages')
+    .select('*').eq('project_id', project.id).order('stage_index');
+  if (!arr) return;
+  
+  const active = arr.find(s => s.status === 'active');
+  const nextPending = arr.find(s => s.status === 'pending');
+  const target = active || nextPending;
+  if (!target) return;
+  
+  const stageObj = (typeof STAGES !== 'undefined' && STAGES[target.stage_index]) || { name: 'Этап', icon: '•' };
+  const tip = CP_STAGE_TIPS[target.stage_index] || '';
+  
+  // Deadline from stage
+  var dlStr = '';
+  if (target.deadline) {
+    const dl = new Date(target.deadline);
+    const today = new Date(); today.setHours(0,0,0,0);
+    const diff = Math.ceil((dl - today) / 86400000);
+    const MONTHS_SHORT = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+    if (diff < 0) dlStr = `Срок истёк ${Math.abs(diff)}д назад`;
+    else if (diff === 0) dlStr = 'Сегодня';
+    else if (diff === 1) dlStr = 'Завтра';
+    else if (diff <= 7) dlStr = `Через ${diff} дн.`;
+    else dlStr = `${dl.getDate()} ${MONTHS_SHORT[dl.getMonth()]}`;
+  }
+
+  var titleEl = g('cp-next-title');
+  var subEl   = g('cp-next-sub');
+  var dlEl    = g('cp-next-deadline');
+  var icEl    = g('cp-next-icon');
+  if (titleEl) titleEl.textContent = (active ? 'Сейчас в работе: ' : 'Следующий этап: ') + stageObj.name;
+  if (subEl)   subEl.textContent   = tip;
+  if (dlEl)    dlEl.textContent    = dlStr;
+  if (icEl)    icEl.textContent    = stageObj.icon;
+  if (!dlStr && dlEl) dlEl.style.display = 'none';
+  el.style.display = 'block';
+}
+
+// ── 2. ACTIVITY FEED ────────────────────────────
+async function cpRenderActivityFeed(project) {
+  const el = g('cp-activity-feed');
+  const list = g('cp-act-items');
+  if (!el || !list) return;
+
+  const { data: hist } = await sb.from('stage_history')
+    .select('*').eq('project_id', project.id)
+    .order('created_at', { ascending: false }).limit(5);
+  if (!hist || !hist.length) return;
+
+  var evCol = { 'Начат': '#818cf8', 'Завершён': '#34d399', 'Возвращён в ожидание': '#fbbf24' };
+  var evText = {
+    'Начат': 'начал работу над',
+    'Завершён': 'завершил',
+    'Возвращён в ожидание': 'вернул в ожидание'
+  };
+
+  list.innerHTML = hist.map(function(h) {
+    const stageObj = (typeof STAGES !== 'undefined' && STAGES[h.stage_index]) || { name: 'Этапом' };
+    const col = evCol[h.event] || '#818cf8';
+    const verb = evText[h.event] || h.event;
+    const d = new Date(h.created_at);
+    const today = new Date(); today.setHours(0,0,0,0);
+    const diff = Math.floor((new Date().setHours(0,0,0,0) - d.setHours(0,0,0,0)) / 86400000);
+    const timeStr = diff === 0 ? 'Сегодня, ' + new Date(h.created_at).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})
+      : diff === 1 ? 'Вчера'
+      : diff + ' дн. назад';
+    return `<div class="cp-act-item">
+      <div class="cp-act-dot" style="background:${col};box-shadow:0 0 6px ${col}66;"></div>
+      <div class="cp-act-text">Команда <b>${verb}</b> этап «${stageObj.name}»${h.note ? ` — ${h.note}` : ''}</div>
+      <div class="cp-act-time">${timeStr}</div>
+    </div>`;
+  }).join('');
+
+  el.style.display = 'block';
+}
+
+// ── 3. ROI STRIP ────────────────────────────────
+async function cpRenderROIStrip(project) {
+  const el = g('cp-roi-strip');
+  if (!el) return;
+
+  // Load latest published performance report with summary
+  const { data: reps } = await sb.from('reports')
+    .select('id,title,summary,period_b_label,period_d_label,created_at')
+    .eq('project_id', project.id).eq('status','published')
+    .order('created_at', { ascending: false }).limit(1);
+  
+  const rep = reps && reps[0];
+  const sm = rep && rep.summary;
+  if (!sm || (sm.growth_pct == null && sm.traffic_delta == null)) return;
+
+  const fmt = v => new Intl.NumberFormat('ru-RU', {maximumFractionDigits:0}).format(Math.round(Math.abs(v)));
+  const sign = v => v > 0 ? '+' : v < 0 ? '−' : '';
+  
+  var items = [];
+  if (sm.growth_pct != null) items.push({
+    val: (sign(sm.growth_pct) + fmt(sm.growth_pct) + '%'),
+    lbl: 'Рост выручки',
+    color: sm.growth_pct >= 0 ? '#34d399' : '#f87171',
+    badge: sm.growth_pct >= 0 ? '↑ Растём' : '↓ Снизилось',
+    badgeBg: sm.growth_pct >= 0 ? 'rgba(52,211,153,.1)' : 'rgba(248,113,113,.1)',
+    badgeCol: sm.growth_pct >= 0 ? '#34d399' : '#f87171',
+  });
+  if (sm.traffic_delta != null) items.push({
+    val: sign(sm.traffic_delta) + fmt(sm.traffic_delta),
+    lbl: 'Гостей / день Δ',
+    color: sm.traffic_delta >= 0 ? '#22d3ee' : '#f87171',
+    badge: sm.traffic_delta >= 0 ? '↑ Трафик растёт' : '↓ Снижение',
+    badgeBg: sm.traffic_delta >= 0 ? 'rgba(34,211,238,.1)' : 'rgba(248,113,113,.1)',
+    badgeCol: sm.traffic_delta >= 0 ? '#22d3ee' : '#f87171',
+  });
+  if (sm.avg_check_delta != null) items.push({
+    val: sign(sm.avg_check_delta) + fmt(sm.avg_check_delta) + ' сум',
+    lbl: 'Средний чек Δ',
+    color: sm.avg_check_delta >= 0 ? '#fbbf24' : '#f87171',
+    badge: sm.avg_check_delta >= 0 ? '↑ Чек вырос' : '↓ Чек упал',
+    badgeBg: sm.avg_check_delta >= 0 ? 'rgba(251,191,36,.1)' : 'rgba(248,113,113,.1)',
+    badgeCol: sm.avg_check_delta >= 0 ? '#fbbf24' : '#f87171',
+  });
+  if (sm.extra_revenue != null) items.push({
+    val: fmt(sm.extra_revenue) + ' сум',
+    lbl: 'Доп. выручка за период',
+    color: sm.extra_revenue >= 0 ? '#34d399' : '#f87171',
+    badge: sm.extra_revenue >= 0 ? '💰 Заработано доп.' : '—',
+    badgeBg: 'rgba(52,211,153,.08)',
+    badgeCol: '#34d399',
+  });
+
+  if (!items.length) return;
+
+  el.innerHTML = items.map(function(it) {
+    return `<div class="cp-roi-item">
+      <div class="cp-roi-val" style="color:${it.color};">${it.val}</div>
+      <div class="cp-roi-lbl">${it.lbl}</div>
+      <div class="cp-roi-badge" style="background:${it.badgeBg};color:${it.badgeCol};">${it.badge}</div>
+    </div>`;
+  }).join('');
+
+  el.style.display = 'flex';
+}
+
+// ── 4. SMM METRICS ──────────────────────────────
+async function cpRenderSMMMetrics(project) {
+  const el = g('cp-smm-metrics');
+  const grid = g('cp-smm-metrics-grid');
+  const bench = g('cp-benchmark-row');
+  const period = g('cp-smm-period');
+  if (!el || !grid) return;
+
+  const { data: reps } = await sb.from('smm_reports')
+    .select('id,period_label,created_at,metrics')
+    .eq('project_id', project.id)
+    .order('created_at', { ascending: false }).limit(1);
+  
+  const rep = reps && reps[0];
+  const m = rep && rep.metrics;
+  if (!m) return;
+
+  if (period) period.textContent = rep.period_label || '—';
+
+  var metrics = [
+    { key:'er',  label:'ER',   color: CP_SMM_COLORS.er },
+    { key:'lr',  label:'LR',   color: CP_SMM_COLORS.lr },
+    { key:'tr',  label:'C/R',  color: CP_SMM_COLORS.tr },
+    { key:'shr', label:'SH/R', color: CP_SMM_COLORS.shr },
+    { key:'sr',  label:'SR',   color: CP_SMM_COLORS.sr },
+  ];
+
+  grid.innerHTML = metrics.map(function(mt) {
+    const val = m[mt.key];
+    if (val == null) return '';
+    return `<div class="cp-smm-metric">
+      <div class="cp-smm-metric-lbl">${mt.label}</div>
+      <div class="cp-smm-metric-val" style="color:${mt.color};">${val.toFixed(2)}%</div>
+    </div>`;
+  }).join('');
+
+  // Benchmark highlight — check ER
+  if (m.er != null && bench) {
+    const b = CP_SMM_BENCH.er;
+    const isGood = m.er >= b.good;
+    bench.innerHTML = `<span style="color:rgba(91,95,199,.4);">ER ${m.er.toFixed(2)}%</span>
+      <span class="cp-bench-highlight">${isGood ? '✓ Выше среднего по нише' : '↑ Есть потенциал роста'}</span>
+      <span style="color:rgba(91,95,199,.3);">·</span>
+      <span style="color:rgba(91,95,199,.4);">Норма для ресторанов: ${b.good}%+</span>`;
+  }
+
+  el.style.display = 'block';
+}
+
+// ── 5. FOCUS CARD ────────────────────────────────
+async function cpRenderFocusCard(project) {
+  const el = g('cp-focus-card');
+  if (!el) return;
+
+  // Determine focus based on active stage
+  const { data: arr } = await sb.from('project_stages')
+    .select('*').eq('project_id', project.id).order('stage_index');
+  if (!arr) return;
+  
+  const active = arr.find(s => s.status === 'active');
+  const completed = arr.filter(s => s.status === 'completed').length;
+  if (!active && completed === 0) return;
+
+  const stageObj = active && typeof STAGES !== 'undefined' ? STAGES[active.stage_index] : null;
+  
+  var FOCUS_TEXTS = {
+    0: ['Изучаем вашу аудиторию — кто ваши гости, что им важно, почему они выбирают именно вас.', 'Это фундамент. Без глубокого понимания аудитории любой контент — выстрел вслепую.'],
+    1: ['Анализируем конкурентов: что они делают хорошо и где ваше конкурентное преимущество.', 'Знание конкурентов помогает занять чёткую позицию в голове вашей аудитории.'],
+    2: ['Разрабатываем контент-стратегию: голос бренда, рубрики, визуальный стиль, частота публикаций.', 'Хорошая стратегия — это когда каждый пост работает на общую цель.'],
+    3: ['Настраиваем таргетированную рекламу — показываем ваш ресторан именно тем, кто готов прийти.', 'Правильные аудитории = деньги работают эффективно, не распыляются.'],
+    4: ['Создаём контент-план: темы, форматы, даты выхода на месяц вперёд.', 'Системный план убирает хаос и обеспечивает стабильность присутствия в ленте.'],
+    5: ['Пишем сценарии для Reels — главный инструмент роста в Instagram в 2026 году.', 'Один сильный Reel может принести больше, чем 30 обычных постов.'],
+    6: ['Первая съёмка: создаём визуальный контент для публикаций следующих недель.', 'Профессиональный контент — это то, что отличает серьёзный бренд от любительского.'],
+    7: ['Второй раунд съёмок — наполняем контент-базу, расширяем форматы и ракурсы.', 'Разнообразие контента удерживает аудиторию от усталости.'],
+    8: ['Готовим финальный отчёт — цифры, выводы, рекомендации на следующий период.', 'Отчёт показывает не просто что было сделано, а что это дало вашему бизнесу.'],
+  };
+
+  const si = active ? active.stage_index : completed - 1;
+  const texts = FOCUS_TEXTS[si] || ['Проект в активной фазе.', ''];
+  
+  const focusEl = g('cp-focus-text');
+  const tipEl   = g('cp-focus-tip');
+  if (focusEl) focusEl.textContent = stageObj ? `${stageObj.icon} ${stageObj.name}: ${texts[0]}` : texts[0];
+  if (tipEl)   tipEl.textContent   = texts[1];
+  el.style.display = 'flex';
+}
+
+// ── 6. MILESTONE BANNER ──────────────────────────
+async function cpRenderMilestone(project) {
+  const el = g('cp-milestone');
+  const inner = g('cp-milestone-inner');
+  if (!el || !inner) return;
+
+  const { data: arr } = await sb.from('project_stages')
+    .select('*').eq('project_id', project.id).order('stage_index');
+  if (!arr) return;
+
+  const completed = arr.filter(s => s.status === 'completed').length;
+  const total = 9;
+  const pct = Math.round(completed / total * 100);
+
+  var milestone = null;
+  if (completed === total) {
+    milestone = { emoji: '🏆', title: 'Проект завершён!', sub: 'Все ' + total + ' этапов выполнены · Отличная работа команды' };
+  } else if (completed >= 5 && completed < total) {
+    milestone = { emoji: '🎯', title: 'Пройдена половина пути!', sub: completed + ' из ' + total + ' этапов · Стратегия запущена, контент в работе' };
+  } else if (completed >= 2 && completed < 5) {
+    milestone = { emoji: '🚀', title: 'Старт взят!', sub: 'Аналитика готова — начинаем создавать контент' };
+  }
+
+  if (!milestone) return;
+
+  inner.innerHTML = `<div class="cp-milestone-emoji">${milestone.emoji}</div>
+    <div class="cp-milestone-title">${milestone.title}</div>
+    <div class="cp-milestone-sub">${milestone.sub}</div>`;
+  el.style.display = 'block';
+}
+</script>
+
 </body>
 </html>
 <!-- DTR Passport Sidebar Logic -->
