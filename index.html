@@ -22162,6 +22162,283 @@ function runNewBlocks() {
   .pp-header { padding: 20px 20px 0 !important; }
 }
 </style>
+
+<style id="dtr-preview-scale-fix">
+/* ═══════════════════════════════════════════════════
+   PREVIEW PANEL — Full width, fills the column
+═══════════════════════════════════════════════════ */
+
+/* Make right column fill height and use full space */
+.pp-split-right {
+  overflow-y: auto !important;
+}
+
+.pp-preview-panel {
+  padding: 24px !important;
+  height: 100% !important;
+  box-sizing: border-box !important;
+}
+.pp-preview-panel.pp-pv-active {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Venue card — full width, no max-width cap */
+.ppv-venue-card {
+  max-width: 100% !important;
+  margin: 0 !important;
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  border-radius: 18px !important;
+  background: #0e0e1c !important;
+  border: 1px solid rgba(255,255,255,.1) !important;
+  overflow: hidden !important;
+}
+
+/* TOP section — bigger avatar + name */
+.ppv-venue-top {
+  padding: 32px 36px 28px !important;
+  gap: 22px !important;
+}
+.ppv-venue-avatar {
+  width: 72px !important;
+  height: 72px !important;
+  border-radius: 18px !important;
+  font-size: 32px !important;
+  font-weight: 800 !important;
+}
+.ppv-venue-name {
+  font-size: 32px !important;
+  letter-spacing: -.05em !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+}
+.ppv-venue-cat {
+  font-size: 13px !important;
+  margin-top: 7px !important;
+  letter-spacing: .04em !important;
+}
+
+/* Body rows — bigger, more air */
+.ppv-venue-body {
+  padding: 22px 36px !important;
+  gap: 14px !important;
+  flex: 1 !important;
+}
+.ppv-info-row {
+  font-size: 15px !important;
+  gap: 14px !important;
+}
+.ppv-info-row svg {
+  width: 16px !important;
+  height: 16px !important;
+  flex-shrink: 0 !important;
+  opacity: .45 !important;
+}
+
+/* Socials */
+.ppv-socials-row {
+  padding: 20px 36px !important;
+  gap: 12px !important;
+}
+.ppv-social-chip {
+  padding: 10px 20px !important;
+  font-size: 13px !important;
+  border-radius: 10px !important;
+  flex: 1 !important;
+  justify-content: center !important;
+}
+.ppv-social-chip svg {
+  width: 15px !important;
+  height: 15px !important;
+}
+
+/* Hours */
+.ppv-hours-row {
+  padding: 18px 36px !important;
+  font-size: 14px !important;
+  gap: 12px !important;
+}
+.ppv-hours-row svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* ── Brand card — full width ── */
+.ppv-brand-card {
+  max-width: 100% !important;
+  margin: 0 !important;
+  flex: 1 !important;
+  border-radius: 18px !important;
+  background: #0e0e1c !important;
+  border: 1px solid rgba(255,255,255,.1) !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+.ppv-brand-section {
+  padding: 22px 32px !important;
+}
+.ppv-bsec-label {
+  font-size: 10px !important;
+  margin-bottom: 14px !important;
+  letter-spacing: .22em !important;
+}
+.ppv-tone-badge {
+  font-size: 16px !important;
+  padding: 10px 22px !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+}
+.ppv-palette-swatch {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 10px !important;
+}
+.ppv-msg-tag {
+  font-size: 13px !important;
+  padding: 7px 16px !important;
+  border-radius: 8px !important;
+}
+.ppv-forbidden-tag {
+  font-size: 12px !important;
+  padding: 6px 14px !important;
+  border-radius: 8px !important;
+}
+.ppv-style-quote {
+  font-size: 15px !important;
+  line-height: 1.7 !important;
+  padding-left: 18px !important;
+  border-left-width: 3px !important;
+}
+
+/* ── Media card ── */
+.ppv-media-card {
+  max-width: 100% !important;
+  margin: 0 !important;
+  flex: 1 !important;
+  border-radius: 18px !important;
+  background: #0e0e1c !important;
+  border: 1px solid rgba(255,255,255,.1) !important;
+}
+.ppv-media-link-item {
+  padding: 18px 28px !important;
+  gap: 18px !important;
+}
+.ppv-ml-icon {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 11px !important;
+}
+.ppv-ml-icon svg {
+  width: 20px !important;
+  height: 20px !important;
+}
+.ppv-ml-label { font-size: 10px !important; margin-bottom: 5px !important; }
+.ppv-ml-url {
+  font-size: 13px !important;
+  max-width: 100% !important;
+}
+.ppv-ml-status {
+  width: 10px !important;
+  height: 10px !important;
+}
+.ppv-rules-text {
+  font-size: 14px !important;
+  line-height: 1.7 !important;
+}
+
+/* ── Audience preview ── */
+.ppv-audience-header,
+.ppv-comp-header,
+.ppv-kpi-header,
+.ppv-notes-header {
+  margin-bottom: 20px !important;
+}
+.ppv-persona-grid {
+  grid-template-columns: 1fr 1fr !important;
+  gap: 16px !important;
+}
+.ppv-persona-mini {
+  padding: 22px !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(255,255,255,.09) !important;
+  background: #0e0e1c !important;
+}
+.ppv-persona-mini-name {
+  font-size: 17px !important;
+  margin-bottom: 5px !important;
+}
+.ppv-persona-mini-age {
+  font-size: 11px !important;
+  margin-bottom: 14px !important;
+}
+.ppv-persona-mini-attr {
+  font-size: 13px !important;
+  margin-bottom: 6px !important;
+}
+
+/* ── Competitor items ── */
+.ppv-comp-item {
+  border-radius: 14px !important;
+  padding: 18px 22px !important;
+  margin-bottom: 10px !important;
+  background: #0e0e1c !important;
+  border: 1px solid rgba(255,255,255,.09) !important;
+}
+.ppv-comp-name {
+  font-size: 17px !important;
+  margin-bottom: 12px !important;
+}
+.ppv-comp-cols { gap: 16px !important; }
+.ppv-comp-col-lbl { font-size: 10px !important; margin-bottom: 5px !important; }
+.ppv-comp-col-val { font-size: 13px !important; }
+
+/* ── KPI items ── */
+.ppv-kpi-item {
+  padding: 20px 24px !important;
+  margin-bottom: 10px !important;
+  border-radius: 14px !important;
+  background: #0e0e1c !important;
+  border: 1px solid rgba(255,255,255,.09) !important;
+}
+.ppv-kpi-goal { font-size: 16px !important; margin-bottom: 14px !important; }
+.ppv-kpi-nums { gap: 32px !important; }
+.ppv-kpi-num-val { font-size: 24px !important; }
+.ppv-kpi-num-lbl { font-size: 10px !important; }
+
+/* ── Notes ── */
+.ppv-note-item {
+  padding: 16px 0 !important;
+  gap: 16px !important;
+}
+.ppv-note-text { font-size: 14px !important; line-height: 1.7 !important; }
+.ppv-note-time { font-size: 11px !important; }
+.ppv-note-dot {
+  width: 10px !important;
+  height: 10px !important;
+  margin-top: 4px !important;
+}
+
+/* ── Empty state ── */
+.ppv-empty-preview {
+  font-size: 12px !important;
+  padding: 80px 30px !important;
+  letter-spacing: .08em !important;
+}
+
+/* Preview header bar */
+.pp-preview-header {
+  padding: 14px 28px !important;
+}
+.pp-preview-label {
+  font-size: 10px !important;
+  letter-spacing: .12em !important;
+}
+.pp-preview-tab-label {
+  font-size: 11px !important;
+}
+</style>
 </body>
 </html>
 <!-- DTR Passport Sidebar Logic -->
