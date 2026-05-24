@@ -8347,21 +8347,33 @@ canvas {
       <button class="logout-btn" onclick="doLogout()">Выйти</button>
     </div>
   </header>
-  <div class="app-main">
-    <div class="back-btn" onclick="goBackToProject()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
-      Назад к проекту
-    </div>
-    <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px;">
-      <div id="pp-icon" style="width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;"></div>
-      <div>
-        <div style="font-family:Manrope,sans-serif;font-size:10px;color:var(--txt3);letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px;">Паспорт клиента</div>
-        <div style="font-family:Manrope,sans-serif;font-size:26px;font-weight:800;letter-spacing:-.03em;" id="pp-title">—</div>
+  <div class="app-main pp-app-main">
+    <!-- ── HEADER ── -->
+    <div class="pp-header">
+      <div class="back-btn" onclick="goBackToProject()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        Назад к проекту
+      </div>
+      <div class="pp-title-row">
+        <div id="pp-icon" class="pp-avatar"></div>
+        <div class="pp-title-info">
+          <div class="pp-label-tag">Паспорт клиента</div>
+          <div class="pp-name" id="pp-title">—</div>
+          <div class="pp-meta-row">
+            <span class="pp-meta-chip" id="pp-category-chip">—</span>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Tab nav -->
-    <div class="passport-nav" id="passport-nav">
+    <!-- ── TWO-COLUMN SHELL ── -->
+    <div class="pp-layout">
+
+      <!-- LEFT: Tab content -->
+      <div class="pp-main-col">
+
+        <!-- Tab nav -->
+        <div class="passport-nav" id="passport-nav">
       <button class="passport-tab pt-active" onclick="switchPassportTab('basic',this)">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="13" y2="13"/></svg>
         Профиль
@@ -8631,7 +8643,100 @@ canvas {
       </div>
     </div>
 
-    <div style="height:60px;"></div>
+        <div style="height:60px;"></div>
+      </div><!-- /pp-main-col -->
+
+      <!-- RIGHT: Sticky project brief sidebar -->
+      <aside class="pp-sidebar">
+
+        <!-- Project Identity -->
+        <div class="pp-sb-card">
+          <div class="pp-sb-title">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
+            Проект
+          </div>
+          <div class="pp-sb-project-name" id="pp-sb-name">—</div>
+          <div class="pp-sb-project-cat" id="pp-sb-category">—</div>
+        </div>
+
+        <!-- Completion checklist -->
+        <div class="pp-sb-card">
+          <div class="pp-sb-title">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            Заполненность паспорта
+          </div>
+          <div class="pp-sb-progress-bar-wrap">
+            <div class="pp-sb-progress-bar" id="pp-sb-progress" style="width:0%"></div>
+          </div>
+          <div class="pp-sb-progress-label" id="pp-sb-progress-label">Рассчитывается...</div>
+          <div class="pp-sb-checklist" id="pp-sb-checklist">
+            <div class="pp-sb-check-item" data-tab="basic">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Профиль заведения</span>
+            </div>
+            <div class="pp-sb-check-item" data-tab="brand">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Бренд и тон голоса</span>
+            </div>
+            <div class="pp-sb-check-item" data-tab="audience">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Портреты аудитории</span>
+            </div>
+            <div class="pp-sb-check-item" data-tab="competitors">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Конкурентная карта</span>
+            </div>
+            <div class="pp-sb-check-item" data-tab="kpi">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Цели и KPI</span>
+            </div>
+            <div class="pp-sb-check-item" data-tab="media">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Медиа-библиотека</span>
+            </div>
+            <div class="pp-sb-check-item" data-tab="notes">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Заметки команды</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick nav guide -->
+        <div class="pp-sb-card">
+          <div class="pp-sb-title">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+            Быстрый старт
+          </div>
+          <div class="pp-sb-guide">
+            <div class="pp-sb-guide-step">
+              <span class="pp-sb-step-num">1</span>
+              <span>Заполни <b>Профиль</b> — название, контакты, соцсети</span>
+            </div>
+            <div class="pp-sb-guide-step">
+              <span class="pp-sb-step-num">2</span>
+              <span>Укажи <b>Бренд</b> — тон голоса и запрещённые темы</span>
+            </div>
+            <div class="pp-sb-guide-step">
+              <span class="pp-sb-step-num">3</span>
+              <span>Добавь <b>Аудиторию</b> — минимум 2 персонажа</span>
+            </div>
+            <div class="pp-sb-guide-step">
+              <span class="pp-sb-step-num">4</span>
+              <span>Занеси <b>KPI</b> — согласованные цели с клиентом</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Last update -->
+        <div class="pp-sb-last-update" id="pp-sb-last-update">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Последнее обновление: —
+        </div>
+
+      </aside><!-- /pp-sidebar -->
+
+    </div><!-- /pp-layout -->
+
   </div>
 </div>
 
@@ -21719,5 +21824,391 @@ function runNewBlocks() {
 }
 
 </style>
+
+<style id="dtr-passport-layout-v3">
+/* ═══════════════════════════════════════════════════════
+   PASSPORT PAGE — Two-column layout + Avatar fix
+═══════════════════════════════════════════════════════ */
+
+/* ── PAGE SHELL ── */
+.pp-app-main {
+  padding: 0 !important;
+  max-width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: calc(100vh - 60px) !important;
+}
+
+/* ── HEADER BAND ── */
+.pp-header {
+  padding: 28px 48px 0 !important;
+}
+
+/* ── LAYOUT: main col + sidebar ── */
+.pp-layout {
+  display: grid !important;
+  grid-template-columns: 1fr 300px !important;
+  gap: 0 !important;
+  align-items: start !important;
+  flex: 1 !important;
+}
+
+.pp-main-col {
+  padding: 0 0 0 48px !important;
+  min-width: 0 !important;
+}
+
+/* ── AVATAR FIX ── */
+.pp-avatar,
+#pp-icon {
+  width: 60px !important;
+  height: 60px !important;
+  border-radius: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-family: 'Sora','Manrope',sans-serif !important;
+  font-size: 26px !important;
+  font-weight: 800 !important;
+  flex-shrink: 0 !important;
+  letter-spacing: -.02em !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,.35) !important;
+  /* Ensure text (single letter) shows */
+  color: inherit !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+/* ── TITLE ROW ── */
+.pp-title-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 18px !important;
+  margin-bottom: 24px !important;
+}
+
+.pp-title-info {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+}
+
+.pp-label-tag {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important;
+  color: rgba(129,140,248,.5) !important;
+  letter-spacing: .22em !important;
+  text-transform: uppercase !important;
+}
+
+.pp-name {
+  font-family: 'Sora','Manrope',sans-serif !important;
+  font-size: 30px !important;
+  font-weight: 800 !important;
+  letter-spacing: -.05em !important;
+  color: #f1f1f5 !important;
+  line-height: 1.1 !important;
+}
+
+.pp-meta-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-top: 2px !important;
+}
+
+.pp-meta-chip {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  padding: 3px 10px !important;
+  border-radius: 6px !important;
+  background: rgba(255,255,255,.06) !important;
+  border: 1px solid rgba(255,255,255,.09) !important;
+  color: rgba(255,255,255,.45) !important;
+  letter-spacing: .04em !important;
+}
+
+/* ── PASSPORT NAV inside pp-main-col ── */
+.pp-main-col .passport-nav {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  position: sticky !important;
+  top: 60px !important;
+  backdrop-filter: blur(32px) !important;
+  background: rgba(6,6,10,.95) !important;
+}
+
+/* ── PS-CARD full width inside col ── */
+.pp-main-col .ps-card {
+  width: 100% !important;
+}
+
+/* ══════════════════════════════════════════════
+   SIDEBAR — Sticky project brief
+══════════════════════════════════════════════ */
+.pp-sidebar {
+  padding: 0 32px 40px 24px !important;
+  position: sticky !important;
+  top: 60px !important;
+  align-self: start !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  max-height: calc(100vh - 80px) !important;
+  overflow-y: auto !important;
+  scrollbar-width: none !important;
+  padding-top: 20px !important;
+}
+.pp-sidebar::-webkit-scrollbar { display: none !important; }
+
+.pp-sb-card {
+  background: #0d0d16 !important;
+  border: 1px solid rgba(255,255,255,.07) !important;
+  border-radius: 14px !important;
+  padding: 18px 20px !important;
+  transition: border-color .2s !important;
+}
+.pp-sb-card:hover { border-color: rgba(255,255,255,.13) !important; }
+
+.pp-sb-title {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important;
+  color: rgba(255,255,255,.25) !important;
+  letter-spacing: .2em !important;
+  text-transform: uppercase !important;
+  margin-bottom: 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+}
+.pp-sb-title svg { opacity: .5 !important; }
+
+/* Project identity */
+.pp-sb-project-name {
+  font-family: 'Sora','Manrope',sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.04em !important;
+  color: #f1f1f5 !important;
+  margin-bottom: 5px !important;
+}
+.pp-sb-project-cat {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 11px !important;
+  color: rgba(255,255,255,.35) !important;
+  letter-spacing: .04em !important;
+}
+
+/* Progress bar */
+.pp-sb-progress-bar-wrap {
+  height: 4px !important;
+  background: rgba(255,255,255,.07) !important;
+  border-radius: 99px !important;
+  overflow: hidden !important;
+  margin-bottom: 8px !important;
+}
+.pp-sb-progress-bar {
+  height: 100% !important;
+  background: linear-gradient(90deg, #5b5fc7, #818cf8) !important;
+  border-radius: 99px !important;
+  transition: width 1s cubic-bezier(.16,1,.3,1) !important;
+}
+.pp-sb-progress-label {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  color: rgba(255,255,255,.3) !important;
+  margin-bottom: 16px !important;
+}
+
+/* Checklist */
+.pp-sb-checklist {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+.pp-sb-check-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 9px !important;
+  font-family: 'Manrope', sans-serif !important;
+  font-size: 12px !important;
+  color: rgba(255,255,255,.3) !important;
+  cursor: pointer !important;
+  transition: color .15s !important;
+  padding: 3px 0 !important;
+}
+.pp-sb-check-item svg {
+  width: 14px !important; height: 14px !important;
+  flex-shrink: 0 !important;
+  opacity: .2 !important;
+  color: rgba(255,255,255,.3) !important;
+}
+.pp-sb-check-item:hover { color: rgba(255,255,255,.65) !important; }
+.pp-sb-check-item.pp-sb-check-done {
+  color: rgba(52,211,153,.8) !important;
+}
+.pp-sb-check-item.pp-sb-check-done svg {
+  opacity: 1 !important;
+  color: #34d399 !important;
+  stroke: #34d399 !important;
+  filter: drop-shadow(0 0 3px rgba(52,211,153,.4)) !important;
+}
+
+/* Quick guide steps */
+.pp-sb-guide {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+.pp-sb-guide-step {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  font-family: 'Manrope', sans-serif !important;
+  font-size: 12px !important;
+  color: rgba(255,255,255,.42) !important;
+  line-height: 1.5 !important;
+}
+.pp-sb-guide-step b {
+  color: rgba(255,255,255,.7) !important;
+  font-weight: 600 !important;
+}
+.pp-sb-step-num {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  color: rgba(129,140,248,.6) !important;
+  background: rgba(91,95,199,.12) !important;
+  border: 1px solid rgba(129,140,248,.18) !important;
+  border-radius: 6px !important;
+  width: 20px !important; height: 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  margin-top: 1px !important;
+}
+
+/* Last update */
+.pp-sb-last-update {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  color: rgba(255,255,255,.18) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 0 4px !important;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .pp-layout { grid-template-columns: 1fr 260px !important; }
+}
+@media (max-width: 900px) {
+  .pp-layout { grid-template-columns: 1fr !important; }
+  .pp-sidebar { display: none !important; }
+  .pp-main-col { padding-left: 0 !important; }
+  .pp-header { padding: 20px 20px 0 !important; }
+}
+</style>
 </body>
 </html>
+<!-- DTR Passport Sidebar Logic -->
+<script>
+(function() {
+  // Update sidebar when passport data loads
+  var _origLoadPassport = typeof loadPassport !== 'undefined' ? loadPassport : null;
+
+  function ppSidebarUpdate() {
+    // Project name + category
+    var proj = typeof currentProject !== 'undefined' ? currentProject : null;
+    if (proj) {
+      var sbName = document.getElementById('pp-sb-name');
+      var sbCat  = document.getElementById('pp-sb-category');
+      var sbChip = document.getElementById('pp-category-chip');
+      if (sbName) sbName.textContent = proj.name || '—';
+      // category comes from passport basic data
+      setTimeout(function() {
+        var pd = typeof passportData !== 'undefined' ? passportData : null;
+        var cat = pd && pd.basic && pd.basic.category ? pd.basic.category : proj.description || '—';
+        if (sbCat)  sbCat.textContent  = cat;
+        if (sbChip) sbChip.textContent = cat;
+        ppUpdateChecklist(pd);
+        ppUpdateProgress(pd);
+        ppUpdateLastUpdate(pd);
+      }, 800);
+    }
+  }
+
+  function ppUpdateChecklist(pd) {
+    var checks = document.querySelectorAll('.pp-sb-check-item');
+    if (!pd) return;
+    var filled = {
+      basic: pd.basic && (pd.basic.name || pd.basic.phone || pd.basic.address),
+      brand: pd.brand && (pd.brand.tone || pd.brand.messages),
+      audience: pd.audience && pd.audience.length > 0,
+      competitors: pd.competitors && pd.competitors.length > 0,
+      kpi: pd.kpi && pd.kpi.length > 0,
+      media: pd.media && (pd.media.photo || pd.media.video),
+      notes: pd.notes && pd.notes.length > 0,
+    };
+    checks.forEach(function(el) {
+      var tab = el.getAttribute('data-tab');
+      if (filled[tab]) {
+        el.classList.add('pp-sb-check-done');
+      } else {
+        el.classList.remove('pp-sb-check-done');
+      }
+    });
+  }
+
+  function ppUpdateProgress(pd) {
+    if (!pd) return;
+    var sections = ['basic','brand','audience','competitors','kpi','media','notes'];
+    var filled = {
+      basic: pd.basic && (pd.basic.name || pd.basic.phone),
+      brand: pd.brand && pd.brand.tone,
+      audience: pd.audience && pd.audience.length > 0,
+      competitors: pd.competitors && pd.competitors.length > 0,
+      kpi: pd.kpi && pd.kpi.length > 0,
+      media: pd.media && pd.media.photo,
+      notes: pd.notes && pd.notes.length > 0,
+    };
+    var count = sections.filter(function(s) { return filled[s]; }).length;
+    var pct = Math.round(count / sections.length * 100);
+    var bar = document.getElementById('pp-sb-progress');
+    var lbl = document.getElementById('pp-sb-progress-label');
+    if (bar) bar.style.width = pct + '%';
+    if (lbl) lbl.textContent = count + ' из ' + sections.length + ' разделов заполнено · ' + pct + '%';
+  }
+
+  function ppUpdateLastUpdate(pd) {
+    var el = document.getElementById('pp-sb-last-update');
+    if (!el) return;
+    var now = new Date();
+    var months = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+    el.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Обновлено: ' + now.getDate() + ' ' + months[now.getMonth()];
+  }
+
+  // Hook into page show
+  var _orig = typeof openPassport !== 'undefined' ? openPassport : null;
+  // Poll for passport load
+  var _ppInterval = setInterval(function() {
+    var page = document.getElementById('page-passport');
+    if (page && page.classList.contains('active')) {
+      ppSidebarUpdate();
+    }
+  }, 1200);
+
+  // Also fire on tab switch to update checklist
+  document.addEventListener('click', function(e) {
+    var tab = e.target.closest('.passport-tab');
+    if (tab) {
+      setTimeout(function() {
+        var pd = typeof passportData !== 'undefined' ? passportData : null;
+        if (pd) { ppUpdateChecklist(pd); ppUpdateProgress(pd); }
+      }, 100);
+    }
+  });
+})();
+</script>
