@@ -6942,6 +6942,223 @@ input, select, textarea {
 })();
 </script>
 
+<style id="dtr-report-animations">
+/* ════════════════════════════════════════════════════
+   PREMIUM REPORT ANIMATIONS — Serious & Dynamic
+════════════════════════════════════════════════════ */
+
+/* ── Keyframes ── */
+@keyframes rp-fade-up    { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+@keyframes rp-fade-in    { from{opacity:0} to{opacity:1} }
+@keyframes rp-slide-left { from{opacity:0;transform:translateX(-12px)} to{opacity:1;transform:translateX(0)} }
+@keyframes rp-scale-in   { from{opacity:0;transform:scale(.96)} to{opacity:1;transform:scale(1)} }
+@keyframes rp-count-up   { from{opacity:0;transform:translateY(8px);filter:blur(3px)} to{opacity:1;transform:translateY(0);filter:blur(0)} }
+@keyframes rp-bar-grow   { from{width:0 !important} to{width:var(--target-w)} }
+@keyframes rp-line-draw  { from{stroke-dashoffset:1000} to{stroke-dashoffset:0} }
+@keyframes rp-pulse-dot  { 0%,100%{box-shadow:0 0 0 0 rgba(91,95,199,.4)} 50%{box-shadow:0 0 0 8px rgba(91,95,199,0)} }
+@keyframes rp-shimmer    {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes rp-border-glow {
+  0%,100% { border-color: rgba(91,95,199,.1); }
+  50%      { border-color: rgba(91,95,199,.28); }
+}
+@keyframes rp-top-line {
+  from { transform: scaleX(0); transform-origin: left; }
+  to   { transform: scaleX(1); transform-origin: left; }
+}
+@keyframes rp-number-flip {
+  0%   { opacity:0; transform:translateY(-6px) rotateX(90deg); }
+  100% { opacity:1; transform:translateY(0) rotateX(0); }
+}
+
+/* ── Hero compare — enters from top ── */
+.hero-compare {
+  animation: rp-fade-up .5s cubic-bezier(.16,1,.3,1) both !important;
+}
+.hero-compare::before {
+  animation: rp-top-line .8s .3s cubic-bezier(.16,1,.3,1) both !important;
+}
+.hb.before  { animation: rp-slide-left .45s .1s cubic-bezier(.16,1,.3,1) both !important; }
+.hb.during  { animation: rp-slide-left .45s .18s cubic-bezier(.16,1,.3,1) both !important; }
+
+/* ── KPI values — number flip animation ── */
+.kpi-v {
+  animation: rp-count-up .55s cubic-bezier(.16,1,.3,1) both !important;
+  perspective: 400px !important;
+}
+.kpi:nth-child(1) .kpi-v { animation-delay: .08s !important; }
+.kpi:nth-child(2) .kpi-v { animation-delay: .14s !important; }
+.kpi:nth-child(3) .kpi-v { animation-delay: .20s !important; }
+.kpi:nth-child(4) .kpi-v { animation-delay: .26s !important; }
+.kpi:nth-child(5) .kpi-v { animation-delay: .32s !important; }
+
+/* ── KPI cards stagger ── */
+.kpi-row .kpi { animation: rp-scale-in .4s cubic-bezier(.16,1,.3,1) both !important; }
+.kpi-row .kpi:nth-child(1) { animation-delay: .05s !important; }
+.kpi-row .kpi:nth-child(2) { animation-delay: .10s !important; }
+.kpi-row .kpi:nth-child(3) { animation-delay: .15s !important; }
+.kpi-row .kpi:nth-child(4) { animation-delay: .20s !important; }
+.kpi-row .kpi:nth-child(5) { animation-delay: .25s !important; }
+
+/* ── Section headers slide in ── */
+.sh {
+  animation: rp-slide-left .4s cubic-bezier(.16,1,.3,1) both !important;
+}
+
+/* ── Chart blocks stagger ── */
+.cb {
+  animation: rp-fade-up .45s cubic-bezier(.16,1,.3,1) both !important;
+}
+.two .cb:first-child { animation-delay: .04s !important; }
+.two .cb:last-child  { animation-delay: .10s !important; }
+
+/* ── Progress/bar fills animate on load ── */
+.ir-fill {
+  animation: rp-bar-grow .8s cubic-bezier(.16,1,.3,1) both !important;
+}
+.ot-bar {
+  transition: width 1.2s cubic-bezier(.16,1,.3,1) !important;
+}
+
+/* ── Insight rows slide in ── */
+.ins-row {
+  animation: rp-slide-left .4s cubic-bezier(.16,1,.3,1) both !important;
+}
+#ins-block .ins-row:nth-child(1) { animation-delay: .04s !important; }
+#ins-block .ins-row:nth-child(2) { animation-delay: .10s !important; }
+#ins-block .ins-row:nth-child(3) { animation-delay: .16s !important; }
+#ins-block .ins-row:nth-child(4) { animation-delay: .22s !important; }
+
+/* ── Peaks block ── */
+#peaks-block .cb, #peaksBlock .cb {
+  animation: rp-fade-up .5s .2s cubic-bezier(.16,1,.3,1) both !important;
+}
+
+/* ── Section entry ── */
+#seg-time-block {
+  animation: rp-fade-up .5s cubic-bezier(.16,1,.3,1) both !important;
+}
+#avg-channel-section {
+  animation: rp-fade-up .5s .05s cubic-bezier(.16,1,.3,1) both !important;
+}
+#sec-trend, #sec-hour-kpd, #sec-peak-shift,
+#sec-menu-rotation, #sec-channel-revenue,
+#sec-delivery-time, #sec-branch-contrib {
+  animation: rp-fade-up .45s cubic-bezier(.16,1,.3,1) both !important;
+}
+
+/* ── AI block ── */
+.ai-block {
+  animation: rp-scale-in .5s .1s cubic-bezier(.16,1,.3,1) both !important;
+}
+.ai-top-line {
+  animation: rp-top-line .9s cubic-bezier(.16,1,.3,1) both !important;
+}
+.ai-section {
+  animation: rp-slide-left .4s cubic-bezier(.16,1,.3,1) both !important;
+}
+.ai-section:nth-child(1) { animation-delay: .05s !important; }
+.ai-section:nth-child(2) { animation-delay: .12s !important; }
+.ai-section:nth-child(3) { animation-delay: .19s !important; }
+.ai-section:nth-child(4) { animation-delay: .26s !important; }
+
+/* ── Hover: KPI shimmer effect ── */
+.kpi {
+  background-image: none !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.kpi::after {
+  content: '' !important;
+  position: absolute !important;
+  top: 0; left: -100%; width: 60%; height: 100% !important;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.04), transparent) !important;
+  transition: left .5s !important;
+  pointer-events: none !important;
+}
+.kpi:hover::after { left: 150% !important; }
+
+/* ── CB hover: subtle top accent ── */
+.cb {
+  position: relative !important;
+}
+.cb::after {
+  content: '' !important;
+  position: absolute !important;
+  top: 0; left: 20%; right: 20%; height: 1px !important;
+  background: linear-gradient(90deg, transparent, rgba(91,95,199,.4), transparent) !important;
+  opacity: 0 !important;
+  transition: opacity .25s, left .25s !important;
+}
+.cb:hover::after { opacity: 1 !important; }
+
+/* ── Item row — slide on hover ── */
+.ir { transition: all .18s cubic-bezier(.16,1,.3,1) !important; }
+.ir:hover { transform: translateX(5px) !important; }
+
+/* ── Weekday badge ── */
+#weekday-best > div {
+  animation: rp-scale-in .4s cubic-bezier(.16,1,.3,1) both !important;
+}
+#weekday-best > div:nth-child(1){ animation-delay:.05s !important; }
+#weekday-best > div:nth-child(2){ animation-delay:.12s !important; }
+#weekday-best > div:nth-child(3){ animation-delay:.19s !important; }
+
+/* ── Segment cards (time of day) stagger ── */
+#seg-time-inner > div:nth-child(1) { animation: rp-scale-in .4s .03s cubic-bezier(.16,1,.3,1) both !important; }
+#seg-time-inner > div:nth-child(2) { animation: rp-scale-in .4s .08s cubic-bezier(.16,1,.3,1) both !important; }
+#seg-time-inner > div:nth-child(3) { animation: rp-scale-in .4s .13s cubic-bezier(.16,1,.3,1) both !important; }
+#seg-time-inner > div:nth-child(4) { animation: rp-scale-in .4s .18s cubic-bezier(.16,1,.3,1) both !important; }
+
+/* ── Channel cards stagger ── */
+#avg-channel-inner > div:nth-child(1) { animation: rp-fade-up .4s .04s cubic-bezier(.16,1,.3,1) both !important; }
+#avg-channel-inner > div:nth-child(2) { animation: rp-fade-up .4s .10s cubic-bezier(.16,1,.3,1) both !important; }
+#avg-channel-inner > div:nth-child(3) { animation: rp-fade-up .4s .16s cubic-bezier(.16,1,.3,1) both !important; }
+#avg-channel-inner > div:nth-child(4) { animation: rp-fade-up .4s .22s cubic-bezier(.16,1,.3,1) both !important; }
+
+/* ── Branch contrib rows ── */
+#branch-contrib-inner > div { animation: rp-slide-left .4s cubic-bezier(.16,1,.3,1) both !important; }
+#branch-contrib-inner > div:nth-child(1){ animation-delay:.04s !important; }
+#branch-contrib-inner > div:nth-child(2){ animation-delay:.09s !important; }
+#branch-contrib-inner > div:nth-child(3){ animation-delay:.14s !important; }
+#branch-contrib-inner > div:nth-child(4){ animation-delay:.19s !important; }
+#branch-contrib-inner > div:nth-child(5){ animation-delay:.24s !important; }
+
+/* ── Menu rank rows ── */
+#menu-rank-change > div { animation: rp-fade-up .3s cubic-bezier(.16,1,.3,1) both !important; }
+#menu-rank-change > div:nth-child(odd) { animation-delay:.03s !important; }
+#menu-rank-change > div:nth-child(even){ animation-delay:.07s !important; }
+
+/* ── Chart canvas — subtle fade in ── */
+canvas {
+  animation: rp-fade-in .6s .2s both !important;
+}
+
+/* ── Growth badge ── */
+#growth-badge {
+  animation: rp-scale-in .5s .4s cubic-bezier(.16,1,.3,1) both !important;
+}
+
+/* ── Order type cards ── */
+.ot-card { animation: rp-fade-up .4s cubic-bezier(.16,1,.3,1) both !important; }
+
+/* ── Scroll-triggered visibility — only animate when analytics-wrap becomes visible ── */
+.analytics-wrap:not(.visible) .kpi,
+.analytics-wrap:not(.visible) .cb,
+.analytics-wrap:not(.visible) .sh,
+.analytics-wrap:not(.visible) .ins-row,
+.analytics-wrap:not(.visible) .hero-compare {
+  animation: none !important;
+  opacity: 1 !important;
+}
+
+/* ── Number counter animation JS hook ── */
+.rp-counting {
+  transition: color .3s !important;
+}
+</style>
 </head>
 <body>
 
@@ -9149,11 +9366,15 @@ const set = (id, v) => { const e = g(id); if (e) e.textContent = v }
 const fmt = (n, d=0) => n == null ? '—' : new Intl.NumberFormat('ru-RU', {maximumFractionDigits:d}).format(n)
 const fmtM = n => {
   if (!n && n !== 0) return '—'
-  const a = Math.abs(n), s = n < 0 ? '-' : ''
-  if (a >= 1e9) return s + (a/1e9).toFixed(1) + ' млрд'
-  if (a >= 1e6) return s + (a/1e6).toFixed(1) + ' млн'
-  if (a >= 1e3) return s + (a/1e3).toFixed(0) + ' тыс'
-  return s + fmt(a)
+  const s = n < 0 ? '-' : ''
+  const a = Math.abs(n)
+  // Всегда полное число с разрядами — без сокращений млн/тыс
+  return s + new Intl.NumberFormat('ru-RU', {maximumFractionDigits:0}).format(Math.round(a))
+}
+const fmtFull = n => {
+  if (!n && n !== 0) return '—'
+  const s = n < 0 ? '-' : ''
+  return s + new Intl.NumberFormat('ru-RU', {maximumFractionDigits:0}).format(Math.round(Math.abs(n)))
 }
 const pn = v => { if (v == null) return 0; return parseFloat(String(v).replace(/\s/g,'').replace(',','.')) || 0 }
 const xCfg = {ticks:{color:'#5a577a',font:{size:10},maxRotation:0},grid:{display:false}}
@@ -10848,7 +11069,7 @@ function runAnalysis() {
     {label:LABEL_B,data:bArr,borderColor:'#5a576e',backgroundColor:'rgba(90,87,110,.05)',borderWidth:1.5,pointRadius:bArr.length<40?3:0,tension:.35},
     {label:LABEL_D,data:dArr,borderColor:'#5b3ef5',backgroundColor:'rgba(91,62,245,.09)',borderWidth:2.5,pointRadius:dArr.length<40?3:0,tension:.35,fill:true},
     {label:'База',data:base,borderColor:'#ff3d6b',borderDash:[6,4],borderWidth:1.5,pointRadius:0},
-  ]},{plugins:{legend:{labels:{color:'#9490b8',font:{size:11,family:'monospace'}}},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(1)+' млн'}}},scales:{x:xCfg,y:{...yCfg,ticks:{...yCfg.ticks,callback:v=>v+'M'}}}})
+  ]},{plugins:{legend:{labels:{color:'#9490b8',font:{size:11,family:'monospace'}}},tooltip:{mode:'index',intersect:false,callbacks:{label:function(c){ var v=c.parsed.y; return c.dataset.label+': '+new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(Math.round(v*1e6))+' сум'; }}}},scales:{x:xCfg,y:{...yCfg,ticks:{...yCfg.ticks,callback:v=>v+'M'}}}})
 
   mkChart('cChk','bar',{labels:lbl,datasets:[
     {label:LABEL_B,data:b.rows.map(r=>Math.round(r.chk)),backgroundColor:'rgba(90,87,110,.5)',borderRadius:3},
@@ -11214,7 +11435,7 @@ function renderWeekdayTrend() {
       cnt[dow]++
     })
     return {
-      rev: rev.map((v, i) => cnt[i] ? +(v / cnt[i] / 1e6).toFixed(2) : 0),
+      rev: rev.map((v, i) => cnt[i] ? Math.round(v / cnt[i]) : 0),
       chk: chk.map((v, i) => cnt[i] ? Math.round(v / cnt[i]) : 0),
       cnt
     }
@@ -11251,7 +11472,7 @@ function renderWeekdayTrend() {
     labels: DAYS,
     datasets: [
       {
-        label: LABEL_B + ' (млн сум/день)',
+        label: LABEL_B + ' (сум/день)',
         data: ab.rev,
         backgroundColor: COLORS_REV.map(c => c.replace('.75', '.45').replace('.8', '.45')),
         borderColor: COLORS_REV.map(c => c.replace('.75', '1').replace('.8', '1').replace('.65','1')),
@@ -11259,7 +11480,7 @@ function renderWeekdayTrend() {
         borderRadius: 5,
       },
       {
-        label: LABEL_D + ' (млн сум/день)',
+        label: LABEL_D + ' (сум/день)',
         data: ad.rev,
         backgroundColor: COLORS_REV,
         borderRadius: 5,
@@ -11308,9 +11529,9 @@ function renderWeekdayTrend() {
       </div>`
 
     best.innerHTML = [
-      maxRevIdx >= 0 ? badge('🏆', 'Лучший день по выручке', DAYS[maxRevIdx] + ' · ' + ad.rev[maxRevIdx].toFixed(1) + 'M', 'var(--green)') : '',
+      maxRevIdx >= 0 ? badge('🏆', 'Лучший день по выручке', DAYS[maxRevIdx] + ' · ' + new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(Math.round(ad.rev[maxRevIdx]*1e6)) + ' сум', 'var(--green)') : '',
       maxChkIdx >= 0 ? badge('👥', 'Больше всего чеков', DAYS[maxChkIdx] + ' · ' + ad.chk[maxChkIdx] + ' чек.', 'var(--cyan)') : '',
-      minRevIdx >= 0 && minRevIdx !== maxRevIdx ? badge('📉', 'Слабый день', DAYS[minRevIdx] + ' · ' + ad.rev[minRevIdx].toFixed(1) + 'M', 'var(--amber)') : '',
+      minRevIdx >= 0 && minRevIdx !== maxRevIdx ? badge('📉', 'Слабый день', DAYS[minRevIdx] + ' · ' + new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(Math.round(ad.rev[minRevIdx]*1e6)) + ' сум', 'var(--amber)') : '',
     ].join('')
   }
 }
@@ -11358,7 +11579,7 @@ function renderBranch() {
   tbl.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:12px;"><thead><tr style="border-bottom:1px solid var(--brd);">${['ФИЛИАЛ','ВЫР/ДЕНЬ П1','ВЫР/ДЕНЬ П2','РОСТ %','СР.ЧЕК П1','СР.ЧЕК П2'].map((h,i)=>`<th style="text-align:${i===0?'left':'right'};padding:9px 12px;font-size:9px;color:var(--txt2);font-family:Manrope,sans-serif;letter-spacing:.1em;font-weight:400;">${h}</th>`).join('')}</tr></thead><tbody>${[...stats].sort((a,b2)=>b2.gr-a.gr).map(s=>`<tr onmouseenter="this.style.background='rgba(91,62,245,.05)'" onmouseleave="this.style.background=''" style="border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s;"><td style="padding:10px 12px;"><div style="display:flex;align-items:center;gap:7px;"><span style="width:8px;height:8px;border-radius:50%;background:${s.col};flex-shrink:0;"></span><b>${s.name}</b></div></td><td style="text-align:right;padding:10px 12px;font-family:Manrope,sans-serif;color:var(--txt2);">${fmtM(Math.round(s.bRpd))}</td><td style="text-align:right;padding:10px 12px;font-family:Manrope,sans-serif;color:${s.col};font-weight:600;">${fmtM(Math.round(s.dRpd))}</td><td style="text-align:right;padding:10px 12px;"><span style="padding:3px 9px;border-radius:10px;font-family:Manrope,sans-serif;font-size:11px;font-weight:700;background:${s.gr>=0?'rgba(0,229,163,.12)':'rgba(255,61,107,.12)'};color:${s.gr>=0?'var(--green)':'var(--red)'};">${s.gr>=0?'▲':'▼'} ${Math.abs(s.gr).toFixed(1)}%</span></td><td style="text-align:right;padding:10px 12px;font-family:Manrope,sans-serif;color:var(--txt2);">${fmtM(Math.round(s.bAvg))}</td><td style="text-align:right;padding:10px 12px;font-family:Manrope,sans-serif;color:${s.dAvg>=s.bAvg?'var(--green)':'var(--red)'};">${fmtM(Math.round(s.dAvg))}</td></tr>`).join('')}</tbody></table>`
   // Charts
   if(CH.brR)CH.brR.destroy();if(CH.brG)CH.brG.destroy()
-  CH.brR=new Chart(g('cBrR'),{type:'bar',data:{labels:stats.map(s=>s.name),datasets:[{label:'П1',data:stats.map(s=>+(s.bRpd/1e6).toFixed(1)),backgroundColor:'rgba(90,87,110,.5)',borderRadius:4},{label:'П2',data:stats.map(s=>+(s.dRpd/1e6).toFixed(1)),backgroundColor:stats.map(s=>s.col+'cc'),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#9490b8',font:{size:10,family:'monospace'}}}},scales:{x:{...xCfg,ticks:{...xCfg.ticks,maxRotation:20}},y:{...yCfg,ticks:{...yCfg.ticks,callback:v=>v+'M'}}}}})
+  CH.brR=new Chart(g('cBrR'),{type:'bar',data:{labels:stats.map(s=>s.name),datasets:[{label:'П1',data:stats.map(s=>+(s.bRpd/1e6).toFixed(1)),backgroundColor:'rgba(90,87,110,.5)',borderRadius:4},{label:'П2',data:stats.map(s=>+(s.dRpd/1e6).toFixed(1)),backgroundColor:stats.map(s=>s.col+'cc'),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#9490b8',font:{size:10,family:'monospace'}}}},scales:{x:{...xCfg,ticks:{...xCfg.ticks,maxRotation:20}},y:{...yCfg,ticks:{...yCfg.ticks,callback:v=>new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(v)}}}}})
   const s2=[...stats].sort((a,b2)=>b2.gr-a.gr)
   CH.brG=new Chart(g('cBrG'),{type:'bar',data:{labels:s2.map(s=>s.name),datasets:[{data:s2.map(s=>+s.gr.toFixed(1)),backgroundColor:s2.map(s=>s.gr>=0?'rgba(0,229,163,.8)':'rgba(255,61,107,.8)'),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>(c.parsed.y>=0?'+':'')+c.parsed.y.toFixed(1)+'%'}}},scales:{x:{...xCfg,ticks:{...xCfg.ticks,maxRotation:20}},y:{...yCfg,ticks:{...yCfg.ticks,callback:v=>(v>=0?'+':'')+v+'%'}}}}})
   // Rating
@@ -11368,7 +11589,7 @@ function renderBranch() {
   const byRev = [...stats].sort((x,y) => y.dRpd - x.dRpd)
   const ratingItems = [
     {icon:'🏆', label:'Лучший рост', s:byGr[0], extra:'▲ '+Math.abs((byGr[0]||{gr:0}).gr).toFixed(1)+'%'},
-    {icon:'🔥', label:'Лидер выручки', s:byRev[0], extra:fmtM(Math.round(((byRev[0]||{dRpd:0}).dRpd)))+'/день'},
+    {icon:'🔥', label:'Лидер выручки', s:byRev[0], extra:new Intl.NumberFormat('ru-RU').format(Math.round(((byRev[0]||{dRpd:0}).dRpd)))+' сум/день'},
     {icon:'📉', label:'Требует внимания', s:byGr[byGr.length-1], extra:((byGr[byGr.length-1]||{gr:0}).gr>=0?'▲':'▼')+' '+Math.abs(((byGr[byGr.length-1]||{gr:0}).gr)).toFixed(1)+'%'}
   ]
   ratingItems.forEach(c => {
