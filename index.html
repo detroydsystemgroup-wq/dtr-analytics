@@ -20636,5 +20636,183 @@ function runNewBlocks() {
 }
 
 </style>
+
+<style id="dtr-health-serious-v1">
+/* ═══════════════════════════════════════════════════
+   AGENCY HEALTH — "Bloomberg Terminal" aesthetic
+   No glows. No shimmer. Pure data.
+   Serious, restrained, professional.
+═══════════════════════════════════════════════════ */
+
+/* Cards — flat, no drama */
+.ov2-health-card {
+  background: #0d0d14 !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  border-radius: 16px !important;
+  padding: 26px 24px !important;
+  transition: border-color .2s !important;
+  box-shadow: none !important;
+}
+.ov2-health-card:hover {
+  border-color: rgba(255,255,255,.15) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Title — smaller, quieter */
+.ov2-health-title {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important;
+  letter-spacing: .22em !important;
+  text-transform: uppercase !important;
+  color: rgba(255,255,255,.22) !important;
+  margin-bottom: 20px !important;
+  gap: 8px !important;
+}
+.ov2-health-title-dot {
+  width: 5px !important;
+  height: 5px !important;
+  border-radius: 50% !important;
+  box-shadow: none !important;
+  opacity: .6 !important;
+}
+
+/* Score ring — NO glow, NO drop-shadow */
+.ov2-score-svg {
+  width: 100% !important;
+  height: 100% !important;
+  transform: rotate(-90deg) !important;
+}
+.ov2-score-bg {
+  fill: none !important;
+  stroke: rgba(255,255,255,.07) !important;
+  stroke-width: 5 !important;
+}
+.ov2-score-fg {
+  fill: none !important;
+  stroke-width: 5 !important;
+  stroke-linecap: butt !important;
+  transition: stroke-dashoffset 1.2s cubic-bezier(.16,1,.3,1) !important;
+  filter: none !important;
+  opacity: .85 !important;
+}
+.ov2-score-ring {
+  width: 76px !important;
+  height: 76px !important;
+  flex-shrink: 0 !important;
+}
+.ov2-score-num {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.03em !important;
+  line-height: 1 !important;
+}
+.ov2-score-lbl {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 7px !important;
+  color: rgba(255,255,255,.22) !important;
+  letter-spacing: .1em !important;
+  margin-top: 3px !important;
+}
+
+/* Gauge row text */
+.ov2-gauge-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  margin-bottom: 20px !important;
+}
+.ov2-gauge-row > div > div:first-child {
+  font-family: 'Manrope', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: rgba(255,255,255,.7) !important;
+}
+.ov2-gauge-row > div > div:last-child {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  color: rgba(255,255,255,.22) !important;
+  margin-top: 3px !important;
+}
+
+/* Health rows — clean, minimal */
+.ov2-health-rows {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+}
+.ov2-health-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 9px 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(255,255,255,.05) !important;
+  transition: none !important;
+  cursor: default !important;
+}
+.ov2-health-row:last-child { border-bottom: none !important; }
+.ov2-health-row:hover {
+  background: transparent !important;
+  transform: none !important;
+  border-color: rgba(255,255,255,.05) !important;
+}
+.ov2-health-row-name {
+  font-family: 'Manrope', sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: rgba(255,255,255,.55) !important;
+  flex: 1 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+.ov2-health-row-bar-wrap {
+  width: 100px !important;
+  height: 3px !important;
+  background: rgba(255,255,255,.07) !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
+}
+.ov2-health-row-bar {
+  height: 100% !important;
+  border-radius: 0 !important;
+  transition: width 1s cubic-bezier(.4,0,.2,1) !important;
+  /* NO shimmer */
+}
+.ov2-health-row-bar::after { display: none !important; }
+
+.ov2-health-row-val {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.02em !important;
+  flex-shrink: 0 !important;
+  min-width: 32px !important;
+  text-align: right !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+/* Mute the bar colors — no saturated green */
+.ov2-health-row-bar[style*="#34d399"] { background: rgba(52,211,153,.55) !important; }
+.ov2-health-row-bar[style*="#818cf8"] { background: rgba(129,140,248,.55) !important; }
+.ov2-health-row-bar[style*="#fbbf24"] { background: rgba(251,191,36,.55) !important; }
+.ov2-health-row-bar[style*="#f87171"] { background: rgba(248,113,113,.55) !important; }
+.ov2-health-row-bar[style*="#22d3ee"] { background: rgba(34,211,238,.55) !important; }
+
+/* Score fg — remove glow, desaturate slightly */
+.ov2-score-fg[stroke="#34d399"] { stroke: rgba(52,211,153,.8)   !important; filter: none !important; }
+.ov2-score-fg[stroke="#818cf8"] { stroke: rgba(129,140,248,.8)  !important; filter: none !important; }
+.ov2-score-fg[stroke="#22d3ee"] { stroke: rgba(34,211,238,.8)   !important; filter: none !important; }
+.ov2-score-fg[stroke="#fbbf24"] { stroke: rgba(251,191,36,.8)   !important; filter: none !important; }
+.ov2-score-fg[stroke="#f87171"] { stroke: rgba(248,113,113,.8)  !important; filter: none !important; }
+
+/* dotPulse animation on title dot — kill it */
+.ov2-health-title-dot { animation: none !important; }
+</style>
 </body>
 </html>
