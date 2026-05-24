@@ -22657,6 +22657,380 @@ function runNewBlocks() {
   margin: 0 !important;
 }
 </style>
+
+<style id="dtr-preview-unified-v1">
+/* ═══════════════════════════════════════════════════════
+   UNIFIED PREVIEW SYSTEM — все панели одного размера
+   Каждая панель = 100% высота и ширина правой колонки
+═══════════════════════════════════════════════════════ */
+
+/* Правая колонка — жёсткий контейнер */
+.pp-split-right {
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  background: #09090f !important;
+}
+
+/* Все панели — одинаковый размер */
+.pp-preview-panel {
+  display: none !important;
+  flex: 1 !important;
+  flex-direction: column !important;
+  overflow-y: auto !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+.pp-preview-panel.pp-pv-active {
+  display: flex !important;
+}
+
+/* ── Универсальная карточка превью ── */
+.ppv-venue-card,
+.ppv-brand-card,
+.ppv-media-card {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  overflow: visible !important;
+}
+
+#ppv-audience,
+#ppv-competitors,
+#ppv-kpi,
+#ppv-notes {
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+}
+
+/* ══════════════════════════════════
+   ПРОФИЛЬ — venue identity card
+══════════════════════════════════ */
+.ppv-venue-top {
+  padding: 44px 52px 36px !important;
+  gap: 24px !important;
+  border-bottom: 1px solid rgba(255,255,255,.07) !important;
+  background: rgba(255,255,255,.025) !important;
+  flex-shrink: 0 !important;
+}
+.ppv-venue-avatar {
+  width: 80px !important; height: 80px !important;
+  border-radius: 20px !important;
+  font-size: 36px !important; font-weight: 800 !important;
+  flex-shrink: 0 !important;
+}
+.ppv-venue-name {
+  font-size: 38px !important;
+  letter-spacing: -.06em !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  color: #f1f1f5 !important;
+}
+.ppv-venue-cat {
+  font-size: 14px !important;
+  margin-top: 8px !important;
+  letter-spacing: .05em !important;
+  color: rgba(255,255,255,.28) !important;
+}
+
+.ppv-venue-body {
+  padding: 32px 52px !important;
+  gap: 18px !important;
+  flex: 1 !important;
+  flex-shrink: 0 !important;
+}
+.ppv-info-row {
+  font-size: 16px !important;
+  gap: 18px !important;
+  color: rgba(255,255,255,.72) !important;
+  line-height: 1.4 !important;
+}
+.ppv-info-row svg {
+  width: 18px !important; height: 18px !important;
+  opacity: .38 !important; flex-shrink: 0 !important;
+}
+.ppv-info-row.ppv-empty {
+  font-size: 15px !important;
+  color: rgba(255,255,255,.13) !important;
+  font-style: italic !important;
+}
+
+.ppv-socials-row {
+  padding: 28px 52px !important;
+  gap: 14px !important;
+  flex-shrink: 0 !important;
+  border-top: 1px solid rgba(255,255,255,.07) !important;
+}
+.ppv-social-chip {
+  flex: 1 !important;
+  justify-content: center !important;
+  padding: 15px 20px !important;
+  font-size: 15px !important;
+  border-radius: 12px !important;
+  gap: 10px !important;
+  background: rgba(255,255,255,.05) !important;
+  border: 1px solid rgba(255,255,255,.09) !important;
+  color: rgba(255,255,255,.4) !important;
+}
+.ppv-social-chip.ppv-filled {
+  background: rgba(91,95,199,.12) !important;
+  border-color: rgba(129,140,248,.25) !important;
+  color: rgba(165,180,252,.9) !important;
+}
+.ppv-social-chip svg { width: 16px !important; height: 16px !important; }
+
+.ppv-hours-row {
+  padding: 22px 52px !important;
+  font-size: 16px !important;
+  gap: 16px !important;
+  border-top: 1px solid rgba(255,255,255,.07) !important;
+  background: rgba(255,255,255,.02) !important;
+  flex-shrink: 0 !important;
+  color: rgba(255,255,255,.5) !important;
+}
+.ppv-hours-row svg { width: 18px !important; height: 18px !important; opacity: .4 !important; }
+
+.ppv-divider { display: none !important; }
+
+/* ══════════════════════════════════
+   БРЕНД — brand book page
+══════════════════════════════════ */
+.ppv-brand-section {
+  padding: 28px 52px !important;
+  border-bottom: 1px solid rgba(255,255,255,.07) !important;
+  flex-shrink: 0 !important;
+}
+.ppv-brand-section:last-child { border-bottom: none !important; flex: 1 !important; }
+
+.ppv-bsec-label {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  color: rgba(255,255,255,.22) !important;
+  letter-spacing: .22em !important;
+  text-transform: uppercase !important;
+  margin-bottom: 16px !important;
+}
+
+.ppv-tone-badge {
+  font-size: 18px !important;
+  padding: 12px 26px !important;
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.02em !important;
+}
+.ppv-tone-badge.empty {
+  font-style: italic !important;
+  font-weight: 400 !important;
+  color: rgba(255,255,255,.18) !important;
+  background: rgba(255,255,255,.03) !important;
+  border-color: rgba(255,255,255,.07) !important;
+  font-size: 15px !important;
+}
+
+.ppv-palette { gap: 10px !important; flex-wrap: wrap !important; }
+.ppv-palette-swatch {
+  width: 48px !important; height: 48px !important;
+  border-radius: 12px !important;
+  border: 1.5px solid rgba(255,255,255,.15) !important;
+  box-shadow: 0 3px 10px rgba(0,0,0,.35) !important;
+}
+.ppv-palette-empty {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 12px !important;
+  color: rgba(255,255,255,.18) !important;
+  font-style: italic !important;
+}
+
+.ppv-messages-list, .ppv-forbidden-list { gap: 8px !important; flex-wrap: wrap !important; }
+.ppv-msg-tag {
+  font-size: 14px !important; padding: 8px 18px !important;
+  border-radius: 9px !important;
+}
+.ppv-forbidden-tag {
+  font-size: 13px !important; padding: 7px 16px !important;
+  border-radius: 9px !important;
+}
+.ppv-tag-empty {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 12px !important; color: rgba(255,255,255,.18) !important;
+  font-style: italic !important;
+}
+.ppv-style-quote {
+  font-size: 16px !important; line-height: 1.75 !important;
+  padding-left: 20px !important; border-left: 3px solid rgba(129,140,248,.3) !important;
+  font-style: italic !important; color: rgba(255,255,255,.6) !important;
+}
+
+/* ══════════════════════════════════
+   АУДИТОРИЯ
+══════════════════════════════════ */
+.ppv-audience-header {
+  padding: 32px 52px 24px !important;
+  margin-bottom: 0 !important;
+  border-bottom: 1px solid rgba(255,255,255,.07) !important;
+  background: rgba(255,255,255,.025) !important;
+  flex-shrink: 0 !important;
+}
+.ppv-persona-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 0 !important;
+  flex: 1 !important;
+}
+.ppv-persona-mini {
+  padding: 32px 36px !important;
+  border-radius: 0 !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(255,255,255,.06) !important;
+  border-right: 1px solid rgba(255,255,255,.06) !important;
+  background: transparent !important;
+  transition: background .15s !important;
+}
+.ppv-persona-mini:hover { background: rgba(255,255,255,.02) !important; }
+.ppv-persona-mini:nth-child(even) { border-right: none !important; }
+.ppv-persona-mini-name { font-size: 18px !important; margin-bottom: 6px !important; }
+.ppv-persona-mini-age { font-size: 12px !important; margin-bottom: 16px !important; }
+.ppv-persona-mini-attr { font-size: 14px !important; margin-bottom: 8px !important; line-height: 1.6 !important; }
+
+/* ══════════════════════════════════
+   КОНКУРЕНТЫ
+══════════════════════════════════ */
+.ppv-comp-header {
+  padding: 32px 52px 24px !important;
+  margin-bottom: 0 !important;
+  border-bottom: 1px solid rgba(255,255,255,.07) !important;
+  background: rgba(255,255,255,.025) !important;
+  flex-shrink: 0 !important;
+}
+.ppv-comp-list { flex: 1 !important; overflow-y: auto !important; }
+.ppv-comp-item {
+  padding: 28px 52px !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(255,255,255,.06) !important;
+  border-left: 4px solid rgba(245,158,11,.45) !important;
+  background: transparent !important;
+  transition: background .15s !important;
+}
+.ppv-comp-item:hover { background: rgba(255,255,255,.02) !important; }
+.ppv-comp-name { font-size: 20px !important; margin-bottom: 14px !important; }
+.ppv-comp-cols { gap: 32px !important; }
+.ppv-comp-col-lbl { font-size: 10px !important; margin-bottom: 7px !important; letter-spacing: .14em !important; }
+.ppv-comp-col-val { font-size: 14px !important; line-height: 1.65 !important; }
+
+/* ══════════════════════════════════
+   KPI
+══════════════════════════════════ */
+.ppv-kpi-header {
+  padding: 32px 52px 24px !important;
+  margin-bottom: 0 !important;
+  border-bottom: 1px solid rgba(255,255,255,.07) !important;
+  background: rgba(255,255,255,.025) !important;
+  flex-shrink: 0 !important;
+}
+.ppv-kpi-grid { flex: 1 !important; overflow-y: auto !important; }
+.ppv-kpi-item {
+  padding: 32px 52px !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(255,255,255,.06) !important;
+  border-left: 4px solid rgba(52,211,153,.45) !important;
+  background: transparent !important;
+  transition: background .15s !important;
+}
+.ppv-kpi-item:hover { background: rgba(255,255,255,.02) !important; }
+.ppv-kpi-goal { font-size: 20px !important; margin-bottom: 18px !important; line-height: 1.4 !important; }
+.ppv-kpi-nums { gap: 48px !important; }
+.ppv-kpi-num-val { font-size: 30px !important; }
+.ppv-kpi-num-lbl { font-size: 10px !important; margin-top: 6px !important; letter-spacing: .14em !important; }
+
+/* ══════════════════════════════════
+   МЕДИА
+══════════════════════════════════ */
+.ppv-media-link-item {
+  padding: 26px 52px !important;
+  gap: 22px !important;
+  border-bottom: 1px solid rgba(255,255,255,.07) !important;
+  flex-shrink: 0 !important;
+  transition: background .15s !important;
+}
+.ppv-media-link-item:hover { background: rgba(255,255,255,.02) !important; }
+.ppv-ml-icon { width: 48px !important; height: 48px !important; border-radius: 13px !important; }
+.ppv-ml-icon svg { width: 22px !important; height: 22px !important; }
+.ppv-ml-label { font-size: 10px !important; margin-bottom: 5px !important; letter-spacing: .18em !important; }
+.ppv-ml-url { font-size: 14px !important; max-width: 100% !important; }
+.ppv-ml-status { width: 11px !important; height: 11px !important; }
+.ppv-rules-text { font-size: 15px !important; line-height: 1.75 !important; }
+
+/* ══════════════════════════════════
+   ЗАМЕТКИ
+══════════════════════════════════ */
+.ppv-notes-header {
+  padding: 32px 52px 24px !important;
+  margin-bottom: 0 !important;
+  border-bottom: 1px solid rgba(255,255,255,.07) !important;
+  background: rgba(255,255,255,.025) !important;
+  flex-shrink: 0 !important;
+}
+.ppv-notes-list { flex: 1 !important; overflow-y: auto !important; }
+.ppv-note-item {
+  padding: 24px 52px !important;
+  gap: 20px !important;
+  border-bottom: 1px solid rgba(255,255,255,.06) !important;
+  transition: background .15s !important;
+}
+.ppv-note-item:hover { background: rgba(255,255,255,.02) !important; }
+.ppv-note-text { font-size: 15px !important; line-height: 1.75 !important; }
+.ppv-note-time { font-size: 11px !important; margin-top: 6px !important; }
+.ppv-note-dot { width: 10px !important; height: 10px !important; margin-top: 4px !important; }
+
+/* ══════════════════════════════════
+   ПУСТОЕ СОСТОЯНИЕ — одинаковое везде
+══════════════════════════════════ */
+.ppv-empty-preview {
+  flex: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 12px !important;
+  color: rgba(255,255,255,.15) !important;
+  letter-spacing: .1em !important;
+  padding: 0 !important;
+  text-align: center !important;
+}
+
+/* ══════════════════════════════════
+   HEADER BRAND LINE — единый для всех
+══════════════════════════════════ */
+.ppv-audience-header .ppv-bsec-label,
+.ppv-comp-header .ppv-bsec-label,
+.ppv-kpi-header .ppv-bsec-label,
+.ppv-notes-header .ppv-bsec-label {
+  margin-bottom: 0 !important;
+  font-size: 11px !important;
+}
+
+/* media rules section */
+#ppv-media .ppv-brand-section {
+  flex: 1 !important;
+  padding: 28px 52px !important;
+}
+</style>
 </body>
 </html>
 <!-- DTR Passport Sidebar Logic -->
