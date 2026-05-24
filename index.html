@@ -6227,6 +6227,721 @@ input, select, textarea {
   min-height: 72px !important;
 }
 </style>
+<style id="dtr-report-premium">
+/* ═══════════════════════════════════════════════════════════════
+   PREMIUM REPORT DESIGN — McKinsey × Bloomberg Terminal
+   Philosophy: Data-dense, structured, every pixel earns its place.
+   No emoji icons. All SVG. Tooltips on hover. Obsidian palette.
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Report page body ── */
+#page-report {
+  --rp-bg:     #07070c;
+  --rp-bg2:    #0c0c14;
+  --rp-bg3:    #10101a;
+  --rp-bg4:    #16162a;
+  --rp-brd:    rgba(91,95,199,.1);
+  --rp-brd2:   rgba(91,95,199,.22);
+  --rp-a:      #5b5fc7;
+  --rp-a2:     #7b7fd4;
+  --rp-a3:     #a5a8e8;
+  --rp-green:  #34d399;
+  --rp-red:    #f87171;
+  --rp-amber:  #fbbf24;
+  --rp-cyan:   #22d3ee;
+  --rp-pink:   #e879f9;
+  --rp-txt:    #eeedf8;
+  --rp-txt2:   #7a78a0;
+  --rp-txt3:   #38364e;
+}
+
+/* ── Report main container ── */
+.report-main {
+  background: var(--rp-bg) !important;
+  padding: 0 !important;
+}
+.report-body {
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  padding: 32px 48px 80px !important;
+}
+
+/* ════════════════════════════════
+   SECTION HEADERS — sh.*
+════════════════════════════════ */
+.sh {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 40px 0 18px !important;
+  margin-bottom: 16px !important;
+  border-bottom: 1px solid var(--rp-brd) !important;
+}
+.sh-num {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important;
+  color: var(--rp-a) !important;
+  background: rgba(91,95,199,.1) !important;
+  border: 1px solid rgba(91,95,199,.2) !important;
+  border-radius: 6px !important;
+  padding: 4px 10px !important;
+  letter-spacing: .16em !important;
+  text-transform: uppercase !important;
+  flex-shrink: 0 !important;
+}
+.sh-title {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.03em !important;
+  color: var(--rp-txt) !important;
+}
+.sh-line {
+  flex: 1 !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, var(--rp-brd), transparent) !important;
+}
+
+/* ════════════════════════════════
+   HERO COMPARE BLOCK
+════════════════════════════════ */
+.hero-compare {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+  border: 1px solid var(--rp-brd) !important;
+  margin-bottom: 14px !important;
+  position: relative !important;
+}
+.hero-compare::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0; left: 0; right: 0; height: 2px !important;
+  background: linear-gradient(90deg, var(--rp-a), var(--rp-cyan), var(--rp-a2)) !important;
+}
+.hb { padding: 28px 32px !important; position: relative !important; }
+.hb.before { background: var(--rp-bg3) !important; }
+.hb.during {
+  background: linear-gradient(160deg, rgba(91,95,199,.08) 0%, rgba(91,95,199,.02) 100%) !important;
+  border-left: 1px solid var(--rp-brd) !important;
+}
+.hb-tag {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important;
+  letter-spacing: .2em !important;
+  text-transform: uppercase !important;
+  color: var(--rp-txt2) !important;
+  margin-bottom: 12px !important;
+  display: flex !important; align-items: center !important; gap: 7px !important;
+}
+.hb-dot { width: 5px; height: 5px; border-radius: 50%; display: inline-block; }
+.hb-rev {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 48px !important;
+  font-weight: 800 !important;
+  letter-spacing: -.05em !important;
+  line-height: 1 !important;
+  margin-bottom: 5px !important;
+  font-variant-numeric: tabular-nums !important;
+}
+.hb-day {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 11px !important;
+  color: var(--rp-txt2) !important;
+  margin-bottom: 18px !important;
+}
+.ms {
+  background: rgba(255,255,255,.03) !important;
+  border: 1px solid var(--rp-brd) !important;
+  border-radius: 10px !important;
+  padding: 12px 14px !important;
+}
+.ms.ac { background: rgba(91,95,199,.07) !important; border-color: var(--rp-brd2) !important; }
+.ms-l {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important;
+  color: var(--rp-txt3) !important;
+  letter-spacing: .12em !important;
+  text-transform: uppercase !important;
+  margin-bottom: 5px !important;
+}
+.ms-v {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.02em !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+/* ════════════════════════════════
+   KPI CARDS
+════════════════════════════════ */
+.kpi-row {
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr) !important;
+  gap: 8px !important;
+  margin-bottom: 14px !important;
+}
+.kpi {
+  background: var(--rp-bg3) !important;
+  border: 1px solid var(--rp-brd) !important;
+  border-radius: 14px !important;
+  padding: 18px 16px !important;
+  transition: border-color .2s, transform .2s cubic-bezier(.16,1,.3,1), box-shadow .2s !important;
+  cursor: default !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.kpi::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0; left: 0; right: 0; height: 1px !important;
+  background: linear-gradient(90deg, transparent, var(--rp-a2), transparent) !important;
+  opacity: 0 !important;
+  transition: opacity .2s !important;
+}
+.kpi:hover {
+  border-color: var(--rp-brd2) !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 12px 32px rgba(0,0,0,.5), 0 0 20px rgba(91,95,199,.08) !important;
+}
+.kpi:hover::before { opacity: 1 !important; }
+.kpi-l {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 9px !important;
+  color: var(--rp-txt3) !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+  margin-bottom: 10px !important;
+}
+.kpi-v {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 24px !important;
+  font-weight: 800 !important;
+  letter-spacing: -.03em !important;
+  line-height: 1 !important;
+  margin-bottom: 5px !important;
+  font-variant-numeric: tabular-nums !important;
+}
+.kpi-s {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  color: var(--rp-txt2) !important;
+}
+/* KPI tooltip — appears on hover */
+.kpi[data-tip]:hover::after {
+  content: attr(data-tip) !important;
+  position: absolute !important;
+  bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%) !important;
+  background: #1a1a2e !important; border: 1px solid var(--rp-brd2) !important;
+  color: var(--rp-txt) !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important; line-height: 1.5 !important;
+  padding: 8px 12px !important; border-radius: 8px !important;
+  white-space: nowrap !important; z-index: 999 !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.6) !important;
+  pointer-events: none !important;
+}
+
+/* ════════════════════════════════
+   CHART BLOCKS — .cb
+════════════════════════════════ */
+.cb {
+  background: var(--rp-bg3) !important;
+  border: 1px solid var(--rp-brd) !important;
+  border-radius: 16px !important;
+  padding: 20px 22px !important;
+  margin-bottom: 10px !important;
+  transition: border-color .2s !important;
+  position: relative !important;
+}
+.cb:hover { border-color: rgba(91,95,199,.18) !important; }
+.cb-title {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: -.01em !important;
+  color: var(--rp-txt) !important;
+  margin-bottom: 3px !important;
+  display: flex !important; align-items: center !important; gap: 8px !important;
+}
+.cb-title svg { flex-shrink: 0; opacity: .7; }
+.cb-sub {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  color: var(--rp-txt2) !important;
+  margin-bottom: 16px !important;
+  letter-spacing: .04em !important;
+}
+.two {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+  margin-bottom: 10px !important;
+}
+
+/* ── Chart block tooltip (cb-title hover) ── */
+.cb-title[data-tip] { cursor: default; position: relative; }
+.cb-title[data-tip]:hover::after {
+  content: attr(data-tip) !important;
+  position: absolute !important;
+  top: calc(100% + 6px); left: 0 !important;
+  background: #1a1a2e !important; border: 1px solid var(--rp-brd2) !important;
+  color: var(--rp-txt) !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important; line-height: 1.6 !important; font-weight: 400 !important;
+  padding: 10px 14px !important; border-radius: 9px !important;
+  max-width: 320px !important; white-space: pre-wrap !important;
+  z-index: 999 !important; box-shadow: 0 8px 24px rgba(0,0,0,.6) !important;
+  pointer-events: none !important; letter-spacing: 0 !important;
+}
+
+/* ════════════════════════════════
+   ITEM ROWS — ir.*
+════════════════════════════════ */
+.ir {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 8px 0 !important;
+  border-bottom: 1px solid var(--rp-brd) !important;
+  transition: background .15s !important;
+}
+.ir:last-child { border-bottom: none !important; }
+.ir:hover { background: rgba(91,95,199,.04) !important; border-radius: 8px !important; padding-left: 6px !important; }
+.ir-rank {
+  width: 24px !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 11px !important;
+  color: var(--rp-txt2) !important;
+  flex-shrink: 0 !important;
+  text-align: center !important;
+}
+.ir-name {
+  flex: 1 !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: var(--rp-txt) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+.ir-bar {
+  width: 80px !important;
+  height: 3px !important;
+  background: rgba(255,255,255,.06) !important;
+  border-radius: 2px !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
+}
+.ir-fill { height: 100% !important; border-radius: 2px !important; transition: width .6s ease !important; }
+.ir-val {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 11px !important;
+  color: var(--rp-txt2) !important;
+  flex-shrink: 0 !important;
+  min-width: 70px !important;
+  text-align: right !important;
+}
+
+/* ════════════════════════════════
+   ORDER TYPE CARDS — ot-*
+════════════════════════════════ */
+.ot-card {
+  background: rgba(255,255,255,.025) !important;
+  border: 1px solid var(--rp-brd) !important;
+  border-radius: 12px !important;
+  padding: 14px 16px !important;
+  transition: border-color .2s, transform .2s !important;
+}
+.ot-card:hover {
+  border-color: var(--rp-brd2) !important;
+  transform: translateX(3px) !important;
+}
+.ot-name {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: var(--rp-txt) !important;
+}
+.ot-val {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.04em !important;
+  line-height: 1.1 !important;
+  font-variant-numeric: tabular-nums !important;
+}
+.ot-sub {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  color: var(--rp-txt2) !important;
+  margin-top: 2px !important;
+}
+.ot-bar {
+  height: 3px !important;
+  border-radius: 2px !important;
+}
+
+/* ════════════════════════════════
+   INSIGHTS — ins.*
+════════════════════════════════ */
+#ins-block { display: flex !important; flex-direction: column !important; gap: 8px !important; }
+.ins-row {
+  display: flex !important;
+  gap: 14px !important;
+  align-items: flex-start !important;
+  background: var(--rp-bg3) !important;
+  border: 1px solid var(--rp-brd) !important;
+  border-left: 3px solid var(--rp-a) !important;
+  border-radius: 12px !important;
+  padding: 14px 18px !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 13px !important;
+  line-height: 1.65 !important;
+  color: var(--rp-txt2) !important;
+  transition: border-color .2s !important;
+  margin-bottom: 0 !important;
+}
+.ins-row:hover { border-color: var(--rp-a2) !important; }
+.ins-ic {
+  flex-shrink: 0 !important;
+  margin-top: 2px !important;
+  width: 18px !important;
+  height: 18px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* ════════════════════════════════
+   AI BLOCK
+════════════════════════════════ */
+.ai-block {
+  background: var(--rp-bg3) !important;
+  border: 1px solid var(--rp-brd) !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  margin-bottom: 14px !important;
+}
+.ai-top-line {
+  height: 1px !important;
+  background: linear-gradient(90deg, var(--rp-a), var(--rp-cyan), var(--rp-pink)) !important;
+  opacity: .7 !important;
+}
+.ai-head {
+  padding: 16px 20px !important;
+  display: flex !important; align-items: center !important; justify-content: space-between !important;
+  border-bottom: 1px solid var(--rp-brd) !important;
+}
+.ai-info { display: flex !important; align-items: center !important; gap: 12px !important; }
+.ai-icon {
+  width: 32px; height: 32px !important;
+  border-radius: 8px !important;
+  background: rgba(91,95,199,.1) !important;
+  border: 1px solid var(--rp-brd) !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+}
+.ai-title { font-family: 'Inter', sans-serif !important; font-size: 13px !important; font-weight: 600 !important; color: var(--rp-txt) !important; }
+.ai-sub   { font-family: 'JetBrains Mono', monospace !important; font-size: 10px !important; color: var(--rp-txt2) !important; }
+.ai-body  { padding: 8px 20px 20px !important; }
+.ai-section {
+  background: rgba(91,95,199,.04) !important;
+  border-left: 2px solid var(--rp-a) !important;
+  border-radius: 0 10px 10px 0 !important;
+  padding: 12px 16px !important;
+  margin-bottom: 10px !important;
+}
+.ai-section-title {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 12px !important; font-weight: 600 !important;
+  margin-bottom: 6px !important; color: var(--rp-txt) !important;
+}
+.ai-section-text {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 12px !important; line-height: 1.7 !important; color: var(--rp-txt2) !important;
+}
+
+/* ════════════════════════════════
+   PEAKS BLOCK
+════════════════════════════════ */
+#peaks-block .cb-title svg,
+#peaksBlock .cb-title svg { vertical-align: middle; }
+
+/* ════════════════════════════════
+   GROWTH BADGE
+════════════════════════════════ */
+#growth-badge span {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: .04em !important;
+  border-radius: 8px !important;
+  padding: 5px 14px !important;
+}
+
+/* ════════════════════════════════
+   SEGMENT CARDS (time of day)
+════════════════════════════════ */
+#seg-time-inner > div {
+  border-radius: 16px !important;
+  border: 1px solid rgba(255,255,255,.06) !important;
+}
+#seg-time-inner > div:hover {
+  border-color: rgba(255,255,255,.12) !important;
+  transform: translateY(-2px) !important;
+  transition: all .2s cubic-bezier(.16,1,.3,1) !important;
+}
+
+/* ════════════════════════════════
+   LEADERBOARD ROWS (legend inside charts)
+════════════════════════════════ */
+.leg { display:flex; gap:16px; margin-bottom:12px; flex-wrap:wrap; }
+.li  { display:flex; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--rp-txt2); }
+.lsq { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
+
+/* ════════════════════════════════
+   TOOLTIPS GLOBAL — [data-tooltip]
+════════════════════════════════ */
+[data-tooltip] { position: relative; cursor: help; }
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+  background: #1a1a2e; border: 1px solid rgba(91,95,199,.3);
+  color: #eeedf8; font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; line-height: 1.6; font-weight: 400;
+  padding: 8px 12px; border-radius: 8px;
+  max-width: 280px; white-space: pre-wrap;
+  z-index: 999; box-shadow: 0 8px 24px rgba(0,0,0,.6);
+  pointer-events: none; opacity: 0;
+  transition: opacity .15s;
+}
+[data-tooltip]:hover::after { opacity: 1; }
+
+/* ════════════════════════════════
+   REPORT HEADER BAR
+════════════════════════════════ */
+.report-hdr {
+  background: rgba(7,7,12,.96) !important;
+  backdrop-filter: blur(32px) !important;
+  border-bottom: 1px solid rgba(91,95,199,.1) !important;
+  padding: 0 48px !important;
+  height: 56px !important;
+}
+.report-title {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 16px !important; font-weight: 700 !important;
+  letter-spacing: -.02em !important; color: var(--rp-txt) !important;
+}
+.report-period-badge {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important; letter-spacing: .1em !important;
+  background: rgba(91,95,199,.1) !important;
+  border: 1px solid rgba(91,95,199,.2) !important;
+  color: var(--rp-a2) !important;
+  border-radius: 6px !important;
+  padding: 4px 10px !important;
+}
+
+/* ════════════════════════════════
+   Publish/Back buttons
+════════════════════════════════ */
+#btn-publish, #btn-back-report {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 12px !important; font-weight: 600 !important;
+  border-radius: 9px !important;
+  padding: 8px 16px !important;
+  transition: all .2s !important;
+}
+#btn-publish {
+  background: rgba(52,211,153,.1) !important;
+  border: 1px solid rgba(52,211,153,.25) !important;
+  color: #34d399 !important;
+}
+#btn-publish:hover {
+  background: rgba(52,211,153,.18) !important;
+  border-color: rgba(52,211,153,.45) !important;
+}
+
+/* ════════════════════════════════
+   SCROLLBAR
+════════════════════════════════ */
+#page-report ::-webkit-scrollbar { width: 4px; }
+#page-report ::-webkit-scrollbar-track { background: transparent; }
+#page-report ::-webkit-scrollbar-thumb { background: rgba(91,95,199,.2); border-radius: 4px; }
+
+/* ════════════════════════════════
+   ANIMATIONS
+════════════════════════════════ */
+@keyframes rpFadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.analytics-wrap.visible .sh  { animation: rpFadeUp .4s cubic-bezier(.16,1,.3,1) both; }
+.analytics-wrap.visible .kpi { animation: rpFadeUp .4s cubic-bezier(.16,1,.3,1) both; }
+.analytics-wrap.visible .cb  { animation: rpFadeUp .45s cubic-bezier(.16,1,.3,1) both; }
+.analytics-wrap.visible .hero-compare { animation: rpFadeUp .35s cubic-bezier(.16,1,.3,1) both; }
+.analytics-wrap.visible .kpi:nth-child(1){animation-delay:.03s}
+.analytics-wrap.visible .kpi:nth-child(2){animation-delay:.06s}
+.analytics-wrap.visible .kpi:nth-child(3){animation-delay:.09s}
+.analytics-wrap.visible .kpi:nth-child(4){animation-delay:.12s}
+.analytics-wrap.visible .kpi:nth-child(5){animation-delay:.15s}
+</style>
+
+<script id="dtr-report-premium-js">
+// ── Add data-tip to KPI cards after runAnalysis ──
+// ── Replace emoji icons with SVG in cb-title ──
+// ── Add tooltips to chart blocks ──
+
+(function() {
+  // SVG icons map (replaces emoji in cb-title)
+  var SVG = {
+    clock: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 13.5"/></svg>',
+    trend: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
+    bar:   '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="4" height="18" rx="1"/><rect x="9" y="8" width="4" height="13" rx="1"/><rect x="16" y="13" width="4" height="8" rx="1"/></svg>',
+    list:  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>',
+    users: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>',
+    home:  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+    star:  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+    map:   '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>',
+    info:  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+    layer: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
+    week:  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+    check: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  };
+
+  // KPI tooltip definitions
+  var KPI_TIPS = {
+    'k1': 'Изменение выручки/день\nПериод 2 − Период 1\nФормула: Δ = dRev/dDays − bRev/bDays',
+    'k2': 'Процент роста выручки/день\nФормула: Δ / bRev × 100%',
+    'k3': 'Суммарная доп. выручка за весь период 2\nФормула: Δ выручки/день × дней периода 2',
+    'k4': 'Изменение трафика (чеков/день)\nФормула: dChk/dDays − bChk/bDays',
+    'k5': 'Изменение среднего чека\nФормула: dRev/dChk − bRev/bChk\nСредний чек = выручка ÷ количество чеков',
+  };
+
+  // Chart block tooltip definitions
+  var CB_TIPS = {
+    'cDay':    'Выручка по дням — сравнение двух периодов\nЛинии: фактическая выручка\nПунктир: базовое среднее',
+    'cChk':    'Количество чеков по дням\nКаждый чек = один заказ',
+    'cAvg':    'Средний чек = Выручка ÷ Чеки\nПоказывает изменение суммы среднего заказа',
+    'cHR':     'Выручка по часам суток\nПомогает понять в какое время больше гостей',
+    'cHCb':    'Трафик (чеки) по часам — Период 1\nЦвет: желтый=завтрак, фиолет=обед, зел=вечер',
+    'cHCd':    'Трафик (чеки) по часам — Период 2',
+    'cTrend':  'Скользящее среднее 7 дней\nСглаживает случайные колебания\nПоказывает реальный тренд без шума',
+    'cHourAvg':'Средний чек по часу = Выручка_час ÷ Чеки_час\nСамые высокие столбцы = самые выгодные часы',
+    'cStack':  'Стакированный график — чеки по типу заказа и часу\nПомогает видеть когда работает каждый канал',
+    'cChannelRev': 'Суммарная выручка по каналу продаж\nЗал / С собой / Доставка',
+    'cWDR':    'Средняя выручка по дням недели\n(только если периоды перекрывают одинаковые дни)',
+    'cWDC':    'Средний трафик (чеки) по дням недели',
+    'cBrR':    'Выручка/день по каждому филиалу\nИспользует реальные дни работы каждого филиала',
+    'cBrG':    'Процент роста выручки/день по филиалам\nФормула: (dRPD − bRPD) / bRPD × 100%',
+  };
+
+  function applyPremiumReport() {
+    // Add data-tip to KPI cards
+    Object.keys(KPI_TIPS).forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) {
+        var card = el.closest('.kpi');
+        if (card) card.setAttribute('data-tip', KPI_TIPS[id]);
+      }
+    });
+
+    // Add tooltips to chart canvases → parent cb
+    Object.keys(CB_TIPS).forEach(function(id) {
+      var canvas = document.getElementById(id);
+      if (!canvas) return;
+      var cb = canvas.closest('.cb');
+      if (cb) {
+        var title = cb.querySelector('.cb-title');
+        if (title) {
+          title.setAttribute('data-tip', CB_TIPS[id]);
+          title.style.cursor = 'help';
+        }
+      }
+    });
+
+    // Replace emoji in cb-title with SVG
+    document.querySelectorAll('.cb-title').forEach(function(el) {
+      // Remove leading emoji characters, replace with SVG
+      var txt = el.innerHTML;
+      // Trend/up SVG for выручка по дням
+      txt = txt.replace(/📈/g, SVG.trend);
+      txt = txt.replace(/📉/g, SVG.trend);
+      txt = txt.replace(/⭐/g, SVG.star);
+      txt = txt.replace(/👥/g, SVG.users);
+      txt = txt.replace(/🏪/g, SVG.home);
+      txt = txt.replace(/🏆/g, SVG.star);
+      txt = txt.replace(/📊/g, SVG.bar);
+      txt = txt.replace(/📅/g, SVG.week);
+      txt = txt.replace(/⏱️/g, SVG.clock);
+      txt = txt.replace(/🔄/g, SVG.layer);
+      txt = txt.replace(/💸/g, SVG.bar);
+      txt = txt.replace(/🌙/g, SVG.clock);
+      txt = txt.replace(/🎯/g, SVG.check);
+      txt = txt.replace(/💰/g, SVG.bar);
+      txt = txt.replace(/📌/g, SVG.info);
+      el.innerHTML = txt;
+    });
+
+    // Replace emoji in sh-num
+    document.querySelectorAll('.sh-num').forEach(function(el) {
+      var txt = el.innerHTML;
+      txt = txt.replace(/📅/g, '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>');
+      txt = txt.replace(/⭐/g, '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>');
+      txt = txt.replace(/★/g, '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>');
+      txt = txt.replace(/📈/g, '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>');
+      txt = txt.replace(/💸/g, '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="4" height="18" rx="1"/><rect x="9" y="8" width="4" height="13" rx="1"/><rect x="16" y="13" width="4" height="8" rx="1"/></svg>');
+      txt = txt.replace(/⏱️/g, '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 13.5"/></svg>');
+      txt = txt.replace(/🔄/g, '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 12 12 17 22 12"/></svg>');
+      txt = txt.replace(/📊/g, '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="4" height="18" rx="1"/><rect x="9" y="8" width="4" height="13" rx="1"/><rect x="16" y1="13" width="4" height="8" rx="1"/></svg>');
+      txt = txt.replace(/🌙/g, '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>');
+      txt = txt.replace(/🎯/g, '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>');
+      txt = txt.replace(/📦/g, '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 002 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>');
+      el.innerHTML = txt;
+    });
+
+    // Replace emoji in ins-ic
+    document.querySelectorAll('.ins-ic').forEach(function(el) {
+      var txt = el.textContent.trim();
+      var svgMap = {
+        '📈': '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
+        '📉': '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2" stroke-linecap="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>',
+        '💰': '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>',
+        '👥': '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/><line x1="20" y1="8" x2="20" y2="14"/></svg>',
+        '🧾': '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e879f9" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="4" height="18" rx="1"/><rect x="9" y="8" width="4" height="13" rx="1"/><rect x="16" y="13" width="4" height="8" rx="1"/></svg>',
+      };
+      if (svgMap[txt]) el.innerHTML = svgMap[txt];
+    });
+
+    // Replace emoji in peaks block
+    document.querySelectorAll('#peaks-block .cb-title, #peaksBlock .cb-title').forEach(function(el) {
+      el.innerHTML = el.innerHTML.replace(/⭐[^<]*/,'');
+      if (!el.querySelector('svg')) {
+        el.insertAdjacentHTML('afterbegin', SVG.star + ' ');
+      }
+    });
+  }
+
+  // Run after runAnalysis fires
+  var _origRA = window.runAnalysis;
+  if (typeof _origRA === 'function') {
+    window.runAnalysis = function() {
+      _origRA.apply(this, arguments);
+      setTimeout(applyPremiumReport, 150);
+    };
+  }
+
+  // Also try on page load for pre-loaded reports
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(applyPremiumReport, 500);
+  });
+})();
+</script>
+
 </head>
 <body>
 
