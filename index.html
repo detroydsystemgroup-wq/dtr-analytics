@@ -9788,7 +9788,6 @@ function processFile(file, key) {
   const r = new FileReader()
   r.onload = async e => {
     try {
-    if (!ANTHROPIC_KEY) throw new Error('API ключ не задан. Вставь свой Anthropic ключ в константу ANTHROPIC_KEY в файле.')
       const wb = XLSX.read(e.target.result, {type:'array'})
       const ws = wb.Sheets[wb.SheetNames[0]]
       const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''})
