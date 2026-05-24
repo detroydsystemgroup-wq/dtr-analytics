@@ -107,11 +107,17 @@ body::before {
 /* ── PAGES ── */
 .page {
   display: none;
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
   position: relative;
   z-index: 1;
 }
 .page.active {
   display: block;
+  visibility: visible;
+  height: auto;
+  overflow: visible;
 }
 #page-client.active {
   display: flex;
