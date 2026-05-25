@@ -9601,6 +9601,10 @@ canvas {
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
           Заметки
         </button>
+        <button class="pp-tab agency-only" data-tab="ai" onclick="ppTab('ai',this)" style="background:rgba(91,95,199,.07);border-color:rgba(91,95,199,.2);">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--a2)" stroke-width="1.8" stroke-linecap="round"><path d="M12 2a4 4 0 014 4v1h1a3 3 0 013 3v6a3 3 0 01-3 3H7a3 3 0 01-3-3V10a3 3 0 013-3h1V6a4 4 0 014-4z"/><circle cx="9" cy="13" r="1" fill="var(--a2)"/><circle cx="15" cy="13" r="1" fill="var(--a2)"/></svg>
+          <span style="color:var(--a2);font-weight:600;">AI-Бриф</span>
+        </button>
         <!-- progress pill -->
         <div class="pp-tab-progress-pill" id="pp-progress-pill">
           <div class="pp-tpp-bar" id="pp-tpp-bar" style="width:0%"></div>
@@ -9814,6 +9818,73 @@ canvas {
             Добавить заметку
           </button>
         </div>
+      </div>
+
+      <!-- ══ AI-БРИФ PANEL ══ -->
+      <div class="pp-form-panel" id="ppf-ai">
+
+        <!-- Context chips row -->
+        <div class="pai-context-row" id="pai-context-row"></div>
+
+        <!-- Mode selector -->
+        <div class="pai-modes">
+          <button class="pai-mode-btn pai-mode-active" data-mode="full" onclick="paSelectMode(this)">
+            <span class="pai-mode-icon">📋</span>
+            <span class="pai-mode-label">Полный бриф</span>
+          </button>
+          <button class="pai-mode-btn" data-mode="content_plan" onclick="paSelectMode(this)">
+            <span class="pai-mode-icon">📅</span>
+            <span class="pai-mode-label">Контент-план</span>
+          </button>
+          <button class="pai-mode-btn" data-mode="competitors" onclick="paSelectMode(this)">
+            <span class="pai-mode-icon">⚔️</span>
+            <span class="pai-mode-label">Конкуренты</span>
+          </button>
+          <button class="pai-mode-btn" data-mode="tone" onclick="paSelectMode(this)">
+            <span class="pai-mode-icon">🗣️</span>
+            <span class="pai-mode-label">Тон и тексты</span>
+          </button>
+        </div>
+
+        <!-- Mode description -->
+        <div class="pai-mode-desc" id="pai-mode-desc">Рубрики, hooks для Reels, хэштеги, тон голоса и позиционирование — всё из данных паспорта</div>
+
+        <!-- Generate button -->
+        <button class="pai-gen-btn" id="pai-gen-btn" onclick="runPassportAI()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Сгенерировать бриф
+        </button>
+
+        <!-- Output area -->
+        <div class="pai-output-wrap" id="pai-output-wrap" style="display:none;">
+          <div class="pai-output-header">
+            <div class="pai-output-label" id="pai-output-label">Результат</div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn-ghost" style="font-size:11px;padding:5px 12px;" onclick="savePAIBrief()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Сохранить
+              </button>
+              <button class="btn-ghost" style="font-size:11px;padding:5px 12px;" onclick="copyPAIBrief()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                Копировать
+              </button>
+            </div>
+          </div>
+          <div class="pai-output-body" id="pai-output-body"></div>
+        </div>
+
+        <!-- Brief history -->
+        <div class="pai-history-wrap" id="pai-history-wrap" style="display:none;">
+          <div class="pai-history-label">История брифов</div>
+          <div class="pai-history-list" id="pai-history-list"></div>
+        </div>
+
+        <!-- SQL note -->
+        <div style="margin-top:16px;padding:9px 12px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.12);border-radius:8px;font-size:9.5px;font-family:'JetBrains Mono',monospace;color:rgba(245,158,11,.55);">
+          SQL: ALTER TABLE client_passports ADD COLUMN IF NOT EXISTS ai_briefs jsonb DEFAULT '[]';
+          <button onclick="navigator.clipboard.writeText(`ALTER TABLE client_passports ADD COLUMN IF NOT EXISTS ai_briefs jsonb DEFAULT '[]';`).then(()=>{this.textContent='✓';setTimeout(()=>this.textContent='SQL',1500)})" style="margin-left:8px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;color:rgba(245,158,11,.7);">SQL</button>
+        </div>
+
       </div>
 
     </div><!-- /pp-split-left -->
@@ -13365,6 +13436,364 @@ ${LABEL_D} (${dD} дн): выручка/день ${fmtM(Math.round(dRD))} | че
   btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 100 .49"/></svg> Обновить анализ'
   btn.style.opacity = '1'
   aiRunning = false
+}
+
+// ══════════════════════════════════════════════
+// PHASE 4: AI-БРИФ ИЗ ПАСПОРТА
+// SQL: ALTER TABLE client_passports ADD COLUMN IF NOT EXISTS ai_briefs jsonb DEFAULT '[]';
+// ══════════════════════════════════════════════
+
+let _paiMode = 'full'
+let _paiRunning = false
+let _paiCurrentText = ''
+
+const PAI_MODE_DESCS = {
+  full:         'Рубрики, hooks для Reels, хэштег-кластеры, тон голоса и позиционирование — из данных паспорта',
+  content_plan: '30 постов на месяц: день, формат, рубрика, тема — готовый план для команды',
+  competitors:  'Анализ слабостей конкурентов, незанятые ниши, уникальное позиционирование бренда',
+  tone:         '5 готовых примеров подписей в тоне бренда для разных форматов и рубрик',
+}
+
+const PAI_MODE_LABELS = {
+  full: 'Полный бриф', content_plan: 'Контент-план', competitors: 'Конкуренты', tone: 'Тон и тексты'
+}
+
+function paSelectMode(btn) {
+  document.querySelectorAll('.pai-mode-btn').forEach(b => b.classList.remove('pai-mode-active'))
+  btn.classList.add('pai-mode-active')
+  _paiMode = btn.dataset.mode
+  const desc = g('pai-mode-desc')
+  if (desc) desc.textContent = PAI_MODE_DESCS[_paiMode] || ''
+}
+
+// ── Build context chips showing what data is available ──
+function paiUpdateContext() {
+  const row = g('pai-context-row'); if (!row) return
+  const pd = passportData
+  const chips = [
+    { label: '🏢 Профиль', ok: !!(pd.basic?.name) },
+    { label: '🎨 Бренд', ok: !!(pd.brand?.tone) },
+    { label: '👥 ' + (pd.audience?.length||0) + ' персон', ok: !!(pd.audience?.length) },
+    { label: '⚔️ ' + (pd.competitors?.length||0) + ' конк.', ok: !!(pd.competitors?.length) },
+    { label: '🎯 ' + (pd.kpi?.length||0) + ' KPI', ok: !!(pd.kpi?.length) },
+    { label: '📸 Медиа', ok: !!(pd.media?.photo || pd.media?.video) },
+  ]
+  row.innerHTML = chips.map(c =>
+    `<span class="pai-ctx-chip ${c.ok?'ok':'no'}">${c.ok?'✓':'·'} ${c.label}</span>`
+  ).join('')
+}
+
+// ── Assemble prompt from passport ──
+function paiBuildPrompt(mode) {
+  const pd = passportData
+  const b = pd.basic || {}
+  const br = pd.brand || {}
+  const aud = pd.audience || []
+  const comp = pd.competitors || []
+  const kpi = pd.kpi || []
+
+  const audienceBlock = aud.length
+    ? aud.map(p => `  • ${p.name||'—'} (${p.age||'?'}): боль — «${p.pain||'—'}», ценит — «${p.motivation||'—'}»`).join('\n')
+    : '  Не заполнено'
+
+  const compBlock = comp.length
+    ? comp.map(c => `  • ${c.name}: сильные — ${c.strong||'—'} | слабые — ${c.weak||'—'}`).join('\n')
+    : '  Не заполнено'
+
+  const kpiBlock = kpi.length
+    ? kpi.map(k => `  • ${k.goal} (цель: ${k.target||'—'}${k.fact_value!=null?' | факт: '+fmt(k.fact_value):''} )`).join('\n')
+    : '  KPI не заданы'
+
+  const brandBlock = [
+    br.tone ? `Тон: ${br.tone}` : '',
+    br.messages?.length ? `Ключевые смыслы: ${br.messages.join(', ')}` : '',
+    br.forbidden?.length ? `Запрещено: ${br.forbidden.join(', ')}` : '',
+    br.colors?.length ? `Цвета бренда: ${br.colors.join(', ')}` : '',
+    br.style ? `Визуальный стиль: ${br.style}` : '',
+  ].filter(Boolean).join(' | ')
+
+  const context = `КЛИЕНТ: ${b.name||'Без названия'}, ${b.category||''}, ${b.address||''}
+БРЕНД: ${brandBlock || 'не заполнен'}
+АУДИТОРИЯ:
+${audienceBlock}
+КОНКУРЕНТЫ:
+${compBlock}
+KPI:
+${kpiBlock}
+ЧАСЫ РАБОТЫ: ${b.hours||'—'}`
+
+  if (mode === 'full') return `Ты — senior SMM-стратег. Создай структурированный контент-бриф на русском языке.
+
+${context}
+
+Формат ответа — строго по разделам:
+
+## 🎯 Позиционирование
+Одно чёткое УТП (до 2 предложений) + почему клиент должен выбрать именно их
+
+## 📱 Контент-рубрики
+5 рубрик. Каждая: НАЗВАНИЕ РУБРИКИ — описание что снимать (1-2 предложения) — почему это работает для этой аудитории
+
+## 🎬 Hooks для Reels (3 варианта)
+Первые 3 секунды видео. Каждый hook: конкретная фраза или действие которое цепляет именно эту ЦА
+
+## #️⃣ Хэштеги
+3 кластера по 6-8 хэштегов: Геолокация | Тематика | Аудитория. Только реальные, без выдумки.
+
+## 🗣️ Тон и стиль
+2 примера подписи: один для Story/развлекательного поста, один для продающего. Точно в тоне бренда.
+
+## ⚔️ Конкурентная дифференциация  
+Что конкуренты делают плохо и как это использовать в контенте (конкретно)`
+
+  if (mode === 'content_plan') return `Ты — SMM-контент-стратег. Создай контент-план на 30 дней.
+
+${context}
+
+Формат: таблица. Каждая строка:
+День | Формат | Рубрика | Тема/идея поста
+
+Форматы: Reels, Карусель, Story, Пост-текст, Коллаборация
+Используй рубрики релевантные этому бизнесу.
+Чередуй: 60% развлекательный/образовательный, 30% вовлекающий, 10% продающий.
+Начни с ## 📅 Контент-план на месяц`
+
+  if (mode === 'competitors') return `Ты — стратег по позиционированию. Проведи анализ конкурентной среды.
+
+${context}
+
+## ⚔️ Карта конкурентов
+Для каждого конкурента: их главная сила и главная слабость в SMM
+
+## 🕳️ Незанятые ниши
+Что конкуренты НЕ делают — какой контент или позиционирование свободны
+
+## 🎯 Уникальное позиционирование
+Конкретная стратегия как выделиться. Не абстрактно — конкретные шаги для этого бизнеса.
+
+## 💡 Топ-3 контент-идеи
+Идеи которые напрямую бьют в слабости конкурентов`
+
+  if (mode === 'tone') return `Ты — копирайтер-практик. Напиши примеры текстов в точном тоне этого бренда.
+
+${context}
+
+## 🗣️ Голос бренда
+2-3 предложения описывающих как звучит этот бренд (НЕ абстрактно — с примерами слов и структур)
+
+## ✍️ 5 примеров подписей
+1. Приветственный пост (знакомство с местом)
+2. Продающий пост (призыв прийти/заказать)
+3. Подпись к Reels с едой/продуктом
+4. Вовлекающий пост (вопрос к аудитории)
+5. Story-подпись (за кулисами)
+
+Каждый пример — полный текст, готовый к публикации. Включая эмодзи в стиле бренда.`
+
+  return ''
+}
+
+// ── Main generation function ──
+async function runPassportAI() {
+  if (_paiRunning) return
+  const prompt = paiBuildPrompt(_paiMode)
+  if (!prompt) return
+
+  if (!ANTHROPIC_KEY) {
+    g('pai-output-body').innerHTML = `<div style="padding:14px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:8px;font-size:12px;color:var(--red);">API ключ не задан. Вставь свой Anthropic ключ в константу <code>ANTHROPIC_KEY</code> в начале файла.</div>`
+    g('pai-output-wrap').style.display = 'block'
+    return
+  }
+
+  _paiRunning = true
+  const btn = g('pai-gen-btn')
+  btn.disabled = true
+  btn.innerHTML = '<span class="spinner"></span> Генерирую...'
+
+  g('pai-output-wrap').style.display = 'none'
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1200,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    })
+    if (!resp.ok) throw new Error('HTTP ' + resp.status)
+    const data = await resp.json()
+    if (data.error) throw new Error(data.error.message)
+    const text = data.content?.[0]?.text || ''
+    _paiCurrentText = text
+
+    // Render output
+    g('pai-output-label').textContent = PAI_MODE_LABELS[_paiMode] + ' · только что'
+    g('pai-output-body').innerHTML = renderPAIText(text, _paiMode)
+    g('pai-output-wrap').style.display = 'block'
+
+  } catch(err) {
+    g('pai-output-body').innerHTML = `<div style="padding:14px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:8px;font-size:12px;color:var(--red);">Ошибка: ${esc(err.message)}</div>`
+    g('pai-output-wrap').style.display = 'block'
+  }
+
+  btn.disabled = false
+  btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Сгенерировать снова'
+  _paiRunning = false
+}
+
+// ── Render AI text into styled sections ──
+function renderPAIText(text, mode) {
+  const sectionColors = {
+    '🎯': '#5b5fc7', '📱': '#0dcfff', '🎬': '#c084fc',
+    '#️⃣': '#4ade80', '🗣️': '#f59e0b', '⚔️': '#f87171',
+    '📅': '#5b5fc7', '🕳️': '#0dcfff', '💡': '#4ade80', '✍️': '#c084fc',
+  }
+  const sections = text.split(/(?=## )/).filter(s => s.trim())
+  if (!sections.length) return `<div class="pai-section-body" style="white-space:pre-wrap;">${esc(text)}</div>`
+
+  return sections.map(sec => {
+    const lines = sec.trim().split('\n')
+    const titleLine = lines[0].replace(/^## /, '').trim()
+    const body = lines.slice(1).join('\n').trim()
+    const icon = Object.keys(sectionColors).find(ic => titleLine.includes(ic)) || ''
+    const col = sectionColors[icon] || 'var(--a2)'
+
+    const bodyHtml = body.split('\n').map(line => {
+      line = line.trim()
+      if (!line) return ''
+      // Table row (content plan)
+      if (line.includes('|') && !line.startsWith('#')) {
+        const cells = line.split('|').map(c => c.trim()).filter(Boolean)
+        if (cells.length >= 3) {
+          return `<div style="display:grid;grid-template-columns:40px 1fr 1fr 2fr;gap:6px;padding:5px 8px;border-bottom:1px solid var(--brd);font-size:11px;">
+            ${cells.map((c,i) => `<span style="color:${i===0?'var(--txt3)':i===1?col:'var(--txt2)'};">${esc(c)}</span>`).join('')}
+          </div>`
+        }
+      }
+      // Hook line
+      if ((line.startsWith('•') || line.startsWith('-')) && mode === 'full' && titleLine.includes('🎬')) {
+        return `<div class="pai-hook-card">"${esc(line.replace(/^[•\-]\s*/,''))}"</div>`
+      }
+      // Rubric (numbered or bullet in full mode)
+      if (titleLine.includes('📱') && line.match(/^\d+\.|^[•\-]/)) {
+        const clean = line.replace(/^\d+\.\s*|^[•\-]\s*/, '')
+        const parts = clean.split('—')
+        return `<div class="pai-rubric-card">
+          <div class="pai-rubric-name">${esc((parts[0]||'').trim())}</div>
+          ${parts[1] ? `<div class="pai-rubric-desc">${esc(parts.slice(1).join('—').trim())}</div>` : ''}
+        </div>`
+      }
+      // Hashtag line
+      if (line.match(/#\w/)) {
+        const tags = line.match(/#[\wА-Яа-я_]+/g) || []
+        const prefix = line.replace(/#[\wА-Яа-я_]+/g,'').replace(/[:|—]/g,'').trim()
+        return `<div class="pai-hashtag-cluster">
+          ${prefix ? `<div class="pai-hashtag-cluster-name">${esc(prefix)}</div>` : ''}
+          <div class="pai-hashtags">${tags.map(t=>`<span class="pai-hashtag">${esc(t)}</span>`).join('')}</div>
+        </div>`
+      }
+      // Bold markers
+      if (line.startsWith('**') || line.startsWith('###')) {
+        return `<div style="font-family:Manrope,sans-serif;font-size:12px;font-weight:700;color:${col};margin:8px 0 4px;">${esc(line.replace(/\*\*/g,'').replace(/^###\s*/,''))}</div>`
+      }
+      // Bullet list
+      if (line.startsWith('•') || line.startsWith('-')) {
+        return `<div style="display:flex;gap:7px;margin-bottom:5px;font-size:12px;color:var(--txt2);">
+          <span style="color:${col};flex-shrink:0;">▸</span>
+          <span>${esc(line.replace(/^[•\-]\s*/,''))}</span>
+        </div>`
+      }
+      return `<p style="margin-bottom:6px;font-size:12px;color:var(--txt2);line-height:1.6;">${esc(line)}</p>`
+    }).filter(Boolean).join('')
+
+    return `<div class="pai-section">
+      <div class="pai-section-title" style="color:${col};">${esc(titleLine)}</div>
+      <div class="pai-section-body">${bodyHtml}</div>
+    </div>`
+  }).join('')
+}
+
+// ── Save brief to passport ──
+async function savePAIBrief() {
+  if (!_paiCurrentText) return
+  const brief = {
+    mode: _paiMode,
+    mode_label: PAI_MODE_LABELS[_paiMode],
+    text: _paiCurrentText,
+    generated_at: new Date().toISOString()
+  }
+  if (!passportData.ai_briefs) passportData.ai_briefs = []
+  passportData.ai_briefs.unshift(brief)
+  if (passportData.ai_briefs.length > 10) passportData.ai_briefs.pop()
+
+  try {
+    const { data: existing } = await sb.from('client_passports').select('ai_briefs').eq('project_id', currentProject.id).maybeSingle()
+    if (existing) {
+      await sb.from('client_passports').update({ ai_briefs: passportData.ai_briefs }).eq('project_id', currentProject.id)
+    }
+  } catch(e) { console.warn('Save brief failed:', e) }
+
+  renderPAIHistory()
+  showAlertToast('✅', 'Бриф сохранён', PAI_MODE_LABELS[_paiMode] + ' добавлен в историю')
+}
+
+// ── Copy brief to clipboard ──
+function copyPAIBrief() {
+  if (!_paiCurrentText) return
+  navigator.clipboard.writeText(_paiCurrentText).then(() => {
+    showAlertToast('📋', 'Скопировано', 'Бриф скопирован в буфер обмена')
+  }).catch(() => {})
+}
+
+// ── Render brief history ──
+function renderPAIHistory() {
+  const wrap = g('pai-history-wrap')
+  const list = g('pai-history-list')
+  if (!wrap || !list) return
+  const briefs = passportData.ai_briefs || []
+  if (!briefs.length) { wrap.style.display = 'none'; return }
+  wrap.style.display = 'block'
+  list.innerHTML = briefs.map((b, i) => {
+    const d = new Date(b.generated_at)
+    const dateStr = d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'}) + ' · ' + d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})
+    return `<div class="pai-history-item" onclick="loadPAIBrief(${i})">
+      <div class="pai-history-item-label">${esc(b.mode_label || b.mode)}</div>
+      <div class="pai-history-item-date">${dateStr}</div>
+    </div>`
+  }).join('')
+}
+
+function loadPAIBrief(idx) {
+  const b = (passportData.ai_briefs||[])[idx]; if (!b) return
+  _paiCurrentText = b.text
+  _paiMode = b.mode
+  g('pai-output-label').textContent = b.mode_label + ' · ' + new Date(b.generated_at).toLocaleDateString('ru-RU')
+  g('pai-output-body').innerHTML = renderPAIText(b.text, b.mode)
+  g('pai-output-wrap').style.display = 'block'
+}
+
+// ── Hook into ppTab to init AI panel ──
+const _origPpTab = window.ppTab
+window.ppTab = function(tab, btn) {
+  if (_origPpTab) _origPpTab(tab, btn)
+  if (tab === 'ai') {
+    paiUpdateContext()
+    renderPAIHistory()
+    // Also load ai_briefs from DB if not loaded
+    if (!passportData.ai_briefs) {
+      sb.from('client_passports').select('ai_briefs').eq('project_id', currentProject.id).maybeSingle()
+        .then(({ data }) => {
+          if (data?.ai_briefs) { passportData.ai_briefs = data.ai_briefs; renderPAIHistory() }
+        }).catch(()=>{})
+    }
+  }
 }
 
 // ══════════════════════════════════════════════
@@ -26993,6 +27422,200 @@ window.switchPassportTab = function(tab, btn) {
 })();
 </script>
 <style id="dtr-history-mckinsey">
+/* ── PHASE 4: AI-БРИФ ПАСПОРТА ── */
+.pai-context-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+  min-height: 28px;
+}
+.pai-ctx-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  border: 1px solid;
+}
+.pai-ctx-chip.ok  { background: rgba(74,222,128,.08); color: var(--green); border-color: rgba(74,222,128,.2); }
+.pai-ctx-chip.no  { background: var(--bg4); color: var(--txt3); border-color: var(--brd); opacity: .5; }
+.pai-modes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.pai-mode-btn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 14px;
+  background: var(--bg4);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: all .15s;
+  text-align: left;
+}
+.pai-mode-btn:hover { border-color: var(--brd2); background: var(--bg5); }
+.pai-mode-btn.pai-mode-active {
+  border-color: var(--a2);
+  background: rgba(91,95,199,.1);
+  box-shadow: inset 0 0 0 1px rgba(91,95,199,.15);
+}
+.pai-mode-icon { font-size: 16px; flex-shrink: 0; }
+.pai-mode-label { font-family: Manrope, sans-serif; font-size: 12px; font-weight: 600; color: var(--txt); }
+.pai-mode-desc {
+  font-family: Manrope, sans-serif;
+  font-size: 11px;
+  color: var(--txt3);
+  line-height: 1.5;
+  margin-bottom: 14px;
+  padding: 8px 12px;
+  background: var(--bg4);
+  border-radius: var(--r-xs);
+  border-left: 2px solid var(--a);
+}
+.pai-gen-btn {
+  width: 100%;
+  padding: 13px 20px;
+  background: linear-gradient(135deg, var(--a) 0%, #7c5cfc 100%);
+  border: none;
+  border-radius: var(--r-sm);
+  color: #fff;
+  font-family: Manrope, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  cursor: pointer;
+  transition: all .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  box-shadow: 0 4px 20px rgba(91,95,199,.35);
+  margin-bottom: 16px;
+}
+.pai-gen-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(91,95,199,.45); }
+.pai-gen-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.pai-output-wrap {
+  background: var(--bg3);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  margin-bottom: 14px;
+  animation: fadeUp .3s cubic-bezier(.16,1,.3,1) both;
+}
+.pai-output-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--brd);
+  background: var(--bg4);
+}
+.pai-output-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--a2);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.pai-output-body {
+  padding: 16px;
+  max-height: 480px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,.06) transparent;
+}
+.pai-section {
+  margin-bottom: 18px;
+  animation: fadeUp .3s cubic-bezier(.16,1,.3,1) both;
+}
+.pai-section-title {
+  font-family: Manrope, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--brd);
+}
+.pai-section-body {
+  font-family: Manrope, sans-serif;
+  font-size: 12px;
+  color: var(--txt2);
+  line-height: 1.65;
+}
+.pai-section-body ul { margin: 6px 0 6px 16px; }
+.pai-section-body li { margin-bottom: 4px; }
+.pai-rubric-card {
+  padding: 8px 12px;
+  background: rgba(91,95,199,.06);
+  border: 1px solid rgba(91,95,199,.15);
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+.pai-rubric-name { font-size: 12px; font-weight: 700; color: var(--a2); margin-bottom: 3px; }
+.pai-rubric-desc { font-size: 11px; color: var(--txt2); line-height: 1.4; }
+.pai-hook-card {
+  padding: 9px 13px;
+  background: rgba(34,211,238,.04);
+  border: 1px solid rgba(34,211,238,.12);
+  border-radius: 8px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: var(--cyan);
+  font-style: italic;
+}
+.pai-hashtag-cluster {
+  margin-bottom: 8px;
+}
+.pai-hashtag-cluster-name { font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--txt3); letter-spacing: .08em; margin-bottom: 4px; }
+.pai-hashtags { display: flex; flex-wrap: wrap; gap: 5px; }
+.pai-hashtag {
+  padding: 2px 9px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--brd);
+  border-radius: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--txt2);
+}
+/* History */
+.pai-history-wrap { margin-top: 4px; }
+.pai-history-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--txt3);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.pai-history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--bg4);
+  border: 1px solid var(--brd);
+  border-radius: 8px;
+  margin-bottom: 5px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.pai-history-item:hover { border-color: var(--brd2); background: var(--bg5); }
+.pai-history-item-label { font-family: Manrope, sans-serif; font-size: 12px; font-weight: 500; color: var(--txt); }
+.pai-history-item-date { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--txt3); }
+
 /* ── PHASE 3: ALERT RULES UI ── */
 .alert-rule-row {
   display: grid;
