@@ -8356,57 +8356,92 @@ canvas {
 
 <!-- MODAL: Telegram Setup -->
 <div class="modal-overlay" id="modal-telegram">
-  <div class="modal" style="max-width:460px;">
+  <div class="modal" style="max-width:500px;">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
       <div style="width:40px;height:40px;border-radius:12px;background:rgba(0,136,204,.12);border:1px solid rgba(0,136,204,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="#2AABEE" stroke="none"><path d="M21.198 2.433a2.242 2.242 0 00-1.022.215l-16.5 7.5a2.25 2.25 0 00.126 4.073l3.9 1.205 2.306 6.58a.75.75 0 001.397.105l2.474-4.32 4.682 3.26a2.25 2.25 0 003.396-1.39l2.926-14.25a2.25 2.25 0 00-3.685-2.078z"/></svg>
       </div>
-      <div class="modal-title" style="margin-bottom:0;">Telegram уведомления</div>
+      <div class="modal-title" style="margin-bottom:0;">Telegram — уведомления и алерты</div>
     </div>
-    <div style="font-size:12px;color:var(--txt3);margin-bottom:20px;">Клиент будет получать сообщения при изменении статуса этапов</div>
 
-    <div id="tg-setup-steps">
-      <!-- Step 1 -->
-      <div class="tg-step">
-        <div class="tg-step-num">1</div>
-        <div>
-          <div class="tg-step-title">Клиент пишет боту</div>
-          <div class="tg-step-desc">Попроси клиента открыть Telegram и написать <b>/start</b> вашему боту</div>
-          <div class="tg-bot-link" id="tg-bot-link-display">@твой_бот</div>
+    <!-- Tabs -->
+    <div style="display:flex;gap:3px;background:var(--bg4);border-radius:8px;padding:3px;margin-bottom:18px;">
+      <button id="tg-tab-connect" onclick="tgSwitchTab('connect')" style="flex:1;padding:6px 10px;border:none;border-radius:6px;background:var(--bg5);color:var(--txt);font-family:Manrope,sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;">🔗 Подключение</button>
+      <button id="tg-tab-alerts" onclick="tgSwitchTab('alerts')" style="flex:1;padding:6px 10px;border:none;border-radius:6px;background:transparent;color:var(--txt2);font-family:Manrope,sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;">🔔 Алерты</button>
+      <button id="tg-tab-log" onclick="tgSwitchTab('log')" style="flex:1;padding:6px 10px;border:none;border-radius:6px;background:transparent;color:var(--txt2);font-family:Manrope,sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;">📋 Лог</button>
+    </div>
+
+    <!-- TAB: Connect -->
+    <div id="tg-panel-connect">
+      <div style="font-size:12px;color:var(--txt3);margin-bottom:16px;">Клиент получает сообщения при смене статуса этапов</div>
+      <div id="tg-setup-steps">
+        <div class="tg-step">
+          <div class="tg-step-num">1</div>
+          <div>
+            <div class="tg-step-title">Клиент пишет боту</div>
+            <div class="tg-step-desc">Попроси клиента открыть Telegram и написать <b>/start</b> вашему боту</div>
+            <div class="tg-bot-link" id="tg-bot-link-display">@твой_бот</div>
+          </div>
         </div>
-      </div>
-      <!-- Step 2 -->
-      <div class="tg-step">
-        <div class="tg-step-num">2</div>
-        <div style="flex:1;">
-          <div class="tg-step-title">Вставь Chat ID клиента</div>
-          <div class="tg-step-desc">Бот покажет клиенту его Chat ID — скопируй и вставь сюда</div>
-          <div class="field" style="margin-top:10px;margin-bottom:0;">
-            <input type="text" id="tg-chat-id-inp" placeholder="123456789" style="font-family:monospace;">
+        <div class="tg-step">
+          <div class="tg-step-num">2</div>
+          <div style="flex:1;">
+            <div class="tg-step-title">Вставь Chat ID клиента</div>
+            <div class="tg-step-desc">Бот покажет клиенту его Chat ID — скопируй и вставь сюда</div>
+            <div class="field" style="margin-top:10px;margin-bottom:0;">
+              <input type="text" id="tg-chat-id-inp" placeholder="123456789" style="font-family:monospace;">
+            </div>
+          </div>
+        </div>
+        <div class="tg-step">
+          <div class="tg-step-num">3</div>
+          <div>
+            <div class="tg-step-title">Проверь соединение</div>
+            <div class="tg-step-desc">Отправим тестовое сообщение клиенту</div>
+            <button class="tg-test-btn" id="tg-test-btn" onclick="sendTestTelegram()">Отправить тест</button>
+            <div id="tg-test-result" style="font-size:11px;margin-top:8px;font-family:monospace;"></div>
           </div>
         </div>
       </div>
-      <!-- Step 3 -->
-      <div class="tg-step">
-        <div class="tg-step-num">3</div>
-        <div>
-          <div class="tg-step-title">Проверь соединение</div>
-          <div class="tg-step-desc">Отправим тестовое сообщение клиенту</div>
-          <button class="tg-test-btn" id="tg-test-btn" onclick="sendTestTelegram()">Отправить тест</button>
-          <div id="tg-test-result" style="font-size:11px;margin-top:8px;font-family:monospace;"></div>
-        </div>
+      <div style="background:rgba(91,95,199,.06);border:1px solid rgba(91,95,199,.2);border-radius:var(--r-sm);padding:12px 14px;margin:16px 0;font-size:11px;color:var(--txt2);line-height:1.6;">
+        <b style="color:var(--a2);">Бот настраивается один раз в Supabase.</b><br>
+        Инструкция в README ниже — займёт ~10 минут.
+      </div>
+      <div class="modal-footer" style="margin-top:0;">
+        <button class="btn-ghost" onclick="closeModal('modal-telegram')">Закрыть</button>
+        <button class="btn-primary" style="flex:1;" onclick="saveTelegramChatId()">Сохранить Chat ID</button>
       </div>
     </div>
 
-    <div style="background:rgba(91,95,199,.06);border:1px solid rgba(91,95,199,.2);border-radius:var(--r-sm);padding:12px 14px;margin:16px 0;font-size:11px;color:var(--txt2);line-height:1.6;">
-      <b style="color:var(--a2);">Бот настраивается один раз в Supabase.</b><br>
-      Инструкция в README ниже — займёт ~10 минут.
+    <!-- TAB: Alerts -->
+    <div id="tg-panel-alerts" style="display:none;">
+      <div style="font-size:12px;color:var(--txt3);margin-bottom:14px;line-height:1.5;">Алерты срабатывают автоматически при запуске отчёта и открытии трекера. Telegram должен быть подключён.</div>
+
+      <div id="alert-rules-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;"></div>
+
+      <div style="padding:10px 12px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.15);border-radius:8px;font-size:10px;font-family:'JetBrains Mono',monospace;color:rgba(245,158,11,.65);margin-bottom:14px;">
+        SQL: ALTER TABLE projects ADD COLUMN IF NOT EXISTS alert_rules jsonb DEFAULT '[]';
+        <button onclick="navigator.clipboard.writeText(`ALTER TABLE projects ADD COLUMN IF NOT EXISTS alert_rules jsonb DEFAULT '[]';`).then(()=>{this.textContent='✓';setTimeout(()=>this.textContent='SQL',1500)})" style="margin-left:8px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);border-radius:4px;padding:2px 8px;font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(245,158,11,.7);cursor:pointer;">SQL</button>
+      </div>
+
+      <div class="modal-footer" style="margin-top:0;">
+        <button class="btn-ghost" onclick="closeModal('modal-telegram')">Закрыть</button>
+        <button class="btn-primary" style="flex:1;" onclick="saveAlertRules()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Сохранить алерты
+        </button>
+      </div>
     </div>
 
-    <div class="modal-footer">
-      <button class="btn-ghost" onclick="closeModal('modal-telegram')">Закрыть</button>
-      <button class="btn-primary" style="flex:1;" onclick="saveTelegramChatId()">Сохранить</button>
+    <!-- TAB: Log -->
+    <div id="tg-panel-log" style="display:none;">
+      <div id="alert-log-list" style="display:flex;flex-direction:column;gap:6px;max-height:320px;overflow-y:auto;"></div>
+      <div class="modal-footer" style="margin-top:14px;">
+        <button class="btn-ghost" onclick="closeModal('modal-telegram')">Закрыть</button>
+        <button class="btn-ghost" onclick="clearAlertLog()">Очистить лог</button>
+      </div>
     </div>
+
   </div>
 </div>
 
@@ -11176,7 +11211,293 @@ _DTR Analytics_`
 }
 
 
-// ── COPY REPORT LINK ─────────────────────────
+// ══════════════════════════════════════════════
+// PHASE 3: PROACTIVE ALERT ENGINE
+// SQL: ALTER TABLE projects ADD COLUMN IF NOT EXISTS alert_rules jsonb DEFAULT '[]';
+// ══════════════════════════════════════════════
+
+// Default alert rule templates
+const ALERT_TEMPLATES = [
+  { type: 'revenue_drop',  label: 'Падение выручки/день',       desc: 'Период 2 ниже Периода 1 на X%',         unit: '%',  defaultThreshold: 10, emoji: '📉' },
+  { type: 'traffic_drop',  label: 'Падение трафика',            desc: 'Чеков/день ниже Периода 1 на X%',       unit: '%',  defaultThreshold: 10, emoji: '👥' },
+  { type: 'avgcheck_drop', label: 'Падение среднего чека',      desc: 'Средний чек ниже Периода 1 на X%',      unit: '%',  defaultThreshold: 8,  emoji: '🧾' },
+  { type: 'kpi_miss',      label: 'KPI ниже плана',             desc: 'Выполнение KPI ниже X%',               unit: '%',  defaultThreshold: 80, emoji: '🎯' },
+  { type: 'overdue_stage', label: 'Просроченный этап',          desc: 'Этап не закрыт после дедлайна',         unit: 'дн', defaultThreshold: 1,  emoji: '⏰' },
+  { type: 'overdue_task',  label: 'Просроченная задача',        desc: 'Задача не закрыта после дедлайна',      unit: 'дн', defaultThreshold: 1,  emoji: '📌' },
+]
+
+let alertRules = []          // loaded from project.alert_rules
+let alertLog   = []          // in-memory log for this session
+let _tgActiveTab = 'connect' // track which tab is open
+
+// ── Telegram modal tab switcher ──
+function tgSwitchTab(tab) {
+  _tgActiveTab = tab
+  const tabs = ['connect', 'alerts', 'log']
+  tabs.forEach(t => {
+    const btn = g('tg-tab-' + t)
+    const panel = g('tg-panel-' + t)
+    const active = t === tab
+    if (btn) {
+      btn.style.background = active ? 'var(--bg5)' : 'transparent'
+      btn.style.color = active ? 'var(--txt)' : 'var(--txt2)'
+      btn.style.fontWeight = active ? '600' : '500'
+    }
+    if (panel) panel.style.display = active ? 'block' : 'none'
+  })
+  if (tab === 'alerts') renderAlertRules()
+  if (tab === 'log')    renderAlertLog()
+}
+
+// ── Load alert rules from project ──
+async function loadAlertRules() {
+  if (!currentProject) return
+  try {
+    const { data } = await sb.from('projects').select('alert_rules').eq('id', currentProject.id).single()
+    alertRules = data?.alert_rules || []
+  } catch(e) { alertRules = [] }
+  // Ensure all templates are represented
+  ALERT_TEMPLATES.forEach(tpl => {
+    if (!alertRules.find(r => r.type === tpl.type)) {
+      alertRules.push({ type: tpl.type, enabled: false, threshold: tpl.defaultThreshold })
+    }
+  })
+}
+
+// ── Render alert rules in modal ──
+function renderAlertRules() {
+  const list = g('alert-rules-list'); if (!list) return
+  list.innerHTML = ALERT_TEMPLATES.map((tpl, i) => {
+    const rule = alertRules.find(r => r.type === tpl.type) || { enabled: false, threshold: tpl.defaultThreshold }
+    return `<div class="alert-rule-row${rule.enabled?' ar-enabled':''}">
+      <div class="alert-rule-info">
+        <div class="alert-rule-name">${tpl.emoji} ${tpl.label}</div>
+        <div class="alert-rule-desc">${tpl.desc}</div>
+      </div>
+      <div class="alert-threshold-wrap">
+        <input class="alert-threshold-inp" type="number" min="1" max="99"
+          id="ar-thresh-${tpl.type}" value="${rule.threshold}" ${rule.enabled?'':'disabled'}>
+        <span class="alert-unit-lbl">${tpl.unit}</span>
+      </div>
+      <label class="alert-toggle">
+        <input type="checkbox" id="ar-en-${tpl.type}" ${rule.enabled?'checked':''}
+          onchange="arToggle('${tpl.type}',this.checked)">
+        <span class="alert-toggle-track"></span>
+        <span class="alert-toggle-thumb"></span>
+      </label>
+    </div>`
+  }).join('')
+}
+
+function arToggle(type, enabled) {
+  const inp = g('ar-thresh-' + type)
+  if (inp) inp.disabled = !enabled
+  const row = inp?.closest('.alert-rule-row')
+  if (row) row.classList.toggle('ar-enabled', enabled)
+}
+
+// ── Save alert rules ──
+async function saveAlertRules() {
+  alertRules = ALERT_TEMPLATES.map(tpl => {
+    const inp = g('ar-thresh-' + tpl.type)
+    const enCb = g('ar-en-' + tpl.type)
+    return {
+      type: tpl.type,
+      enabled: enCb?.checked || false,
+      threshold: inp ? parseInt(inp.value) || tpl.defaultThreshold : tpl.defaultThreshold
+    }
+  })
+  try {
+    await sb.from('projects').update({ alert_rules: alertRules }).eq('id', currentProject.id)
+    if (currentProject) currentProject.alert_rules = alertRules
+  } catch(e) { console.warn('Save alert rules failed:', e) }
+  closeModal('modal-telegram')
+  showAlertToast('✅', 'Алерты сохранены', 'Будут срабатывать при запуске отчёта и открытии трекера')
+}
+
+// ── CORE: check alerts after runAnalysis ──
+async function checkAlerts(metrics) {
+  if (!currentProject?.telegram_chat_id) return
+  if (!alertRules.length) return
+  const { dRD, bRD, dCD, bCD, dA, bA, grP } = metrics
+  const tgEsc = s => String(s||'').replace(/[*_`[\]()~>#+=|{}.!-]/g,'\\$&')
+  const fired = []
+
+  for (const rule of alertRules) {
+    if (!rule.enabled) continue
+    const tpl = ALERT_TEMPLATES.find(t => t.type === rule.type)
+    if (!tpl) continue
+
+    let triggered = false
+    let alertText = ''
+    let logLevel = 'warn'
+
+    if (rule.type === 'revenue_drop' && bRD > 0) {
+      const drop = ((bRD - dRD) / bRD) * 100
+      if (drop >= rule.threshold) {
+        triggered = true
+        logLevel = drop >= 20 ? 'crit' : 'warn'
+        alertText = `📉 *Падение выручки*\n\nПроект: *${tgEsc(currentProject.name)}*\n\nПериод 1: ${fmtM(Math.round(bRD))} сум/день\nПериод 2: ${fmtM(Math.round(dRD))} сум/день\nПадение: *${drop.toFixed(1)}%* (порог: ${rule.threshold}%)\n\n_DTR Analytics · Автоматический алерт_`
+      }
+    }
+    if (rule.type === 'traffic_drop' && bCD > 0) {
+      const drop = ((bCD - dCD) / bCD) * 100
+      if (drop >= rule.threshold) {
+        triggered = true
+        alertText = `👥 *Падение трафика*\n\nПроект: *${tgEsc(currentProject.name)}*\n\nПериод 1: ${fmt(Math.round(bCD))} чеков/день\nПериод 2: ${fmt(Math.round(dCD))} чеков/день\nПадение: *${drop.toFixed(1)}%*\n\n_DTR Analytics_`
+      }
+    }
+    if (rule.type === 'avgcheck_drop' && bA > 0) {
+      const drop = ((bA - dA) / bA) * 100
+      if (drop >= rule.threshold) {
+        triggered = true
+        alertText = `🧾 *Падение среднего чека*\n\nПроект: *${tgEsc(currentProject.name)}*\n\nБыло: ${fmtM(Math.round(bA))} сум\nСтало: ${fmtM(Math.round(dA))} сум\nПадение: *${drop.toFixed(1)}%*\n\n_DTR Analytics_`
+      }
+    }
+    if (rule.type === 'kpi_miss' && _reportPassportKPIs.length) {
+      const missed = _reportPassportKPIs.filter(k => {
+        const metricMap = { revenue_per_day: dRD, avg_check: dA, traffic: dCD, growth_pct: grP }
+        const fact = metricMap[k.metric_type]
+        if (fact == null || !k.plan_value) return false
+        return (fact / k.plan_value * 100) < rule.threshold
+      })
+      if (missed.length) {
+        triggered = true
+        logLevel = 'crit'
+        alertText = `🎯 *KPI ниже плана*\n\nПроект: *${tgEsc(currentProject.name)}*\n\n` +
+          missed.map(k => `• ${tgEsc(k.goal)}: выполнение < ${rule.threshold}%`).join('\n') +
+          `\n\n_DTR Analytics_`
+      }
+    }
+
+    if (triggered && alertText) {
+      fired.push({ type: rule.type, label: tpl.label, level: logLevel, text: alertText })
+    }
+  }
+
+  // Fire all triggered alerts
+  for (const alert of fired) {
+    await sendTelegramAlert(alert.text)
+    _logAlert(alert.emoji||'⚠️', alert.label, alert.level, currentProject.name)
+    showAlertToast('🔔', alert.label, 'Алерт отправлен в Telegram')
+  }
+}
+
+// ── Check overdue stages and tasks (called from loadTracker) ──
+async function checkOverdueAlerts() {
+  if (!currentProject?.telegram_chat_id) return
+  if (!alertRules.length) return
+  const today = new Date().toISOString().slice(0,10)
+  const tgEsc = s => String(s||'').replace(/[*_`[\]()~>#+=|{}.!-]/g,'\\$&')
+
+  // Overdue stages
+  const stageRule = alertRules.find(r => r.type === 'overdue_stage' && r.enabled)
+  if (stageRule) {
+    const overdue = trackerData.filter(s =>
+      s.status !== 'completed' && s.deadline && s.deadline < today
+    )
+    if (overdue.length) {
+      const names = overdue.map(s => `• ${STAGES[s.stage_index]?.icon||''} ${tgEsc(STAGES[s.stage_index]?.name||'Этап')}`).join('\n')
+      const text = `⏰ *Просроченные этапы*\n\nПроект: *${tgEsc(currentProject.name)}*\n\n${names}\n\n_DTR Analytics_`
+      // Throttle: only fire once per session per project
+      const key = 'alert_overdue_stage_' + currentProject.id
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, '1')
+        await sendTelegramAlert(text)
+        _logAlert('⏰', `${overdue.length} просроченных этапов`, 'crit', currentProject.name)
+        showAlertToast('⏰', 'Просроченные этапы', `${overdue.length} этапов прошли дедлайн`)
+      }
+    }
+  }
+
+  // Overdue tasks
+  const taskRule = alertRules.find(r => r.type === 'overdue_task' && r.enabled)
+  if (taskRule) {
+    const overdueTasks = []
+    Object.values(tasksData).forEach(arr => {
+      arr.forEach(t => {
+        if (!t.done && t.deadline && t.deadline < today) overdueTasks.push(t)
+      })
+    })
+    if (overdueTasks.length) {
+      const key = 'alert_overdue_task_' + currentProject.id
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, '1')
+        const text = `📌 *Просроченные задачи*\n\nПроект: *${tgEsc(currentProject.name)}*\n\n` +
+          overdueTasks.slice(0,5).map(t => `• ${tgEsc(t.title)}${t.assignee?' (@'+tgEsc(t.assignee)+')':''}`).join('\n') +
+          (overdueTasks.length > 5 ? `\n+ещё ${overdueTasks.length-5}` : '') +
+          `\n\n_DTR Analytics_`
+        await sendTelegramAlert(text)
+        _logAlert('📌', `${overdueTasks.length} просроченных задач`, 'warn', currentProject.name)
+        showAlertToast('📌', 'Просроченные задачи', `${overdueTasks.length} задач без выполнения`)
+      }
+    }
+  }
+}
+
+// ── Generic Telegram alert sender ──
+async function sendTelegramAlert(text) {
+  const chatId = currentProject?.telegram_chat_id
+  if (!chatId) return
+  try {
+    await fetch(TG_EDGE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY },
+      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'Markdown' })
+    })
+  } catch(e) { console.warn('Alert send failed:', e.message) }
+}
+
+// ── In-memory alert log ──
+function _logAlert(icon, label, level, project) {
+  alertLog.unshift({ icon, label, level, project, time: new Date().toISOString() })
+  if (alertLog.length > 50) alertLog.pop()
+}
+
+function renderAlertLog() {
+  const list = g('alert-log-list'); if (!list) return
+  if (!alertLog.length) {
+    list.innerHTML = '<div style="text-align:center;padding:24px;font-size:12px;color:var(--txt3);">Алертов ещё не было в этой сессии</div>'
+    return
+  }
+  list.innerHTML = alertLog.map(a => {
+    const t = new Date(a.time).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})
+    return `<div class="alert-log-item al-${a.level}">
+      <div class="alert-log-icon">${a.icon}</div>
+      <div>
+        <div class="alert-log-title">${esc(a.label)}</div>
+        <div class="alert-log-meta">${esc(a.project)} · ${t}</div>
+      </div>
+    </div>`
+  }).join('')
+}
+
+function clearAlertLog() { alertLog = []; renderAlertLog() }
+
+// ── Toast notification ──
+function showAlertToast(icon, title, body) {
+  const existing = document.querySelector('.alert-toast')
+  if (existing) existing.remove()
+  const toast = document.createElement('div')
+  toast.className = 'alert-toast'
+  toast.innerHTML = `<div class="alert-toast-icon">${icon}</div>
+    <div><div class="alert-toast-title">${esc(title)}</div>
+    <div class="alert-toast-body">${esc(body)}</div></div>`
+  toast.onclick = () => toast.remove()
+  document.body.appendChild(toast)
+  setTimeout(() => { if (toast.parentNode) toast.remove() }, 5000)
+}
+
+// ── Extend openTelegramSetup to also load rules and reset to connect tab ──
+const _origOpenTelegramSetup = window.openTelegramSetup
+window.openTelegramSetup = async function() {
+  if (_origOpenTelegramSetup) _origOpenTelegramSetup()
+  tgSwitchTab('connect')
+  await loadAlertRules()
+}
+
+// ══════════════════════════════════════════════
+// COPY REPORT LINK
 function copyReportLink(type, id, btn) {
   const url = window.location.origin + window.location.pathname + '#' + type + '/' + id
   navigator.clipboard.writeText(url).then(() => {
@@ -11978,6 +12299,8 @@ async function openProject(id) {
   loadReports()
   loadSMMReports()
   loadTracker()
+  // ── Phase 3: pre-load alert rules silently ──
+  loadAlertRules().catch(()=>{})
 }
 
 async function loadReports() {
@@ -12410,6 +12733,9 @@ function runAnalysis() {
 
   // ── KPI Plan vs Fact: sync passport KPIs with actual report metrics ──
   syncKPIFacts({ dRD, dA, dCD, grP })
+
+  // ── Phase 3: proactive alert check ──
+  checkAlerts({ dRD, bRD, dCD, bCD, dA, bA, grP }).catch(e => console.warn('Alert check failed:', e))
 
   // Hero
   set('hbd',bD); set('hdd',dD)
@@ -13242,6 +13568,9 @@ async function loadTracker() {
   renderTracker()
   renderHistory(hist || [])
   setupRealtimeTracker()
+
+  // ── Phase 3: check overdue alerts after tracker+tasks are ready ──
+  checkOverdueAlerts().catch(e => console.warn('Overdue check failed:', e))
 }
 
 function renderTracker() {
@@ -26664,6 +26993,130 @@ window.switchPassportTab = function(tab, btn) {
 })();
 </script>
 <style id="dtr-history-mckinsey">
+/* ── PHASE 3: ALERT RULES UI ── */
+.alert-rule-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg3);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-sm);
+  transition: border-color .15s;
+}
+.alert-rule-row.ar-enabled { border-color: rgba(91,95,199,.25); }
+.alert-rule-info { min-width: 0; }
+.alert-rule-name {
+  font-family: Manrope, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--txt);
+  margin-bottom: 3px;
+}
+.alert-rule-desc {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--txt3);
+  letter-spacing: .03em;
+}
+.alert-threshold-wrap {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.alert-threshold-inp {
+  width: 52px;
+  background: var(--bg4);
+  border: 1px solid var(--brd);
+  border-radius: 6px;
+  padding: 5px 8px;
+  color: var(--txt);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  outline: none;
+  transition: border-color .15s;
+}
+.alert-threshold-inp:focus { border-color: var(--a2); }
+.alert-unit-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--txt3);
+  white-space: nowrap;
+}
+/* Toggle switch */
+.alert-toggle {
+  position: relative;
+  width: 32px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.alert-toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+.alert-toggle-track {
+  position: absolute;
+  inset: 0;
+  background: var(--bg5);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background .2s;
+  border: 1px solid var(--brd);
+}
+.alert-toggle input:checked + .alert-toggle-track { background: var(--a); border-color: var(--a); }
+.alert-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  background: var(--txt3);
+  border-radius: 50%;
+  transition: transform .2s, background .2s;
+  pointer-events: none;
+}
+.alert-toggle input:checked ~ .alert-toggle-thumb { transform: translateX(14px); background: #fff; }
+/* Alert log items */
+.alert-log-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--bg3);
+  border: 1px solid var(--brd);
+}
+.alert-log-icon { font-size: 16px; margin-top: 1px; }
+.alert-log-title { font-size: 12px; font-weight: 600; color: var(--txt); margin-bottom: 2px; }
+.alert-log-meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--txt3); }
+.alert-log-item.al-warn { border-color: rgba(245,158,11,.2); background: rgba(245,158,11,.04); }
+.alert-log-item.al-crit { border-color: rgba(248,113,113,.2); background: rgba(248,113,113,.04); }
+.alert-log-item.al-ok   { border-color: rgba(74,222,128,.2); background: rgba(74,222,128,.04); }
+/* Alert fired toast */
+.alert-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--bg3);
+  border: 1px solid var(--brd2);
+  border-radius: 12px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  box-shadow: var(--shadow-lg);
+  z-index: 9999;
+  max-width: 340px;
+  animation: fadeUp .3s cubic-bezier(.16,1,.3,1) both;
+  cursor: pointer;
+}
+.alert-toast-icon { font-size: 20px; flex-shrink: 0; }
+.alert-toast-title { font-size: 13px; font-weight: 700; color: var(--txt); margin-bottom: 3px; }
+.alert-toast-body { font-size: 11px; color: var(--txt2); line-height: 1.4; }
+
+/* ── PHASE 3 END ── */
+
 /* ── STAGE TASKS — Phase 2 ── */
 .task-section {
   margin-top: 12px;
