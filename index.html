@@ -11039,13 +11039,15 @@ async function sendTelegramStageNotification(stageIndex, newStatus, note) {
   const statusText = newStatus === 'completed' ? '✅ Завершён' : '🔵 Начат'
   const emoji = newStatus === 'completed' ? '🎉' : '🚀'
 
-  let text = `${emoji} *${currentProject.name}*
+  // Escape special Markdown chars from user-supplied strings to prevent broken messages
+  const tgEsc = s => String(s||'').replace(/[*_`[\]()~>#+=|{}.!-]/g, '\\$&')
+  let text = `${emoji} *${tgEsc(currentProject.name)}*
 
 `
-  text += `Этап *${stage.name}* — ${statusText}
+  text += `Этап *${tgEsc(stage.name)}* — ${statusText}
 `
   if (note) text += `
-💬 ${note}`
+💬 ${tgEsc(note)}`
   text += `
 
 _DTR Analytics_`
@@ -11118,7 +11120,7 @@ function globalSearch(q) {
   }).slice(0, 3)
 
   if (!projects.length && !stages.length) {
-    res.innerHTML = `<div class="gsr-empty">Ничего не найдено по «${q}»</div>`
+    res.innerHTML = `<div class="gsr-empty">Ничего не найдено по «${esc(q)}»</div>`
     return
   }
 
@@ -11132,8 +11134,8 @@ function globalSearch(q) {
       return `<div class="gsr-item" onclick="closeGlobalSearch();openProject('${p.id}')">
         <div class="gsr-icon" style="background:${col}22;border:1px solid ${col}44;color:${col};">${p.name[0]}</div>
         <div>
-          <div class="gsr-title">${p.name}</div>
-          <div class="gsr-sub">${p.description || 'Нет описания'} · ${prog.pct}% выполнено</div>
+          <div class="gsr-title">${esc(p.name)}</div>
+          <div class="gsr-sub">${esc(p.description || 'Нет описания')} · ${prog.pct}% выполнено</div>
         </div>
       </div>`
     }).join('')
@@ -11150,7 +11152,7 @@ function globalSearch(q) {
         <div class="gsr-icon" style="background:var(--bg4);font-size:16px;">${stage.icon}</div>
         <div>
           <div class="gsr-title">${stage.name}</div>
-          <div class="gsr-sub">${proj.name} · <span style="color:${stColor}">${s.status === 'completed' ? 'Завершён' : s.status === 'active' ? 'В работе' : 'Ожидает'}</span></div>
+          <div class="gsr-sub">${esc(proj.name)} · <span style="color:${stColor}">${s.status === 'completed' ? 'Завершён' : s.status === 'active' ? 'В работе' : 'Ожидает'}</span></div>
         </div>
       </div>`
     }).join('')
@@ -11219,7 +11221,7 @@ async function loadActivityFeed() {
           <div class="act-body">
             <div class="act-text">
               ${evEmoji} <b>${item.stage.name}</b> — ${item.event}
-              <span class="act-project-chip" style="background:${col}18;color:${col};">${item.proj.name}</span>
+              <span class="act-project-chip" style="background:${col}18;color:${col};">${esc(item.proj.name)}</span>
             </div>
             ${item.note ? `<div class="act-meta">💬 ${esc(item.note)}</div>` : ''}
             <div class="act-meta">${time}</div>
@@ -11325,8 +11327,8 @@ function renderSMMLb() {
           <div class="smm-lb-project">
             <div class="smm-lb-proj-icon" style="background:${col}22;border:1px solid ${col}44;color:${col};">${d.proj.name[0]}</div>
             <div>
-              <div class="smm-lb-proj-name">${d.proj.name}</div>
-              <div class="smm-lb-proj-period">📅 ${d.report.period_label}</div>
+              <div class="smm-lb-proj-name">${esc(d.proj.name)}</div>
+              <div class="smm-lb-proj-period">📅 ${esc(d.report.period_label)}</div>
             </div>
           </div>
           ${otherMetrics.slice(0,3).map(k => {
@@ -12070,6 +12072,7 @@ async function openReport(id) {
 }
 
 async function publishReport() {
+  if (!currentReport) return
   await sb.from('reports').update({ status: 'published' }).eq('id', currentReport.id)
   g('btn-publish').style.display = 'none'
   currentReport.status = 'published'
@@ -13975,17 +13978,17 @@ function collectSMMData() {
     reels_reach: n('sd-reels-reach'), posts_reach: n('sd-posts-reach'), stories_reach: n('sd-stories-reach'),
     reels_views: n('sd-reels-views'), posts_views: n('sd-posts-views'),
     followers: n('sd-followers'),
-    er: +g('sd-er').value || 0, lr: +g('sd-lr').value || 0, tr: +g('sd-tr').value || 0,
-    shr: +g('sd-shr').value || 0, sr: +g('sd-sr').value || 0
+    er: n('sd-er'), lr: n('sd-lr'), tr: n('sd-tr'),
+    shr: n('sd-shr'), sr: n('sd-sr')
   }
   smmData.prev = {
     followers: n('sd-prev-followers'),
-    er: +g('sd-prev-er').value || 0, lr: +g('sd-prev-lr').value || 0,
-    tr: +g('sd-prev-tr').value || 0, shr: +g('sd-prev-shr').value || 0, sr: +g('sd-prev-sr').value || 0
+    er: n('sd-prev-er'), lr: n('sd-prev-lr'),
+    tr: n('sd-prev-tr'), shr: n('sd-prev-shr'), sr: n('sd-prev-sr')
   }
   smmData.goals = {
-    er: +g('sd-goal-er').value || 0, lr: +g('sd-goal-lr').value || 0,
-    tr: +g('sd-goal-tr').value || 0, shr: +g('sd-goal-shr').value || 0, sr: +g('sd-goal-sr').value || 0
+    er: n('sd-goal-er'), lr: n('sd-goal-lr'),
+    tr: n('sd-goal-tr'), shr: n('sd-goal-shr'), sr: n('sd-goal-sr')
   }
 }
 
@@ -14190,12 +14193,12 @@ function renderSMMReelsGrid() {
       <div class="smm-reel-thumb">
         <div class="smm-reel-rank-wm">${rank}</div>
         <div class="smm-reel-play">
-          ${r.link ? `<a href="${r.link}" target="_blank" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:var(--smm-accent2);"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></a>` : '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:var(--smm-accent2)"><polygon points="5 3 19 12 5 21 5 3"/></svg>'}
+          ${r.link ? `<a href="${/^https?:\/\//i.test(r.link)?r.link:'#'}" rel="noopener noreferrer" target="_blank" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:var(--smm-accent2);"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></a>` : '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:var(--smm-accent2)"><polygon points="5 3 19 12 5 21 5 3"/></svg>'}
         </div>
         <div class="smm-reel-rank-badge ${bCls}">${medal}</div>
       </div>
       <div class="smm-reel-body">
-        <div class="smm-reel-title">${r.title || 'Reel #'+rank}</div>
+        <div class="smm-reel-title">${esc(r.title || 'Reel #'+rank)}</div>
         <div class="smm-reel-stats">
           <div class="smm-reel-stat">👁 просм.<span>${fmtK(r.views)}</span></div>
           <div class="smm-reel-stat">❤️ лайки<span>${fmtK(r.likes)}</span></div>
@@ -14241,7 +14244,7 @@ function renderSMMRubricGrid() {
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
         <div>
           ${isWin?`<div style="font-size:9px;font-family:'JetBrains Mono',monospace;color:${pal.a};letter-spacing:.15em;text-transform:uppercase;margin-bottom:4px;">🏆 Лучшая</div>`:'<div style="height:17px;"></div>'}
-          <div style="font-size:15px;font-weight:600;color:#fff;">${r.name}</div>
+          <div style="font-size:15px;font-weight:600;color:#fff;">${esc(r.name)}</div>
         </div>
         <div style="text-align:right;">
           <div style="font-size:9px;color:rgba(255,255,255,.35);font-family:'JetBrains Mono',monospace;letter-spacing:.1em;margin-bottom:2px;">ПОСТОВ</div>
@@ -15047,12 +15050,22 @@ async function deleteProject(id) {
   const btn = document.getElementById('ps-delete-btn')
   if (btn) { btn.disabled = true; btn.textContent = 'Удаляем...' }
 
-  // Delete stages first
+  // Delete all report_files for this project's reports first
+  const { data: projReports } = await sb.from('reports').select('id').eq('project_id', id)
+  if (projReports && projReports.length) {
+    const repIds = projReports.map(r => r.id)
+    await sb.from('report_files').delete().in('report_id', repIds)
+  }
+  // Delete stage history
+  await sb.from('stage_history').delete().eq('project_id', id)
+  // Delete stages
   await sb.from('project_stages').delete().eq('project_id', id)
   // Delete reports
   await sb.from('reports').delete().eq('project_id', id)
   // Delete SMM reports
   await sb.from('smm_reports').delete().eq('project_id', id)
+  // Delete client passport
+  await sb.from('client_passports').delete().eq('project_id', id)
   // Delete project
   const { error } = await sb.from('projects').delete().eq('id', id)
 
