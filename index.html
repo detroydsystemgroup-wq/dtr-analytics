@@ -10948,8 +10948,10 @@ CREATE TABLE IF NOT EXISTS stage_tasks (
   created_by uuid
 );
 ALTER TABLE stage_tasks ENABLE ROW LEVEL SECURITY;
-CREATE POLICY IF NOT EXISTS "allow_all_tasks" ON stage_tasks
-  FOR ALL USING (true) WITH CHECK (true);
+DO $$ BEGIN
+  CREATE POLICY "allow_all_tasks" ON stage_tasks FOR ALL USING (true) WITH CHECK (true);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- ② Команда проекта
 ALTER TABLE projects ADD COLUMN IF NOT EXISTS team_members jsonb DEFAULT '[]';
