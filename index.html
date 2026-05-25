@@ -9591,14 +9591,14 @@ canvas {
   opacity: 1 !important;
 }
 
-/* Done segment */
+/* Done segment — full opacity, gold colour set inline */
 .pcard-seg.pcs-done {
-  opacity: .7 !important;
+  opacity: 1 !important;
 }
 
-/* Pending segment */
+/* Pending segment — barely visible */
 .pcard-seg.pcs-pending {
-  opacity: .25 !important;
+  opacity: .22 !important;
 }
 
 /* Hover: brighten all segs */
@@ -17314,17 +17314,17 @@ function renderProjectGrid() {
       const st = projStages.find(s => s.stage_index === i)
       return st ? st.status : 'pending'
     })
-    const activeIdx = stageStatuses.findIndex(s => s === 'in_progress')
+    const activeIdx = stageStatuses.findIndex(s => s === 'active' || s === 'in_progress')
     const firstPending = stageStatuses.findIndex(s => s !== 'completed')
     const curIdx = activeIdx !== -1 ? activeIdx : (pct < 100 ? firstPending : -1)
     const stageSegs = stageStatuses.map((st,i) => {
       const done = st === 'completed'
       const active = (i === activeIdx) || (activeIdx === -1 && i === firstPending && pct < 100)
-      // Done: dark matte gold — пройденные этапы
-      // Active: bright gold + glow — текущий этап
-      // Pending: dim — ещё впереди
-      const bg = done ? '#8a6a28' : active ? '#c9a84c' : 'rgba(255,255,255,.07)'
-      const glow = active ? 'box-shadow:0 0 10px rgba(201,168,76,.65);' : ''
+      // Done: яркое золото — пройденные этапы хорошо видны
+      // Active: ещё ярче + glow — текущий этап
+      // Pending: почти невидимый
+      const bg = done ? '#b8923a' : active ? '#dec17a' : 'rgba(255,255,255,.08)'
+      const glow = active ? 'box-shadow:0 0 12px rgba(222,193,122,.7);' : done ? 'box-shadow:0 0 4px rgba(184,146,58,.3);' : ''
       return `<div class="pcard-seg${active?' pcs-active':''}${done&&!active?' pcs-done':''}${!done&&!active?' pcs-pending':''}" style="background:${bg};${glow}"></div>`
     }).join('')
     const stageInfo = curIdx >= 0 && curIdx < 9 && pct < 100
@@ -24495,10 +24495,10 @@ async function loadOverview() {
         for (var i = 0; i < 9; i++) {
           var st = projStages.find(function(s){ return s.stage_index === i; });
           var stStatus = st ? st.status : 'pending';
-          // Done: тёмное золото | Active: яркое золото | Pending: почти невидимый
-          var segBg = stStatus === 'completed' ? '#8a6a28' : stStatus === 'active' ? '#c9a84c' : 'rgba(255,255,255,.07)';
-          var segH = stStatus === 'active' ? '10px' : '6px';
-          var segGlow = stStatus === 'active' ? 'box-shadow:0 0 10px rgba(201,168,76,.6);' : '';
+          // Done: яркое золото | Active: ещё ярче + glow | Pending: почти невидимый
+          var segBg = stStatus === 'completed' ? '#b8923a' : (stStatus === 'active' || stStatus === 'in_progress') ? '#dec17a' : 'rgba(255,255,255,.08)';
+          var segH = (stStatus === 'active' || stStatus === 'in_progress') ? '10px' : '6px';
+          var segGlow = stStatus === 'completed' ? 'box-shadow:0 0 4px rgba(184,146,58,.3);' : (stStatus === 'active' || stStatus === 'in_progress') ? 'box-shadow:0 0 12px rgba(222,193,122,.7);' : '';
           segs += '<div class="ov2-pipe-seg" style="background:' + segBg + ';height:' + segH + ';' + segGlow + '"></div>';
         }
 
