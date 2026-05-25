@@ -8473,6 +8473,10 @@ canvas {
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M8 10h8M8 14h5"/></svg>
         Паспорт
       </button>
+      <button class="pp-tab agency-only" id="pptab-team" onclick="openTeamManager()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        Команда
+      </button>
       <button class="pp-tab agency-only" id="pptab-history" onclick="switchProjTab('history',this)">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 13.5"/></svg>
         История
@@ -10000,18 +10004,45 @@ canvas {
 
 <!-- MODAL: Добавить KPI -->
 <div class="modal-overlay" id="modal-kpi">
-  <div class="modal" style="max-width:480px;">
-    <div class="modal-title">Добавить цель</div>
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-title">Добавить цель / KPI</div>
     <div class="ps-grid">
-      <div class="ps-field full"><label>Цель</label><input type="text" id="ki-goal" placeholder="Увеличить выручку на 20%"></div>
-      <div class="ps-field"><label>Текущий показатель</label><input type="text" id="ki-current" placeholder="5 млн/мес"></div>
-      <div class="ps-field"><label>Целевой показатель</label><input type="text" id="ki-target" placeholder="6 млн/мес"></div>
-      <div class="ps-field"><label>Метрика</label><input type="text" id="ki-metric" placeholder="Выручка/месяц"></div>
+      <div class="ps-field full"><label>Описание цели</label><input type="text" id="ki-goal" placeholder="Увеличить выручку на 20%"></div>
+
+      <!-- NEW: metric type selector -->
+      <div class="ps-field full">
+        <label>Тип метрики <span style="color:var(--a2);font-size:9px;letter-spacing:.05em;">— для авто-сравнения с отчётом</span></label>
+        <select id="ki-metric-type" style="width:100%;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--r-sm);padding:10px 14px;color:var(--txt);font-family:Manrope,sans-serif;font-size:13px;outline:none;" onchange="kpiMetricTypeChange()">
+          <option value="custom">Произвольная (без авто-связки)</option>
+          <option value="revenue_per_day">Выручка в день (сум/день)</option>
+          <option value="avg_check">Средний чек (сум)</option>
+          <option value="traffic">Трафик (чеков/день)</option>
+          <option value="growth_pct">Рост выручки (%)</option>
+        </select>
+      </div>
+
+      <!-- NEW: plan value + unit (shown for auto types) -->
+      <div class="ps-field" id="ki-plan-wrap">
+        <label>Плановое значение <span style="color:var(--a2);font-size:9px;">— числом</span></label>
+        <input type="number" id="ki-plan-value" placeholder="4500000" min="0">
+      </div>
+      <div class="ps-field" id="ki-unit-wrap">
+        <label>Единица измерения</label>
+        <input type="text" id="ki-unit" placeholder="сум/день">
+      </div>
+
+      <div class="ps-field"><label>Текущий показатель (текст)</label><input type="text" id="ki-current" placeholder="5 млн/мес"></div>
+      <div class="ps-field"><label>Целевой показатель (текст)</label><input type="text" id="ki-target" placeholder="6 млн/мес"></div>
+      <div class="ps-field"><label>Метрика (подпись)</label><input type="text" id="ki-metric" placeholder="Выручка/месяц"></div>
       <div class="ps-field"><label>Срок</label><input type="date" id="ki-deadline"></div>
     </div>
+
+    <!-- KPI type hint -->
+    <div id="ki-type-hint" style="display:none;margin-top:10px;padding:10px 13px;background:rgba(91,95,199,.07);border:1px solid rgba(91,95,199,.18);border-radius:var(--r-xs);font-size:11px;color:var(--a3);line-height:1.5;font-family:Manrope,sans-serif;"></div>
+
     <div class="modal-footer">
       <button class="btn-ghost" onclick="closeModal('modal-kpi')">Отмена</button>
-      <button class="btn-primary" style="flex:1;" onclick="addKPI()">Добавить</button>
+      <button class="btn-primary" style="flex:1;" onclick="addKPI()">Добавить цель</button>
     </div>
   </div>
 </div>
@@ -10384,6 +10415,19 @@ canvas {
         <div class="cb"><div class="cb-title">Рейтинг филиалов</div><div id="branch-rating" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px;"></div></div>
       </div>
 
+      <!-- KPI ПЛАН VS ФАКТ — Экосистемная связка -->
+      <div id="sec-kpi-pf" style="display:none;">
+        <div class="sh">
+          <div class="sh-num">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          </div>
+          <div class="sh-title">KPI: план vs факт</div>
+          <div class="sh-line"></div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;">← из паспорта клиента</div>
+        </div>
+        <div id="kpi-pf-table" style="display:grid;gap:10px;margin-bottom:24px;"></div>
+      </div>
+
       <!-- AI -->
       <div class="sh"><div class="sh-num">AI</div><div class="sh-title">Интеллектуальный анализ</div><div class="sh-line"></div>
         <button class="btn-ghost" style="font-size:11px;" id="ai-btn" onclick="runAI()">
@@ -10601,6 +10645,74 @@ canvas {
 </div>
 
 <!-- MODAL: EDIT STAGE (agency only) -->
+<!-- MODAL: ADD / EDIT TASK (Phase 2) -->
+<div class="modal-overlay" id="modal-task">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-title" id="task-modal-title">Добавить задачу</div>
+    <input type="hidden" id="task-stage-index" value="">
+    <input type="hidden" id="task-editing-id" value="">
+    <div class="field">
+      <label>Название задачи</label>
+      <input type="text" id="task-title-inp" placeholder="Например: собрать референсы" maxlength="120">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="field" style="margin-bottom:0">
+        <label>Исполнитель</label>
+        <select id="task-assignee-inp" style="width:100%;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--r-sm);padding:10px 14px;color:var(--txt);font-family:Manrope,sans-serif;font-size:13px;outline:none;">
+          <option value="">— не назначен —</option>
+        </select>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>Приоритет</label>
+        <select id="task-priority-inp" style="width:100%;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--r-sm);padding:10px 14px;color:var(--txt);font-family:Manrope,sans-serif;font-size:13px;outline:none;">
+          <option value="normal">🔵 Обычный</option>
+          <option value="high">🟡 Высокий</option>
+          <option value="urgent">🔴 Срочный</option>
+          <option value="low">⚪ Низкий</option>
+        </select>
+      </div>
+    </div>
+    <div class="field" style="margin-top:12px;">
+      <label>Дедлайн (опционально)</label>
+      <input type="date" id="task-deadline-inp">
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-task')">Отмена</button>
+      <button class="btn-primary" style="flex:1;" onclick="saveTask()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Сохранить задачу
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: TEAM MEMBERS (Phase 2) -->
+<div class="modal-overlay" id="modal-team">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-title">👥 Команда проекта</div>
+    <div style="font-size:11px;color:var(--txt3);font-family:Manrope,sans-serif;margin-bottom:14px;line-height:1.5;">Добавь участников команды — они будут доступны как исполнители задач</div>
+    <div class="field">
+      <label>Имя участника</label>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="team-member-inp" placeholder="Алишер, Малика, Тимур..." style="flex:1;" onkeydown="if(event.key==='Enter')addTeamMember()">
+        <button class="btn-ghost" onclick="addTeamMember()" style="flex-shrink:0;">+ Добавить</button>
+      </div>
+    </div>
+    <div class="team-row" id="team-chips-list" style="min-height:32px;"></div>
+    <div style="margin-top:12px;padding:10px 12px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.15);border-radius:8px;font-size:10px;font-family:'JetBrains Mono',monospace;color:rgba(245,158,11,.6);">
+      SQL (один раз): ALTER TABLE projects ADD COLUMN IF NOT EXISTS team_members jsonb DEFAULT '[]';
+      <button onclick="navigator.clipboard.writeText(`ALTER TABLE projects ADD COLUMN IF NOT EXISTS team_members jsonb DEFAULT '[]';`).then(()=>{this.textContent='✓';setTimeout(()=>this.textContent='SQL',1500)})" style="margin-left:8px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);border-radius:4px;padding:2px 8px;font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(245,158,11,.7);cursor:pointer;">SQL</button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-team')">Закрыть</button>
+      <button class="btn-primary" style="flex:1;" onclick="saveTeamMembers()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Сохранить команду
+      </button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal-stage">
   <div class="modal" style="max-width:480px;">
     <div class="modal-title" id="stage-modal-title">Этап</div>
@@ -12019,6 +12131,9 @@ async function openReport(id) {
   g('btn-publish').style.display = r.status === 'draft' ? 'flex' : 'none'
   g('back-to-project').onclick = () => goBackToProject()
 
+  // ── Load passport KPIs for plan vs fact sync ──
+  await loadReportPassportKPIs()
+
   // Reset file states
   Object.keys(S).forEach(k => delete S[k])
   document.querySelectorAll('.drop').forEach(d => d.classList.remove('done'))
@@ -12292,6 +12407,9 @@ function runAnalysis() {
   if (currentReport) {
     sb.from('reports').update({ summary: { b_days:bD, d_days:dD, b_total_rev:bR, d_total_rev:dR, b_total_chk:bC, d_total_chk:dC, b_rev_per_day:bRD, d_rev_per_day:dRD, b_avg_check:bA, d_avg_check:dA, growth_pct:grP, growth_abs:gr, extra_revenue:ex, traffic_delta:tr, avg_check_delta:ad } }).eq('id', currentReport.id)
   }
+
+  // ── KPI Plan vs Fact: sync passport KPIs with actual report metrics ──
+  syncKPIFacts({ dRD, dA, dCD, grP })
 
   // Hero
   set('hbd',bD); set('hdd',dD)
@@ -12924,6 +13042,185 @@ ${LABEL_D} (${dD} дн): выручка/день ${fmtM(Math.round(dRD))} | че
 }
 
 // ══════════════════════════════════════════════
+// PHASE 2: TASKS + TEAM
+// SQL (run once in Supabase Dashboard):
+// CREATE TABLE IF NOT EXISTS stage_tasks (
+//   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+//   project_id uuid REFERENCES projects(id) ON DELETE CASCADE,
+//   stage_index integer NOT NULL,
+//   title text NOT NULL,
+//   assignee text DEFAULT '',
+//   priority text DEFAULT 'normal',
+//   deadline date,
+//   done boolean DEFAULT false,
+//   created_at timestamptz DEFAULT now(),
+//   created_by uuid
+// );
+// ALTER TABLE stage_tasks ENABLE ROW LEVEL SECURITY;
+// CREATE POLICY "allow_all_tasks" ON stage_tasks FOR ALL USING (true) WITH CHECK (true);
+// ALTER TABLE projects ADD COLUMN IF NOT EXISTS team_members jsonb DEFAULT '[]';
+// ══════════════════════════════════════════════
+
+let tasksData = {}
+let teamMembers = []
+let _teamEditing = []
+const PRIORITY_COLORS = { urgent:'#f87171', high:'#fbbf24', normal:'#7b7fd4', low:'#444' }
+
+async function loadTasks() {
+  if (!currentProject) return
+  try {
+    const { data } = await sb.from('stage_tasks')
+      .select('*').eq('project_id', currentProject.id)
+      .order('created_at', { ascending: true })
+    tasksData = {}
+    ;(data || []).forEach(t => {
+      if (!tasksData[t.stage_index]) tasksData[t.stage_index] = []
+      tasksData[t.stage_index].push(t)
+    })
+  } catch(e) { console.warn('Tasks load failed (table may not exist yet):', e.message) }
+}
+
+async function loadTeamMembers() {
+  if (!currentProject) return
+  try {
+    const { data } = await sb.from('projects').select('team_members').eq('id', currentProject.id).single()
+    teamMembers = data?.team_members || []
+  } catch(e) { teamMembers = [] }
+}
+
+function renderTasksForStage(stageIndex) {
+  const container = g('task-list-' + stageIndex)
+  const badge = g('task-badge-' + stageIndex)
+  if (!container) return
+  const tasks = tasksData[stageIndex] || []
+  const done = tasks.filter(t => t.done).length
+  const isClient = _isClientCache === true
+  if (badge) {
+    badge.textContent = tasks.length ? `${done}/${tasks.length}` : '0'
+    badge.className = 'task-count-pill' + (tasks.length ? ' has-tasks' : '')
+  }
+  const pb = g('task-pb-' + stageIndex)
+  if (pb) pb.style.width = tasks.length ? Math.round((done/tasks.length)*100)+'%' : '0%'
+  if (!tasks.length) {
+    container.innerHTML = isClient ? '' : `<div style="font-family:Manrope,sans-serif;font-size:11px;color:var(--txt3);padding:4px 2px;">Нет задач — нажми + чтобы добавить</div>`
+    return
+  }
+  const today = new Date().toISOString().slice(0,10)
+  container.innerHTML = tasks.map(t => {
+    const priColor = PRIORITY_COLORS[t.priority] || PRIORITY_COLORS.normal
+    const dlStr = t.deadline ? new Date(t.deadline+'T00:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short'}) : ''
+    const isOverdue = t.deadline && !t.done && t.deadline < today
+    return `<div class="task-item${t.done?' ti-done':''}" id="ti-${t.id}">
+      <div class="task-checkbox${t.done?' checked':''}" onclick="${isClient?'void(0)':'_toggleTask(\''+t.id+'\','+stageIndex+','+(!t.done)+')'}" ${isClient?'style="pointer-events:none;"':''}>
+        <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg>
+      </div>
+      <div class="task-body">
+        <div class="task-title" title="${esc(t.title)}">${esc(t.title)}</div>
+        <div class="task-meta">
+          <span class="task-priority-dot" style="background:${priColor};"></span>
+          ${t.assignee ? `<span class="task-assignee">@${esc(t.assignee)}</span>` : ''}
+          ${dlStr ? `<span class="task-dl${isOverdue?' overdue':''}">📅 ${dlStr}${isOverdue?' ⚠':''}</span>` : ''}
+        </div>
+      </div>
+      ${!isClient ? `<button class="task-del-btn" onclick="_deleteTask('${t.id}',${stageIndex})" title="Удалить">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>` : ''}
+    </div>`
+  }).join('')
+}
+
+async function _toggleTask(taskId, stageIndex, newDone) {
+  try {
+    await sb.from('stage_tasks').update({ done: newDone }).eq('id', taskId)
+    const arr = tasksData[stageIndex] || []
+    const t = arr.find(x => x.id === taskId)
+    if (t) t.done = newDone
+    renderTasksForStage(stageIndex)
+  } catch(e) { console.warn('Toggle task failed:', e) }
+}
+
+async function _deleteTask(taskId, stageIndex) {
+  try {
+    await sb.from('stage_tasks').delete().eq('id', taskId)
+    if (tasksData[stageIndex]) tasksData[stageIndex] = tasksData[stageIndex].filter(t => t.id !== taskId)
+    renderTasksForStage(stageIndex)
+  } catch(e) { console.warn('Delete task failed:', e) }
+}
+
+function openAddTask(stageIndex) {
+  g('task-stage-index').value = stageIndex
+  g('task-editing-id').value = ''
+  g('task-modal-title').textContent = (STAGES[stageIndex]?.icon||'') + ' ' + (STAGES[stageIndex]?.name||'Этап')
+  g('task-title-inp').value = ''
+  g('task-deadline-inp').value = ''
+  const sel = g('task-assignee-inp')
+  sel.innerHTML = '<option value="">— не назначен —</option>' +
+    teamMembers.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('')
+  g('task-priority-inp').value = 'normal'
+  g('modal-task').classList.add('open')
+  setTimeout(() => g('task-title-inp').focus(), 100)
+}
+
+async function saveTask() {
+  const title = g('task-title-inp').value.trim()
+  if (!title) { g('task-title-inp').style.borderColor='var(--red)'; setTimeout(()=>g('task-title-inp').style.borderColor='',1500); return }
+  const stageIndex = parseInt(g('task-stage-index').value)
+  const assignee = g('task-assignee-inp').value
+  const priority = g('task-priority-inp').value
+  const deadline = g('task-deadline-inp').value || null
+  const editingId = g('task-editing-id').value
+  try {
+    if (editingId) {
+      await sb.from('stage_tasks').update({ title, assignee, priority, deadline }).eq('id', editingId)
+      const t = (tasksData[stageIndex]||[]).find(x => x.id === editingId)
+      if (t) Object.assign(t, { title, assignee, priority, deadline })
+    } else {
+      const { data } = await sb.from('stage_tasks').insert({
+        project_id: currentProject.id, stage_index: stageIndex,
+        title, assignee, priority, deadline, done: false, created_by: currentUser.id
+      }).select().single()
+      if (data) {
+        if (!tasksData[stageIndex]) tasksData[stageIndex] = []
+        tasksData[stageIndex].push(data)
+      }
+    }
+    closeModal('modal-task')
+    renderTasksForStage(stageIndex)
+  } catch(e) {
+    console.warn('Save task failed:', e)
+    alert('Ошибка: ' + e.message + '\n\nВыполни SQL из кнопки «Команда» → скопируй SQL → Supabase Dashboard.')
+  }
+}
+
+function openTeamManager() {
+  _teamEditing = [...teamMembers]
+  renderTeamChips()
+  g('team-member-inp').value = ''
+  g('modal-team').classList.add('open')
+  setTimeout(() => g('team-member-inp').focus(), 100)
+}
+function renderTeamChips() {
+  const list = g('team-chips-list'); if (!list) return
+  if (!_teamEditing.length) { list.innerHTML = '<span style="font-size:11px;color:var(--txt3);font-family:Manrope,sans-serif;">Участников пока нет</span>'; return }
+  list.innerHTML = _teamEditing.map((m,i) =>
+    `<span class="team-chip">${esc(m)} <span onclick="_rmTeamMember(${i})" style="margin-left:4px;cursor:pointer;color:var(--red);font-weight:700;">×</span></span>`
+  ).join('')
+}
+function _rmTeamMember(i) { _teamEditing.splice(i,1); renderTeamChips() }
+function addTeamMember() {
+  const val = g('team-member-inp').value.trim()
+  if (!val || _teamEditing.includes(val)) return
+  _teamEditing.push(val); g('team-member-inp').value = ''
+  renderTeamChips(); g('team-member-inp').focus()
+}
+async function saveTeamMembers() {
+  teamMembers = [..._teamEditing]
+  try { await sb.from('projects').update({ team_members: teamMembers }).eq('id', currentProject.id) }
+  catch(e) { console.warn('Save team failed:', e) }
+  closeModal('modal-team')
+}
+
+// ══════════════════════════════════════════════
 // TRACKER
 // ══════════════════════════════════════════════
 async function loadTracker() {
@@ -12938,6 +13235,9 @@ async function loadTracker() {
     .eq('project_id', currentProject.id)
     .order('created_at', { ascending: false })
     .limit(25)
+
+  // ── Phase 2: load tasks and team in parallel ──
+  await Promise.all([loadTasks(), loadTeamMembers()])
 
   renderTracker()
   renderHistory(hist || [])
@@ -13000,6 +13300,26 @@ function renderTracker() {
     const editBtn = hideEdit ? '' :
       `<button class="tracker-edit-btn" onclick="openEditStage(${i})">Изменить</button>`
 
+    // ── Phase 2: Task section ──
+    const stageTasks = tasksData[i] || []
+    const tasksDone = stageTasks.filter(t => t.done).length
+    const taskSection = hideEdit && !stageTasks.length ? '' : `
+      <div class="task-section">
+        <div class="task-section-head">
+          <div class="task-section-label">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            Задачи
+            <span class="task-count-pill${stageTasks.length?' has-tasks':''}" id="task-badge-${i}">${stageTasks.length?tasksDone+'/'+stageTasks.length:'0'}</span>
+          </div>
+          ${!hideEdit ? `<button class="task-add-btn" onclick="openAddTask(${i})">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Задача
+          </button>` : ''}
+        </div>
+        ${stageTasks.length ? `<div class="task-progress-bar"><div class="task-progress-fill" id="task-pb-${i}" style="width:${Math.round((tasksDone/stageTasks.length)*100)}%"></div></div>` : `<div class="task-progress-bar"><div class="task-progress-fill" id="task-pb-${i}" style="width:0%"></div></div>`}
+        <div class="task-list" id="task-list-${i}"></div>
+      </div>`
+
     return `<div class="tracker-stage">
       <div class="tracker-stage-left">
         <div class="tracker-dot t-${st}">${dotInner}</div>
@@ -13021,9 +13341,13 @@ function renderTracker() {
           ${noteHtml}
           ${linkHtml}
         </div>` : ''}
+        ${taskSection}
       </div>
     </div>`
   }).join('')
+
+  // ── Phase 2: populate task lists after DOM is ready ──
+  STAGES.forEach((_, i) => renderTasksForStage(i))
 }
 
 function renderHistory(hist) {
@@ -13169,6 +13493,110 @@ async function saveStage() {
   loadTracker()
 }
 
+
+// ══════════════════════════════════════════════
+// KPI PLAN vs FACT ENGINE
+// ══════════════════════════════════════════════
+let _reportPassportKPIs = [] // KPIs loaded from passport when report is opened
+
+// Called from openReport() — loads KPIs for the current project's passport
+async function loadReportPassportKPIs() {
+  if (!currentProject) return
+  try {
+    const { data } = await sb.from('client_passports')
+      .select('kpi').eq('project_id', currentProject.id).maybeSingle()
+    _reportPassportKPIs = (data?.kpi || []).filter(k => k.metric_type && k.metric_type !== 'custom' && k.plan_value != null)
+  } catch(e) { _reportPassportKPIs = [] }
+}
+
+// Called from runAnalysis() — matches report metrics to passport KPIs, renders table, saves facts back
+async function syncKPIFacts(metrics) {
+  const kpis = _reportPassportKPIs
+  const sec = g('sec-kpi-pf')
+  const table = g('kpi-pf-table')
+  if (!sec || !table || !kpis.length) { if(sec) sec.style.display='none'; return }
+
+  // metric_type → actual value from report
+  const metricMap = {
+    revenue_per_day: metrics.dRD,   // выручка/день период 2
+    avg_check:       metrics.dA,    // средний чек период 2
+    traffic:         metrics.dCD,   // чеков/день период 2
+    growth_pct:      metrics.grP    // рост % vs период 1
+  }
+
+  const now = new Date().toISOString()
+  const updatedKPIs = []
+  let anyLinked = false
+
+  table.innerHTML = kpis.map(k => {
+    const factVal = metricMap[k.metric_type]
+    if (factVal == null) return ''
+    anyLinked = true
+
+    const plan = k.plan_value
+    const fact = factVal
+    const pct = plan > 0 ? (fact / plan) * 100 : 0
+    const achieved = Math.round(pct)
+    const unit = k.unit || ''
+
+    // Classify
+    let cls, badgeCls, badgeTxt
+    if (achieved >= 100) { cls='kpf-hit'; badgeCls='hit'; badgeTxt='✓ Выполнено' }
+    else if (achieved >= 80) { cls='kpf-near'; badgeCls='near'; badgeTxt='~ Почти' }
+    else { cls='kpf-miss'; badgeCls='miss'; badgeTxt='✗ Не выполнено' }
+
+    const barW = Math.min(achieved, 100)
+    const barColor = achieved>=100?'var(--green)':achieved>=80?'var(--amber)':'var(--red)'
+
+    // Save fact back to this KPI
+    updatedKPIs.push({ ...k, fact_value: Math.round(fact), fact_updated_at: now })
+
+    return `<div class="kpf-card ${cls}">
+      <div>
+        <div class="kpf-goal">${esc(k.goal)}</div>
+        <div class="kpf-meta">${{revenue_per_day:'Выручка/день',avg_check:'Средний чек',traffic:'Трафик',growth_pct:'Рост %'}[k.metric_type]} · Период 2</div>
+        <div class="kpf-bar-track">
+          <div class="kpf-bar-fill" style="width:${barW}%;background:${barColor};"></div>
+        </div>
+        <div style="display:flex;gap:20px;margin-top:10px;">
+          <div class="kpf-num-block">
+            <div class="kpf-num-val" style="color:var(--txt2);font-size:14px;">${fmt(Math.round(plan))} ${unit}</div>
+            <div class="kpf-num-lbl">План</div>
+          </div>
+          <div class="kpf-num-block">
+            <div class="kpf-num-val" style="color:${barColor};font-size:14px;">${fmt(Math.round(fact))} ${unit}</div>
+            <div class="kpf-num-lbl">Факт</div>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div class="kpf-pct-ring" style="color:${barColor};">${achieved}%</div>
+        <div style="margin-top:6px;"><span class="kpf-badge ${badgeCls}">${badgeTxt}</span></div>
+        <div class="kpf-updated" style="margin-top:6px;">← обновлено сейчас</div>
+      </div>
+    </div>`
+  }).join('')
+
+  if (anyLinked) {
+    sec.style.display = 'block'
+    // Write facts back to passport in Supabase
+    try {
+      if (currentProject) {
+        const { data: pass } = await sb.from('client_passports').select('kpi').eq('project_id', currentProject.id).maybeSingle()
+        if (pass) {
+          const mergedKPIs = (pass.kpi || []).map(k => {
+            const updated = updatedKPIs.find(u => u.goal === k.goal && u.metric_type === k.metric_type)
+            if (updated) return { ...k, fact_value: updated.fact_value, fact_updated_at: updated.fact_updated_at }
+            return k
+          })
+          await sb.from('client_passports').update({ kpi: mergedKPIs }).eq('project_id', currentProject.id)
+        }
+      }
+    } catch(e) { console.warn('KPI sync write failed:', e) }
+  } else {
+    sec.style.display = 'none'
+  }
+}
 
 // ══════════════════════════════════════════════
 // PASSPORT
@@ -13452,12 +13880,44 @@ function renderKPI() {
   const hideBtn = _isClientCache
   list.innerHTML = kpis.map((k, i) => {
     const dl = k.deadline ? new Date(k.deadline).toLocaleDateString('ru-RU', {day:'numeric',month:'long',year:'numeric'}) : null
-    return `<div class="kpi-passport-card">
+
+    // ── Plan/Fact progress bar ──
+    let pfHtml = ''
+    if (k.metric_type && k.metric_type !== 'custom' && k.plan_value != null) {
+      const hasFact = k.fact_value != null
+      const factNum = hasFact ? k.fact_value : 0
+      const pct = k.plan_value > 0 ? Math.min(Math.round((factNum / k.plan_value) * 100), 150) : 0
+      const barColor = pct >= 100 ? 'var(--green)' : pct >= 80 ? 'var(--amber)' : 'var(--red)'
+      const unit = k.unit || ''
+      const factUpdated = k.fact_updated_at ? new Date(k.fact_updated_at).toLocaleDateString('ru-RU',{day:'numeric',month:'short'}) : null
+      pfHtml = `
+        <div class="kpi-pf-bar-wrap">
+          <div class="kpi-pf-row">
+            <span>0</span>
+            <span>План: ${fmt(k.plan_value)} ${unit}</span>
+          </div>
+          <div class="kpi-pf-track">
+            <div class="kpi-pf-fill" style="width:${Math.min(pct,100)}%;background:${barColor};"></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:5px;">
+            ${hasFact
+              ? `<div class="kpi-fact-badge" style="background:${pct>=100?'rgba(74,222,128,.1)':pct>=80?'rgba(245,158,11,.1)':'rgba(248,113,113,.1)'};color:${barColor};">
+                  Факт: ${fmt(factNum)} ${unit} · ${pct}%
+                 </div>`
+              : `<div class="kpi-fact-badge" style="background:var(--bg4);color:var(--txt3);">Факт появится после отчёта</div>`
+            }
+            ${factUpdated ? `<div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--green);">обновлено ${factUpdated}</div>` : ''}
+          </div>
+        </div>`
+    }
+
+    return `<div class="kpi-passport-card" style="position:relative;">
       ${!hideBtn ? `<button class="persona-del-btn" style="position:absolute;top:10px;right:10px;" onclick="deleteKPI(${i})">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
       </button>` : ''}
       <div class="kpi-goal">${esc(k.goal)}</div>
       ${dl ? `<div class="kpi-deadline-tag">📅 ${dl}</div>` : ''}
+      ${k.metric_type && k.metric_type !== 'custom' ? `<div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--a2);letter-spacing:.08em;margin-bottom:6px;text-transform:uppercase;">${{revenue_per_day:'▸ Выручка/день',avg_check:'▸ Средний чек',traffic:'▸ Трафик',growth_pct:'▸ Рост %'}[k.metric_type]||''} · Авто-связка</div>` : ''}
       <div class="kpi-vals">
         <div class="kpi-val-block">
           <div class="kpi-val-num" style="color:var(--txt3);">${esc(k.current || '—')}</div>
@@ -13470,6 +13930,7 @@ function renderKPI() {
         </div>
       </div>
       ${k.metric ? `<div style="font-family:Manrope,sans-serif;font-size:10px;color:var(--txt3);margin-top:8px;">${esc(k.metric)}</div>` : ''}
+      ${pfHtml}
     </div>`
   }).join('')
 }
@@ -13554,15 +14015,62 @@ async function deleteCompetitor(i) {
   renderCompetitors(); await savePassport()
 }
 
+// ── KPI modal: metric type hint ──
+const _kpiTypeHints = {
+  revenue_per_day: 'Авто-связка: после запуска отчёта система возьмёт Выручка/день Периода 2 и сравнит с плановым значением.',
+  avg_check:       'Авто-связка: после запуска отчёта система возьмёт Средний чек Периода 2 и сравнит с плановым значением.',
+  traffic:         'Авто-связка: после запуска отчёта система возьмёт Чеков/день Периода 2 и сравнит с плановым значением.',
+  growth_pct:      'Авто-связка: после запуска отчёта система возьмёт Рост % (Период 2 vs Период 1) и сравнит с плановым значением.',
+  custom:          ''
+}
+const _kpiTypeUnits = {
+  revenue_per_day: 'сум/день', avg_check: 'сум', traffic: 'чеков/день', growth_pct: '%', custom: ''
+}
+function kpiMetricTypeChange() {
+  const t = getVal('ki-metric-type')
+  const hint = g('ki-type-hint')
+  const planWrap = g('ki-plan-wrap')
+  const unitWrap = g('ki-unit-wrap')
+  if (t !== 'custom') {
+    planWrap.style.display = 'block'
+    unitWrap.style.display = 'block'
+    if (!getVal('ki-unit')) setVal('ki-unit', _kpiTypeUnits[t] || '')
+    hint.style.display = 'block'
+    hint.textContent = _kpiTypeHints[t]
+  } else {
+    hint.style.display = 'none'
+  }
+}
+
 // ── KPI ──
-function openAddKPI() { g('modal-kpi').classList.add('open'); g('ki-goal').focus(); }
+function openAddKPI() {
+  g('modal-kpi').classList.add('open')
+  // reset
+  ;['ki-goal','ki-current','ki-target','ki-metric','ki-plan-value','ki-unit'].forEach(id => setVal(id,''))
+  setVal('ki-deadline','')
+  const sel = g('ki-metric-type'); if(sel) sel.value = 'custom'
+  const hint = g('ki-type-hint'); if(hint) hint.style.display = 'none'
+  g('ki-goal').focus()
+}
 async function addKPI() {
   const goal = getVal('ki-goal'); if (!goal) return
+  const metricType = getVal('ki-metric-type') || 'custom'
+  const planValueRaw = getVal('ki-plan-value')
+  const planValue = planValueRaw ? parseFloat(planValueRaw) : null
   passportData.kpi.push({
-    goal, current: getVal('ki-current'), target: getVal('ki-target'),
-    metric: getVal('ki-metric'), deadline: getVal('ki-deadline')
+    goal,
+    current:     getVal('ki-current'),
+    target:      getVal('ki-target'),
+    metric:      getVal('ki-metric'),
+    deadline:    getVal('ki-deadline'),
+    metric_type: metricType,
+    plan_value:  planValue,
+    unit:        getVal('ki-unit') || (_kpiTypeUnits[metricType] || ''),
+    fact_value:  null,
+    fact_updated_at: null,
+    history: []
   })
-  ;['ki-goal','ki-current','ki-target','ki-metric','ki-deadline'].forEach(id => setVal(id,''))
+  ;['ki-goal','ki-current','ki-target','ki-metric','ki-deadline','ki-plan-value','ki-unit'].forEach(id => setVal(id,''))
   closeModal('modal-kpi')
   renderKPI(); await savePassport()
 }
@@ -26156,8 +26664,205 @@ window.switchPassportTab = function(tab, btn) {
 })();
 </script>
 <style id="dtr-history-mckinsey">
-/* ═══════════════════════════════════════════════════════
-   ИСТОРИЯ АКТИВНОСТИ — McKinsey Activity Journal
+/* ── STAGE TASKS — Phase 2 ── */
+.task-section {
+  margin-top: 12px;
+  border-top: 1px solid rgba(255,255,255,.05);
+  padding-top: 10px;
+}
+.task-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.task-section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--txt3);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.task-count-pill {
+  background: var(--bg5);
+  border-radius: 10px;
+  padding: 1px 7px;
+  font-size: 9px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--txt3);
+}
+.task-count-pill.has-tasks { background: rgba(91,95,199,.15); color: var(--a2); }
+.task-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: transparent;
+  border: 1px dashed rgba(255,255,255,.1);
+  border-radius: 6px;
+  font-family: Manrope, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--txt3);
+  cursor: pointer;
+  transition: all .15s;
+}
+.task-add-btn:hover {
+  border-color: var(--a2);
+  color: var(--a2);
+  background: rgba(91,95,199,.06);
+}
+.task-list { display: flex; flex-direction: column; gap: 4px; }
+.task-item {
+  display: grid;
+  grid-template-columns: 22px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.025);
+  border: 1px solid transparent;
+  transition: all .15s;
+}
+.task-item:hover { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.06); }
+.task-item.ti-done { opacity: .45; }
+.task-checkbox {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid var(--txt3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all .15s;
+}
+.task-checkbox:hover { border-color: var(--green); background: rgba(74,222,128,.08); }
+.task-checkbox.checked { background: var(--green); border-color: var(--green); }
+.task-checkbox.checked svg { display: block; }
+.task-checkbox svg { display: none; width: 10px; height: 10px; stroke: #000; }
+.task-body { min-width: 0; }
+.task-title {
+  font-family: Manrope, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--txt);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+.ti-done .task-title { text-decoration: line-through; color: var(--txt3); }
+.task-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.task-assignee {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  padding: 1px 7px;
+  border-radius: 5px;
+  background: rgba(91,95,199,.12);
+  color: var(--a2);
+  white-space: nowrap;
+}
+.task-dl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--txt3);
+  white-space: nowrap;
+}
+.task-dl.overdue { color: var(--red); }
+.task-priority-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.task-del-btn {
+  opacity: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--txt3);
+  padding: 3px;
+  border-radius: 4px;
+  transition: all .15s;
+  display: flex;
+  align-items: center;
+}
+.task-item:hover .task-del-btn { opacity: 1; }
+.task-del-btn:hover { color: var(--red); background: rgba(248,113,113,.1); }
+.task-progress-bar {
+  height: 2px;
+  background: var(--bg5);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+.task-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--green);
+  transition: width .4s ease;
+}
+/* Team badge row */
+.team-row { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+.team-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  padding: 3px 9px;
+  border-radius: 10px;
+  background: var(--bg4);
+  border: 1px solid var(--brd);
+  color: var(--txt2);
+  cursor: pointer;
+  transition: all .15s;
+}
+.team-chip:hover { border-color: var(--brd2); color: var(--txt); }
+.team-chip.tc-del { color: var(--red); border-color: rgba(248,113,113,.2); background: rgba(248,113,113,.05); }
+
+/* ── KPI ПЛАН vs ФАКТ (Report section) ── */
+.kpf-card {
+  background: var(--bg3);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-md);
+  padding: 16px 20px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  transition: border-color .2s;
+}
+.kpf-card.kpf-hit  { border-left: 3px solid var(--green); }
+.kpf-card.kpf-miss { border-left: 3px solid var(--red); }
+.kpf-card.kpf-near { border-left: 3px solid var(--amber); }
+.kpf-card.kpf-na   { border-left: 3px solid var(--txt3); opacity: .6; }
+.kpf-goal { font-family: Manrope,sans-serif; font-size: 13px; font-weight: 600; color: var(--txt); margin-bottom: 6px; }
+.kpf-meta { font-family: 'JetBrains Mono',monospace; font-size: 10px; color: var(--txt3); letter-spacing: .05em; margin-bottom: 10px; }
+.kpf-bar-track { height: 5px; background: var(--bg5); border-radius: 4px; overflow: hidden; position: relative; }
+.kpf-bar-fill { height: 100%; border-radius: 4px; transition: width .8s cubic-bezier(.4,0,.2,1); }
+.kpf-nums { display: flex; gap: 20px; align-items: center; }
+.kpf-num-block { text-align: center; }
+.kpf-num-val { font-family: Manrope,sans-serif; font-size: 18px; font-weight: 800; letter-spacing: -.03em; line-height: 1; }
+.kpf-num-lbl { font-family: 'JetBrains Mono',monospace; font-size: 9px; color: var(--txt3); letter-spacing: .1em; text-transform: uppercase; margin-top: 3px; }
+.kpf-badge { font-family: 'JetBrains Mono',monospace; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 8px; white-space: nowrap; }
+.kpf-badge.hit  { background: rgba(74,222,128,.1); color: var(--green); }
+.kpf-badge.miss { background: rgba(248,113,113,.1); color: var(--red); }
+.kpf-badge.near { background: rgba(245,158,11,.1); color: var(--amber); }
+.kpf-badge.na   { background: var(--bg4); color: var(--txt3); }
+.kpf-pct-ring { font-family: Manrope,sans-serif; font-size: 28px; font-weight: 800; letter-spacing: -.04em; line-height: 1; text-align: right; }
+.kpf-updated { font-family: 'JetBrains Mono',monospace; font-size: 9px; color: var(--green); letter-spacing: .08em; margin-top: 3px; }
+
+/* ── KPI card in passport — plan/fact progress ── */
+.kpi-pf-bar-wrap { margin-top: 10px; }
+.kpi-pf-row { display: flex; justify-content: space-between; font-family: 'JetBrains Mono',monospace; font-size: 9px; color: var(--txt3); margin-bottom: 4px; }
+.kpi-pf-track { height: 4px; background: var(--bg5); border-radius: 4px; overflow: hidden; }
+.kpi-pf-fill { height: 100%; border-radius: 4px; transition: width .6s ease; }
+.kpi-fact-badge { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; padding: 2px 8px; border-radius: 6px; font-family: 'JetBrains Mono',monospace; font-size: 9px; font-weight: 600; letter-spacing: .06em; }
+
+
    Clean timeline. Data density. Zero noise.
 ═══════════════════════════════════════════════════════ */
 
