@@ -15340,10 +15340,6 @@ function renderKanbanCol(containerId, tasks, status) {
       draggable="true"
       ondragstart="kbDragStart(event,'${t.id}')"
       ondragend="kbDragEnd(event)">
-      <div class="kb-card-stage-tag">
-        <span>${stageIcon}</span>
-        <span>${esc(stageName)}</span>
-      </div>
       <div class="kb-card-title">${esc(t.title)}</div>
       <div class="kb-card-meta">
         ${t.assignee ? `<span class="kb-card-assignee">@${esc(t.assignee)}</span>` : ''}
@@ -15368,10 +15364,13 @@ async function kbMoveTask(taskId, fromStatus, toStatus) {
   const now = new Date().toISOString()
   const updates = { kanban_status: toStatus }
 
-  // → Активные: start timer
+  // → Активные: start timer + reassign to CURRENT active stage
   if (toStatus === 'active') {
     updates.timer_started_at = now
     updates.done = false
+    // Auto-reassign to currently active stage
+    const activeStageIdx = getActiveStageIndex()
+    updates.stage_index = activeStageIdx
   }
 
   // Активные → Завершённые: stop timer, log time
