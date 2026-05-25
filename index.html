@@ -8354,178 +8354,142 @@ canvas {
       <div style="height:60px;"></div>
     </div>
 
-    <!-- ══ FINANCE BI DASHBOARD ══ -->
-    <div id="dtab-finance-panel" style="display:none;">
+    <!-- ══ FINANCE BI — APPLE PREMIUM ══ -->
+    <div id="dtab-finance-panel" style="display:none;padding-bottom:60px;">
 
-      <!-- ① AGENCY KPI STRIP -->
-      <div class="bi-kpi-strip" id="bi-kpi-strip">
-        <div class="bi-kpi-card">
-          <div class="bi-kpi-icon" style="background:rgba(74,222,128,.1);color:var(--green);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-          </div>
-          <div class="bi-kpi-body">
-            <div class="bi-kpi-val" id="bi-mrr">—</div>
-            <div class="bi-kpi-lbl">MRR Агентства</div>
-            <div class="bi-kpi-sub" id="bi-mrr-sub">— клиентов</div>
+      <!-- ① HERO METRICS — full-width cinematic strip -->
+      <div class="apl-hero-strip">
+        <div class="apl-hero-card apl-hero-revenue">
+          <div class="apl-hero-eyebrow">MRR АГЕНТСТВА</div>
+          <div class="apl-hero-num" id="bi-mrr">—</div>
+          <div class="apl-hero-sub" id="bi-mrr-sub">сум в месяц</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="bi-mrr-foot">— клиентов</div>
+        </div>
+        <div class="apl-hero-divider"></div>
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">РАСХОДЫ</div>
+          <div class="apl-hero-num apl-red" id="bi-costs">—</div>
+          <div class="apl-hero-sub">зарплаты · расходы · opex</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="bi-costs-sub">—</div>
+        </div>
+        <div class="apl-hero-divider"></div>
+        <div class="apl-hero-card apl-hero-profit">
+          <div class="apl-hero-eyebrow">ЧИСТАЯ ПРИБЫЛЬ</div>
+          <div class="apl-hero-num apl-green" id="bi-profit">—</div>
+          <div class="apl-hero-sub" id="bi-margin-pct">маржинальность</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-margin-bar">
+            <div class="apl-margin-track"><div class="apl-margin-fill" id="bi-margin-bar" style="width:0%"></div></div>
           </div>
         </div>
-        <div class="bi-kpi-card">
-          <div class="bi-kpi-icon" style="background:rgba(248,113,113,.1);color:var(--red);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </div>
-          <div class="bi-kpi-body">
-            <div class="bi-kpi-val" id="bi-costs">—</div>
-            <div class="bi-kpi-lbl">Общие расходы</div>
-            <div class="bi-kpi-sub" id="bi-costs-sub">зарплаты + расходы</div>
-          </div>
-        </div>
-        <div class="bi-kpi-card bi-kpi-main">
-          <div class="bi-kpi-icon" style="background:rgba(91,95,199,.15);color:var(--a2);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-          </div>
-          <div class="bi-kpi-body">
-            <div class="bi-kpi-val" id="bi-profit">—</div>
-            <div class="bi-kpi-lbl">Чистая прибыль</div>
-            <div class="bi-kpi-sub" id="bi-margin-pct">маржинальность —</div>
-          </div>
-        </div>
-        <div class="bi-kpi-card">
-          <div class="bi-kpi-icon" style="background:rgba(34,211,238,.1);color:var(--cyan);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          </div>
-          <div class="bi-kpi-body">
-            <div class="bi-kpi-val" id="bi-hours">—</div>
-            <div class="bi-kpi-lbl">Часов отработано</div>
-            <div class="bi-kpi-sub" id="bi-hours-sub">за все проекты</div>
-          </div>
+        <div class="apl-hero-divider"></div>
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">ВРЕМЯ</div>
+          <div class="apl-hero-num apl-blue" id="bi-hours">—</div>
+          <div class="apl-hero-sub">часов отработано</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="bi-hours-sub">по всем проектам</div>
         </div>
       </div>
 
-      <!-- ② MAIN CONTENT: Segments + Projects -->
-      <div class="bi-main-layout">
-
-        <!-- LEFT: Segment sidebar -->
-        <div class="bi-sidebar">
-          <div class="bi-sidebar-label">Сегменты</div>
-          <div class="bi-seg-list" id="bi-seg-list">
-            <button class="bi-seg-btn bi-seg-active" data-seg="all" onclick="biSetSegment('all',this)">
-              <span class="bi-seg-icon">📋</span>
-              <span class="bi-seg-name">Все проекты</span>
-              <span class="bi-seg-count" id="bsc-all">0</span>
-            </button>
-            <button class="bi-seg-btn" data-seg="profit" onclick="biSetSegment('profit',this)">
-              <span class="bi-seg-icon">🏆</span>
-              <span class="bi-seg-name">Самые выгодные</span>
-              <span class="bi-seg-count" id="bsc-profit">0</span>
-            </button>
-            <button class="bi-seg-btn" data-seg="efficient" onclick="biSetSegment('efficient',this)">
-              <span class="bi-seg-icon">⚡</span>
-              <span class="bi-seg-name">Мин. часов</span>
-              <span class="bi-seg-count" id="bsc-efficient">0</span>
-            </button>
-            <button class="bi-seg-btn" data-seg="atrisk" onclick="biSetSegment('atrisk',this)">
-              <span class="bi-seg-icon">⚠️</span>
-              <span class="bi-seg-name">At-Risk</span>
-              <span class="bi-seg-count" id="bsc-atrisk">0</span>
-            </button>
-            <button class="bi-seg-btn" data-seg="heavy" onclick="biSetSegment('heavy',this)">
-              <span class="bi-seg-icon">⏰</span>
-              <span class="bi-seg-name">Затратные</span>
-              <span class="bi-seg-count" id="bsc-heavy">0</span>
-            </button>
-            <button class="bi-seg-btn" data-seg="nobudget" onclick="biSetSegment('nobudget',this)">
-              <span class="bi-seg-icon">💡</span>
-              <span class="bi-seg-name">Без бюджета</span>
-              <span class="bi-seg-count" id="bsc-nobudget">0</span>
-            </button>
-          </div>
-
-          <!-- Agency cost donut -->
-          <div class="bi-sidebar-label" style="margin-top:20px;">Структура расходов</div>
-          <div style="position:relative;height:160px;margin-bottom:8px;">
-            <canvas id="cFinDonut"></canvas>
-          </div>
-          <div id="bi-donut-legend" style="display:flex;flex-direction:column;gap:5px;"></div>
+      <!-- ② BODY: filter pill row + two-column layout -->
+      <div class="apl-filter-row">
+        <div class="apl-pill-bar" id="apl-pill-bar">
+          <button class="apl-pill apl-pill-active" data-seg="all" onclick="biSetSegment('all',this)">Все <span id="bsc-all">0</span></button>
+          <button class="apl-pill" data-seg="profit" onclick="biSetSegment('profit',this)">🏆 Выгодные <span id="bsc-profit">0</span></button>
+          <button class="apl-pill" data-seg="efficient" onclick="biSetSegment('efficient',this)">⚡ Мин. часов <span id="bsc-efficient">0</span></button>
+          <button class="apl-pill" data-seg="atrisk" onclick="biSetSegment('atrisk',this)">⚠ At-Risk <span id="bsc-atrisk">0</span></button>
+          <button class="apl-pill" data-seg="heavy" onclick="biSetSegment('heavy',this)">⏰ Затратные <span id="bsc-heavy">0</span></button>
+          <button class="apl-pill" data-seg="nobudget" onclick="biSetSegment('nobudget',this)">Без бюджета <span id="bsc-nobudget">0</span></button>
         </div>
+        <select id="bi-sort-sel" onchange="biRenderTable()" class="apl-sort-sel">
+          <option value="margin_pct">Маржа ↓</option>
+          <option value="budget">Бюджет ↓</option>
+          <option value="profit">Прибыль ↓</option>
+          <option value="hours">Часы ↓</option>
+          <option value="name">Имя A–Z</option>
+        </select>
+      </div>
 
-        <!-- RIGHT: Project table + chart -->
-        <div class="bi-content">
+      <div class="apl-body-grid">
 
-          <!-- Toolbar -->
-          <div class="bi-toolbar">
-            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt3);letter-spacing:.06em;" id="bi-segment-label">ВСЕ ПРОЕКТЫ</div>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <select id="bi-sort-sel" onchange="biRenderTable()" style="background:var(--bg4);border:1px solid var(--brd);border-radius:6px;padding:5px 10px;color:var(--txt);font-family:Manrope,sans-serif;font-size:11px;outline:none;">
-                <option value="margin_pct">По марже %</option>
-                <option value="budget">По бюджету</option>
-                <option value="profit">По прибыли</option>
-                <option value="hours">По часам</option>
-                <option value="name">По имени</option>
-              </select>
-            </div>
+        <!-- LEFT: Projects table (main) -->
+        <div class="apl-main-col">
+
+          <!-- Bar chart -->
+          <div class="apl-chart-card" id="bi-bar-wrap" style="display:none;">
+            <div class="apl-chart-label">МАРЖИНАЛЬНОСТЬ ПО ПРОЕКТАМ</div>
+            <div style="position:relative;height:110px;"><canvas id="cFinBar"></canvas></div>
           </div>
 
-          <!-- Bar chart: margin % per project -->
-          <div class="bi-chart-wrap" id="bi-bar-wrap">
-            <div class="bi-chart-title">Маржинальность по проектам (%)</div>
-            <div style="position:relative;height:120px;">
-              <canvas id="cFinBar"></canvas>
-            </div>
-          </div>
-
-          <!-- Projects table -->
-          <div class="bi-proj-table">
-            <div class="bi-proj-thead">
-              <div class="bi-th" style="flex:1.8;">Проект</div>
-              <div class="bi-th bi-th-num">Бюджет</div>
-              <div class="bi-th bi-th-num">Расходы</div>
-              <div class="bi-th bi-th-num">Прибыль</div>
-              <div class="bi-th bi-th-num">Маржа</div>
-              <div class="bi-th bi-th-num">Часы</div>
-              <div class="bi-th" style="width:90px;"></div>
+          <!-- Table -->
+          <div class="apl-table-card">
+            <div class="apl-thead">
+              <div class="apl-th apl-th-name">Проект</div>
+              <div class="apl-th apl-th-r">Бюджет/мес</div>
+              <div class="apl-th apl-th-r">Расходы</div>
+              <div class="apl-th apl-th-r">Прибыль</div>
+              <div class="apl-th apl-th-r">Маржа</div>
+              <div class="apl-th apl-th-r">Часы</div>
+              <div class="apl-th" style="width:88px;"></div>
             </div>
             <div id="bi-proj-tbody"></div>
           </div>
 
-          <!-- Project detail panel (slide-in) -->
-          <div class="bi-detail-panel" id="bi-detail-panel" style="display:none;">
-            <div class="bi-detail-header">
-              <div>
-                <div class="bi-detail-name" id="bi-detail-name">—</div>
-                <div class="bi-detail-cat" id="bi-detail-cat">—</div>
+          <!-- Empty state -->
+          <div id="bi-empty" style="display:none;">
+            <div class="apl-empty-state">
+              <div class="apl-empty-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".3"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
               </div>
-              <button class="btn-ghost" style="font-size:11px;" onclick="biCloseDetail()">✕ Закрыть</button>
+              <div class="apl-empty-title">Финансы не настроены</div>
+              <div class="apl-empty-sub">Нажми «Задать» напротив любого проекта<br>чтобы добавить бюджет и расходы</div>
             </div>
-
-            <!-- Detail KPIs -->
-            <div class="bi-detail-kpis" id="bi-detail-kpis"></div>
-
-            <!-- Cost breakdown -->
-            <div class="bi-detail-section-label">Разбивка расходов</div>
-            <div id="bi-detail-costs"></div>
-
-            <!-- Edit button -->
-            <button class="btn-primary" style="width:100%;margin-top:14px;" id="bi-detail-edit-btn">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-              Редактировать P&L
-            </button>
           </div>
 
-          <!-- Empty state -->
-          <div id="bi-empty" style="display:none;text-align:center;padding:48px 24px;">
-            <div style="font-size:36px;margin-bottom:12px;">💰</div>
-            <div style="font-family:Manrope,sans-serif;font-size:14px;font-weight:600;color:var(--txt);margin-bottom:6px;">Задай бюджеты клиентов</div>
-            <div style="font-size:12px;color:var(--txt3);">Нажми «💰 Задать» напротив любого проекта</div>
+          <!-- Detail panel -->
+          <div class="apl-detail-card" id="bi-detail-panel" style="display:none;">
+            <div class="apl-detail-top">
+              <div>
+                <div class="apl-detail-title" id="bi-detail-name">—</div>
+                <div class="apl-detail-sub" id="bi-detail-cat">—</div>
+              </div>
+              <button class="apl-close-btn" onclick="biCloseDetail()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <div class="apl-detail-kpis" id="bi-detail-kpis"></div>
+            <div class="apl-detail-label">Разбивка затрат</div>
+            <div id="bi-detail-costs"></div>
+            <button class="apl-edit-btn" id="bi-detail-edit-btn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Редактировать P&amp;L
+            </button>
+          </div>
+        </div>
+
+        <!-- RIGHT: Cost donut -->
+        <div class="apl-side-col">
+          <div class="apl-donut-card">
+            <div class="apl-chart-label">СТРУКТУРА РАСХОДОВ</div>
+            <div class="apl-donut-wrap">
+              <canvas id="cFinDonut"></canvas>
+              <div class="apl-donut-center" id="apl-donut-center">
+                <div class="apl-donut-center-val" id="apl-donut-cval">—</div>
+                <div class="apl-donut-center-lbl">расходы</div>
+              </div>
+            </div>
+            <div id="bi-donut-legend" class="apl-donut-legend"></div>
           </div>
         </div>
       </div>
 
       <!-- SQL hint -->
-      <details style="margin-top:16px;">
-        <summary style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;padding:8px 12px;background:var(--bg4);border:1px solid var(--brd);border-radius:8px;">
-          <span>▸ SQL — дополнительные колонки для полного P&L</span>
-        </summary>
-        <div class="fin-sql-hint" style="margin-top:6px;">
+      <details class="apl-sql-details">
+        <summary class="apl-sql-summary">▸ SQL — колонки для полного P&L</summary>
+        <div class="fin-sql-hint" style="margin-top:8px;">
           <code>ALTER TABLE projects ADD COLUMN IF NOT EXISTS contractors jsonb DEFAULT '[]';<br>ALTER TABLE projects ADD COLUMN IF NOT EXISTS extra_expenses jsonb DEFAULT '[]';<br>ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;</code>
           <button onclick="navigator.clipboard.writeText('ALTER TABLE projects ADD COLUMN IF NOT EXISTS contractors jsonb DEFAULT \'[]\';\nALTER TABLE projects ADD COLUMN IF NOT EXISTS extra_expenses jsonb DEFAULT \'[]\';\nALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;').then(()=>{this.textContent='✓';setTimeout(()=>this.textContent='SQL',1500)})" class="fin-sql-copy">SQL</button>
         </div>
@@ -14194,8 +14158,8 @@ const _biSegLabels = {
 
 function biSetSegment(seg, btn) {
   _biSegment = seg
-  document.querySelectorAll('.bi-seg-btn').forEach(b=>b.classList.remove('bi-seg-active'))
-  btn.classList.add('bi-seg-active')
+  document.querySelectorAll('.apl-pill').forEach(b=>b.classList.remove('apl-pill-active'))
+  btn.classList.add('apl-pill-active')
   const lbl = g('bi-segment-label')
   if (lbl) lbl.textContent = _biSegLabels[seg] || seg.toUpperCase()
   biRenderTable()
@@ -14227,7 +14191,8 @@ function renderFinance() {
 
   const s=(id,v)=>{const el=g(id);if(el)el.textContent=v}
   s('bi-mrr',          totalMRR>0 ? fmtM(totalMRR)+' сум' : '—')
-  s('bi-mrr-sub',      withBudget.length + ' клиент' + (withBudget.length===1?'':'ов'))
+  s('bi-mrr-sub',      'сум в месяц')
+  s('bi-mrr-foot',     withBudget.length + ' клиент' + (withBudget.length===1?'':'ов'))
   s('bi-costs',        totalCosts>0 ? fmtM(totalCosts)+' сум' : '—')
   s('bi-costs-sub',    'зарплаты + расходы + opex')
   s('bi-profit',       totalMRR>0 ? (totalProfit>=0?'+':'')+fmtM(totalProfit)+' сум' : '—')
@@ -14237,6 +14202,10 @@ function renderFinance() {
 
   const profitEl=g('bi-profit')
   if(profitEl && totalMRR>0) profitEl.style.color=totalProfit>=0?'var(--green)':'var(--red)'
+
+  // Margin bar
+  const bar = g('bi-margin-bar')
+  if(bar) bar.style.width = Math.max(0, Math.min(100, agencyMargin)) + '%'
 
   // ── Segment counts ──
   const sc=(id,rows)=>{ const el=g(id); if(el) el.textContent=rows.length }
@@ -14290,39 +14259,39 @@ function biRenderTable() {
     const {p,budget,totalCost,profit,marginPct,hours,hasBudget} = r
     const isSelected = p.id === _biSelectedId
 
-    let mColor='var(--txt3)', mBg='var(--bg5)'
+    let mColor='rgba(255,255,255,.2)', mBg='rgba(255,255,255,.05)'
     if(marginPct!==null) {
-      if(marginPct>=60){mColor='var(--cyan)';mBg='rgba(34,211,238,.12)'}
-      else if(marginPct>=20){mColor='var(--green)';mBg='rgba(74,222,128,.1)'}
-      else{mColor='var(--red)';mBg='rgba(248,113,113,.1)'}
+      if(marginPct>=60){mColor='rgba(34,211,238,.9)';mBg='rgba(34,211,238,.1)'}
+      else if(marginPct>=20){mColor='rgba(74,222,128,.9)';mBg='rgba(74,222,128,.1)'}
+      else{mColor='rgba(248,113,113,.9)';mBg='rgba(248,113,113,.1)'}
     }
 
-    let badgeHtml=''
-    if(!hasBudget) badgeHtml=`<span class="bi-badge" style="background:var(--bg4);color:var(--txt3);">нет бюджета</span>`
-    else if(marginPct>=60) badgeHtml=`<span class="bi-badge" style="background:rgba(34,211,238,.1);color:var(--cyan);">🚀 Апселл</span>`
-    else if(marginPct<20)  badgeHtml=`<span class="bi-badge" style="background:rgba(248,113,113,.1);color:var(--red);">⚠️ At-Risk</span>`
+    let statusHtml=''
+    if(!hasBudget) statusHtml=`<span class="apl-status" style="background:rgba(255,255,255,.04);color:rgba(255,255,255,.25);">нет бюджета</span>`
+    else if(marginPct!==null && marginPct>=60) statusHtml=`<span class="apl-status" style="background:rgba(34,211,238,.08);color:rgba(34,211,238,.7);">Апселл</span>`
+    else if(marginPct!==null && marginPct<20)  statusHtml=`<span class="apl-status" style="background:rgba(248,113,113,.08);color:rgba(248,113,113,.7);">At-Risk</span>`
 
-    return `<div class="bi-proj-row${isSelected?' bi-row-selected':''}" onclick="biSelectProject('${p.id}')">
-      <div class="bi-proj-info">
-        <div class="bi-proj-name">${esc(p.name)}</div>
-        <div class="bi-proj-meta">
+    return `<div class="apl-proj-row${isSelected?' apl-row-selected':''}" onclick="biSelectProject('${p.id}')">
+      <div class="apl-proj-name-col">
+        <div class="apl-pname">${esc(p.name)}</div>
+        <div class="apl-pmeta">
           <span>${esc(p.category||'—')}</span>
-          ${badgeHtml}
+          ${statusHtml}
         </div>
       </div>
-      <div class="bi-cell${!hasBudget?' bi-cell-dim':''}">${hasBudget?fmtM(budget):'—'}</div>
-      <div class="bi-cell${totalCost>0?' bi-cell-neg':' bi-cell-dim'}">${totalCost>0?fmtM(totalCost):'—'}</div>
-      <div class="bi-cell${profit!==null?(profit>=0?' bi-cell-pos':' bi-cell-neg'):' bi-cell-dim'}">${profit!==null?(profit>=0?'+':'')+fmtM(profit):'—'}</div>
-      <div class="bi-cell">
+      <div class="apl-cell${hasBudget?' apl-cell-rev':''}">${hasBudget?fmtM(budget):'—'}</div>
+      <div class="apl-cell${totalCost>0?' apl-cell-cost':''}">${totalCost>0?fmtM(totalCost):'—'}</div>
+      <div class="apl-cell${profit!==null?(profit>=0?' apl-cell-pos':' apl-cell-neg'):''}">${profit!==null?(profit>=0?'+':'')+fmtM(profit):'—'}</div>
+      <div class="apl-cell">
         ${marginPct!==null
-          ? `<span class="bi-margin-chip" style="background:${mBg};color:${mColor};">${marginPct}%</span>`
-          : '<span class="bi-cell-dim">—</span>'}
+          ? `<span class="apl-margin-pill" style="background:${mBg};color:${mColor};">${marginPct}%</span>`
+          : '<span style="color:rgba(255,255,255,.15);">—</span>'}
       </div>
-      <div class="bi-cell${hours>0?' bi-cell-pos':' bi-cell-dim'}">${hours>0?hours+'ч':'—'}</div>
-      <div class="bi-row-actions">
-        <button class="${!hasBudget?'btn-primary':'btn-ghost'}" style="font-size:10px;padding:4px 10px;${!hasBudget?'background:var(--a);':''}"
+      <div class="apl-cell${hours>0?' apl-cell-hrs':''}">${hours>0?hours+'h':'—'}</div>
+      <div class="apl-row-actions">
+        <button class="${!hasBudget?'btn-primary':'btn-ghost'}" style="font-size:10px;padding:5px 10px;${!hasBudget?'background:var(--a);':'opacity:.6;'}"
           onclick="event.stopPropagation();openFinanceModal('${p.id}','${esc(p.name)}')">
-          ${!hasBudget?'💰 Задать':'Изменить'}
+          ${!hasBudget?'Задать':'Изменить'}
         </button>
       </div>
     </div>`
@@ -14331,8 +14300,8 @@ function biRenderTable() {
 
 function biSelectProject(projId) {
   _biSelectedId = _biSelectedId === projId ? null : projId
-  document.querySelectorAll('.bi-proj-row').forEach(r=>{
-    r.classList.toggle('bi-row-selected', r.getAttribute('onclick')?.includes(projId) && _biSelectedId===projId)
+  document.querySelectorAll('.apl-proj-row').forEach(r=>{
+    r.classList.toggle('apl-row-selected', r.getAttribute('onclick')?.includes(`'${projId}'`) && _biSelectedId===projId)
   })
   if (!_biSelectedId) { biCloseDetail(); return }
   const row = _biAllRows.find(r=>r.p.id===projId)
@@ -14343,7 +14312,7 @@ function biCloseDetail() {
   _biSelectedId = null
   const panel = g('bi-detail-panel')
   if(panel) panel.style.display='none'
-  document.querySelectorAll('.bi-proj-row').forEach(r=>r.classList.remove('bi-row-selected'))
+  document.querySelectorAll('.apl-proj-row').forEach(r=>r.classList.remove('apl-row-selected'))
 }
 
 function biShowDetail(row) {
@@ -14353,42 +14322,43 @@ function biShowDetail(row) {
   panel.style.display='block'
 
   g('bi-detail-name').textContent = p.name
-  g('bi-detail-cat').textContent  = (p.category||'—') + (p.status==='archived'?' · Архив':'')
+  g('bi-detail-cat').textContent  = (p.category||'—').toUpperCase() + (p.status==='archived'?' · АРХИВ':'')
 
-  const mCol = marginPct===null?'var(--txt3)':marginPct>=20?'var(--green)':'var(--red)'
+  const mCol = marginPct===null?'rgba(255,255,255,.4)':marginPct>=20?'var(--green)':'var(--red)'
 
   g('bi-detail-kpis').innerHTML = [
-    {label:'Бюджет/мес', val:budget>0?fmtM(budget)+' сум':'—', color:'var(--txt)'},
-    {label:'Расходы',    val:totalCost>0?fmtM(totalCost)+' сум':'—', color:'var(--red)'},
-    {label:'Прибыль',    val:profit!==null?(profit>=0?'+':'')+fmtM(profit)+' сум':'—', color:profit>=0?'var(--green)':'var(--red)'},
-    {label:'Маржа',      val:marginPct!==null?marginPct+'%':'—', color:mCol},
-  ].map(k=>`<div class="bi-detail-kpi">
-    <div class="bi-detail-kpi-val" style="color:${k.color};">${k.val}</div>
-    <div class="bi-detail-kpi-lbl">${k.label}</div>
+    {label:'БЮДЖЕТ',  val:budget>0?fmtM(budget)+' с':  '—', color:'rgba(255,255,255,.85)'},
+    {label:'РАСХОДЫ', val:totalCost>0?fmtM(totalCost)+' с':'—', color:'rgba(248,113,113,.8)'},
+    {label:'ПРИБЫЛЬ', val:profit!==null?(profit>=0?'+':'')+fmtM(profit)+' с':'—', color:profit!==null&&profit>=0?'var(--green)':'var(--red)'},
+    {label:'МАРЖА',   val:marginPct!==null?marginPct+'%':'—', color:mCol},
+  ].map(k=>`<div class="apl-dkpi">
+    <div class="apl-dkpi-val" style="color:${k.color};">${k.val}</div>
+    <div class="apl-dkpi-lbl">${k.label}</div>
   </div>`).join('')
 
-  const costColors = ['#5b5fc7','#f59e0b','#f87171','#4ade80']
+  const costColors = ['#818cf8','#f59e0b','#f87171','#4ade80']
   const costItems = [
-    {name:'Зарплаты', amount:salaries, color:costColors[0]},
-    {name:'Доп. расходы', amount:extras, color:costColors[1]},
-    {name:'Операционные', amount:opex, color:costColors[2]},
-    {name:'Часов: '+hours+'ч', amount:0, color:costColors[3], suffix:' (время)'},
-  ].filter(c=>c.amount>0||c.name.startsWith('Часов'))
+    {name:'Зарплаты',      amount:salaries, color:costColors[0]},
+    {name:'Доп. расходы',  amount:extras,   color:costColors[1]},
+    {name:'Операционные',  amount:opex,     color:costColors[2]},
+  ].filter(c=>c.amount>0)
 
-  const maxAmt = Math.max(...costItems.map(c=>c.amount), 1)
-  g('bi-detail-costs').innerHTML = costItems.map(c=>`
-    <div class="bi-cost-row">
-      <div class="bi-cost-name">
-        <span class="bi-cost-dot" style="background:${c.color};"></span>
-        ${esc(c.name)}
-      </div>
-      ${c.amount>0 ? `<div class="bi-cost-bar-wrap">
-        <div class="bi-cost-bar-track">
-          <div class="bi-cost-bar-fill" style="width:${Math.round(c.amount/maxAmt*100)}%;background:${c.color};"></div>
+  if(hours>0) costItems.push({name:'Часов: '+hours+'ч', amount:0, color:costColors[3], isHours:true})
+
+  const maxAmt = Math.max(...costItems.filter(c=>c.amount>0).map(c=>c.amount), 1)
+
+  g('bi-detail-costs').innerHTML = costItems.length ? costItems.map(c=>`
+    <div class="apl-cost-item">
+      <span class="apl-cost-dot" style="background:${c.color};"></span>
+      <span class="apl-cost-name">${esc(c.name)}</span>
+      ${c.amount>0 ? `<div class="apl-cost-bar-wrap">
+        <div class="apl-cost-track">
+          <div class="apl-cost-fill" style="width:${Math.round(c.amount/maxAmt*100)}%;background:${c.color};"></div>
         </div>
       </div>` : '<div style="flex:1;"></div>'}
-      <div class="bi-cost-val">${c.amount>0?fmtM(c.amount)+' сум':(c.suffix||'')}</div>
-    </div>`).join('') || '<div style="font-size:12px;color:var(--txt3);padding:8px 0;">Расходы не заданы</div>'
+      <span class="apl-cost-val">${c.amount>0 ? fmtM(c.amount)+' сум' : (c.isHours?hours+'ч':'—')}</span>
+    </div>`).join('')
+    : '<div style="font-family:Manrope,sans-serif;font-size:12px;color:rgba(255,255,255,.25);padding:8px 0;">Расходы не добавлены в P&L</div>'
 
   const editBtn = g('bi-detail-edit-btn')
   if(editBtn) editBtn.onclick = ()=>openFinanceModal(p.id, p.name)
@@ -14426,18 +14396,23 @@ function renderBIDonut(rows) {
   const totalProfit   = rows.reduce((s,r)=>s+(r.profit||0),0)
 
   const items = [
-    {label:'Зарплаты',   val:totalSalaries, color:'#5b5fc7'},
-    {label:'Доп. расх.',  val:totalExtras,   color:'#f59e0b'},
-    {label:'Операц.',    val:totalOpex,     color:'#f87171'},
-    {label:'Прибыль',    val:Math.max(0,totalProfit), color:'#4ade80'},
+    {label:'Зарплаты',    val:totalSalaries, color:'#818cf8'},
+    {label:'Доп. расходы', val:totalExtras,   color:'#f59e0b'},
+    {label:'Операционные', val:totalOpex,     color:'#f87171'},
+    {label:'Прибыль',     val:Math.max(0,totalProfit), color:'#34d399'},
   ].filter(i=>i.val>0)
+
+  // Update center label
+  const totalCosts = totalSalaries+totalExtras+totalOpex
+  const cv = g('apl-donut-cval')
+  if(cv) cv.textContent = totalCosts>0 ? fmtM(totalCosts) : '—'
 
   const legend = g('bi-donut-legend')
   if(legend) legend.innerHTML = items.map(i=>`
-    <div style="display:flex;align-items:center;gap:6px;font-family:Manrope,sans-serif;font-size:10px;color:var(--txt2);">
-      <span style="width:8px;height:8px;border-radius:2px;background:${i.color};flex-shrink:0;display:inline-block;"></span>
-      <span>${i.label}</span>
-      <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);">${fmtM(i.val)}</span>
+    <div class="apl-legend-item">
+      <span class="apl-legend-dot" style="background:${i.color};"></span>
+      <span class="apl-legend-name">${i.label}</span>
+      <span class="apl-legend-val">${fmtM(i.val)}</span>
     </div>`).join('')
 
   if(!items.length) { canvas.style.display='none'; return }
@@ -14446,10 +14421,19 @@ function renderBIDonut(rows) {
   if(_biChartDonut){_biChartDonut.destroy();_biChartDonut=null}
   _biChartDonut = new Chart(canvas, {
     type:'doughnut',
-    data:{ labels:items.map(i=>i.label), datasets:[{data:items.map(i=>i.val), backgroundColor:items.map(i=>i.color), borderWidth:0, hoverOffset:4}] },
+    data:{ labels:items.map(i=>i.label), datasets:[{
+      data:items.map(i=>i.val),
+      backgroundColor:items.map(i=>i.color+'cc'),
+      borderColor:items.map(i=>i.color+'33'),
+      borderWidth:1,
+      hoverOffset:6
+    }]},
     options:{
-      responsive:true, maintainAspectRatio:false, cutout:'70%',
-      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:ctx=>ctx.label+': '+fmtM(ctx.raw)+' сум'}} }
+      responsive:true, maintainAspectRatio:false, cutout:'72%',
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:ctx=>ctx.label+': '+fmtM(ctx.raw)+' сум'}}
+      }
     }
   })
 }
@@ -29153,9 +29137,504 @@ window.switchPassportTab = function(tab, btn) {
 .roi-lbl { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--txt3); letter-spacing: .1em; text-transform: uppercase; }
 
 /* ══════════════════════════════════════
-   FINANCE BI DASHBOARD — Phase 5 v3
+   FINANCE BI — APPLE PREMIUM DESIGN
 ══════════════════════════════════════ */
-.bi-kpi-strip {
+
+/* Hero strip */
+.apl-hero-strip {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1.2fr auto 1fr;
+  align-items: stretch;
+  background: var(--bg3);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 20px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+}
+.apl-hero-card {
+  padding: 28px 28px 22px;
+  position: relative;
+}
+.apl-hero-revenue {
+  background: linear-gradient(135deg, rgba(91,95,199,.12) 0%, transparent 60%);
+}
+.apl-hero-profit {
+  background: linear-gradient(135deg, rgba(74,222,128,.07) 0%, transparent 60%);
+}
+.apl-hero-divider {
+  width: 1px;
+  background: rgba(255,255,255,.06);
+  margin: 20px 0;
+}
+.apl-hero-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .16em;
+  color: rgba(255,255,255,.3);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.apl-hero-num {
+  font-family: Manrope, sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -.05em;
+  line-height: 1;
+  color: var(--txt);
+  margin-bottom: 5px;
+}
+.apl-hero-num.apl-red   { color: var(--red); }
+.apl-hero-num.apl-green { color: var(--green); }
+.apl-hero-num.apl-blue  { color: var(--cyan); }
+.apl-hero-sub {
+  font-family: Manrope, sans-serif;
+  font-size: 11px;
+  color: rgba(255,255,255,.3);
+  margin-bottom: 16px;
+}
+.apl-hero-rule {
+  height: 1px;
+  background: rgba(255,255,255,.06);
+  margin-bottom: 12px;
+}
+.apl-hero-foot {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: rgba(255,255,255,.35);
+  letter-spacing: .04em;
+}
+.apl-hero-margin-bar { margin-top: 4px; }
+.apl-margin-track {
+  height: 3px;
+  background: rgba(255,255,255,.06);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.apl-margin-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--green) 0%, rgba(74,222,128,.4) 100%);
+  transition: width .8s cubic-bezier(.4,0,.2,1);
+}
+
+/* Filter row */
+.apl-filter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+.apl-pill-bar {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.apl-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 100px;
+  font-family: Manrope, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255,255,255,.45);
+  cursor: pointer;
+  transition: all .15s;
+}
+.apl-pill:hover {
+  background: rgba(255,255,255,.07);
+  border-color: rgba(255,255,255,.12);
+  color: rgba(255,255,255,.75);
+}
+.apl-pill-active {
+  background: rgba(255,255,255,.1) !important;
+  border-color: rgba(255,255,255,.18) !important;
+  color: #fff !important;
+  font-weight: 600;
+}
+.apl-pill span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  background: rgba(255,255,255,.1);
+  padding: 1px 6px;
+  border-radius: 20px;
+  color: rgba(255,255,255,.5);
+}
+.apl-pill-active span { background: rgba(255,255,255,.15); color: rgba(255,255,255,.8); }
+.apl-sort-sel {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 100px;
+  padding: 6px 14px;
+  color: rgba(255,255,255,.6);
+  font-family: Manrope, sans-serif;
+  font-size: 12px;
+  outline: none;
+  cursor: pointer;
+  transition: all .15s;
+  flex-shrink: 0;
+}
+.apl-sort-sel:hover { border-color: rgba(255,255,255,.14); color: rgba(255,255,255,.8); }
+
+/* Body grid */
+.apl-body-grid {
+  display: grid;
+  grid-template-columns: 1fr 240px;
+  gap: 14px;
+  align-items: start;
+}
+.apl-main-col { display: flex; flex-direction: column; gap: 12px; }
+
+/* Chart card */
+.apl-chart-card {
+  background: var(--bg3);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 16px;
+  padding: 16px 20px;
+}
+.apl-chart-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .16em;
+  color: rgba(255,255,255,.25);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+/* Projects table */
+.apl-table-card {
+  background: var(--bg3);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.apl-thead {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.apl-th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .14em;
+  color: rgba(255,255,255,.22);
+  text-transform: uppercase;
+}
+.apl-th-name { flex: 1.8; }
+.apl-th-r { width: 100px; text-align: right; flex-shrink: 0; }
+
+/* Table rows */
+.apl-proj-row {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.03);
+  cursor: pointer;
+  transition: background .12s;
+  position: relative;
+}
+.apl-proj-row::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: transparent;
+  transition: background .15s;
+}
+.apl-proj-row:hover { background: rgba(255,255,255,.025); }
+.apl-proj-row:hover::after { background: rgba(255,255,255,.1); }
+.apl-proj-row:last-child { border-bottom: none; }
+.apl-row-selected { background: rgba(91,95,199,.08) !important; }
+.apl-row-selected::after { background: var(--a) !important; }
+.apl-proj-name-col { flex: 1.8; min-width: 0; }
+.apl-pname {
+  font-family: Manrope, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--txt);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+.apl-pmeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: rgba(255,255,255,.25);
+}
+.apl-cell {
+  width: 100px;
+  text-align: right;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,.4);
+  flex-shrink: 0;
+}
+.apl-cell-rev  { color: rgba(255,255,255,.75); font-weight: 600; }
+.apl-cell-cost { color: rgba(248,113,113,.75); }
+.apl-cell-pos  { color: rgba(74,222,128,.85); font-weight: 700; }
+.apl-cell-neg  { color: rgba(248,113,113,.85); font-weight: 700; }
+.apl-cell-hrs  { color: rgba(34,211,238,.6); }
+.apl-margin-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  padding: 3px 8px;
+  border-radius: 100px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+.apl-row-actions { width: 88px; display: flex; justify-content: flex-end; flex-shrink: 0; }
+.apl-row-actions button {
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Status badge */
+.apl-status {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  letter-spacing: .06em;
+  padding: 2px 7px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+/* Detail card */
+.apl-detail-card {
+  background: var(--bg3);
+  border: 1px solid rgba(91,95,199,.2);
+  border-radius: 16px;
+  padding: 22px 24px;
+  animation: fadeUp .22s cubic-bezier(.16,1,.3,1) both;
+}
+.apl-detail-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.apl-detail-title {
+  font-family: Manrope, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--txt);
+  letter-spacing: -.03em;
+  margin-bottom: 4px;
+}
+.apl-detail-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: rgba(255,255,255,.3);
+  letter-spacing: .06em;
+}
+.apl-close-btn {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.08);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: rgba(255,255,255,.4);
+  transition: all .15s;
+}
+.apl-close-btn:hover { background: rgba(248,113,113,.12); color: var(--red); border-color: rgba(248,113,113,.2); }
+.apl-detail-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.apl-dkpi {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.apl-dkpi-val {
+  font-family: Manrope, sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  margin-bottom: 4px;
+  line-height: 1;
+}
+.apl-dkpi-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.25);
+}
+.apl-detail-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.25);
+  margin-bottom: 10px;
+}
+.apl-cost-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.apl-cost-item:last-child { border-bottom: none; }
+.apl-cost-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.apl-cost-name {
+  flex: 1;
+  font-family: Manrope, sans-serif;
+  font-size: 12px;
+  color: rgba(255,255,255,.55);
+}
+.apl-cost-bar-wrap { flex: 1; max-width: 80px; }
+.apl-cost-track { height: 2px; background: rgba(255,255,255,.06); border-radius: 2px; overflow: hidden; }
+.apl-cost-fill  { height: 100%; border-radius: 2px; }
+.apl-cost-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,.75);
+  min-width: 90px;
+  text-align: right;
+}
+.apl-edit-btn {
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px 20px;
+  background: rgba(91,95,199,.15);
+  border: 1px solid rgba(91,95,199,.25);
+  border-radius: 12px;
+  color: var(--a2);
+  font-family: Manrope, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all .15s;
+}
+.apl-edit-btn:hover { background: rgba(91,95,199,.25); border-color: rgba(91,95,199,.4); }
+
+/* Donut side card */
+.apl-side-col { position: sticky; top: 16px; }
+.apl-donut-card {
+  background: var(--bg3);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 16px;
+  padding: 20px;
+}
+.apl-donut-wrap {
+  position: relative;
+  height: 180px;
+  margin-bottom: 16px;
+}
+.apl-donut-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+.apl-donut-center-val {
+  font-family: Manrope, sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  color: var(--txt);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.apl-donut-center-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.3);
+}
+.apl-donut-legend { display: flex; flex-direction: column; gap: 8px; }
+.apl-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.apl-legend-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.apl-legend-name {
+  flex: 1;
+  font-family: Manrope, sans-serif;
+  font-size: 11px;
+  color: rgba(255,255,255,.45);
+}
+.apl-legend-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: rgba(255,255,255,.5);
+}
+
+/* Empty state */
+.apl-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  text-align: center;
+}
+.apl-empty-icon {
+  width: 64px; height: 64px;
+  border-radius: 20px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.06);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px;
+}
+.apl-empty-title {
+  font-family: Manrope, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255,255,255,.5);
+  margin-bottom: 8px;
+}
+.apl-empty-sub {
+  font-family: Manrope, sans-serif;
+  font-size: 12px;
+  color: rgba(255,255,255,.25);
+  line-height: 1.6;
+}
+
+/* SQL details */
+.apl-sql-details { margin-top: 20px; }
+.apl-sql-summary {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: rgba(255,255,255,.2);
+  cursor: pointer;
+  letter-spacing: .06em;
+  list-style: none;
+  padding: 8px 0;
+}
+
+/* ── PHASE 4: AI-БРИФ ПАСПОРТА ── */
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
