@@ -8723,6 +8723,11 @@ canvas {
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         Этапы
       </button>
+      <button class="pp-tab agency-only" id="pptab-kanban" onclick="switchProjTab('kanban',this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="5" height="18" rx="1"/><rect x="10" y="3" width="5" height="12" rx="1"/><rect x="17" y="3" width="5" height="15" rx="1"/></svg>
+        Операционка
+        <span class="pp-tab-count" id="pptab-count-kanban" style="display:none;"></span>
+      </button>
       <button class="pp-tab" id="pptab-reports" onclick="switchProjTab('reports',this)">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         Отчёты
@@ -8849,6 +8854,84 @@ canvas {
         </button>
       </div>
       <div id="smm-reports-list"></div>
+    </div>
+
+    <!-- TAB: KANBAN — Операционка -->
+    <div id="pp-tab-kanban" style="display:none;">
+
+      <!-- Kanban header -->
+      <div class="kb-header">
+        <div>
+          <div class="kb-title">Операционка</div>
+          <div class="kb-subtitle" id="kb-active-stage-label">Активный этап: —</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <div class="kb-legend">
+            <span class="kb-leg-dot" style="background:rgba(255,255,255,.2);"></span> В ожидании
+            <span class="kb-leg-dot" style="background:#818cf8;margin-left:12px;"></span> Активные
+            <span class="kb-leg-dot" style="background:#34d399;margin-left:12px;"></span> Завершённые
+          </div>
+          <button class="kb-add-btn" onclick="openKanbanAddTask()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Новая задача
+          </button>
+        </div>
+      </div>
+
+      <!-- SQL note -->
+      <div class="kb-sql-note" id="kb-sql-note" style="display:none;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Для работы канбана нужно выполнить SQL:
+        <code>ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS kanban_status text DEFAULT 'waiting'; ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS timer_started_at timestamptz;</code>
+        <button onclick="openSQLSetup()" class="kb-sql-btn">Открыть SQL Setup</button>
+      </div>
+
+      <!-- Kanban board — 3 columns -->
+      <div class="kb-board" id="kb-board"
+        ondragover="kbDragOver(event)" ondrop="kbDrop(event)">
+
+        <!-- Column: В ожидании -->
+        <div class="kb-col" id="kb-col-waiting" data-status="waiting"
+          ondragover="kbColDragOver(event,this)" ondragleave="kbColDragLeave(this)" ondrop="kbColDrop(event,this,'waiting')">
+          <div class="kb-col-header kb-col-waiting-h">
+            <div class="kb-col-title">В ожидании</div>
+            <div class="kb-col-count" id="kb-count-waiting">0</div>
+          </div>
+          <div class="kb-cards" id="kb-cards-waiting"></div>
+          <button class="kb-col-add" onclick="openKanbanAddTask('waiting')">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Добавить задачу
+          </button>
+        </div>
+
+        <!-- Column: Активные -->
+        <div class="kb-col kb-col-active-wrap" id="kb-col-active" data-status="active"
+          ondragover="kbColDragOver(event,this)" ondragleave="kbColDragLeave(this)" ondrop="kbColDrop(event,this,'active')">
+          <div class="kb-col-header kb-col-active-h">
+            <div class="kb-col-title">
+              <span class="kb-active-pulse"></span>
+              Активные
+            </div>
+            <div class="kb-col-count kb-count-active" id="kb-count-active">0</div>
+          </div>
+          <div class="kb-cards" id="kb-cards-active"></div>
+          <button class="kb-col-add" onclick="openKanbanAddTask('active')">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Добавить задачу
+          </button>
+        </div>
+
+        <!-- Column: Завершённые -->
+        <div class="kb-col" id="kb-col-done" data-status="done"
+          ondragover="kbColDragOver(event,this)" ondragleave="kbColDragLeave(this)" ondrop="kbColDrop(event,this,'done')">
+          <div class="kb-col-header kb-col-done-h">
+            <div class="kb-col-title">Завершённые</div>
+            <div class="kb-col-count" id="kb-count-done">0</div>
+          </div>
+          <div class="kb-cards" id="kb-cards-done"></div>
+        </div>
+
+      </div><!-- /kb-board -->
     </div>
 
     <!-- TAB: HISTORY -->
@@ -11088,7 +11171,11 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS monthly_budget bigint DEFAULT 0;
 ALTER TABLE projects ADD COLUMN IF NOT EXISTS hourly_rate integer DEFAULT 0;
 
 -- ⑤ AI-брифы в паспорте
-ALTER TABLE client_passports ADD COLUMN IF NOT EXISTS ai_briefs jsonb DEFAULT '[]';</pre>
+ALTER TABLE client_passports ADD COLUMN IF NOT EXISTS ai_briefs jsonb DEFAULT '[]';
+
+-- ⑥ Канбан — Операционка
+ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS kanban_status text DEFAULT 'waiting';
+ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS timer_started_at timestamptz;</pre>
     </div>
 
     <div style="display:flex;gap:8px;padding:10px 14px;background:rgba(74,222,128,.05);border:1px solid rgba(74,222,128,.15);border-radius:8px;margin-bottom:14px;font-family:Manrope,sans-serif;font-size:11px;color:var(--txt2);">
@@ -11101,6 +11188,48 @@ ALTER TABLE client_passports ADD COLUMN IF NOT EXISTS ai_briefs jsonb DEFAULT '[
       <button class="btn-primary" style="flex:1;" onclick="window.open('https://supabase.com/dashboard',`_blank`);closeModal('modal-sql-setup')">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
         Открыть Supabase
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: KANBAN — Add task -->
+<div class="modal-overlay" id="modal-kanban-task">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-title" id="kb-task-modal-title">Новая задача</div>
+    <input type="hidden" id="kb-task-status-inp" value="waiting">
+    <div class="field">
+      <label>Название задачи</label>
+      <input type="text" id="kb-task-title-inp" placeholder="Что нужно сделать?" maxlength="120" onkeydown="if(event.key==='Enter')saveKanbanTask()">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="field" style="margin-bottom:0;">
+        <label>Исполнитель</label>
+        <select id="kb-task-assignee-inp" style="width:100%;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--r-sm);padding:10px 14px;color:var(--txt);font-family:Manrope,sans-serif;font-size:13px;outline:none;">
+          <option value="">— не назначен —</option>
+        </select>
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label>Приоритет</label>
+        <select id="kb-task-priority-inp" style="width:100%;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--r-sm);padding:10px 14px;color:var(--txt);font-family:Manrope,sans-serif;font-size:13px;outline:none;">
+          <option value="normal">🔵 Обычный</option>
+          <option value="high">🟡 Высокий</option>
+          <option value="urgent">🔴 Срочный</option>
+          <option value="low">⚪ Низкий</option>
+        </select>
+      </div>
+    </div>
+    <div class="field" style="margin-top:12px;">
+      <label>Дедлайн <span style="color:var(--txt3);font-size:9px;">(опционально)</span></label>
+      <input type="date" id="kb-task-deadline-inp">
+    </div>
+    <!-- Active stage hint -->
+    <div id="kb-stage-hint" style="margin-top:8px;padding:8px 12px;background:rgba(91,95,199,.07);border:1px solid rgba(91,95,199,.18);border-radius:8px;font-size:11px;color:var(--a2);font-family:Manrope,sans-serif;"></div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-kanban-task')">Отмена</button>
+      <button class="btn-primary" style="flex:1;" onclick="saveKanbanTask()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Создать задачу
       </button>
     </div>
   </div>
@@ -11487,16 +11616,18 @@ let _currentProjTab = 'tracker'
 
 function switchProjTab(tab, btn) {
   _currentProjTab = tab
-  // Update tabs active state
   document.querySelectorAll('.pp-tab').forEach(b => b.classList.remove('pp-tab-active'))
   if (btn) btn.classList.add('pp-tab-active')
 
   // Show/hide panels
-  const panels = ['tracker','reports','smm','history']
+  const panels = ['tracker','reports','smm','history','kanban']
   panels.forEach(p => {
     const el = g('pp-tab-' + p)
     if (el) el.style.display = p === tab ? 'block' : 'none'
   })
+
+  // Load data on tab switch
+  if (tab === 'kanban') loadKanban()
 
   // Update primary action button
   const lbl = g('pp-action-label')
@@ -11507,7 +11638,10 @@ function switchProjTab(tab, btn) {
   } else if (tab === 'smm') {
     if (lbl) lbl.textContent = 'Новый SMM'
     if (btn2) btn2.onclick = openCreateSMMReport
-  } else if (tab === 'tracker') {
+  } else if (tab === 'kanban') {
+    if (lbl) lbl.textContent = 'Новая задача'
+    if (btn2) btn2.onclick = () => openKanbanAddTask()
+  } else {
     if (lbl) lbl.textContent = 'Новый отчёт'
     if (btn2) btn2.onclick = openCreateReport
   }
@@ -15052,6 +15186,358 @@ window.ppTab = function(tab, btn) {
     }
   }
 }
+
+// ══════════════════════════════════════════════
+// KANBAN — ОПЕРАЦИОНКА ENGINE
+// SQL (run once):
+// ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS kanban_status text DEFAULT 'waiting';
+// ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS timer_started_at timestamptz;
+// ══════════════════════════════════════════════
+
+let kanbanTasks = []          // All tasks for this project
+let _kbDragId   = null        // Task being dragged
+let _kbLiveInterval = null    // Live timer update interval
+
+const STAGES_ICONS = ['🔍','📋','✍️','📸','🎬','✅','📊','💬','🏆']
+
+// ── Get currently active stage index ──
+function getActiveStageIndex() {
+  const inProgress = trackerData.find(s => s.status === 'in_progress')
+  if (inProgress) return inProgress.stage_index
+  // Fall back to first incomplete stage
+  const pending = trackerData.find(s => s.status !== 'completed')
+  return pending ? pending.stage_index : 0
+}
+
+function getActiveStageName() {
+  const idx = getActiveStageIndex()
+  return STAGES[idx]?.name || ('Этап ' + (idx + 1))
+}
+
+// ── Load kanban tasks ──
+async function loadKanban() {
+  if (!currentProject) return
+  try {
+    const { data, error } = await sb.from('stage_tasks')
+      .select('*')
+      .eq('project_id', currentProject.id)
+      .order('created_at', { ascending: true })
+    if (error) throw error
+    kanbanTasks = data || []
+    // Sync: tasks without kanban_status get 'waiting', done tasks get 'done'
+    kanbanTasks.forEach(t => {
+      if (!t.kanban_status) t.kanban_status = t.done ? 'done' : 'waiting'
+    })
+  } catch(e) {
+    console.warn('Kanban load failed:', e.message)
+    // Show SQL note if table columns missing
+    if (e.message?.includes('column') || e.message?.includes('does not exist')) {
+      const note = g('kb-sql-note'); if(note) note.style.display='flex'
+    }
+    kanbanTasks = []
+  }
+  renderKanban()
+  startKanbanLiveTimer()
+}
+
+// ── Render full kanban board ──
+function renderKanban() {
+  const cols = { waiting: [], active: [], done: [] }
+  kanbanTasks.forEach(t => {
+    const s = t.kanban_status || 'waiting'
+    if (cols[s]) cols[s].push(t)
+  })
+
+  // Update counts
+  const setCount = (id, n) => { const el=g(id); if(el) el.textContent=n }
+  setCount('kb-count-waiting', cols.waiting.length)
+  setCount('kb-count-active',  cols.active.length)
+  setCount('kb-count-done',    cols.done.length)
+
+  // Update kanban tab badge
+  const badge = g('pptab-count-kanban')
+  if (badge) {
+    const active = cols.active.length
+    if (active > 0) { badge.textContent = active; badge.style.display='inline'; badge.style.background='rgba(129,140,248,.3)'; badge.style.color='#818cf8' }
+    else badge.style.display = 'none'
+  }
+
+  // Update active stage label
+  const lbl = g('kb-active-stage-label')
+  if (lbl) {
+    const idx = getActiveStageIndex()
+    const stage = STAGES[idx]
+    lbl.textContent = stage ? `Активный этап: ${stage.icon} ${stage.name}` : 'Активный этап: —'
+  }
+
+  // Render each column
+  renderKanbanCol('kb-cards-waiting', cols.waiting, 'waiting')
+  renderKanbanCol('kb-cards-active',  cols.active,  'active')
+  renderKanbanCol('kb-cards-done',    cols.done,    'done')
+}
+
+function renderKanbanCol(containerId, tasks, status) {
+  const container = g(containerId); if (!container) return
+  if (!tasks.length) {
+    const empties = { waiting:'Перетащи задачу сюда', active:'Нет активных задач', done:'Ещё нет завершённых' }
+    container.innerHTML = `<div class="kb-col-empty">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".3"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+      ${empties[status]||''}
+    </div>`
+    return
+  }
+
+  const today = new Date().toISOString().slice(0,10)
+  const isClient = _isClientCache === true
+
+  container.innerHTML = tasks.map(t => {
+    const stageName = STAGES[t.stage_index]?.name || 'Этап'
+    const stageIcon = STAGES[t.stage_index]?.icon || '•'
+    const priColors = { urgent:'#f87171', high:'#fbbf24', normal:'#818cf8', low:'rgba(255,255,255,.2)' }
+
+    // Timer badge
+    let timerHtml = ''
+    if (status === 'active' && t.timer_started_at) {
+      const elMin = Math.round((Date.now() - new Date(t.timer_started_at)) / 60000)
+      const h = Math.floor(elMin/60), m = elMin%60
+      const display = h > 0 ? `${h}ч ${m}м` : `${m}м`
+      timerHtml = `<span class="kb-card-timer kb-timer-live" id="kbt-${t.id}">⏱ ${display}</span>`
+    } else if ((t.time_logged || 0) > 0) {
+      const h = Math.floor(t.time_logged/60), m = t.time_logged%60
+      const display = h > 0 ? `${h}ч ${m}м` : `${m}м`
+      timerHtml = `<span class="kb-card-timer kb-timer-logged">✓ ${display}</span>`
+    }
+
+    // Deadline
+    let dlHtml = ''
+    if (t.deadline) {
+      const dlStr = new Date(t.deadline+'T00:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short'})
+      const isOverdue = t.deadline < today && status !== 'done'
+      dlHtml = `<span class="kb-card-deadline${isOverdue?' overdue':''}">📅 ${dlStr}</span>`
+    }
+
+    // Move buttons
+    let moveHtml = ''
+    if (!isClient) {
+      if (status === 'waiting') {
+        moveHtml = `<button class="kb-move-btn to-active" onclick="event.stopPropagation();kbMoveTask('${t.id}','waiting','active')">▶ Начать</button>`
+      } else if (status === 'active') {
+        moveHtml = `
+          <button class="kb-move-btn to-waiting" onclick="event.stopPropagation();kbMoveTask('${t.id}','active','waiting')">← Назад</button>
+          <button class="kb-move-btn to-done" onclick="event.stopPropagation();kbMoveTask('${t.id}','active','done')">✓ Готово</button>`
+      } else if (status === 'done') {
+        moveHtml = `<button class="kb-move-btn to-waiting" onclick="event.stopPropagation();kbMoveTask('${t.id}','done','waiting')">↺ Вернуть</button>`
+      }
+    }
+
+    return `<div class="kb-card${status==='active'?' kb-card-active':''}${status==='done'?' kb-card-done':''}"
+      id="kbc-${t.id}"
+      data-id="${t.id}"
+      data-status="${status}"
+      data-priority="${t.priority||'normal'}"
+      draggable="true"
+      ondragstart="kbDragStart(event,'${t.id}')"
+      ondragend="kbDragEnd(event)">
+      <div class="kb-card-stage-tag">
+        <span>${stageIcon}</span>
+        <span>${esc(stageName)}</span>
+      </div>
+      <div class="kb-card-title">${esc(t.title)}</div>
+      <div class="kb-card-meta">
+        ${t.assignee ? `<span class="kb-card-assignee">@${esc(t.assignee)}</span>` : ''}
+        ${dlHtml}
+        ${timerHtml}
+      </div>
+      ${!isClient ? `<div class="kb-card-actions">
+        ${moveHtml}
+        <button class="kb-del-btn" onclick="event.stopPropagation();kbDeleteTask('${t.id}')" title="Удалить">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>` : ''}
+    </div>`
+  }).join('')
+}
+
+// ── CORE: Move task between statuses ──
+async function kbMoveTask(taskId, fromStatus, toStatus) {
+  const task = kanbanTasks.find(t => t.id === taskId)
+  if (!task) return
+
+  const now = new Date().toISOString()
+  const updates = { kanban_status: toStatus }
+
+  // → Активные: start timer
+  if (toStatus === 'active') {
+    updates.timer_started_at = now
+    updates.done = false
+  }
+
+  // Активные → Завершённые: stop timer, log time
+  if (toStatus === 'done' && fromStatus === 'active' && task.timer_started_at) {
+    const elapsedMin = Math.max(1, Math.round((Date.now() - new Date(task.timer_started_at)) / 60000))
+    updates.time_logged = (task.time_logged || 0) + elapsedMin
+    updates.timer_started_at = null
+    updates.done = true
+    // Update finance cache
+    if (currentProject) {
+      _finTaskHours[currentProject.id] = (_finTaskHours[currentProject.id] || 0) + elapsedMin
+    }
+    showAlertToast('✅', `Задача завершена`, `+${elapsedMin} мин записано`)
+  }
+
+  if (toStatus === 'waiting') {
+    // Stop any running timer without logging
+    if (task.timer_started_at && fromStatus === 'active') {
+      updates.timer_started_at = null
+    }
+    updates.done = false
+  }
+
+  // Save to DB
+  try {
+    await sb.from('stage_tasks').update(updates).eq('id', taskId)
+    Object.assign(task, updates)
+    // Also sync tasksData for tracker view
+    const arr = tasksData[task.stage_index] || []
+    const trackerTask = arr.find(x => x.id === taskId)
+    if (trackerTask) Object.assign(trackerTask, updates)
+    renderKanban()
+    renderTasksForStage(task.stage_index)
+  } catch(e) {
+    console.warn('Move task failed:', e)
+    if (e.message?.includes('column')) { g('kb-sql-note').style.display='flex'; openSQLSetup() }
+  }
+}
+
+// ── Delete task from kanban ──
+async function kbDeleteTask(taskId) {
+  const task = kanbanTasks.find(t => t.id === taskId)
+  try {
+    await sb.from('stage_tasks').delete().eq('id', taskId)
+    kanbanTasks = kanbanTasks.filter(t => t.id !== taskId)
+    if (task && tasksData[task.stage_index]) {
+      tasksData[task.stage_index] = tasksData[task.stage_index].filter(t => t.id !== taskId)
+    }
+    renderKanban()
+    if (task) renderTasksForStage(task.stage_index)
+  } catch(e) { console.warn('Delete kanban task:', e) }
+}
+
+// ── Live timer update every 30s ──
+function startKanbanLiveTimer() {
+  if (_kbLiveInterval) clearInterval(_kbLiveInterval)
+  _kbLiveInterval = setInterval(() => {
+    const activeTasks = kanbanTasks.filter(t => t.kanban_status === 'active' && t.timer_started_at)
+    if (!activeTasks.length) return
+    activeTasks.forEach(t => {
+      const el = g('kbt-' + t.id); if (!el) return
+      const elMin = Math.round((Date.now() - new Date(t.timer_started_at)) / 60000)
+      const h = Math.floor(elMin/60), m = elMin%60
+      el.textContent = '⏱ ' + (h > 0 ? `${h}ч ${m}м` : `${m}м`)
+    })
+  }, 30000) // every 30s
+}
+
+// ── Open add task modal for kanban ──
+function openKanbanAddTask(defaultStatus = 'waiting') {
+  const activeIdx = getActiveStageIndex()
+  const stageName = getActiveStageName()
+
+  g('kb-task-status-inp').value = defaultStatus
+  g('kb-task-title-inp').value = ''
+  g('kb-task-deadline-inp').value = ''
+  g('kb-task-priority-inp').value = 'normal'
+
+  // Populate assignee
+  const sel = g('kb-task-assignee-inp')
+  sel.innerHTML = '<option value="">— не назначен —</option>' +
+    teamMembers.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('')
+
+  // Stage hint
+  const hint = g('kb-stage-hint')
+  if (hint) hint.textContent = `Задача будет привязана к активному этапу: ${STAGES[activeIdx]?.icon||''} ${stageName}`
+
+  // Modal title
+  const labels = { waiting:'В ожидании', active:'Активные', done:'Завершённые' }
+  g('kb-task-modal-title').textContent = `Новая задача → ${labels[defaultStatus]||'—'}`
+
+  g('modal-kanban-task').classList.add('open')
+  setTimeout(() => g('kb-task-title-inp').focus(), 100)
+}
+
+async function saveKanbanTask() {
+  const title = g('kb-task-title-inp').value.trim()
+  if (!title) { g('kb-task-title-inp').style.borderColor='var(--red)'; setTimeout(()=>g('kb-task-title-inp').style.borderColor='',1500); return }
+
+  const kanbanStatus = g('kb-task-status-inp').value || 'waiting'
+  const assignee = g('kb-task-assignee-inp').value
+  const priority = g('kb-task-priority-inp').value
+  const deadline = g('kb-task-deadline-inp').value || null
+  const stageIndex = getActiveStageIndex()
+
+  const now = new Date().toISOString()
+  const insertData = {
+    project_id: currentProject.id,
+    stage_index: stageIndex,
+    title, assignee, priority, deadline,
+    done: kanbanStatus === 'done',
+    kanban_status: kanbanStatus,
+    timer_started_at: kanbanStatus === 'active' ? now : null,
+    created_by: currentUser?.id || null
+  }
+
+  try {
+    const { data, error } = await sb.from('stage_tasks').insert(insertData).select().single()
+    if (error) throw error
+    if (data) {
+      kanbanTasks.push(data)
+      if (!tasksData[stageIndex]) tasksData[stageIndex] = []
+      tasksData[stageIndex].push(data)
+    }
+    closeModal('modal-kanban-task')
+    renderKanban()
+    renderTasksForStage(stageIndex)
+  } catch(e) {
+    console.warn('Save kanban task failed:', e)
+    closeModal('modal-kanban-task')
+    openSQLSetup()
+  }
+}
+
+// ── DRAG & DROP ──
+function kbDragStart(e, taskId) {
+  _kbDragId = taskId
+  const card = g('kbc-' + taskId)
+  if (card) setTimeout(() => card.classList.add('kb-dragging'), 0)
+  e.dataTransfer.effectAllowed = 'move'
+  e.dataTransfer.setData('text/plain', taskId)
+}
+function kbDragEnd(e) {
+  document.querySelectorAll('.kb-card').forEach(c => c.classList.remove('kb-dragging'))
+  document.querySelectorAll('.kb-col').forEach(c => c.classList.remove('kb-drag-over'))
+  _kbDragId = null
+}
+function kbColDragOver(e, col) {
+  e.preventDefault()
+  e.dataTransfer.dropEffect = 'move'
+  document.querySelectorAll('.kb-col').forEach(c => c.classList.remove('kb-drag-over'))
+  col.classList.add('kb-drag-over')
+}
+function kbColDragLeave(col) {
+  col.classList.remove('kb-drag-over')
+}
+function kbColDrop(e, col, toStatus) {
+  e.preventDefault()
+  col.classList.remove('kb-drag-over')
+  if (!_kbDragId) return
+  const task = kanbanTasks.find(t => t.id === _kbDragId)
+  if (!task) return
+  const fromStatus = task.kanban_status || 'waiting'
+  if (fromStatus === toStatus) return
+  kbMoveTask(_kbDragId, fromStatus, toStatus)
+}
+function kbDragOver(e) { e.preventDefault() }
+function kbDrop(e) { e.preventDefault() }
 
 // ══════════════════════════════════════════════
 // PHASE 2: TASKS + TEAM
@@ -28845,7 +29331,341 @@ window.switchPassportTab = function(tab, btn) {
   margin-top: 4px;
 }
 
-/* Finance modal sections */
+/* ══════════════════════════════════════
+   KANBAN — ОПЕРАЦИОНКА — PREMIUM SOFT
+══════════════════════════════════════ */
+.kb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.kb-title {
+  font-family: Manrope, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--txt);
+  letter-spacing: -.03em;
+  margin-bottom: 4px;
+}
+.kb-subtitle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: rgba(255,255,255,.3);
+  letter-spacing: .06em;
+}
+.kb-legend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: rgba(255,255,255,.3);
+  letter-spacing: .06em;
+}
+.kb-leg-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+}
+.kb-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  background: var(--a);
+  border: none;
+  border-radius: 100px;
+  font-family: Manrope, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: all .15s;
+  box-shadow: 0 4px 16px rgba(91,95,199,.3);
+}
+.kb-add-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(91,95,199,.4); }
+.kb-sql-note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(245,158,11,.06);
+  border: 1px solid rgba(245,158,11,.18);
+  border-radius: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: rgba(245,158,11,.7);
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.kb-sql-note code { color: rgba(245,158,11,.5); font-size: 9px; }
+.kb-sql-btn {
+  margin-left: auto;
+  background: rgba(245,158,11,.12);
+  border: 1px solid rgba(245,158,11,.2);
+  border-radius: 6px;
+  padding: 4px 12px;
+  color: rgba(245,158,11,.8);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  cursor: pointer;
+}
+/* Board */
+.kb-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  align-items: start;
+  min-height: 480px;
+}
+/* Column */
+.kb-col {
+  border-radius: 16px;
+  background: rgba(255,255,255,.02);
+  border: 1px solid rgba(255,255,255,.05);
+  padding: 14px;
+  min-height: 400px;
+  transition: background .15s, border-color .15s;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.kb-col.kb-drag-over {
+  background: rgba(91,95,199,.06);
+  border-color: rgba(91,95,199,.25);
+}
+.kb-col-active-wrap {
+  background: rgba(91,95,199,.04);
+  border-color: rgba(91,95,199,.12);
+}
+.kb-col-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.kb-col-title {
+  font-family: Manrope, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255,255,255,.5);
+  letter-spacing: .02em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.kb-col-waiting-h .kb-col-title { color: rgba(255,255,255,.4); }
+.kb-col-active-h  .kb-col-title { color: #818cf8; }
+.kb-col-done-h    .kb-col-title { color: #34d399; }
+.kb-col-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: rgba(255,255,255,.05);
+  color: rgba(255,255,255,.3);
+}
+.kb-count-active { background: rgba(129,140,248,.12); color: #818cf8; }
+.kb-active-pulse {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #818cf8;
+  animation: pulse 2s ease infinite;
+}
+.kb-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-height: 40px;
+}
+/* Card */
+.kb-card {
+  background: var(--bg3);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 12px;
+  padding: 14px 14px 12px;
+  cursor: grab;
+  transition: all .18s cubic-bezier(.4,0,.2,1);
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+}
+.kb-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  border-radius: 12px 0 0 12px;
+  background: transparent;
+  transition: background .15s;
+}
+.kb-card:hover {
+  border-color: rgba(255,255,255,.12);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.25);
+}
+.kb-card:active { cursor: grabbing; transform: scale(.97); opacity: .85; }
+.kb-card.kb-dragging { opacity: .4; transform: scale(.96); box-shadow: none; }
+/* Priority left border */
+.kb-card[data-priority="urgent"]::before { background: #f87171; }
+.kb-card[data-priority="high"]::before   { background: #fbbf24; }
+.kb-card[data-priority="normal"]::before { background: #818cf8; }
+.kb-card[data-priority="low"]::before    { background: rgba(255,255,255,.1); }
+/* Active card glow */
+.kb-card-active {
+  border-color: rgba(129,140,248,.2);
+  background: rgba(129,140,248,.05);
+}
+.kb-card-active::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 1px rgba(129,140,248,.15);
+  pointer-events: none;
+}
+/* Done card */
+.kb-card-done { opacity: .5; }
+.kb-card-done .kb-card-title { text-decoration: line-through; }
+/* Card content */
+.kb-card-stage-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.25);
+  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.kb-card-title {
+  font-family: Manrope, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--txt);
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+.kb-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.kb-card-assignee {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: rgba(91,95,199,.12);
+  color: rgba(129,140,248,.8);
+}
+.kb-card-deadline {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: rgba(255,255,255,.3);
+}
+.kb-card-deadline.overdue { color: #f87171; }
+.kb-card-timer {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin-left: auto;
+}
+.kb-timer-live {
+  background: rgba(248,113,113,.12);
+  color: #f87171;
+  animation: timerPulse 1.5s ease infinite;
+}
+.kb-timer-logged { background: rgba(34,211,238,.1); color: rgba(34,211,238,.7); }
+/* Move buttons inside card */
+.kb-card-actions {
+  display: none;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,.05);
+}
+.kb-card:hover .kb-card-actions { display: flex; }
+.kb-move-btn {
+  flex: 1;
+  padding: 5px 0;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 7px;
+  font-family: Manrope, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,.4);
+  cursor: pointer;
+  transition: all .12s;
+  text-align: center;
+}
+.kb-move-btn:hover { background: rgba(255,255,255,.08); color: rgba(255,255,255,.8); border-color: rgba(255,255,255,.14); }
+.kb-move-btn.to-active:hover { background: rgba(129,140,248,.12); color: #818cf8; border-color: rgba(129,140,248,.2); }
+.kb-move-btn.to-done:hover   { background: rgba(52,211,153,.1);  color: #34d399;  border-color: rgba(52,211,153,.2); }
+.kb-move-btn.to-waiting:hover{ background: rgba(255,255,255,.06); }
+.kb-del-btn {
+  width: 28px; height: 28px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: rgba(255,255,255,.25);
+  transition: all .12s;
+  flex-shrink: 0;
+}
+.kb-del-btn:hover { background: rgba(248,113,113,.1); border-color: rgba(248,113,113,.2); color: #f87171; }
+/* Column add button */
+.kb-col-add {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: transparent;
+  border: 1px dashed rgba(255,255,255,.08);
+  border-radius: 10px;
+  font-family: Manrope, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255,255,255,.25);
+  cursor: pointer;
+  width: 100%;
+  transition: all .15s;
+}
+.kb-col-add:hover {
+  border-color: rgba(255,255,255,.15);
+  color: rgba(255,255,255,.5);
+  background: rgba(255,255,255,.02);
+}
+/* Empty col state */
+.kb-col-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 12px;
+  font-family: Manrope, sans-serif;
+  font-size: 11px;
+  color: rgba(255,255,255,.15);
+  text-align: center;
+  gap: 6px;
+}
+
+/* ── Finance modal sections ── */
 .fin-section {
   margin: 16px 0;
   padding: 14px 16px;
