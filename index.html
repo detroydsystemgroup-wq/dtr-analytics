@@ -8377,12 +8377,16 @@ canvas {
         </div>
       </div>
 
-      <!-- SQL hint -->
-      <div class="fin-sql-hint">
-        SQL (один раз):
-        <code>ALTER TABLE projects ADD COLUMN IF NOT EXISTS monthly_budget bigint DEFAULT 0; ALTER TABLE projects ADD COLUMN IF NOT EXISTS hourly_rate integer DEFAULT 0;</code>
-        <button onclick="navigator.clipboard.writeText(`ALTER TABLE projects ADD COLUMN IF NOT EXISTS monthly_budget bigint DEFAULT 0;\nALTER TABLE projects ADD COLUMN IF NOT EXISTS hourly_rate integer DEFAULT 0;`).then(()=>{this.textContent='✓';setTimeout(()=>this.textContent='SQL',1500)})" class="fin-sql-copy">SQL</button>
-      </div>
+      <!-- SQL hint — collapsed -->
+      <details style="margin-bottom:14px;">
+        <summary style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);letter-spacing:.06em;cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;padding:8px 12px;background:var(--bg4);border:1px solid var(--brd);border-radius:8px;">
+          <span>▸ SQL — нужно выполнить один раз в Supabase Dashboard</span>
+        </summary>
+        <div class="fin-sql-hint" style="margin-top:6px;border-radius:8px;">
+          <code>ALTER TABLE projects ADD COLUMN IF NOT EXISTS monthly_budget bigint DEFAULT 0;<br>ALTER TABLE projects ADD COLUMN IF NOT EXISTS hourly_rate integer DEFAULT 0;</code>
+          <button onclick="navigator.clipboard.writeText('ALTER TABLE projects ADD COLUMN IF NOT EXISTS monthly_budget bigint DEFAULT 0;\nALTER TABLE projects ADD COLUMN IF NOT EXISTS hourly_rate integer DEFAULT 0;').then(()=>{this.textContent='✓ Скопировано';setTimeout(()=>this.textContent='Копировать SQL',1500)})" class="fin-sql-copy">Копировать SQL</button>
+        </div>
+      </details>
 
       <!-- P&L Table -->
       <div class="fin-table-wrap">
@@ -8625,6 +8629,10 @@ canvas {
       </button>
     </div>
     <div class="pp-tabs-actions">
+      <button class="tg-connect-btn agency-only" onclick="openSQLSetup()" title="SQL настройка БД" style="color:rgba(245,158,11,.7);border-color:rgba(245,158,11,.2);background:rgba(245,158,11,.05);" id="btn-sql-setup">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/></svg>
+        SQL Setup
+      </button>
       <button class="tg-connect-btn agency-only" id="tg-connect-btn" onclick="openTelegramSetup()" title="Подключить Telegram клиента">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.198 2.433a2.242 2.242 0 00-1.022.215l-16.5 7.5a2.25 2.25 0 00.126 4.073l3.9 1.205 2.306 6.58a.75.75 0 001.397.105l2.474-4.32 4.682 3.26a2.25 2.25 0 003.396-1.39l2.926-14.25a2.25 2.25 0 00-3.685-2.078z"/></svg>
         <span id="tg-connect-lbl">Telegram</span>
@@ -9986,11 +9994,16 @@ canvas {
           <div class="pai-history-list" id="pai-history-list"></div>
         </div>
 
-        <!-- SQL note -->
-        <div style="margin-top:16px;padding:9px 12px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.12);border-radius:8px;font-size:9.5px;font-family:'JetBrains Mono',monospace;color:rgba(245,158,11,.55);">
-          SQL: ALTER TABLE client_passports ADD COLUMN IF NOT EXISTS ai_briefs jsonb DEFAULT '[]';
-          <button onclick="navigator.clipboard.writeText(`ALTER TABLE client_passports ADD COLUMN IF NOT EXISTS ai_briefs jsonb DEFAULT '[]';`).then(()=>{this.textContent='✓';setTimeout(()=>this.textContent='SQL',1500)})" style="margin-left:8px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;color:rgba(245,158,11,.7);">SQL</button>
-        </div>
+        <!-- SQL note — collapsed by default -->
+        <details style="margin-top:12px;">
+          <summary style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);letter-spacing:.06em;cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;">
+            <span>▸ SQL для сохранения истории брифов</span>
+          </summary>
+          <div style="margin-top:8px;padding:9px 12px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.12);border-radius:8px;font-size:9.5px;font-family:'JetBrains Mono',monospace;color:rgba(245,158,11,.55);">
+            ALTER TABLE client_passports ADD COLUMN IF NOT EXISTS ai_briefs jsonb DEFAULT '[]';
+            <button onclick="navigator.clipboard.writeText(`ALTER TABLE client_passports ADD COLUMN IF NOT EXISTS ai_briefs jsonb DEFAULT '[]';`).then(()=>{this.textContent='✓';setTimeout(()=>this.textContent='SQL',1500)})" style="margin-left:8px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:4px;padding:2px 8px;font-size:9px;cursor:pointer;color:rgba(245,158,11,.7);">Копировать</button>
+          </div>
+        </details>
 
       </div>
 
@@ -10679,6 +10692,38 @@ canvas {
         </div>
       </div>
 
+      </div>
+
+      <!-- ПРОГНОЗ СЛЕДУЮЩЕГО ПЕРИОДА — Phase 6 -->
+      <div id="sec-forecast" style="display:none;">
+        <div class="sh">
+          <div class="sh-num">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div class="sh-title">Прогноз следующего периода</div>
+          <div class="sh-line"></div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;" id="forecast-data-pts">← N отчётов</div>
+        </div>
+
+        <!-- Forecast cards -->
+        <div class="fc-grid" id="fc-cards"></div>
+
+        <!-- Trend chart canvas -->
+        <div class="cb" id="fc-chart-wrap" style="margin-bottom:24px;display:none;">
+          <div class="cb-title">Исторический тренд + прогноз</div>
+          <div class="cb-sub" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt2);margin-bottom:10px;">// пунктир — прогноз, сплошная — факт</div>
+          <div style="position:relative;height:220px"><canvas id="cForecast"></canvas></div>
+        </div>
+
+        <!-- Gap to KPI -->
+        <div id="fc-kpi-gap" style="display:none;margin-bottom:24px;"></div>
+
+        <!-- Insufficient data notice -->
+        <div id="fc-insufficient" style="display:none;padding:20px;text-align:center;font-family:Manrope,sans-serif;font-size:12px;color:var(--txt3);">
+          Нужно минимум 2 опубликованных отчёта с данными для построения прогноза
+        </div>
+      </div>
+
       <!-- СРЕДНИЙ ЧЕК ПО КАНАЛУ ПРОДАЖ -->
       <div id="avg-channel-section" style="display:none;">
         <div class="sh">
@@ -10871,6 +10916,70 @@ canvas {
 </div>
 
 <!-- MODAL: EDIT STAGE (agency only) -->
+<!-- MODAL: SQL SETUP — first run guide (Phase 2+) -->
+<div class="modal-overlay" id="modal-sql-setup">
+  <div class="modal" style="max-width:580px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+      <div style="width:38px;height:38px;border-radius:10px;background:rgba(91,95,199,.12);border:1px solid rgba(91,95,199,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;">🛠️</div>
+      <div>
+        <div class="modal-title" style="margin-bottom:0;">Первоначальная настройка БД</div>
+        <div style="font-size:11px;color:var(--txt3);font-family:Manrope,sans-serif;margin-top:2px;">Выполни SQL в Supabase Dashboard один раз — и все функции заработают</div>
+      </div>
+    </div>
+
+    <div style="margin:16px 0;background:var(--bg4);border:1px solid var(--brd);border-radius:10px;overflow:hidden;">
+      <!-- Step indicator -->
+      <div style="padding:10px 16px;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--a2);letter-spacing:.08em;">SQL EDITOR → NEW QUERY → ВСТАВИТЬ → RUN</span>
+        <button id="sql-copy-all-btn" onclick="copyAllSQL()" style="background:var(--a);border:none;border-radius:6px;padding:5px 14px;font-family:Manrope,sans-serif;font-size:11px;font-weight:600;color:#fff;cursor:pointer;transition:all .15s;">📋 Копировать всё</button>
+      </div>
+      <pre id="sql-all-block" style="margin:0;padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt2);line-height:1.7;overflow-x:auto;white-space:pre-wrap;">-- ① Задачи (обязательно для трекера)
+CREATE TABLE IF NOT EXISTS stage_tasks (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  project_id uuid REFERENCES projects(id) ON DELETE CASCADE,
+  stage_index integer NOT NULL,
+  title text NOT NULL,
+  assignee text DEFAULT '',
+  priority text DEFAULT 'normal',
+  deadline date,
+  done boolean DEFAULT false,
+  time_logged integer DEFAULT 0,
+  created_at timestamptz DEFAULT now(),
+  created_by uuid
+);
+ALTER TABLE stage_tasks ENABLE ROW LEVEL SECURITY;
+CREATE POLICY IF NOT EXISTS "allow_all_tasks" ON stage_tasks
+  FOR ALL USING (true) WITH CHECK (true);
+
+-- ② Команда проекта
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS team_members jsonb DEFAULT '[]';
+
+-- ③ Правила алертов
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS alert_rules jsonb DEFAULT '[]';
+
+-- ④ Финансы агентства
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS monthly_budget bigint DEFAULT 0;
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS hourly_rate integer DEFAULT 0;
+
+-- ⑤ AI-брифы в паспорте
+ALTER TABLE client_passports ADD COLUMN IF NOT EXISTS ai_briefs jsonb DEFAULT '[]';</pre>
+    </div>
+
+    <div style="display:flex;gap:8px;padding:10px 14px;background:rgba(74,222,128,.05);border:1px solid rgba(74,222,128,.15);border-radius:8px;margin-bottom:14px;font-family:Manrope,sans-serif;font-size:11px;color:var(--txt2);">
+      <span style="font-size:16px;flex-shrink:0;">💡</span>
+      <span>Перейди в <b style="color:var(--green);">Supabase Dashboard → SQL Editor → New Query</b>, вставь всё выше и нажми <b>Run</b>. Займёт 10 секунд. После этого перезагрузи страницу.</span>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-sql-setup')">Закрыть</button>
+      <button class="btn-primary" style="flex:1;" onclick="window.open('https://supabase.com/dashboard',`_blank`);closeModal('modal-sql-setup')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Открыть Supabase
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: ADD / EDIT TASK (Phase 2) -->
 <div class="modal-overlay" id="modal-task">
   <div class="modal" style="max-width:460px;">
@@ -12659,6 +12768,15 @@ async function openReport(id) {
     _finTaskHours[currentProject.id] = (tks||[]).reduce((s,t) => s + (t.time_logged||0), 0)
   } catch(e) { /* columns may not exist yet */ }
 
+  // ── Phase 6: if report is already published & has summary, show forecast ──
+  if (r.status === 'published' && r.summary?.d_rev_per_day != null) {
+    const { dRD, dA } = { dRD: r.summary.d_rev_per_day, dA: r.summary.d_avg_check }
+    const dCD = r.summary.d_total_chk / (r.summary.d_days || 1)
+    buildForecast({ dRD, dCD, dA }).catch(()=>{})
+    renderROIBlock().catch(()=>{})
+    syncKPIFacts({ dRD, dA, dCD, grP: r.summary.growth_pct }).catch(()=>{})
+  }
+
   // Reset file states
   Object.keys(S).forEach(k => delete S[k])
   document.querySelectorAll('.drop').forEach(d => d.classList.remove('done'))
@@ -12938,6 +13056,9 @@ function runAnalysis() {
 
   // ── Phase 5: ROI block ──
   renderROIBlock().catch(e => console.warn('ROI render failed:', e))
+
+  // ── Phase 6: predictive forecast ──
+  buildForecast({ dRD, dCD, dA }).catch(e => console.warn('Forecast failed:', e))
 
   // ── Phase 3: proactive alert check ──
   checkAlerts({ dRD, bRD, dCD, bCD, dA, bA, grP }).catch(e => console.warn('Alert check failed:', e))
@@ -13573,6 +13694,292 @@ ${LABEL_D} (${dD} дн): выручка/день ${fmtM(Math.round(dRD))} | че
 }
 
 // ══════════════════════════════════════════════
+// PHASE 6: PREDICTIVE FORECAST ENGINE
+// ══════════════════════════════════════════════
+
+let _forecastChart = null
+
+// ── Simple linear regression: y = a + b*x ──
+function _linReg(points) {
+  // points: [{x, y}]  x = report index (0,1,2...), y = metric value
+  const n = points.length
+  if (n < 2) return null
+  const sumX  = points.reduce((s, p) => s + p.x, 0)
+  const sumY  = points.reduce((s, p) => s + p.y, 0)
+  const sumXY = points.reduce((s, p) => s + p.x * p.y, 0)
+  const sumX2 = points.reduce((s, p) => s + p.x * p.x, 0)
+  const denom = n * sumX2 - sumX * sumX
+  if (denom === 0) return null
+  const b = (n * sumXY - sumX * sumY) / denom   // slope
+  const a = (sumY - b * sumX) / n                // intercept
+  // R² for confidence
+  const yMean = sumY / n
+  const ssTot = points.reduce((s, p) => s + Math.pow(p.y - yMean, 2), 0)
+  const ssRes = points.reduce((s, p) => s + Math.pow(p.y - (a + b * p.x), 2), 0)
+  const r2 = ssTot > 0 ? 1 - ssRes / ssTot : 1
+  return { a, b, r2: Math.max(0, Math.min(1, r2)) }
+}
+
+// ── Project next value ──
+function _regPredict(reg, x) {
+  if (!reg) return null
+  return reg.a + reg.b * x
+}
+
+// ── Main forecast function — called from runAnalysis ──
+async function buildForecast(currentMetrics) {
+  const sec = g('sec-forecast')
+  if (!sec || !currentProject) return
+
+  // Load all published reports for this project with summaries
+  let allReports = []
+  try {
+    const { data } = await sb.from('reports')
+      .select('id, created_at, summary')
+      .eq('project_id', currentProject.id)
+      .eq('status', 'published')
+      .order('created_at', { ascending: true })
+    allReports = (data || []).filter(r => r.summary && r.summary.d_rev_per_day != null)
+  } catch(e) {
+    console.warn('Forecast load failed:', e)
+    sec.style.display = 'none'
+    return
+  }
+
+  // Add current report metrics as the latest data point (may not be published yet)
+  // Use its values from currentMetrics
+  const dataPoints = allReports.map((r, i) => ({
+    x:    i,
+    date: r.created_at,
+    rRD:  r.summary.d_rev_per_day  || 0,
+    rCD:  (r.summary.d_checks_day != null ? r.summary.d_checks_day : (r.summary.d_total_chk / (r.summary.d_days||1))) || 0,
+    rA:   r.summary.d_avg_check   || 0,
+  }))
+
+  // If current report is not in published list, append as latest point
+  const isCurrentPublished = allReports.some(r => r.id === currentReport?.id)
+  if (!isCurrentPublished && currentMetrics) {
+    dataPoints.push({
+      x: dataPoints.length,
+      date: new Date().toISOString(),
+      rRD: currentMetrics.dRD,
+      rCD: currentMetrics.dCD,
+      rA:  currentMetrics.dA,
+    })
+  }
+
+  // Update badge
+  const badge = g('forecast-data-pts')
+  if (badge) badge.textContent = `← ${dataPoints.length} отчётов`
+
+  // Need at least 2 points
+  if (dataPoints.length < 2) {
+    sec.style.display = 'block'
+    g('fc-cards').innerHTML = ''
+    g('fc-insufficient').style.display = 'block'
+    g('fc-chart-wrap').style.display = 'none'
+    g('fc-kpi-gap').style.display = 'none'
+    return
+  }
+
+  g('fc-insufficient').style.display = 'none'
+  sec.style.display = 'block'
+
+  // Run regressions
+  const regRD  = _linReg(dataPoints.map(p => ({ x: p.x, y: p.rRD })))
+  const regCD  = _linReg(dataPoints.map(p => ({ x: p.x, y: p.rCD })))
+  const regA   = _linReg(dataPoints.map(p => ({ x: p.x, y: p.rA  })))
+
+  const nextX = dataPoints.length   // next period index
+
+  const forecastRD = _regPredict(regRD, nextX)
+  const forecastCD = _regPredict(regCD, nextX)
+  const forecastA  = _regPredict(regA,  nextX)
+
+  // Current (latest real point)
+  const cur = dataPoints[dataPoints.length - 1]
+  const curRD = cur.rRD, curCD = cur.rCD, curA = cur.rA
+
+  // Render forecast cards
+  const cards = [
+    {
+      label: 'ВЫРУЧКА / ДЕНЬ',
+      current: curRD,
+      forecast: forecastRD,
+      unit: 'сум/день',
+      reg: regRD,
+      accent: 'var(--green)',
+      fmt: v => fmtM(Math.round(v)),
+    },
+    {
+      label: 'ТРАФИК / ДЕНЬ',
+      current: curCD,
+      forecast: forecastCD,
+      unit: 'чеков/день',
+      reg: regCD,
+      accent: 'var(--cyan)',
+      fmt: v => Math.round(v).toString(),
+    },
+    {
+      label: 'СРЕДНИЙ ЧЕК',
+      current: curA,
+      forecast: forecastA,
+      unit: 'сум',
+      reg: regA,
+      accent: 'var(--a2)',
+      fmt: v => fmtM(Math.round(v)),
+    },
+  ]
+
+  g('fc-cards').innerHTML = cards.map(c => {
+    if (!c.forecast) return ''
+    const delta  = c.forecast - c.current
+    const deltaPct = c.current > 0 ? (delta / c.current * 100) : 0
+    const isUp   = delta > 0
+    const isFlat = Math.abs(deltaPct) < 1
+    const trendCls = isFlat ? 'fc-trend-flat' : isUp ? 'fc-trend-up' : 'fc-trend-down'
+    const trendTxt = isFlat ? '→ стабильно' : (isUp ? '↑ +' : '↓ ') + Math.abs(deltaPct).toFixed(1) + '%'
+    const conf = c.reg ? Math.round(c.reg.r2 * 100) : 50
+    return `<div class="fc-card" style="--fc-accent:${c.accent}">
+      <div class="fc-metric-name">${c.label}</div>
+      <div class="fc-val-row">
+        <div class="fc-val">${c.fmt(c.forecast)}</div>
+        <div class="fc-unit">${c.unit}</div>
+      </div>
+      <div class="fc-trend-row">
+        <span class="fc-trend-badge ${trendCls}">${trendTxt}</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);">vs ${c.fmt(c.current)} сейчас</span>
+      </div>
+      <div class="fc-conf">
+        Уверенность: ${conf}% (R²=${c.reg?.r2?.toFixed(2)||'—'}, n=${dataPoints.length})
+        <div class="fc-conf-bar"><div class="fc-conf-fill" style="width:${conf}%;"></div></div>
+      </div>
+    </div>`
+  }).join('')
+
+  // ── Trend chart ──
+  if (dataPoints.length >= 3 && regRD) {
+    renderForecastChart(dataPoints, regRD, forecastRD)
+  } else {
+    g('fc-chart-wrap').style.display = 'none'
+  }
+
+  // ── KPI Gap ──
+  renderForecastKPIGap(forecastRD)
+}
+
+// ── Draw forecast chart ──
+function renderForecastChart(dataPoints, reg, forecastRD) {
+  const wrap = g('fc-chart-wrap')
+  const canvas = g('cForecast')
+  if (!wrap || !canvas) return
+  wrap.style.display = 'block'
+
+  const labels = dataPoints.map((p, i) => {
+    const d = new Date(p.date)
+    return d.toLocaleDateString('ru-RU', { month: 'short', year: '2-digit' })
+  })
+  labels.push('→ Прогноз')
+
+  const actualData = dataPoints.map(p => Math.round(p.rRD))
+  const regrLine   = dataPoints.map((_, i) => Math.round(_regPredict(reg, i)))
+  regrLine.push(Math.round(forecastRD))  // extend to forecast point
+
+  // null-fill actual for the forecast point
+  const actualFull = [...actualData, null]
+
+  if (_forecastChart) { _forecastChart.destroy(); _forecastChart = null }
+  _forecastChart = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Факт (выручка/день)',
+          data: actualFull,
+          borderColor: '#4ade80',
+          backgroundColor: 'rgba(74,222,128,.08)',
+          borderWidth: 2,
+          pointRadius: 4,
+          pointBackgroundColor: '#4ade80',
+          tension: .35,
+          fill: true,
+          spanGaps: false,
+        },
+        {
+          label: 'Тренд + прогноз',
+          data: regrLine,
+          borderColor: '#0dcfff',
+          backgroundColor: 'transparent',
+          borderWidth: 1.5,
+          borderDash: [5, 4],
+          pointRadius: (ctx) => ctx.dataIndex === regrLine.length - 1 ? 6 : 0,
+          pointBackgroundColor: '#0dcfff',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          tension: .2,
+          fill: false,
+        },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: true, labels: { color: 'rgba(255,255,255,.45)', font: { size: 10 } } } },
+      scales: {
+        x: { ticks: { color: 'rgba(255,255,255,.35)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.04)' } },
+        y: {
+          ticks: {
+            color: 'rgba(255,255,255,.35)', font: { size: 10 },
+            callback: v => fmtM(Math.round(v))
+          },
+          grid: { color: 'rgba(255,255,255,.04)' }
+        }
+      }
+    }
+  })
+}
+
+// ── Compare forecast to KPI targets ──
+function renderForecastKPIGap(forecastRD) {
+  const gap = g('fc-kpi-gap')
+  if (!gap) return
+
+  const kpis = _reportPassportKPIs.filter(k => k.metric_type === 'revenue_per_day' && k.plan_value)
+  if (!kpis.length || forecastRD == null) { gap.style.display = 'none'; return }
+
+  const kpi = kpis[0]
+  const plan = kpi.plan_value
+  const pct  = Math.round((forecastRD / plan) * 100)
+  const isAhead = forecastRD >= plan
+  const barColor = isAhead ? 'var(--green)' : pct >= 80 ? 'var(--amber)' : 'var(--red)'
+  const barW = Math.min(100, pct)
+
+  gap.style.display = 'block'
+  gap.innerHTML = `<div class="fc-gap-card">
+    <div>
+      <div class="fc-gap-title">Прогноз vs KPI-цель</div>
+      <div class="fc-gap-meta">${esc(kpi.goal)}</div>
+      <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);margin-bottom:4px;">
+        <span>Прогноз: ${fmtM(Math.round(forecastRD))} сум/день</span>
+        <span>Цель: ${fmtM(plan)} сум/день</span>
+      </div>
+      <div class="fc-gap-bar-track">
+        <div class="fc-gap-bar-fill" style="width:${barW}%;background:${barColor};"></div>
+      </div>
+      ${!isAhead ? `<div style="font-family:Manrope,sans-serif;font-size:11px;color:var(--amber);margin-top:8px;">
+        Нужен дополнительный рост <b>+${fmtM(Math.round(plan - forecastRD))} сум/день</b> для достижения цели
+      </div>` : `<div style="font-family:Manrope,sans-serif;font-size:11px;color:var(--green);margin-top:8px;">
+        При текущем тренде цель будет перевыполнена ✓
+      </div>`}
+    </div>
+    <div>
+      <div class="fc-gap-pct" style="color:${barColor};">${pct}%</div>
+      <div class="fc-gap-sub">от плана</div>
+    </div>
+  </div>`
+}
+
+// ══════════════════════════════════════════════
 // PHASE 5: FINANCIAL MODULE
 // SQL:
 // ALTER TABLE projects ADD COLUMN IF NOT EXISTS monthly_budget bigint DEFAULT 0;
@@ -13607,9 +14014,8 @@ function renderFinance() {
   if (!body) return
 
   const projects = _allProjects.filter(p => p.status !== 'archived')
-  const hasBudgets = projects.some(p => p.monthly_budget > 0)
 
-  if (!hasBudgets) {
+  if (!projects.length) {
     body.innerHTML = ''
     if (empty) empty.style.display = 'block'
     g('fin-mrr-total').textContent = '—'
@@ -13620,62 +14026,67 @@ function renderFinance() {
   }
   if (empty) empty.style.display = 'none'
 
-  // Compute P&L per project
+  // Compute P&L per project — ALL projects, not just those with budget
   const rows = projects.map(p => {
     const budget = p.monthly_budget || 0
     const rate   = p.hourly_rate || 0
     const mins   = _finTaskHours[p.id] || 0
     const hours  = Math.round(mins / 60 * 10) / 10
     const cost   = Math.round(rate * hours)
-    const margin = budget - cost
-    const marginPct = budget > 0 ? Math.round((margin / budget) * 100) : null
+    const margin = budget > 0 ? budget - cost : null
+    const marginPct = budget > 0 ? Math.round(((budget - cost) / budget) * 100) : null
     return { p, budget, rate, hours, cost, margin, marginPct }
-  }).filter(r => r.budget > 0)
-   .sort((a, b) => (b.marginPct||0) - (a.marginPct||0))
+  }).sort((a, b) => (b.marginPct || -999) - (a.marginPct || -999))
 
-  // MRR strip
-  const totalMRR = rows.reduce((s, r) => s + r.budget, 0)
-  const avgMargin = rows.length ? Math.round(rows.reduce((s,r) => s + (r.marginPct||0), 0) / rows.length) : 0
-  const best = rows[0]
-  const atRisk = rows.filter(r => r.marginPct !== null && r.marginPct < 20)
+  // MRR strip — only from projects with budget
+  const budgetRows = rows.filter(r => r.budget > 0)
+  const totalMRR   = budgetRows.reduce((s, r) => s + r.budget, 0)
+  const avgMargin  = budgetRows.length ? Math.round(budgetRows.reduce((s,r) => s + (r.marginPct||0), 0) / budgetRows.length) : 0
+  const best       = budgetRows[0]
+  const atRisk     = budgetRows.filter(r => r.marginPct !== null && r.marginPct < 20)
 
-  g('fin-mrr-total').textContent = fmtM(totalMRR) + ' сум'
-  g('fin-mrr-margin').textContent = avgMargin + '%'
+  g('fin-mrr-total').textContent = totalMRR ? fmtM(totalMRR) + ' сум' : '—'
+  g('fin-mrr-margin').textContent = budgetRows.length ? avgMargin + '%' : '—'
   g('fin-mrr-best').textContent = best ? best.p.name.slice(0, 14) : '—'
-  g('fin-mrr-risk').textContent = atRisk.length
+  g('fin-mrr-risk').textContent = atRisk.length || '—'
 
-  // Table rows
+  // Table rows — ALL projects
   body.innerHTML = rows.map(r => {
     const { p, budget, hours, cost, margin, marginPct } = r
-    const isNoBudget  = budget === 0
-    const isRisk      = marginPct !== null && marginPct < 20
-    const isUpsell    = marginPct !== null && marginPct >= 60
-    const isProfit    = marginPct !== null && marginPct >= 20 && marginPct < 60
+    const noBudget = budget === 0
 
-    let statusCls = 'fsb-zero', statusTxt = '— без данных'
-    if (isUpsell)      { statusCls = 'fsb-upsell'; statusTxt = '🚀 Апселл' }
-    else if (isProfit) { statusCls = 'fsb-profit'; statusTxt = '✅ Прибыль' }
-    else if (isRisk)   { statusCls = 'fsb-risk';   statusTxt = '⚠️ At-Risk' }
+    let statusCls = 'fsb-zero', statusTxt = '— нет бюджета'
+    if (!noBudget) {
+      const isRisk   = marginPct !== null && marginPct < 20
+      const isUpsell = marginPct !== null && marginPct >= 60
+      const isProfit = marginPct !== null && marginPct >= 20 && marginPct < 60
+      if (isUpsell)      { statusCls = 'fsb-upsell'; statusTxt = '🚀 Апселл' }
+      else if (isProfit) { statusCls = 'fsb-profit'; statusTxt = '✅ Прибыль' }
+      else if (isRisk)   { statusCls = 'fsb-risk';   statusTxt = '⚠️ At-Risk' }
+      else                { statusCls = 'fsb-zero';  statusTxt = '— нет данных' }
+    }
 
-    const barColor = isRisk ? 'var(--red)' : isUpsell ? 'var(--cyan)' : 'var(--green)'
+    const barColor = (marginPct||0) < 20 ? 'var(--red)' : (marginPct||0) >= 60 ? 'var(--cyan)' : 'var(--green)'
     const barW = Math.max(0, Math.min(100, marginPct || 0))
 
-    return `<div class="fin-table-row">
+    return `<div class="fin-table-row${noBudget ? ' fin-row-nobdg' : ''}">
       <div class="fin-row-name">
         <div class="fin-name-text" title="${esc(p.name)}">${esc(p.name)}</div>
-        <div class="fin-name-meta">${p.category||'—'} · ${r.hours}ч logged</div>
+        <div class="fin-name-meta">${p.category||'—'} · ${hours}ч logged</div>
       </div>
-      <div class="fin-cell fin-budget">${fmtM(budget)}</div>
-      <div class="fin-cell">${hours}</div>
-      <div class="fin-cell fin-cost">${cost > 0 ? fmtM(cost) : '—'}</div>
-      <div class="fin-cell ${margin >= 0 ? 'fin-margin-pos' : 'fin-margin-neg'}">${cost > 0 ? (margin >= 0 ? '+' : '') + fmtM(margin) : '—'}</div>
+      <div class="fin-cell fin-budget">${noBudget ? '<span style="color:var(--txt3);">не задан</span>' : fmtM(budget)}</div>
+      <div class="fin-cell">${hours || '—'}</div>
+      <div class="fin-cell fin-cost">${!noBudget && cost > 0 ? fmtM(cost) : '—'}</div>
+      <div class="fin-cell ${margin !== null && margin >= 0 ? 'fin-margin-pos' : margin !== null ? 'fin-margin-neg' : ''}">${margin !== null ? (margin >= 0 ? '+' : '') + fmtM(margin) : '—'}</div>
       <div class="fin-margin-bar-wrap">
         <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:${barColor};">${marginPct !== null ? marginPct + '%' : '—'}</div>
         <div class="fin-margin-bar-track"><div class="fin-margin-bar-fill" style="width:${barW}%;background:${barColor};"></div></div>
       </div>
       <div style="width:100px;flex-shrink:0;"><span class="fin-status-badge ${statusCls}">${statusTxt}</span></div>
       <div class="fin-edit-btn">
-        <button class="btn-ghost" style="font-size:10px;padding:4px 10px;" onclick="openFinanceModal('${p.id}','${esc(p.name)}',${budget},${p.hourly_rate||0},${hours})">Изменить</button>
+        <button class="${noBudget ? 'btn-primary' : 'btn-ghost'}" style="font-size:10px;padding:5px 12px;${noBudget ? 'background:var(--a);' : ''}" onclick="openFinanceModal('${p.id}','${esc(p.name)}',${budget},${p.hourly_rate||0},${hours})">
+          ${noBudget ? '💰 Задать' : 'Изменить'}
+        </button>
       </div>
     </div>`
   }).join('')
@@ -14162,6 +14573,19 @@ let teamMembers = []
 let _teamEditing = []
 const PRIORITY_COLORS = { urgent:'#f87171', high:'#fbbf24', normal:'#7b7fd4', low:'#444' }
 
+function copyAllSQL() {
+  const sql = g('sql-all-block')?.textContent || ''
+  navigator.clipboard.writeText(sql).then(() => {
+    const btn = g('sql-copy-all-btn')
+    if (btn) { btn.textContent = '✓ Скопировано!'; btn.style.background = 'var(--green)' }
+    setTimeout(() => { if (btn) { btn.textContent = '📋 Копировать всё'; btn.style.background = 'var(--a)' } }, 2000)
+  })
+}
+
+function openSQLSetup() {
+  g('modal-sql-setup').classList.add('open')
+}
+
 async function loadTasks() {
   if (!currentProject) return
   try {
@@ -14271,10 +14695,12 @@ async function saveTask() {
       const t = (tasksData[stageIndex]||[]).find(x => x.id === editingId)
       if (t) Object.assign(t, { title, assignee, priority, deadline })
     } else {
-      const { data } = await sb.from('stage_tasks').insert({
+      const { data, error } = await sb.from('stage_tasks').insert({
         project_id: currentProject.id, stage_index: stageIndex,
-        title, assignee, priority, deadline, done: false, created_by: currentUser.id
+        title, assignee, priority, deadline, done: false,
+        created_by: currentUser?.id || null
       }).select().single()
+      if (error) throw error
       if (data) {
         if (!tasksData[stageIndex]) tasksData[stageIndex] = []
         tasksData[stageIndex].push(data)
@@ -14284,7 +14710,9 @@ async function saveTask() {
     renderTasksForStage(stageIndex)
   } catch(e) {
     console.warn('Save task failed:', e)
-    alert('Ошибка: ' + e.message + '\n\nВыполни SQL из кнопки «Команда» → скопируй SQL → Supabase Dashboard.')
+    closeModal('modal-task')
+    // Show SQL setup modal — table likely doesn't exist yet
+    openSQLSetup()
   }
 }
 
@@ -27763,6 +28191,142 @@ window.switchPassportTab = function(tab, btn) {
 })();
 </script>
 <style id="dtr-history-mckinsey">
+/* ── PHASE 6: FORECAST ── */
+.fc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.fc-card {
+  background: var(--bg3);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-md);
+  padding: 18px 20px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .2s;
+}
+.fc-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--fc-accent, var(--cyan));
+}
+.fc-metric-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--txt3);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.fc-val-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.fc-val {
+  font-family: Manrope, sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  line-height: 1;
+  color: var(--fc-accent, var(--cyan));
+}
+.fc-unit {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--txt3);
+}
+.fc-trend-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.fc-trend-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+.fc-trend-up   { background: rgba(74,222,128,.1);  color: var(--green); }
+.fc-trend-down { background: rgba(248,113,113,.1); color: var(--red); }
+.fc-trend-flat { background: var(--bg4);            color: var(--txt3); }
+.fc-conf {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--txt3);
+  margin-top: 6px;
+}
+.fc-conf-bar {
+  height: 3px;
+  background: var(--bg5);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 5px;
+}
+.fc-conf-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--fc-accent, var(--cyan));
+  opacity: .5;
+}
+/* KPI Gap block */
+.fc-gap-card {
+  background: var(--bg3);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-md);
+  padding: 16px 20px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+}
+.fc-gap-title {
+  font-family: Manrope, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--txt);
+  margin-bottom: 6px;
+}
+.fc-gap-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--txt3);
+  margin-bottom: 10px;
+}
+.fc-gap-bar-track {
+  height: 5px;
+  background: var(--bg5);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.fc-gap-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width .6s ease;
+}
+.fc-gap-pct {
+  font-family: Manrope, sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  line-height: 1;
+  text-align: right;
+}
+.fc-gap-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--txt3);
+  text-align: right;
+  margin-top: 4px;
+}
+
 /* ── PHASE 5: FINANCIAL MODULE ── */
 .fin-mrr-strip {
   display: grid;
@@ -27916,6 +28480,8 @@ window.switchPassportTab = function(tab, btn) {
 .fsb-upsell   { background: rgba(34,211,238,.1);  color: var(--cyan); }
 .fsb-risk     { background: rgba(248,113,113,.1); color: var(--red); }
 .fsb-zero     { background: var(--bg4);            color: var(--txt3); }
+.fin-row-nobdg { opacity: .8; border-left: 2px solid rgba(91,95,199,.3); }
+.fin-row-nobdg:hover { opacity: 1; }
 .fin-edit-btn {
   width: 80px;
   display: flex;
