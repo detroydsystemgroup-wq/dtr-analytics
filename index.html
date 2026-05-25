@@ -9583,11 +9583,11 @@ canvas {
   transition: all .3s var(--ease-out) !important;
 }
 
-/* Active segment — taller, glowing */
+/* Active segment — taller, gold glow */
 .pcard-seg.pcs-active {
   height: 9px !important;
   border-radius: 4px !important;
-  box-shadow: 0 0 8px currentColor !important;
+  box-shadow: 0 0 10px rgba(201,168,76,.6), 0 0 4px rgba(201,168,76,.4) !important;
   opacity: 1 !important;
 }
 
@@ -17320,9 +17320,12 @@ function renderProjectGrid() {
     const stageSegs = stageStatuses.map((st,i) => {
       const done = st === 'completed'
       const active = (i === activeIdx) || (activeIdx === -1 && i === firstPending && pct < 100)
-      const bg = done ? col : active ? col+'99' : 'rgba(255,255,255,.07)'
-      const glow = active ? `box-shadow:0 0 10px ${col}70;` : ''
-      return `<div class="pcard-seg${active?' pcs-active':''}" style="background:${bg};${glow}"></div>`
+      // Active: always matte gold — clearly readable regardless of brand color
+      // Done: brand color at 75% opacity
+      // Pending: near-invisible
+      const bg = active ? '#c9a84c' : done ? col+'bf' : 'rgba(255,255,255,.07)'
+      const glow = active ? 'box-shadow:0 0 10px rgba(201,168,76,.65);' : ''
+      return `<div class="pcard-seg${active?' pcs-active':''}${done&&!active?' pcs-done':''}${!done&&!active?' pcs-pending':''}" style="background:${bg};${glow}"></div>`
     }).join('')
     const stageInfo = curIdx >= 0 && curIdx < 9 && pct < 100
       ? `<span style="opacity:.7">${STAGES[curIdx].icon}</span> <span class="pcs-name">${STAGES[curIdx].name}</span><span class="pcs-dot">·</span><span class="pcs-status">в работе</span>`
@@ -24492,9 +24495,11 @@ async function loadOverview() {
         for (var i = 0; i < 9; i++) {
           var st = projStages.find(function(s){ return s.stage_index === i; });
           var stStatus = st ? st.status : 'pending';
-          var segBg = stStatus === 'completed' ? col : stStatus === 'active' ? col+'88' : 'rgba(184,146,58,.1)';
+          // Active always gold — visible on any brand color
+          var segBg = stStatus === 'completed' ? col+'bf' : stStatus === 'active' ? '#c9a84c' : 'rgba(255,255,255,.07)';
           var segH = stStatus === 'active' ? '10px' : '6px';
-          segs += '<div class="ov2-pipe-seg" style="background:' + segBg + ';height:' + segH + ';' + (stStatus==='active'?'box-shadow:0 0 6px '+col+'66;':'') + '"></div>';
+          var segGlow = stStatus === 'active' ? 'box-shadow:0 0 10px rgba(201,168,76,.6);' : '';
+          segs += '<div class="ov2-pipe-seg" style="background:' + segBg + ';height:' + segH + ';' + segGlow + '"></div>';
         }
 
         // Deadline
