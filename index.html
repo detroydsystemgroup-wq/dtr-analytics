@@ -8051,6 +8051,12 @@ canvas {
             </span>
             <span class="cc-nav-text">Сводка</span>
           </button>
+          <button class="dash-tab cc-nav-item agency-only" id="dtab-finance" onclick="switchDashTab('finance',this)">
+            <span class="cc-nav-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            </span>
+            <span class="cc-nav-text">Финансы</span>
+          </button>
         </nav>
       </div>
 
@@ -8348,11 +8354,112 @@ canvas {
       <div style="height:60px;"></div>
     </div>
 
+    <!-- ══ FINANCE PANEL ══ -->
+    <div id="dtab-finance-panel" style="display:none;">
+
+      <!-- MRR Strip -->
+      <div class="fin-mrr-strip" id="fin-mrr-strip">
+        <div class="fin-mrr-card">
+          <div class="fin-mrr-val" id="fin-mrr-total">—</div>
+          <div class="fin-mrr-lbl">MRR агентства</div>
+        </div>
+        <div class="fin-mrr-card">
+          <div class="fin-mrr-val" id="fin-mrr-margin" style="color:var(--green);">—</div>
+          <div class="fin-mrr-lbl">Средняя маржа</div>
+        </div>
+        <div class="fin-mrr-card">
+          <div class="fin-mrr-val" id="fin-mrr-best">—</div>
+          <div class="fin-mrr-lbl">Лучший клиент</div>
+        </div>
+        <div class="fin-mrr-card">
+          <div class="fin-mrr-val" id="fin-mrr-risk" style="color:var(--red);">—</div>
+          <div class="fin-mrr-lbl">At-Risk клиентов</div>
+        </div>
+      </div>
+
+      <!-- SQL hint -->
+      <div class="fin-sql-hint">
+        SQL (один раз):
+        <code>ALTER TABLE projects ADD COLUMN IF NOT EXISTS monthly_budget bigint DEFAULT 0; ALTER TABLE projects ADD COLUMN IF NOT EXISTS hourly_rate integer DEFAULT 0;</code>
+        <button onclick="navigator.clipboard.writeText(`ALTER TABLE projects ADD COLUMN IF NOT EXISTS monthly_budget bigint DEFAULT 0;\nALTER TABLE projects ADD COLUMN IF NOT EXISTS hourly_rate integer DEFAULT 0;`).then(()=>{this.textContent='✓';setTimeout(()=>this.textContent='SQL',1500)})" class="fin-sql-copy">SQL</button>
+      </div>
+
+      <!-- P&L Table -->
+      <div class="fin-table-wrap">
+        <div class="fin-table-head">
+          <div style="flex:1.5">Клиент</div>
+          <div class="fin-col-num">Бюджет/мес</div>
+          <div class="fin-col-num">Часов</div>
+          <div class="fin-col-num">Себест.</div>
+          <div class="fin-col-num">Маржа</div>
+          <div class="fin-col-num">Марж. %</div>
+          <div class="fin-col-num">Статус</div>
+          <div class="fin-col-act"></div>
+        </div>
+        <div id="fin-table-body"></div>
+      </div>
+
+      <!-- Empty state -->
+      <div id="fin-empty" style="display:none;text-align:center;padding:48px 24px;">
+        <div style="font-size:36px;margin-bottom:12px;">💰</div>
+        <div style="font-family:Manrope,sans-serif;font-size:14px;font-weight:600;color:var(--txt);margin-bottom:6px;">Задай бюджеты клиентов</div>
+        <div style="font-size:12px;color:var(--txt3);">Нажми «Изменить» на любом проекте — введи бюджет и ставку часа</div>
+      </div>
+
+    </div>
 
     </main>
   </div>
 </div>
 
+
+<!-- MODAL: Finance — set project budget & rate (Phase 5) -->
+<div class="modal-overlay" id="modal-finance">
+  <div class="modal" style="max-width:420px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+      <div style="width:38px;height:38px;border-radius:10px;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;">💰</div>
+      <div class="modal-title" style="margin-bottom:0;">Финансы проекта</div>
+    </div>
+    <div style="font-size:11px;color:var(--txt3);font-family:Manrope,sans-serif;margin-bottom:16px;" id="fin-modal-proj-name">—</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="field">
+        <label>Бюджет клиента / мес <span style="color:var(--txt3);font-size:9px;">(сум)</span></label>
+        <input type="number" id="fin-budget-inp" placeholder="2 500 000" min="0">
+      </div>
+      <div class="field">
+        <label>Ставка часа <span style="color:var(--txt3);font-size:9px;">(сум/час)</span></label>
+        <input type="number" id="fin-rate-inp" placeholder="50 000" min="0">
+      </div>
+    </div>
+
+    <!-- Live P&L preview -->
+    <div class="fin-pnl-preview" id="fin-pnl-preview" style="display:none;">
+      <div class="fin-pnl-row">
+        <span>Бюджет</span>
+        <span id="fpv-budget" style="color:var(--green);">—</span>
+      </div>
+      <div class="fin-pnl-row">
+        <span>Себестоимость (est. <span id="fpv-hours">0</span>ч × ставка)</span>
+        <span id="fpv-cost" style="color:var(--red);">—</span>
+      </div>
+      <div class="fin-pnl-sep"></div>
+      <div class="fin-pnl-row" style="font-weight:700;">
+        <span>Маржа</span>
+        <span id="fpv-margin">—</span>
+      </div>
+    </div>
+
+    <input type="hidden" id="fin-modal-proj-id" value="">
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-finance')">Отмена</button>
+      <button class="btn-primary" style="flex:1;" onclick="saveFinanceSettings()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Сохранить
+      </button>
+    </div>
+  </div>
+</div>
 
 <!-- MODAL: Telegram Setup -->
 <div class="modal-overlay" id="modal-telegram">
@@ -10521,6 +10628,19 @@ canvas {
         <div class="cb"><div class="cb-title">Рейтинг филиалов</div><div id="branch-rating" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px;"></div></div>
       </div>
 
+      <!-- ROI АГЕНТСТВА — Phase 5 -->
+      <div id="sec-roi" style="display:none;">
+        <div class="sh">
+          <div class="sh-num">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          </div>
+          <div class="sh-title">ROI инвестиций в маркетинг</div>
+          <div class="sh-line"></div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;">← финансы агентства</div>
+        </div>
+        <div id="roi-block-content" style="margin-bottom:24px;"></div>
+      </div>
+
       <!-- KPI ПЛАН VS ФАКТ — Экосистемная связка -->
       <div id="sec-kpi-pf" style="display:none;">
         <div class="sh">
@@ -12235,12 +12355,14 @@ function renderProjectGrid() {
 function switchDashTab(tab, btn) {
   document.querySelectorAll('.dash-tab').forEach(b => b.classList.remove('dt-active'))
   btn.classList.add('dt-active')
-  g('dtab-projects-panel').style.display = tab === 'projects' ? 'block' : 'none'
-  g('dtab-calendar-panel').style.display = tab === 'calendar' ? 'block' : 'none'
-  g('dtab-activity-panel').style.display = tab === 'activity' ? 'block' : 'none'
-  g('dtab-overview-panel').style.display = tab === 'overview' ? 'block' : 'none'
+  g('dtab-projects-panel').style.display  = tab === 'projects' ? 'block' : 'none'
+  g('dtab-calendar-panel').style.display  = tab === 'calendar' ? 'block' : 'none'
+  g('dtab-activity-panel').style.display  = tab === 'activity' ? 'block' : 'none'
+  g('dtab-overview-panel').style.display  = tab === 'overview' ? 'block' : 'none'
+  g('dtab-finance-panel').style.display   = tab === 'finance'  ? 'block' : 'none'
   if (tab === 'activity') loadActivityFeed()
   if (tab === 'overview') { if (_allProjects.length) { loadOverview(); loadSMMLb(); } else { loadProjects().then(() => { loadOverview(); loadSMMLb(); }) } }
+  if (tab === 'finance')  loadFinance()
 }
 
 // Quick note modal
@@ -12528,6 +12650,15 @@ async function openReport(id) {
   // ── Load passport KPIs for plan vs fact sync ──
   await loadReportPassportKPIs()
 
+  // ── Phase 5: pre-load project finance data for ROI block ──
+  try {
+    const { data: projFin } = await sb.from('projects').select('monthly_budget,hourly_rate').eq('id', currentProject.id).single()
+    if (projFin) { currentProject.monthly_budget = projFin.monthly_budget; currentProject.hourly_rate = projFin.hourly_rate }
+    // Load task hours for this project
+    const { data: tks } = await sb.from('stage_tasks').select('time_logged').eq('project_id', currentProject.id)
+    _finTaskHours[currentProject.id] = (tks||[]).reduce((s,t) => s + (t.time_logged||0), 0)
+  } catch(e) { /* columns may not exist yet */ }
+
   // Reset file states
   Object.keys(S).forEach(k => delete S[k])
   document.querySelectorAll('.drop').forEach(d => d.classList.remove('done'))
@@ -12804,6 +12935,9 @@ function runAnalysis() {
 
   // ── KPI Plan vs Fact: sync passport KPIs with actual report metrics ──
   syncKPIFacts({ dRD, dA, dCD, grP })
+
+  // ── Phase 5: ROI block ──
+  renderROIBlock().catch(e => console.warn('ROI render failed:', e))
 
   // ── Phase 3: proactive alert check ──
   checkAlerts({ dRD, bRD, dCD, bCD, dA, bA, grP }).catch(e => console.warn('Alert check failed:', e))
@@ -13436,6 +13570,213 @@ ${LABEL_D} (${dD} дн): выручка/день ${fmtM(Math.round(dRD))} | че
   btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 100 .49"/></svg> Обновить анализ'
   btn.style.opacity = '1'
   aiRunning = false
+}
+
+// ══════════════════════════════════════════════
+// PHASE 5: FINANCIAL MODULE
+// SQL:
+// ALTER TABLE projects ADD COLUMN IF NOT EXISTS monthly_budget bigint DEFAULT 0;
+// ALTER TABLE projects ADD COLUMN IF NOT EXISTS hourly_rate integer DEFAULT 0;
+// ══════════════════════════════════════════════
+
+let _finTaskHours = {}   // { project_id: total_minutes }
+
+// ── Load finance tab ──
+async function loadFinance() {
+  if (!_allProjects.length) await loadProjects()
+
+  // Load time logs for all projects in parallel (Phase 2 task time)
+  const ids = _allProjects.map(p => p.id)
+  _finTaskHours = {}
+  try {
+    const { data: tasks } = await sb.from('stage_tasks')
+      .select('project_id, time_logged')
+      .in('project_id', ids)
+    ;(tasks || []).forEach(t => {
+      if (!_finTaskHours[t.project_id]) _finTaskHours[t.project_id] = 0
+      _finTaskHours[t.project_id] += (t.time_logged || 0)
+    })
+  } catch(e) { /* table may not have time_logged yet */ }
+
+  renderFinance()
+}
+
+function renderFinance() {
+  const body = g('fin-table-body')
+  const empty = g('fin-empty')
+  if (!body) return
+
+  const projects = _allProjects.filter(p => p.status !== 'archived')
+  const hasBudgets = projects.some(p => p.monthly_budget > 0)
+
+  if (!hasBudgets) {
+    body.innerHTML = ''
+    if (empty) empty.style.display = 'block'
+    g('fin-mrr-total').textContent = '—'
+    g('fin-mrr-margin').textContent = '—'
+    g('fin-mrr-best').textContent = '—'
+    g('fin-mrr-risk').textContent = '—'
+    return
+  }
+  if (empty) empty.style.display = 'none'
+
+  // Compute P&L per project
+  const rows = projects.map(p => {
+    const budget = p.monthly_budget || 0
+    const rate   = p.hourly_rate || 0
+    const mins   = _finTaskHours[p.id] || 0
+    const hours  = Math.round(mins / 60 * 10) / 10
+    const cost   = Math.round(rate * hours)
+    const margin = budget - cost
+    const marginPct = budget > 0 ? Math.round((margin / budget) * 100) : null
+    return { p, budget, rate, hours, cost, margin, marginPct }
+  }).filter(r => r.budget > 0)
+   .sort((a, b) => (b.marginPct||0) - (a.marginPct||0))
+
+  // MRR strip
+  const totalMRR = rows.reduce((s, r) => s + r.budget, 0)
+  const avgMargin = rows.length ? Math.round(rows.reduce((s,r) => s + (r.marginPct||0), 0) / rows.length) : 0
+  const best = rows[0]
+  const atRisk = rows.filter(r => r.marginPct !== null && r.marginPct < 20)
+
+  g('fin-mrr-total').textContent = fmtM(totalMRR) + ' сум'
+  g('fin-mrr-margin').textContent = avgMargin + '%'
+  g('fin-mrr-best').textContent = best ? best.p.name.slice(0, 14) : '—'
+  g('fin-mrr-risk').textContent = atRisk.length
+
+  // Table rows
+  body.innerHTML = rows.map(r => {
+    const { p, budget, hours, cost, margin, marginPct } = r
+    const isNoBudget  = budget === 0
+    const isRisk      = marginPct !== null && marginPct < 20
+    const isUpsell    = marginPct !== null && marginPct >= 60
+    const isProfit    = marginPct !== null && marginPct >= 20 && marginPct < 60
+
+    let statusCls = 'fsb-zero', statusTxt = '— без данных'
+    if (isUpsell)      { statusCls = 'fsb-upsell'; statusTxt = '🚀 Апселл' }
+    else if (isProfit) { statusCls = 'fsb-profit'; statusTxt = '✅ Прибыль' }
+    else if (isRisk)   { statusCls = 'fsb-risk';   statusTxt = '⚠️ At-Risk' }
+
+    const barColor = isRisk ? 'var(--red)' : isUpsell ? 'var(--cyan)' : 'var(--green)'
+    const barW = Math.max(0, Math.min(100, marginPct || 0))
+
+    return `<div class="fin-table-row">
+      <div class="fin-row-name">
+        <div class="fin-name-text" title="${esc(p.name)}">${esc(p.name)}</div>
+        <div class="fin-name-meta">${p.category||'—'} · ${r.hours}ч logged</div>
+      </div>
+      <div class="fin-cell fin-budget">${fmtM(budget)}</div>
+      <div class="fin-cell">${hours}</div>
+      <div class="fin-cell fin-cost">${cost > 0 ? fmtM(cost) : '—'}</div>
+      <div class="fin-cell ${margin >= 0 ? 'fin-margin-pos' : 'fin-margin-neg'}">${cost > 0 ? (margin >= 0 ? '+' : '') + fmtM(margin) : '—'}</div>
+      <div class="fin-margin-bar-wrap">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:${barColor};">${marginPct !== null ? marginPct + '%' : '—'}</div>
+        <div class="fin-margin-bar-track"><div class="fin-margin-bar-fill" style="width:${barW}%;background:${barColor};"></div></div>
+      </div>
+      <div style="width:100px;flex-shrink:0;"><span class="fin-status-badge ${statusCls}">${statusTxt}</span></div>
+      <div class="fin-edit-btn">
+        <button class="btn-ghost" style="font-size:10px;padding:4px 10px;" onclick="openFinanceModal('${p.id}','${esc(p.name)}',${budget},${p.hourly_rate||0},${hours})">Изменить</button>
+      </div>
+    </div>`
+  }).join('')
+}
+
+// ── Open finance modal ──
+function openFinanceModal(projId, projName, budget, rate, hours) {
+  g('fin-modal-proj-id').value = projId
+  g('fin-modal-proj-name').textContent = projName
+  g('fin-budget-inp').value = budget || ''
+  g('fin-rate-inp').value = rate || ''
+  g('fpv-hours').textContent = hours || 0
+  _finUpdatePreview()
+  g('modal-finance').classList.add('open')
+  setTimeout(() => g('fin-budget-inp').focus(), 100)
+  // Live preview
+  g('fin-budget-inp').oninput = _finUpdatePreview
+  g('fin-rate-inp').oninput   = _finUpdatePreview
+}
+
+function _finUpdatePreview() {
+  const budget = parseInt(g('fin-budget-inp').value) || 0
+  const rate   = parseInt(g('fin-rate-inp').value)   || 0
+  const hours  = parseFloat(g('fpv-hours').textContent) || 0
+  const cost   = Math.round(rate * hours)
+  const margin = budget - cost
+  const preview = g('fin-pnl-preview')
+  if (preview) preview.style.display = budget > 0 ? 'block' : 'none'
+  const marginEl = g('fpv-margin')
+  if (g('fpv-budget')) g('fpv-budget').textContent = fmtM(budget) + ' сум'
+  if (g('fpv-cost'))   g('fpv-cost').textContent   = cost > 0 ? fmtM(cost) + ' сум' : '—'
+  if (marginEl) {
+    marginEl.textContent = budget > 0 && cost > 0 ? (margin >= 0 ? '+' : '') + fmtM(margin) + ' сум' : '—'
+    marginEl.style.color = margin >= 0 ? 'var(--green)' : 'var(--red)'
+  }
+}
+
+async function saveFinanceSettings() {
+  const projId = g('fin-modal-proj-id').value
+  const budget = parseInt(g('fin-budget-inp').value) || 0
+  const rate   = parseInt(g('fin-rate-inp').value)   || 0
+  try {
+    await sb.from('projects').update({ monthly_budget: budget, hourly_rate: rate }).eq('id', projId)
+    const p = _allProjects.find(x => x.id === projId)
+    if (p) { p.monthly_budget = budget; p.hourly_rate = rate }
+  } catch(e) {
+    console.warn('Save finance failed (columns may not exist):', e.message)
+    alert('Ошибка: ' + e.message + '\n\nВыполни SQL из блока «Финансы» на дашборде.')
+  }
+  closeModal('modal-finance')
+  renderFinance()
+  showAlertToast('💰', 'Финансы обновлены', 'P&L пересчитан')
+}
+
+// ── ROI block in Performance report ──
+async function renderROIBlock() {
+  if (!currentProject) return
+  const sec = g('sec-roi')
+  const content = g('roi-block-content')
+  if (!sec || !content) return
+
+  const budget = currentProject.monthly_budget || 0
+  if (!budget) { sec.style.display = 'none'; return }
+
+  // Get extra revenue from report summary
+  const summary = currentReport?.summary
+  if (!summary) { sec.style.display = 'none'; return }
+
+  const extraRevenue = summary.extra_revenue || 0   // from runAnalysis
+  const dRD = summary.d_rev_per_day || 0
+  const dDays = summary.d_days || 30
+  const totalRevPeriod = Math.round(dRD * dDays)
+
+  const rate = currentProject.hourly_rate || 0
+  const mins = _finTaskHours[currentProject.id] || 0
+  const hours = Math.round(mins / 60 * 10) / 10
+  const agencyCost = Math.round(rate * hours) || budget  // fallback to budget if no time-tracking
+
+  const roi = agencyCost > 0 ? Math.round((extraRevenue / agencyCost) * 100) : null
+  const roiColor = roi === null ? 'var(--txt3)' : roi >= 100 ? 'var(--green)' : roi >= 0 ? 'var(--amber)' : 'var(--red)'
+
+  sec.style.display = 'block'
+  content.innerHTML = `<div class="roi-card">
+    <div class="roi-cell">
+      <div class="roi-val" style="color:var(--txt);">${fmtM(budget)} <span style="font-size:13px;color:var(--txt3);">сум</span></div>
+      <div class="roi-lbl">Бюджет агентства / мес</div>
+    </div>
+    <div class="roi-cell">
+      <div class="roi-val" style="color:var(--cyan);">${fmtM(totalRevPeriod)} <span style="font-size:13px;color:var(--txt3);">сум</span></div>
+      <div class="roi-lbl">Выручка за период</div>
+    </div>
+    <div class="roi-cell">
+      <div class="roi-val" style="color:${extraRevenue >= 0 ? 'var(--green)' : 'var(--red)'};">${extraRevenue >= 0 ? '+' : ''}${fmtM(Math.round(extraRevenue))} <span style="font-size:13px;">сум</span></div>
+      <div class="roi-lbl">Доп. выручка vs Период 1</div>
+    </div>
+    <div class="roi-cell roi-main">
+      <div class="roi-val" style="color:${roiColor};">${roi !== null ? roi + '%' : '—'}</div>
+      <div class="roi-lbl">ROI инвестиций в агентство</div>
+      ${roi !== null && roi >= 100 ? '<div style="font-size:10px;color:var(--green);margin-top:6px;font-family:Manrope,sans-serif;">Инвестиции окупились ✓</div>' : ''}
+    </div>
+  </div>`
 }
 
 // ══════════════════════════════════════════════
@@ -27422,6 +27763,201 @@ window.switchPassportTab = function(tab, btn) {
 })();
 </script>
 <style id="dtr-history-mckinsey">
+/* ── PHASE 5: FINANCIAL MODULE ── */
+.fin-mrr-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.fin-mrr-card {
+  background: var(--bg3);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-md);
+  padding: 18px 20px;
+  transition: border-color .15s;
+}
+.fin-mrr-card:hover { border-color: var(--brd2); }
+.fin-mrr-val {
+  font-family: Manrope, sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  color: var(--txt);
+  margin-bottom: 5px;
+  line-height: 1;
+}
+.fin-mrr-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--txt3);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.fin-sql-hint {
+  padding: 9px 14px;
+  background: rgba(245,158,11,.04);
+  border: 1px solid rgba(245,158,11,.12);
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  color: rgba(245,158,11,.5);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.fin-sql-hint code { color: rgba(245,158,11,.7); }
+.fin-sql-copy {
+  margin-left: auto;
+  background: rgba(245,158,11,.1);
+  border: 1px solid rgba(245,158,11,.2);
+  border-radius: 4px;
+  padding: 3px 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: rgba(245,158,11,.7);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.fin-table-wrap {
+  background: var(--bg3);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+.fin-table-head {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--brd);
+  background: var(--bg4);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--txt3);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  gap: 8px;
+}
+.fin-col-num { width: 100px; text-align: right; flex-shrink: 0; }
+.fin-col-act { width: 80px; flex-shrink: 0; }
+.fin-table-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.035);
+  gap: 8px;
+  transition: background .12s;
+  cursor: default;
+}
+.fin-table-row:last-child { border-bottom: none; }
+.fin-table-row:hover { background: rgba(255,255,255,.02); }
+.fin-row-name {
+  flex: 1.5;
+  min-width: 0;
+}
+.fin-name-text {
+  font-family: Manrope, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--txt);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 3px;
+}
+.fin-name-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--txt3);
+}
+.fin-cell {
+  width: 100px;
+  text-align: right;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--txt2);
+  flex-shrink: 0;
+}
+.fin-cell.fin-budget { color: var(--txt); font-weight: 600; }
+.fin-cell.fin-cost { color: var(--red); }
+.fin-cell.fin-margin-pos { color: var(--green); font-weight: 600; }
+.fin-cell.fin-margin-neg { color: var(--red); font-weight: 600; }
+.fin-margin-bar-wrap {
+  width: 100px;
+  flex-shrink: 0;
+  text-align: right;
+}
+.fin-margin-bar-track {
+  height: 3px;
+  background: var(--bg5);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 5px;
+}
+.fin-margin-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width .5s ease;
+}
+.fin-status-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  width: 100px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.fsb-profit   { background: rgba(74,222,128,.1);  color: var(--green); }
+.fsb-upsell   { background: rgba(34,211,238,.1);  color: var(--cyan); }
+.fsb-risk     { background: rgba(248,113,113,.1); color: var(--red); }
+.fsb-zero     { background: var(--bg4);            color: var(--txt3); }
+.fin-edit-btn {
+  width: 80px;
+  display: flex;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+/* Finance modal P&L preview */
+.fin-pnl-preview {
+  background: var(--bg4);
+  border: 1px solid var(--brd);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-top: 14px;
+  margin-bottom: 4px;
+}
+.fin-pnl-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: Manrope, sans-serif;
+  font-size: 12px;
+  color: var(--txt2);
+  margin-bottom: 6px;
+}
+.fin-pnl-row:last-child { margin-bottom: 0; }
+.fin-pnl-sep { height: 1px; background: var(--brd); margin: 8px 0; }
+/* ROI block in report */
+.roi-card {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr) 1.5fr;
+  gap: 12px;
+}
+.roi-cell {
+  background: var(--bg3);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-md);
+  padding: 16px 20px;
+}
+.roi-cell.roi-main { background: rgba(74,222,128,.06); border-color: rgba(74,222,128,.2); }
+.roi-val { font-family: Manrope, sans-serif; font-size: 24px; font-weight: 800; letter-spacing: -.04em; line-height: 1; margin-bottom: 5px; }
+.roi-lbl { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--txt3); letter-spacing: .1em; text-transform: uppercase; }
+
 /* ── PHASE 4: AI-БРИФ ПАСПОРТА ── */
 .pai-context-row {
   display: flex;
