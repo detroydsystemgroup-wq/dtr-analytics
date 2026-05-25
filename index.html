@@ -8354,61 +8354,182 @@ canvas {
       <div style="height:60px;"></div>
     </div>
 
-    <!-- ══ FINANCE PANEL ══ -->
+    <!-- ══ FINANCE BI DASHBOARD ══ -->
     <div id="dtab-finance-panel" style="display:none;">
 
-      <!-- MRR Strip -->
-      <div class="fin-mrr-strip" id="fin-mrr-strip">
-        <div class="fin-mrr-card">
-          <div class="fin-mrr-val" id="fin-mrr-total">—</div>
-          <div class="fin-mrr-lbl">MRR агентства</div>
+      <!-- ① AGENCY KPI STRIP -->
+      <div class="bi-kpi-strip" id="bi-kpi-strip">
+        <div class="bi-kpi-card">
+          <div class="bi-kpi-icon" style="background:rgba(74,222,128,.1);color:var(--green);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          </div>
+          <div class="bi-kpi-body">
+            <div class="bi-kpi-val" id="bi-mrr">—</div>
+            <div class="bi-kpi-lbl">MRR Агентства</div>
+            <div class="bi-kpi-sub" id="bi-mrr-sub">— клиентов</div>
+          </div>
         </div>
-        <div class="fin-mrr-card">
-          <div class="fin-mrr-val" id="fin-mrr-margin" style="color:var(--green);">—</div>
-          <div class="fin-mrr-lbl">Средняя маржа</div>
+        <div class="bi-kpi-card">
+          <div class="bi-kpi-icon" style="background:rgba(248,113,113,.1);color:var(--red);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </div>
+          <div class="bi-kpi-body">
+            <div class="bi-kpi-val" id="bi-costs">—</div>
+            <div class="bi-kpi-lbl">Общие расходы</div>
+            <div class="bi-kpi-sub" id="bi-costs-sub">зарплаты + расходы</div>
+          </div>
         </div>
-        <div class="fin-mrr-card">
-          <div class="fin-mrr-val" id="fin-mrr-best">—</div>
-          <div class="fin-mrr-lbl">Лучший клиент</div>
+        <div class="bi-kpi-card bi-kpi-main">
+          <div class="bi-kpi-icon" style="background:rgba(91,95,199,.15);color:var(--a2);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          </div>
+          <div class="bi-kpi-body">
+            <div class="bi-kpi-val" id="bi-profit">—</div>
+            <div class="bi-kpi-lbl">Чистая прибыль</div>
+            <div class="bi-kpi-sub" id="bi-margin-pct">маржинальность —</div>
+          </div>
         </div>
-        <div class="fin-mrr-card">
-          <div class="fin-mrr-val" id="fin-mrr-risk" style="color:var(--red);">—</div>
-          <div class="fin-mrr-lbl">At-Risk клиентов</div>
+        <div class="bi-kpi-card">
+          <div class="bi-kpi-icon" style="background:rgba(34,211,238,.1);color:var(--cyan);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="bi-kpi-body">
+            <div class="bi-kpi-val" id="bi-hours">—</div>
+            <div class="bi-kpi-lbl">Часов отработано</div>
+            <div class="bi-kpi-sub" id="bi-hours-sub">за все проекты</div>
+          </div>
         </div>
       </div>
 
-      <!-- SQL hint — collapsed -->
-      <details style="margin-bottom:14px;">
-        <summary style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);letter-spacing:.06em;cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;padding:8px 12px;background:var(--bg4);border:1px solid var(--brd);border-radius:8px;">
-          <span>▸ SQL — нужно выполнить один раз в Supabase Dashboard</span>
+      <!-- ② MAIN CONTENT: Segments + Projects -->
+      <div class="bi-main-layout">
+
+        <!-- LEFT: Segment sidebar -->
+        <div class="bi-sidebar">
+          <div class="bi-sidebar-label">Сегменты</div>
+          <div class="bi-seg-list" id="bi-seg-list">
+            <button class="bi-seg-btn bi-seg-active" data-seg="all" onclick="biSetSegment('all',this)">
+              <span class="bi-seg-icon">📋</span>
+              <span class="bi-seg-name">Все проекты</span>
+              <span class="bi-seg-count" id="bsc-all">0</span>
+            </button>
+            <button class="bi-seg-btn" data-seg="profit" onclick="biSetSegment('profit',this)">
+              <span class="bi-seg-icon">🏆</span>
+              <span class="bi-seg-name">Самые выгодные</span>
+              <span class="bi-seg-count" id="bsc-profit">0</span>
+            </button>
+            <button class="bi-seg-btn" data-seg="efficient" onclick="biSetSegment('efficient',this)">
+              <span class="bi-seg-icon">⚡</span>
+              <span class="bi-seg-name">Мин. часов</span>
+              <span class="bi-seg-count" id="bsc-efficient">0</span>
+            </button>
+            <button class="bi-seg-btn" data-seg="atrisk" onclick="biSetSegment('atrisk',this)">
+              <span class="bi-seg-icon">⚠️</span>
+              <span class="bi-seg-name">At-Risk</span>
+              <span class="bi-seg-count" id="bsc-atrisk">0</span>
+            </button>
+            <button class="bi-seg-btn" data-seg="heavy" onclick="biSetSegment('heavy',this)">
+              <span class="bi-seg-icon">⏰</span>
+              <span class="bi-seg-name">Затратные</span>
+              <span class="bi-seg-count" id="bsc-heavy">0</span>
+            </button>
+            <button class="bi-seg-btn" data-seg="nobudget" onclick="biSetSegment('nobudget',this)">
+              <span class="bi-seg-icon">💡</span>
+              <span class="bi-seg-name">Без бюджета</span>
+              <span class="bi-seg-count" id="bsc-nobudget">0</span>
+            </button>
+          </div>
+
+          <!-- Agency cost donut -->
+          <div class="bi-sidebar-label" style="margin-top:20px;">Структура расходов</div>
+          <div style="position:relative;height:160px;margin-bottom:8px;">
+            <canvas id="cFinDonut"></canvas>
+          </div>
+          <div id="bi-donut-legend" style="display:flex;flex-direction:column;gap:5px;"></div>
+        </div>
+
+        <!-- RIGHT: Project table + chart -->
+        <div class="bi-content">
+
+          <!-- Toolbar -->
+          <div class="bi-toolbar">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt3);letter-spacing:.06em;" id="bi-segment-label">ВСЕ ПРОЕКТЫ</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <select id="bi-sort-sel" onchange="biRenderTable()" style="background:var(--bg4);border:1px solid var(--brd);border-radius:6px;padding:5px 10px;color:var(--txt);font-family:Manrope,sans-serif;font-size:11px;outline:none;">
+                <option value="margin_pct">По марже %</option>
+                <option value="budget">По бюджету</option>
+                <option value="profit">По прибыли</option>
+                <option value="hours">По часам</option>
+                <option value="name">По имени</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Bar chart: margin % per project -->
+          <div class="bi-chart-wrap" id="bi-bar-wrap">
+            <div class="bi-chart-title">Маржинальность по проектам (%)</div>
+            <div style="position:relative;height:120px;">
+              <canvas id="cFinBar"></canvas>
+            </div>
+          </div>
+
+          <!-- Projects table -->
+          <div class="bi-proj-table">
+            <div class="bi-proj-thead">
+              <div class="bi-th" style="flex:1.8;">Проект</div>
+              <div class="bi-th bi-th-num">Бюджет</div>
+              <div class="bi-th bi-th-num">Расходы</div>
+              <div class="bi-th bi-th-num">Прибыль</div>
+              <div class="bi-th bi-th-num">Маржа</div>
+              <div class="bi-th bi-th-num">Часы</div>
+              <div class="bi-th" style="width:90px;"></div>
+            </div>
+            <div id="bi-proj-tbody"></div>
+          </div>
+
+          <!-- Project detail panel (slide-in) -->
+          <div class="bi-detail-panel" id="bi-detail-panel" style="display:none;">
+            <div class="bi-detail-header">
+              <div>
+                <div class="bi-detail-name" id="bi-detail-name">—</div>
+                <div class="bi-detail-cat" id="bi-detail-cat">—</div>
+              </div>
+              <button class="btn-ghost" style="font-size:11px;" onclick="biCloseDetail()">✕ Закрыть</button>
+            </div>
+
+            <!-- Detail KPIs -->
+            <div class="bi-detail-kpis" id="bi-detail-kpis"></div>
+
+            <!-- Cost breakdown -->
+            <div class="bi-detail-section-label">Разбивка расходов</div>
+            <div id="bi-detail-costs"></div>
+
+            <!-- Edit button -->
+            <button class="btn-primary" style="width:100%;margin-top:14px;" id="bi-detail-edit-btn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Редактировать P&L
+            </button>
+          </div>
+
+          <!-- Empty state -->
+          <div id="bi-empty" style="display:none;text-align:center;padding:48px 24px;">
+            <div style="font-size:36px;margin-bottom:12px;">💰</div>
+            <div style="font-family:Manrope,sans-serif;font-size:14px;font-weight:600;color:var(--txt);margin-bottom:6px;">Задай бюджеты клиентов</div>
+            <div style="font-size:12px;color:var(--txt3);">Нажми «💰 Задать» напротив любого проекта</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SQL hint -->
+      <details style="margin-top:16px;">
+        <summary style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;padding:8px 12px;background:var(--bg4);border:1px solid var(--brd);border-radius:8px;">
+          <span>▸ SQL — дополнительные колонки для полного P&L</span>
         </summary>
-        <div class="fin-sql-hint" style="margin-top:6px;border-radius:8px;">
-          <code>ALTER TABLE projects ADD COLUMN IF NOT EXISTS monthly_budget bigint DEFAULT 0;<br>ALTER TABLE projects ADD COLUMN IF NOT EXISTS hourly_rate integer DEFAULT 0;</code>
-          <button onclick="navigator.clipboard.writeText('ALTER TABLE projects ADD COLUMN IF NOT EXISTS monthly_budget bigint DEFAULT 0;\nALTER TABLE projects ADD COLUMN IF NOT EXISTS hourly_rate integer DEFAULT 0;').then(()=>{this.textContent='✓ Скопировано';setTimeout(()=>this.textContent='Копировать SQL',1500)})" class="fin-sql-copy">Копировать SQL</button>
+        <div class="fin-sql-hint" style="margin-top:6px;">
+          <code>ALTER TABLE projects ADD COLUMN IF NOT EXISTS contractors jsonb DEFAULT '[]';<br>ALTER TABLE projects ADD COLUMN IF NOT EXISTS extra_expenses jsonb DEFAULT '[]';<br>ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;</code>
+          <button onclick="navigator.clipboard.writeText('ALTER TABLE projects ADD COLUMN IF NOT EXISTS contractors jsonb DEFAULT \'[]\';\nALTER TABLE projects ADD COLUMN IF NOT EXISTS extra_expenses jsonb DEFAULT \'[]\';\nALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;').then(()=>{this.textContent='✓';setTimeout(()=>this.textContent='SQL',1500)})" class="fin-sql-copy">SQL</button>
         </div>
       </details>
-
-      <!-- P&L Table -->
-      <div class="fin-table-wrap">
-        <div class="fin-table-head">
-          <div style="flex:1.5">Клиент</div>
-          <div class="fin-col-num">Бюджет/мес</div>
-          <div class="fin-col-num">Часов</div>
-          <div class="fin-col-num">Себест.</div>
-          <div class="fin-col-num">Маржа</div>
-          <div class="fin-col-num">Марж. %</div>
-          <div class="fin-col-num">Статус</div>
-          <div class="fin-col-act"></div>
-        </div>
-        <div id="fin-table-body"></div>
-      </div>
-
-      <!-- Empty state -->
-      <div id="fin-empty" style="display:none;text-align:center;padding:48px 24px;">
-        <div style="font-size:36px;margin-bottom:12px;">💰</div>
-        <div style="font-family:Manrope,sans-serif;font-size:14px;font-weight:600;color:var(--txt);margin-bottom:6px;">Задай бюджеты клиентов</div>
-        <div style="font-size:12px;color:var(--txt3);">Нажми «Изменить» на любом проекте — введи бюджет и ставку часа</div>
-      </div>
 
     </div>
 
@@ -8417,49 +8538,82 @@ canvas {
 </div>
 
 
-<!-- MODAL: Finance — set project budget & rate (Phase 5) -->
+<!-- MODAL: Finance — full P&L editor -->
 <div class="modal-overlay" id="modal-finance">
-  <div class="modal" style="max-width:420px;">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+  <div class="modal" style="max-width:600px;max-height:90vh;overflow-y:auto;">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;position:sticky;top:0;background:var(--bg2);z-index:2;padding-bottom:10px;border-bottom:1px solid var(--brd);">
       <div style="width:38px;height:38px;border-radius:10px;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;">💰</div>
-      <div class="modal-title" style="margin-bottom:0;">Финансы проекта</div>
-    </div>
-    <div style="font-size:11px;color:var(--txt3);font-family:Manrope,sans-serif;margin-bottom:16px;" id="fin-modal-proj-name">—</div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-      <div class="field">
-        <label>Бюджет клиента / мес <span style="color:var(--txt3);font-size:9px;">(сум)</span></label>
-        <input type="number" id="fin-budget-inp" placeholder="2 500 000" min="0">
-      </div>
-      <div class="field">
-        <label>Ставка часа <span style="color:var(--txt3);font-size:9px;">(сум/час)</span></label>
-        <input type="number" id="fin-rate-inp" placeholder="50 000" min="0">
-      </div>
-    </div>
-
-    <!-- Live P&L preview -->
-    <div class="fin-pnl-preview" id="fin-pnl-preview" style="display:none;">
-      <div class="fin-pnl-row">
-        <span>Бюджет</span>
-        <span id="fpv-budget" style="color:var(--green);">—</span>
-      </div>
-      <div class="fin-pnl-row">
-        <span>Себестоимость (est. <span id="fpv-hours">0</span>ч × ставка)</span>
-        <span id="fpv-cost" style="color:var(--red);">—</span>
-      </div>
-      <div class="fin-pnl-sep"></div>
-      <div class="fin-pnl-row" style="font-weight:700;">
-        <span>Маржа</span>
-        <span id="fpv-margin">—</span>
+      <div>
+        <div class="modal-title" style="margin-bottom:0;">Финансы проекта</div>
+        <div style="font-size:11px;color:var(--txt3);font-family:Manrope,sans-serif;margin-top:2px;" id="fin-modal-proj-name">—</div>
       </div>
     </div>
 
     <input type="hidden" id="fin-modal-proj-id" value="">
-    <div class="modal-footer">
+
+    <!-- ① ДОХОД -->
+    <div class="fin-section">
+      <div class="fin-section-label">💵 Доход от клиента</div>
+      <div class="field" style="margin-bottom:0;">
+        <label>Бюджет клиента / мес <span style="color:var(--txt3);font-size:9px;">(сум)</span></label>
+        <input type="number" id="fin-budget-inp" placeholder="12 000 000" min="0" oninput="finRecalc()">
+      </div>
+    </div>
+
+    <!-- ② ЗАРПЛАТЫ ПОДРЯДЧИКОВ -->
+    <div class="fin-section">
+      <div class="fin-section-label" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>👥 Зарплаты подрядчиков</span>
+        <button class="task-add-btn" onclick="finAddContractor()" style="border-style:dashed;">+ Добавить</button>
+      </div>
+      <div id="fin-contractors-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+    </div>
+
+    <!-- ③ ДОПОЛНИТЕЛЬНЫЕ РАСХОДЫ -->
+    <div class="fin-section">
+      <div class="fin-section-label" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>📎 Доп. расходы</span>
+        <button class="task-add-btn" onclick="finAddExpense()" style="border-style:dashed;">+ Добавить</button>
+      </div>
+      <div id="fin-expenses-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+    </div>
+
+    <!-- ④ ОПЕРАЦИОННЫЕ РАСХОДЫ -->
+    <div class="fin-section">
+      <div class="fin-section-label">⚙️ Операционные расходы</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="field" style="margin-bottom:0;">
+          <label>Сумма / мес <span style="color:var(--txt3);font-size:9px;">(сум)</span></label>
+          <input type="number" id="fin-opex-inp" placeholder="500 000" min="0" oninput="finRecalc()">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>Потраченные часы <span style="color:var(--txt3);font-size:9px;">(авто из задач)</span></label>
+          <input type="number" id="fin-hours-inp" placeholder="0" min="0" oninput="finRecalc()" style="background:rgba(91,95,199,.06);border-color:rgba(91,95,199,.2);">
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑤ P&L ИТОГ -->
+    <div class="fin-pnl-preview" id="fin-pnl-preview" style="display:block;margin-top:0;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--a2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">P&L — расчёт в реальном времени</div>
+      <div class="fin-pnl-row"><span>Доход (бюджет)</span><span id="fpv-income" style="color:var(--green);">—</span></div>
+      <div class="fin-pnl-row" style="font-size:11px;color:var(--txt3);"><span>  ↳ Зарплаты</span><span id="fpv-salaries">—</span></div>
+      <div class="fin-pnl-row" style="font-size:11px;color:var(--txt3);"><span>  ↳ Доп. расходы</span><span id="fpv-extras">—</span></div>
+      <div class="fin-pnl-row" style="font-size:11px;color:var(--txt3);"><span>  ↳ Операционные</span><span id="fpv-opex">—</span></div>
+      <div class="fin-pnl-sep"></div>
+      <div class="fin-pnl-row"><span>Итого расходы</span><span id="fpv-total-cost" style="color:var(--red);">—</span></div>
+      <div class="fin-pnl-sep"></div>
+      <div class="fin-pnl-row" style="font-weight:800;font-size:14px;"><span>Маржа</span><span id="fpv-margin">—</span></div>
+      <div class="fin-pnl-row" style="margin-top:4px;"><span>Маржинальность</span><span id="fpv-margin-pct" style="font-weight:700;">—</span></div>
+    </div>
+
+    <div class="modal-footer" style="margin-top:16px;position:sticky;bottom:0;background:var(--bg2);padding-top:12px;border-top:1px solid var(--brd);">
       <button class="btn-ghost" onclick="closeModal('modal-finance')">Отмена</button>
       <button class="btn-primary" style="flex:1;" onclick="saveFinanceSettings()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-        Сохранить
+        Сохранить P&L
       </button>
     </div>
   </div>
@@ -8629,6 +8783,12 @@ canvas {
       </button>
     </div>
     <div class="pp-tabs-actions">
+      <!-- Global timer badge — shows when timer is running -->
+      <div class="global-timer-badge agency-only" id="global-timer-badge" onclick="stopActiveTimer()">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        <span id="global-timer-display">00:00</span>
+        <span id="global-timer-task" style="opacity:.7;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+      </div>
       <button class="tg-connect-btn agency-only" onclick="openSQLSetup()" title="SQL настройка БД" style="color:rgba(245,158,11,.7);border-color:rgba(245,158,11,.2);background:rgba(245,158,11,.05);" id="btn-sql-setup">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/></svg>
         SQL Setup
@@ -13991,156 +14151,515 @@ function renderForecastKPIGap(forecastRD) {
 let _finTaskHours = {}   // { project_id: total_minutes }
 
 // ── Load finance tab ──
+// ══════════════════════════════════════════════
+// FINANCE BI DASHBOARD ENGINE
+// ══════════════════════════════════════════════
+let _biSegment  = 'all'
+let _biAllRows  = []
+let _biChartBar = null
+let _biChartDonut = null
+let _biSelectedId = null
+
+// ── Compute P&L row for one project ──
+function _biComputeRow(p) {
+  const budget   = p.monthly_budget || 0
+  const salaries = (p.contractors || []).reduce((s,c) => s+(parseInt(c.amount)||0), 0)
+  const extras   = (p.extra_expenses || []).reduce((s,e) => s+(parseInt(e.amount)||0), 0)
+  const opex     = p.operational_cost || 0
+  const mins     = _finTaskHours[p.id] || 0
+  const hours    = Math.round(mins / 60 * 10) / 10
+  const totalCost= salaries + extras + opex
+  const profit   = budget > 0 ? budget - totalCost : null
+  const marginPct= budget > 0 && totalCost >= 0 ? Math.round(((budget-totalCost)/budget)*100) : (budget > 0 ? 100 : null)
+  const hasBudget= budget > 0
+  return { p, budget, salaries, extras, opex, hours, totalCost, profit, marginPct, hasBudget }
+}
+
+// ── Segment filter ──
+function _biFilter(rows) {
+  switch(_biSegment) {
+    case 'profit':    return [...rows].filter(r=>r.hasBudget).sort((a,b)=>(b.marginPct||0)-(a.marginPct||0)).slice(0,5)
+    case 'efficient': return [...rows].filter(r=>r.hasBudget && r.hours > 0).sort((a,b)=>a.hours-b.hours)
+    case 'atrisk':    return rows.filter(r=>r.hasBudget && r.marginPct!==null && r.marginPct<20)
+    case 'heavy':     return [...rows].filter(r=>r.hours>0).sort((a,b)=>b.hours-a.hours)
+    case 'nobudget':  return rows.filter(r=>!r.hasBudget)
+    default:          return rows
+  }
+}
+
+const _biSegLabels = {
+  all:'ВСЕ ПРОЕКТЫ', profit:'🏆 ТОП ПО МАРЖЕ', efficient:'⚡ МИН. ЧАСОВ',
+  atrisk:'⚠️ AT-RISK', heavy:'⏰ ЗАТРАТНЫЕ', nobudget:'💡 БЕЗ БЮДЖЕТА'
+}
+
+function biSetSegment(seg, btn) {
+  _biSegment = seg
+  document.querySelectorAll('.bi-seg-btn').forEach(b=>b.classList.remove('bi-seg-active'))
+  btn.classList.add('bi-seg-active')
+  const lbl = g('bi-segment-label')
+  if (lbl) lbl.textContent = _biSegLabels[seg] || seg.toUpperCase()
+  biRenderTable()
+  biCloseDetail()
+}
+
 async function loadFinance() {
   if (!_allProjects.length) await loadProjects()
-
-  // Load time logs for all projects in parallel (Phase 2 task time)
-  const ids = _allProjects.map(p => p.id)
+  const ids = _allProjects.map(p=>p.id)
   _finTaskHours = {}
   try {
-    const { data: tasks } = await sb.from('stage_tasks')
-      .select('project_id, time_logged')
-      .in('project_id', ids)
-    ;(tasks || []).forEach(t => {
-      if (!_finTaskHours[t.project_id]) _finTaskHours[t.project_id] = 0
-      _finTaskHours[t.project_id] += (t.time_logged || 0)
-    })
-  } catch(e) { /* table may not have time_logged yet */ }
-
+    const {data:tasks} = await sb.from('stage_tasks').select('project_id,time_logged').in('project_id',ids)
+    ;(tasks||[]).forEach(t=>{ _finTaskHours[t.project_id]=(_finTaskHours[t.project_id]||0)+(t.time_logged||0) })
+  } catch(e){}
   renderFinance()
 }
 
 function renderFinance() {
-  const body = g('fin-table-body')
-  const empty = g('fin-empty')
-  if (!body) return
+  const projects = _allProjects.filter(p=>p.status!=='archived')
+  _biAllRows = projects.map(_biComputeRow)
 
-  const projects = _allProjects.filter(p => p.status !== 'archived')
+  // ── Agency KPI strip ──
+  const withBudget = _biAllRows.filter(r=>r.hasBudget)
+  const totalMRR   = withBudget.reduce((s,r)=>s+r.budget,0)
+  const totalCosts = withBudget.reduce((s,r)=>s+r.totalCost,0)
+  const totalProfit= totalMRR - totalCosts
+  const agencyMargin = totalMRR > 0 ? Math.round((totalProfit/totalMRR)*100) : 0
+  const totalHours = _biAllRows.reduce((s,r)=>s+r.hours,0)
 
-  if (!projects.length) {
-    body.innerHTML = ''
-    if (empty) empty.style.display = 'block'
-    g('fin-mrr-total').textContent = '—'
-    g('fin-mrr-margin').textContent = '—'
-    g('fin-mrr-best').textContent = '—'
-    g('fin-mrr-risk').textContent = '—'
-    return
+  const s=(id,v)=>{const el=g(id);if(el)el.textContent=v}
+  s('bi-mrr',          totalMRR>0 ? fmtM(totalMRR)+' сум' : '—')
+  s('bi-mrr-sub',      withBudget.length + ' клиент' + (withBudget.length===1?'':'ов'))
+  s('bi-costs',        totalCosts>0 ? fmtM(totalCosts)+' сум' : '—')
+  s('bi-costs-sub',    'зарплаты + расходы + opex')
+  s('bi-profit',       totalMRR>0 ? (totalProfit>=0?'+':'')+fmtM(totalProfit)+' сум' : '—')
+  s('bi-margin-pct',   totalMRR>0 ? 'маржинальность '+agencyMargin+'%' : 'задай бюджеты')
+  s('bi-hours',        totalHours > 0 ? totalHours+'ч' : '—')
+  s('bi-hours-sub',    'по всем проектам')
+
+  const profitEl=g('bi-profit')
+  if(profitEl && totalMRR>0) profitEl.style.color=totalProfit>=0?'var(--green)':'var(--red)'
+
+  // ── Segment counts ──
+  const sc=(id,rows)=>{ const el=g(id); if(el) el.textContent=rows.length }
+  sc('bsc-all',      _biAllRows)
+  sc('bsc-profit',   _biAllRows.filter(r=>r.hasBudget&&r.marginPct>=60))
+  sc('bsc-efficient',_biAllRows.filter(r=>r.hasBudget&&r.hours>0))
+  sc('bsc-atrisk',   _biAllRows.filter(r=>r.hasBudget&&r.marginPct!==null&&r.marginPct<20))
+  sc('bsc-heavy',    _biAllRows.filter(r=>r.hours>0))
+  sc('bsc-nobudget', _biAllRows.filter(r=>!r.hasBudget))
+
+  // ── Donut: agency cost structure ──
+  renderBIDonut(withBudget)
+
+  // ── Table ──
+  biRenderTable()
+}
+
+function biRenderTable() {
+  const sort   = g('bi-sort-sel')?.value || 'margin_pct'
+  let rows     = _biFilter(_biAllRows)
+
+  // Sort
+  rows = [...rows].sort((a,b)=>{
+    if(sort==='margin_pct') return (b.marginPct||0)-(a.marginPct||0)
+    if(sort==='budget')     return b.budget-a.budget
+    if(sort==='profit')     return (b.profit||0)-(a.profit||0)
+    if(sort==='hours')      return b.hours-a.hours
+    if(sort==='name')       return a.p.name.localeCompare(b.p.name)
+    return 0
+  })
+
+  const tbody   = g('bi-proj-tbody')
+  const empty   = g('bi-empty')
+  const barWrap = g('bi-bar-wrap')
+
+  if(!tbody) return
+  if(!rows.length) {
+    tbody.innerHTML=''; if(empty) empty.style.display='block'
+    if(barWrap) barWrap.style.display='none'; return
   }
-  if (empty) empty.style.display = 'none'
+  if(empty) empty.style.display='none'
 
-  // Compute P&L per project — ALL projects, not just those with budget
-  const rows = projects.map(p => {
-    const budget = p.monthly_budget || 0
-    const rate   = p.hourly_rate || 0
-    const mins   = _finTaskHours[p.id] || 0
-    const hours  = Math.round(mins / 60 * 10) / 10
-    const cost   = Math.round(rate * hours)
-    const margin = budget > 0 ? budget - cost : null
-    const marginPct = budget > 0 ? Math.round(((budget - cost) / budget) * 100) : null
-    return { p, budget, rate, hours, cost, margin, marginPct }
-  }).sort((a, b) => (b.marginPct || -999) - (a.marginPct || -999))
+  // Bar chart (only for ≥2 rows with budget)
+  const barRows = rows.filter(r=>r.hasBudget)
+  if(barRows.length>=2 && barWrap) {
+    barWrap.style.display='block'
+    renderBIBarChart(barRows)
+  } else if(barWrap) { barWrap.style.display='none' }
 
-  // MRR strip — only from projects with budget
-  const budgetRows = rows.filter(r => r.budget > 0)
-  const totalMRR   = budgetRows.reduce((s, r) => s + r.budget, 0)
-  const avgMargin  = budgetRows.length ? Math.round(budgetRows.reduce((s,r) => s + (r.marginPct||0), 0) / budgetRows.length) : 0
-  const best       = budgetRows[0]
-  const atRisk     = budgetRows.filter(r => r.marginPct !== null && r.marginPct < 20)
+  tbody.innerHTML = rows.map(r=>{
+    const {p,budget,totalCost,profit,marginPct,hours,hasBudget} = r
+    const isSelected = p.id === _biSelectedId
 
-  g('fin-mrr-total').textContent = totalMRR ? fmtM(totalMRR) + ' сум' : '—'
-  g('fin-mrr-margin').textContent = budgetRows.length ? avgMargin + '%' : '—'
-  g('fin-mrr-best').textContent = best ? best.p.name.slice(0, 14) : '—'
-  g('fin-mrr-risk').textContent = atRisk.length || '—'
-
-  // Table rows — ALL projects
-  body.innerHTML = rows.map(r => {
-    const { p, budget, hours, cost, margin, marginPct } = r
-    const noBudget = budget === 0
-
-    let statusCls = 'fsb-zero', statusTxt = '— нет бюджета'
-    if (!noBudget) {
-      const isRisk   = marginPct !== null && marginPct < 20
-      const isUpsell = marginPct !== null && marginPct >= 60
-      const isProfit = marginPct !== null && marginPct >= 20 && marginPct < 60
-      if (isUpsell)      { statusCls = 'fsb-upsell'; statusTxt = '🚀 Апселл' }
-      else if (isProfit) { statusCls = 'fsb-profit'; statusTxt = '✅ Прибыль' }
-      else if (isRisk)   { statusCls = 'fsb-risk';   statusTxt = '⚠️ At-Risk' }
-      else                { statusCls = 'fsb-zero';  statusTxt = '— нет данных' }
+    let mColor='var(--txt3)', mBg='var(--bg5)'
+    if(marginPct!==null) {
+      if(marginPct>=60){mColor='var(--cyan)';mBg='rgba(34,211,238,.12)'}
+      else if(marginPct>=20){mColor='var(--green)';mBg='rgba(74,222,128,.1)'}
+      else{mColor='var(--red)';mBg='rgba(248,113,113,.1)'}
     }
 
-    const barColor = (marginPct||0) < 20 ? 'var(--red)' : (marginPct||0) >= 60 ? 'var(--cyan)' : 'var(--green)'
-    const barW = Math.max(0, Math.min(100, marginPct || 0))
+    let badgeHtml=''
+    if(!hasBudget) badgeHtml=`<span class="bi-badge" style="background:var(--bg4);color:var(--txt3);">нет бюджета</span>`
+    else if(marginPct>=60) badgeHtml=`<span class="bi-badge" style="background:rgba(34,211,238,.1);color:var(--cyan);">🚀 Апселл</span>`
+    else if(marginPct<20)  badgeHtml=`<span class="bi-badge" style="background:rgba(248,113,113,.1);color:var(--red);">⚠️ At-Risk</span>`
 
-    return `<div class="fin-table-row${noBudget ? ' fin-row-nobdg' : ''}">
-      <div class="fin-row-name">
-        <div class="fin-name-text" title="${esc(p.name)}">${esc(p.name)}</div>
-        <div class="fin-name-meta">${p.category||'—'} · ${hours}ч logged</div>
+    return `<div class="bi-proj-row${isSelected?' bi-row-selected':''}" onclick="biSelectProject('${p.id}')">
+      <div class="bi-proj-info">
+        <div class="bi-proj-name">${esc(p.name)}</div>
+        <div class="bi-proj-meta">
+          <span>${esc(p.category||'—')}</span>
+          ${badgeHtml}
+        </div>
       </div>
-      <div class="fin-cell fin-budget">${noBudget ? '<span style="color:var(--txt3);">не задан</span>' : fmtM(budget)}</div>
-      <div class="fin-cell">${hours || '—'}</div>
-      <div class="fin-cell fin-cost">${!noBudget && cost > 0 ? fmtM(cost) : '—'}</div>
-      <div class="fin-cell ${margin !== null && margin >= 0 ? 'fin-margin-pos' : margin !== null ? 'fin-margin-neg' : ''}">${margin !== null ? (margin >= 0 ? '+' : '') + fmtM(margin) : '—'}</div>
-      <div class="fin-margin-bar-wrap">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:${barColor};">${marginPct !== null ? marginPct + '%' : '—'}</div>
-        <div class="fin-margin-bar-track"><div class="fin-margin-bar-fill" style="width:${barW}%;background:${barColor};"></div></div>
+      <div class="bi-cell${!hasBudget?' bi-cell-dim':''}">${hasBudget?fmtM(budget):'—'}</div>
+      <div class="bi-cell${totalCost>0?' bi-cell-neg':' bi-cell-dim'}">${totalCost>0?fmtM(totalCost):'—'}</div>
+      <div class="bi-cell${profit!==null?(profit>=0?' bi-cell-pos':' bi-cell-neg'):' bi-cell-dim'}">${profit!==null?(profit>=0?'+':'')+fmtM(profit):'—'}</div>
+      <div class="bi-cell">
+        ${marginPct!==null
+          ? `<span class="bi-margin-chip" style="background:${mBg};color:${mColor};">${marginPct}%</span>`
+          : '<span class="bi-cell-dim">—</span>'}
       </div>
-      <div style="width:100px;flex-shrink:0;"><span class="fin-status-badge ${statusCls}">${statusTxt}</span></div>
-      <div class="fin-edit-btn">
-        <button class="${noBudget ? 'btn-primary' : 'btn-ghost'}" style="font-size:10px;padding:5px 12px;${noBudget ? 'background:var(--a);' : ''}" onclick="openFinanceModal('${p.id}','${esc(p.name)}',${budget},${p.hourly_rate||0},${hours})">
-          ${noBudget ? '💰 Задать' : 'Изменить'}
+      <div class="bi-cell${hours>0?' bi-cell-pos':' bi-cell-dim'}">${hours>0?hours+'ч':'—'}</div>
+      <div class="bi-row-actions">
+        <button class="${!hasBudget?'btn-primary':'btn-ghost'}" style="font-size:10px;padding:4px 10px;${!hasBudget?'background:var(--a);':''}"
+          onclick="event.stopPropagation();openFinanceModal('${p.id}','${esc(p.name)}')">
+          ${!hasBudget?'💰 Задать':'Изменить'}
         </button>
       </div>
     </div>`
   }).join('')
 }
 
-// ── Open finance modal ──
-function openFinanceModal(projId, projName, budget, rate, hours) {
-  g('fin-modal-proj-id').value = projId
-  g('fin-modal-proj-name').textContent = projName
-  g('fin-budget-inp').value = budget || ''
-  g('fin-rate-inp').value = rate || ''
-  g('fpv-hours').textContent = hours || 0
-  _finUpdatePreview()
-  g('modal-finance').classList.add('open')
-  setTimeout(() => g('fin-budget-inp').focus(), 100)
-  // Live preview
-  g('fin-budget-inp').oninput = _finUpdatePreview
-  g('fin-rate-inp').oninput   = _finUpdatePreview
+function biSelectProject(projId) {
+  _biSelectedId = _biSelectedId === projId ? null : projId
+  document.querySelectorAll('.bi-proj-row').forEach(r=>{
+    r.classList.toggle('bi-row-selected', r.getAttribute('onclick')?.includes(projId) && _biSelectedId===projId)
+  })
+  if (!_biSelectedId) { biCloseDetail(); return }
+  const row = _biAllRows.find(r=>r.p.id===projId)
+  if (row) biShowDetail(row)
 }
 
-function _finUpdatePreview() {
-  const budget = parseInt(g('fin-budget-inp').value) || 0
-  const rate   = parseInt(g('fin-rate-inp').value)   || 0
-  const hours  = parseFloat(g('fpv-hours').textContent) || 0
-  const cost   = Math.round(rate * hours)
-  const margin = budget - cost
-  const preview = g('fin-pnl-preview')
-  if (preview) preview.style.display = budget > 0 ? 'block' : 'none'
+function biCloseDetail() {
+  _biSelectedId = null
+  const panel = g('bi-detail-panel')
+  if(panel) panel.style.display='none'
+  document.querySelectorAll('.bi-proj-row').forEach(r=>r.classList.remove('bi-row-selected'))
+}
+
+function biShowDetail(row) {
+  const {p, budget, salaries, extras, opex, totalCost, profit, marginPct, hours} = row
+  const panel = g('bi-detail-panel')
+  if(!panel) return
+  panel.style.display='block'
+
+  g('bi-detail-name').textContent = p.name
+  g('bi-detail-cat').textContent  = (p.category||'—') + (p.status==='archived'?' · Архив':'')
+
+  const mCol = marginPct===null?'var(--txt3)':marginPct>=20?'var(--green)':'var(--red)'
+
+  g('bi-detail-kpis').innerHTML = [
+    {label:'Бюджет/мес', val:budget>0?fmtM(budget)+' сум':'—', color:'var(--txt)'},
+    {label:'Расходы',    val:totalCost>0?fmtM(totalCost)+' сум':'—', color:'var(--red)'},
+    {label:'Прибыль',    val:profit!==null?(profit>=0?'+':'')+fmtM(profit)+' сум':'—', color:profit>=0?'var(--green)':'var(--red)'},
+    {label:'Маржа',      val:marginPct!==null?marginPct+'%':'—', color:mCol},
+  ].map(k=>`<div class="bi-detail-kpi">
+    <div class="bi-detail-kpi-val" style="color:${k.color};">${k.val}</div>
+    <div class="bi-detail-kpi-lbl">${k.label}</div>
+  </div>`).join('')
+
+  const costColors = ['#5b5fc7','#f59e0b','#f87171','#4ade80']
+  const costItems = [
+    {name:'Зарплаты', amount:salaries, color:costColors[0]},
+    {name:'Доп. расходы', amount:extras, color:costColors[1]},
+    {name:'Операционные', amount:opex, color:costColors[2]},
+    {name:'Часов: '+hours+'ч', amount:0, color:costColors[3], suffix:' (время)'},
+  ].filter(c=>c.amount>0||c.name.startsWith('Часов'))
+
+  const maxAmt = Math.max(...costItems.map(c=>c.amount), 1)
+  g('bi-detail-costs').innerHTML = costItems.map(c=>`
+    <div class="bi-cost-row">
+      <div class="bi-cost-name">
+        <span class="bi-cost-dot" style="background:${c.color};"></span>
+        ${esc(c.name)}
+      </div>
+      ${c.amount>0 ? `<div class="bi-cost-bar-wrap">
+        <div class="bi-cost-bar-track">
+          <div class="bi-cost-bar-fill" style="width:${Math.round(c.amount/maxAmt*100)}%;background:${c.color};"></div>
+        </div>
+      </div>` : '<div style="flex:1;"></div>'}
+      <div class="bi-cost-val">${c.amount>0?fmtM(c.amount)+' сум':(c.suffix||'')}</div>
+    </div>`).join('') || '<div style="font-size:12px;color:var(--txt3);padding:8px 0;">Расходы не заданы</div>'
+
+  const editBtn = g('bi-detail-edit-btn')
+  if(editBtn) editBtn.onclick = ()=>openFinanceModal(p.id, p.name)
+
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'})
+}
+
+function renderBIBarChart(rows) {
+  const canvas = g('cFinBar'); if(!canvas) return
+  const labels = rows.map(r=>r.p.name.slice(0,12))
+  const data   = rows.map(r=>r.marginPct||0)
+  const colors = data.map(v=>v>=60?'rgba(34,211,238,.7)':v>=20?'rgba(74,222,128,.7)':'rgba(248,113,113,.7)')
+
+  if(_biChartBar){_biChartBar.destroy();_biChartBar=null}
+  _biChartBar = new Chart(canvas, {
+    type:'bar',
+    data:{ labels, datasets:[{ label:'Маржа %', data, backgroundColor:colors, borderRadius:5, borderSkipped:false }] },
+    options:{
+      responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false},
+        tooltip:{ callbacks:{ label:ctx=>'Маржа: '+ctx.raw+'%' } }
+      },
+      scales:{
+        x:{ ticks:{color:'rgba(255,255,255,.35)',font:{size:9}}, grid:{display:false} },
+        y:{ ticks:{color:'rgba(255,255,255,.35)',font:{size:9},callback:v=>v+'%'}, grid:{color:'rgba(255,255,255,.05)'} }
+      }
+    }
+  })
+}
+
+function renderBIDonut(rows) {
+  const canvas = g('cFinDonut'); if(!canvas) return
+  const totalSalaries = rows.reduce((s,r)=>s+r.salaries,0)
+  const totalExtras   = rows.reduce((s,r)=>s+r.extras,0)
+  const totalOpex     = rows.reduce((s,r)=>s+r.opex,0)
+  const totalProfit   = rows.reduce((s,r)=>s+(r.profit||0),0)
+
+  const items = [
+    {label:'Зарплаты',   val:totalSalaries, color:'#5b5fc7'},
+    {label:'Доп. расх.',  val:totalExtras,   color:'#f59e0b'},
+    {label:'Операц.',    val:totalOpex,     color:'#f87171'},
+    {label:'Прибыль',    val:Math.max(0,totalProfit), color:'#4ade80'},
+  ].filter(i=>i.val>0)
+
+  const legend = g('bi-donut-legend')
+  if(legend) legend.innerHTML = items.map(i=>`
+    <div style="display:flex;align-items:center;gap:6px;font-family:Manrope,sans-serif;font-size:10px;color:var(--txt2);">
+      <span style="width:8px;height:8px;border-radius:2px;background:${i.color};flex-shrink:0;display:inline-block;"></span>
+      <span>${i.label}</span>
+      <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--txt3);">${fmtM(i.val)}</span>
+    </div>`).join('')
+
+  if(!items.length) { canvas.style.display='none'; return }
+  canvas.style.display='block'
+
+  if(_biChartDonut){_biChartDonut.destroy();_biChartDonut=null}
+  _biChartDonut = new Chart(canvas, {
+    type:'doughnut',
+    data:{ labels:items.map(i=>i.label), datasets:[{data:items.map(i=>i.val), backgroundColor:items.map(i=>i.color), borderWidth:0, hoverOffset:4}] },
+    options:{
+      responsive:true, maintainAspectRatio:false, cutout:'70%',
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:ctx=>ctx.label+': '+fmtM(ctx.raw)+' сум'}} }
+    }
+  })
+}
+
+// ── Open finance modal ──
+// ══════════════════════════════════════════════
+// PHASE 5 v2: FULL P&L FINANCE ENGINE + TIMER
+// SQL (add these):
+// ALTER TABLE projects ADD COLUMN IF NOT EXISTS contractors jsonb DEFAULT '[]';
+// ALTER TABLE projects ADD COLUMN IF NOT EXISTS extra_expenses jsonb DEFAULT '[]';
+// ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
+// stage_tasks.time_logged already in schema
+// ══════════════════════════════════════════════
+
+let _finContractors = []   // [{name, rate, type:'hourly'|'fixed'}]
+let _finExpenses    = []   // [{category, amount}]
+
+// ── TIMER STATE ──
+let _activeTimer = null    // {taskId, stageIndex, taskTitle, startMs}
+let _timerInterval = null
+
+function startTaskTimer(taskId, stageIndex, taskTitle) {
+  // Stop any running timer first
+  if (_activeTimer) stopActiveTimer()
+  _activeTimer = { taskId, stageIndex, taskTitle, startMs: Date.now() }
+  const badge = g('global-timer-badge')
+  const taskEl = g('global-timer-task')
+  if (badge) badge.classList.add('visible')
+  if (taskEl) taskEl.textContent = taskTitle
+
+  // Update timer btn UI
+  document.querySelectorAll('.task-timer-btn').forEach(b => {
+    b.classList.toggle('running', b.dataset.taskid === taskId)
+  })
+
+  // Start interval
+  _timerInterval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - _activeTimer.startMs) / 1000)
+    const h = Math.floor(elapsed / 3600)
+    const m = Math.floor((elapsed % 3600) / 60)
+    const s = elapsed % 60
+    const display = h > 0
+      ? `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+      : `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+    const el = g('global-timer-display')
+    if (el) el.textContent = display
+  }, 1000)
+}
+
+async function stopActiveTimer() {
+  if (!_activeTimer) return
+  clearInterval(_timerInterval); _timerInterval = null
+  const elapsedMin = Math.round((Date.now() - _activeTimer.startMs) / 60000)
+  const { taskId, stageIndex } = _activeTimer
+  _activeTimer = null
+
+  const badge = g('global-timer-badge')
+  if (badge) badge.classList.remove('visible')
+  document.querySelectorAll('.task-timer-btn.running').forEach(b => b.classList.remove('running'))
+
+  if (elapsedMin < 1) return  // don't log < 1 min
+
+  // Save to DB
+  try {
+    // Read current time_logged
+    const { data: t } = await sb.from('stage_tasks').select('time_logged').eq('id', taskId).single()
+    const current = t?.time_logged || 0
+    await sb.from('stage_tasks').update({ time_logged: current + elapsedMin }).eq('id', taskId)
+    // Update local state
+    const arr = tasksData[stageIndex] || []
+    const task = arr.find(x => x.id === taskId)
+    if (task) task.time_logged = (task.time_logged || 0) + elapsedMin
+    renderTasksForStage(stageIndex)
+    // Update finance hours cache
+    if (currentProject) {
+      _finTaskHours[currentProject.id] = (_finTaskHours[currentProject.id] || 0) + elapsedMin
+    }
+    showAlertToast('⏱', `+${elapsedMin} мин записано`, 'Время добавлено к задаче')
+  } catch(e) { console.warn('Timer save failed:', e) }
+}
+
+// ── Finance modal open ──
+async function openFinanceModal(projId, projName) {
+  g('fin-modal-proj-id').value = projId
+  g('fin-modal-proj-name').textContent = projName
+
+  // Load full project finance data
+  const p = _allProjects.find(x => x.id === projId) || {}
+  g('fin-budget-inp').value = p.monthly_budget || ''
+  g('fin-opex-inp').value   = p.operational_cost || ''
+
+  // Hours from task time logs
+  const totalMins = _finTaskHours[projId] || 0
+  g('fin-hours-inp').value = Math.round(totalMins / 60 * 10) / 10
+
+  _finContractors = (p.contractors || []).map(c => ({...c}))
+  _finExpenses    = (p.extra_expenses || []).map(e => ({...e}))
+
+  renderFinContractors()
+  renderFinExpenses()
+  finRecalc()
+
+  g('modal-finance').classList.add('open')
+  setTimeout(() => g('fin-budget-inp').focus(), 100)
+}
+
+function renderFinContractors() {
+  const list = g('fin-contractors-list'); if (!list) return
+  if (!_finContractors.length) {
+    list.innerHTML = '<div style="font-size:11px;color:var(--txt3);font-family:Manrope,sans-serif;padding:4px 0;">Подрядчики не добавлены</div>'
+    return
+  }
+  list.innerHTML = _finContractors.map((c, i) => `
+    <div class="fin-row-item">
+      <input placeholder="Имя / роль" value="${esc(c.name||'')}" oninput="_finContrUpdate(${i},'name',this.value)">
+      <input type="number" placeholder="Сумма (сум)" value="${c.amount||''}" oninput="_finContrUpdate(${i},'amount',+this.value)">
+      <button class="fin-row-del" onclick="_finContrDel(${i})">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>`).join('')
+}
+function finAddContractor() {
+  _finContractors.push({ name:'', amount:0 })
+  renderFinContractors(); finRecalc()
+  // focus last name input
+  const inputs = g('fin-contractors-list')?.querySelectorAll('input')
+  if (inputs?.length) inputs[inputs.length-2]?.focus()
+}
+function _finContrUpdate(i, key, val) { _finContractors[i][key] = val; finRecalc() }
+function _finContrDel(i) { _finContractors.splice(i,1); renderFinContractors(); finRecalc() }
+
+function renderFinExpenses() {
+  const list = g('fin-expenses-list'); if (!list) return
+  if (!_finExpenses.length) {
+    list.innerHTML = '<div style="font-size:11px;color:var(--txt3);font-family:Manrope,sans-serif;padding:4px 0;">Расходы не добавлены</div>'
+    return
+  }
+  list.innerHTML = _finExpenses.map((e, i) => `
+    <div class="fin-row-item">
+      <input placeholder="Категория (реклама, съёмка...)" value="${esc(e.category||'')}" oninput="_finExpUpdate(${i},'category',this.value)">
+      <input type="number" placeholder="Сумма (сум)" value="${e.amount||''}" oninput="_finExpUpdate(${i},'amount',+this.value)">
+      <button class="fin-row-del" onclick="_finExpDel(${i})">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>`).join('')
+}
+function finAddExpense() {
+  _finExpenses.push({ category:'', amount:0 })
+  renderFinExpenses(); finRecalc()
+  const inputs = g('fin-expenses-list')?.querySelectorAll('input')
+  if (inputs?.length) inputs[inputs.length-2]?.focus()
+}
+function _finExpUpdate(i, key, val) { _finExpenses[i][key] = val; finRecalc() }
+function _finExpDel(i) { _finExpenses.splice(i,1); renderFinExpenses(); finRecalc() }
+
+function finRecalc() {
+  const income    = parseInt(g('fin-budget-inp')?.value) || 0
+  const opex      = parseInt(g('fin-opex-inp')?.value) || 0
+  const salaries  = _finContractors.reduce((s,c) => s + (parseInt(c.amount)||0), 0)
+  const extras    = _finExpenses.reduce((s,e) => s + (parseInt(e.amount)||0), 0)
+  const totalCost = salaries + extras + opex
+  const margin    = income - totalCost
+  const marginPct = income > 0 ? Math.round((margin / income) * 100) : null
+  const col = margin >= 0 ? 'var(--green)' : 'var(--red)'
+
+  const sv = v => v > 0 ? fmtM(v) + ' сум' : '—'
+  const set2 = (id, val) => { const el=g(id); if(el) el.textContent=val }
+  set2('fpv-income',     income > 0 ? fmtM(income)+' сум' : '—')
+  set2('fpv-salaries',   salaries > 0 ? '−' + fmtM(salaries)+' сум' : '—')
+  set2('fpv-extras',     extras > 0   ? '−' + fmtM(extras)  +' сум' : '—')
+  set2('fpv-opex',       opex > 0     ? '−' + fmtM(opex)    +' сум' : '—')
+  set2('fpv-total-cost', totalCost > 0 ? fmtM(totalCost)+' сум' : '—')
+
   const marginEl = g('fpv-margin')
-  if (g('fpv-budget')) g('fpv-budget').textContent = fmtM(budget) + ' сум'
-  if (g('fpv-cost'))   g('fpv-cost').textContent   = cost > 0 ? fmtM(cost) + ' сум' : '—'
+  const pctEl    = g('fpv-margin-pct')
   if (marginEl) {
-    marginEl.textContent = budget > 0 && cost > 0 ? (margin >= 0 ? '+' : '') + fmtM(margin) + ' сум' : '—'
-    marginEl.style.color = margin >= 0 ? 'var(--green)' : 'var(--red)'
+    marginEl.textContent = income > 0 ? (margin >= 0 ? '+' : '') + fmtM(margin)+' сум' : '—'
+    marginEl.style.color = col
+  }
+  if (pctEl) {
+    pctEl.textContent = marginPct !== null ? marginPct + '%' : '—'
+    pctEl.style.color = col
   }
 }
 
 async function saveFinanceSettings() {
   const projId = g('fin-modal-proj-id').value
   const budget = parseInt(g('fin-budget-inp').value) || 0
-  const rate   = parseInt(g('fin-rate-inp').value)   || 0
+  const opex   = parseInt(g('fin-opex-inp').value)   || 0
   try {
-    await sb.from('projects').update({ monthly_budget: budget, hourly_rate: rate }).eq('id', projId)
+    await sb.from('projects').update({
+      monthly_budget:   budget,
+      contractors:      _finContractors,
+      extra_expenses:   _finExpenses,
+      operational_cost: opex
+    }).eq('id', projId)
     const p = _allProjects.find(x => x.id === projId)
-    if (p) { p.monthly_budget = budget; p.hourly_rate = rate }
+    if (p) {
+      p.monthly_budget   = budget
+      p.contractors      = _finContractors
+      p.extra_expenses   = _finExpenses
+      p.operational_cost = opex
+    }
   } catch(e) {
-    console.warn('Save finance failed (columns may not exist):', e.message)
-    alert('Ошибка: ' + e.message + '\n\nВыполни SQL из блока «Финансы» на дашборде.')
+    console.warn('Save finance failed:', e.message)
+    openSQLSetup(); return
   }
   closeModal('modal-finance')
   renderFinance()
-  showAlertToast('💰', 'Финансы обновлены', 'P&L пересчитан')
+  showAlertToast('💰', 'Финансы сохранены', 'P&L обновлён')
 }
 
 // ── ROI block in Performance report ──
@@ -14632,7 +15151,19 @@ function renderTasksForStage(stageIndex) {
     const priColor = PRIORITY_COLORS[t.priority] || PRIORITY_COLORS.normal
     const dlStr = t.deadline ? new Date(t.deadline+'T00:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short'}) : ''
     const isOverdue = t.deadline && !t.done && t.deadline < today
+    const isRunning = _activeTimer?.taskId === t.id
+    const loggedMin = t.time_logged || 0
+    const loggedStr = loggedMin >= 60
+      ? Math.floor(loggedMin/60) + 'ч ' + (loggedMin%60 ? (loggedMin%60)+'м' : '')
+      : loggedMin > 0 ? loggedMin + 'м' : ''
     return `<div class="task-item${t.done?' ti-done':''}" id="ti-${t.id}">
+      ${!isClient ? `<div class="task-timer-btn${isRunning?' running':''}" data-taskid="${t.id}"
+        onclick="${isRunning ? 'stopActiveTimer()' : `startTaskTimer('${t.id}',${stageIndex},'${esc(t.title).replace(/'/g,"\\'")}')` }"
+        title="${isRunning ? 'Остановить таймер' : 'Запустить таймер'}">
+        ${isRunning
+          ? '<svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>'
+          : '<svg viewBox="0 0 24 24" width="9" height="9" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>'}
+      </div>` : '<div style="width:22px;flex-shrink:0;"></div>'}
       <div class="task-checkbox${t.done?' checked':''}" onclick="${isClient?'void(0)':'_toggleTask(\''+t.id+'\','+stageIndex+','+(!t.done)+')'}" ${isClient?'style="pointer-events:none;"':''}>
         <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg>
       </div>
@@ -14642,6 +15173,7 @@ function renderTasksForStage(stageIndex) {
           <span class="task-priority-dot" style="background:${priColor};"></span>
           ${t.assignee ? `<span class="task-assignee">@${esc(t.assignee)}</span>` : ''}
           ${dlStr ? `<span class="task-dl${isOverdue?' overdue':''}">📅 ${dlStr}${isOverdue?' ⚠':''}</span>` : ''}
+          ${loggedStr ? `<span class="task-time-logged has-time">⏱ ${loggedStr}</span>` : ''}
         </div>
       </div>
       ${!isClient ? `<button class="task-del-btn" onclick="_deleteTask('${t.id}',${stageIndex})" title="Удалить">
@@ -28329,6 +28861,100 @@ window.switchPassportTab = function(tab, btn) {
   margin-top: 4px;
 }
 
+/* Finance modal sections */
+.fin-section {
+  margin: 16px 0;
+  padding: 14px 16px;
+  background: var(--bg3);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-md);
+}
+.fin-section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--a2);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.fin-row-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.fin-row-item input {
+  background: var(--bg4);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-xs);
+  padding: 7px 10px;
+  color: var(--txt);
+  font-family: Manrope, sans-serif;
+  font-size: 12px;
+  outline: none;
+  width: 100%;
+  transition: border-color .15s;
+}
+.fin-row-item input:focus { border-color: var(--a2); }
+.fin-row-del {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--txt3);
+  border-radius: 5px;
+  transition: all .15s;
+  flex-shrink: 0;
+}
+.fin-row-del:hover { background: rgba(248,113,113,.1); color: var(--red); }
+
+/* Task timer button */
+.task-timer-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.1);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .15s;
+  flex-shrink: 0;
+  color: var(--txt3);
+}
+.task-timer-btn:hover { border-color: var(--green); color: var(--green); background: rgba(74,222,128,.08); }
+.task-timer-btn.running { border-color: var(--red); color: var(--red); background: rgba(248,113,113,.1); animation: timerPulse 1.5s ease infinite; }
+@keyframes timerPulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+.task-time-logged {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--txt3);
+  white-space: nowrap;
+}
+.task-time-logged.has-time { color: var(--cyan); }
+/* Active timer badge in header */
+.global-timer-badge {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(248,113,113,.12);
+  border: 1px solid rgba(248,113,113,.25);
+  border-radius: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--red);
+  cursor: pointer;
+  animation: timerPulse 2s ease infinite;
+}
+.global-timer-badge.visible { display: flex; }
+
 /* ── PHASE 5: FINANCIAL MODULE ── */
 .fin-mrr-strip {
   display: grid;
@@ -28525,6 +29151,292 @@ window.switchPassportTab = function(tab, btn) {
 .roi-cell.roi-main { background: rgba(74,222,128,.06); border-color: rgba(74,222,128,.2); }
 .roi-val { font-family: Manrope, sans-serif; font-size: 24px; font-weight: 800; letter-spacing: -.04em; line-height: 1; margin-bottom: 5px; }
 .roi-lbl { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--txt3); letter-spacing: .1em; text-transform: uppercase; }
+
+/* ══════════════════════════════════════
+   FINANCE BI DASHBOARD — Phase 5 v3
+══════════════════════════════════════ */
+.bi-kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.bi-kpi-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg3);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  transition: border-color .15s;
+}
+.bi-kpi-card:hover { border-color: var(--brd2); }
+.bi-kpi-main { border-color: rgba(91,95,199,.25); background: rgba(91,95,199,.05); }
+.bi-kpi-icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.bi-kpi-val {
+  font-family: Manrope, sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  line-height: 1;
+  color: var(--txt);
+  margin-bottom: 3px;
+}
+.bi-kpi-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--txt3);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.bi-kpi-sub {
+  font-family: Manrope, sans-serif;
+  font-size: 10px;
+  color: var(--txt3);
+}
+/* Main layout */
+.bi-main-layout {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 14px;
+  align-items: start;
+}
+/* Sidebar */
+.bi-sidebar {
+  position: sticky;
+  top: 0;
+}
+.bi-sidebar-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--txt3);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.bi-seg-list { display: flex; flex-direction: column; gap: 3px; }
+.bi-seg-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: Manrope, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--txt2);
+  text-align: left;
+  width: 100%;
+  transition: all .12s;
+}
+.bi-seg-btn:hover { background: var(--bg4); border-color: var(--brd); }
+.bi-seg-active { background: rgba(91,95,199,.1) !important; border-color: rgba(91,95,199,.25) !important; color: var(--txt) !important; }
+.bi-seg-icon { font-size: 13px; flex-shrink: 0; }
+.bi-seg-name { flex: 1; }
+.bi-seg-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  background: var(--bg5);
+  padding: 1px 7px;
+  border-radius: 10px;
+  color: var(--txt3);
+}
+.bi-seg-active .bi-seg-count { background: rgba(91,95,199,.2); color: var(--a2); }
+/* Content area */
+.bi-content { min-width: 0; }
+.bi-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.bi-chart-wrap {
+  background: var(--bg3);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-md);
+  padding: 12px 16px;
+  margin-bottom: 12px;
+}
+.bi-chart-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--txt3);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+/* Project table */
+.bi-proj-table {
+  background: var(--bg3);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+.bi-proj-thead {
+  display: flex;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--brd);
+  background: var(--bg4);
+}
+.bi-th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--txt3);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.bi-th-num { width: 90px; text-align: right; flex-shrink: 0; }
+.bi-proj-row {
+  display: flex;
+  align-items: center;
+  padding: 11px 14px;
+  border-bottom: 1px solid rgba(255,255,255,.03);
+  cursor: pointer;
+  transition: background .1s;
+  gap: 0;
+}
+.bi-proj-row:last-child { border-bottom: none; }
+.bi-proj-row:hover { background: rgba(255,255,255,.025); }
+.bi-proj-row.bi-row-selected { background: rgba(91,95,199,.08); border-color: rgba(91,95,199,.15); }
+.bi-proj-info { flex: 1.8; min-width: 0; }
+.bi-proj-name {
+  font-family: Manrope, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--txt);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 3px;
+}
+.bi-proj-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--txt3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.bi-cell {
+  width: 90px;
+  text-align: right;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--txt2);
+  flex-shrink: 0;
+  padding-right: 4px;
+}
+.bi-cell-pos { color: var(--green); font-weight: 600; }
+.bi-cell-neg { color: var(--red); font-weight: 600; }
+.bi-cell-dim { color: var(--txt3); }
+.bi-margin-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  padding: 2px 0;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+}
+.bi-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+.bi-row-actions { width: 90px; display: flex; justify-content: flex-end; gap: 5px; flex-shrink: 0; }
+/* Detail panel */
+.bi-detail-panel {
+  margin-top: 12px;
+  background: var(--bg3);
+  border: 1px solid rgba(91,95,199,.25);
+  border-radius: var(--r-md);
+  padding: 18px 20px;
+  animation: fadeUp .25s cubic-bezier(.16,1,.3,1) both;
+}
+.bi-detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--brd);
+}
+.bi-detail-name {
+  font-family: Manrope, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--txt);
+  margin-bottom: 3px;
+}
+.bi-detail-cat {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--txt3);
+}
+.bi-detail-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.bi-detail-kpi {
+  background: var(--bg4);
+  border-radius: 8px;
+  padding: 10px 12px;
+  text-align: center;
+}
+.bi-detail-kpi-val {
+  font-family: Manrope, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -.03em;
+  margin-bottom: 3px;
+}
+.bi-detail-kpi-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  color: var(--txt3);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.bi-detail-section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--a2);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.bi-cost-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  font-family: Manrope, sans-serif;
+  font-size: 12px;
+}
+.bi-cost-row:last-child { border-bottom: none; }
+.bi-cost-name { color: var(--txt2); display: flex; align-items: center; gap: 7px; }
+.bi-cost-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+.bi-cost-val { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--txt); font-weight: 600; }
+.bi-cost-bar-wrap { flex: 1; max-width: 100px; margin: 0 12px; }
+.bi-cost-bar-track { height: 3px; background: var(--bg5); border-radius: 3px; overflow: hidden; }
+.bi-cost-bar-fill { height: 100%; border-radius: 3px; }
 
 /* ── PHASE 4: AI-БРИФ ПАСПОРТА ── */
 .pai-context-row {
