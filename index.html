@@ -8865,32 +8865,31 @@ canvas {
           <div class="kb-title">Операционка</div>
           <div class="kb-subtitle" id="kb-active-stage-label">Активный этап: —</div>
         </div>
-        <div style="display:flex;gap:10px;align-items:center;">
+        <div style="display:flex;gap:8px;align-items:center;">
           <div class="kb-legend">
-            <span class="kb-leg-dot" style="background:rgba(255,255,255,.2);"></span> В ожидании
-            <span class="kb-leg-dot" style="background:#818cf8;margin-left:12px;"></span> Активные
-            <span class="kb-leg-dot" style="background:#34d399;margin-left:12px;"></span> Завершённые
+            <span class="kb-leg-dot" style="background:rgba(255,255,255,.18);"></span>&nbsp;В ожидании
+            <span class="kb-leg-dot" style="background:#a5b4fc;margin-left:10px;"></span>&nbsp;Активные
+            <span class="kb-leg-dot" style="background:#6ee7b7;margin-left:10px;"></span>&nbsp;Завершённые
           </div>
           <button class="kb-add-btn" onclick="openKanbanAddTask()">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Новая задача
           </button>
         </div>
       </div>
 
-      <!-- SQL note -->
+      <!-- SQL note (hidden until error) -->
       <div class="kb-sql-note" id="kb-sql-note" style="display:none;">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        Для работы канбана нужно выполнить SQL:
-        <code>ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS kanban_status text DEFAULT 'waiting'; ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS timer_started_at timestamptz;</code>
-        <button onclick="openSQLSetup()" class="kb-sql-btn">Открыть SQL Setup</button>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Нужно выполнить SQL для колонок kanban_status и timer_started_at
+        <button onclick="openSQLSetup()" class="kb-sql-btn">SQL Setup</button>
       </div>
 
-      <!-- Kanban board — 3 columns -->
+      <!-- 3-column board -->
       <div class="kb-board" id="kb-board"
         ondragover="kbDragOver(event)" ondrop="kbDrop(event)">
 
-        <!-- Column: В ожидании -->
+        <!-- В ожидании -->
         <div class="kb-col" id="kb-col-waiting" data-status="waiting"
           ondragover="kbColDragOver(event,this)" ondragleave="kbColDragLeave(this)" ondrop="kbColDrop(event,this,'waiting')">
           <div class="kb-col-header kb-col-waiting-h">
@@ -8899,13 +8898,13 @@ canvas {
           </div>
           <div class="kb-cards" id="kb-cards-waiting"></div>
           <button class="kb-col-add" onclick="openKanbanAddTask('waiting')">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Добавить задачу
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Добавить
           </button>
         </div>
 
-        <!-- Column: Активные -->
-        <div class="kb-col kb-col-active-wrap" id="kb-col-active" data-status="active"
+        <!-- Активные -->
+        <div class="kb-col" id="kb-col-active" data-status="active"
           ondragover="kbColDragOver(event,this)" ondragleave="kbColDragLeave(this)" ondrop="kbColDrop(event,this,'active')">
           <div class="kb-col-header kb-col-active-h">
             <div class="kb-col-title">
@@ -8916,22 +8915,25 @@ canvas {
           </div>
           <div class="kb-cards" id="kb-cards-active"></div>
           <button class="kb-col-add" onclick="openKanbanAddTask('active')">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Добавить задачу
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Добавить
           </button>
         </div>
 
-        <!-- Column: Завершённые -->
+        <!-- Завершённые -->
         <div class="kb-col" id="kb-col-done" data-status="done"
           ondragover="kbColDragOver(event,this)" ondragleave="kbColDragLeave(this)" ondrop="kbColDrop(event,this,'done')">
           <div class="kb-col-header kb-col-done-h">
-            <div class="kb-col-title">Завершённые</div>
+            <div class="kb-col-title">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="opacity:.6;"><polyline points="20 6 9 17 4 12"/></svg>
+              Завершённые
+            </div>
             <div class="kb-col-count" id="kb-count-done">0</div>
           </div>
           <div class="kb-cards" id="kb-cards-done"></div>
         </div>
 
-      </div><!-- /kb-board -->
+      </div>
     </div>
 
     <!-- TAB: HISTORY -->
@@ -29332,29 +29334,33 @@ window.switchPassportTab = function(tab, btn) {
 }
 
 /* ══════════════════════════════════════
-   KANBAN — ОПЕРАЦИОНКА — PREMIUM SOFT
+   KANBAN — LINEAR/FIGMA PROFESSIONAL
 ══════════════════════════════════════ */
+
+/* Board wrapper */
+#pp-tab-kanban { padding: 0; }
+
 .kb-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
+  padding: 20px 24px 16px;
   border-bottom: 1px solid rgba(255,255,255,.05);
 }
 .kb-title {
   font-family: Manrope, sans-serif;
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--txt);
-  letter-spacing: -.03em;
-  margin-bottom: 4px;
+  letter-spacing: -.02em;
+  margin-bottom: 3px;
 }
 .kb-subtitle {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  color: rgba(255,255,255,.3);
-  letter-spacing: .06em;
+  font-size: 9px;
+  color: rgba(255,255,255,.25);
+  letter-spacing: .08em;
+  text-transform: uppercase;
 }
 .kb-legend {
   display: flex;
@@ -29362,308 +29368,333 @@ window.switchPassportTab = function(tab, btn) {
   gap: 4px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 9px;
-  color: rgba(255,255,255,.3);
-  letter-spacing: .06em;
+  color: rgba(255,255,255,.25);
+  letter-spacing: .05em;
+  margin-right: 12px;
 }
 .kb-leg-dot {
   display: inline-block;
-  width: 6px; height: 6px;
+  width: 5px; height: 5px;
   border-radius: 50%;
 }
 .kb-add-btn {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 8px 16px;
+  gap: 6px;
+  padding: 7px 14px;
   background: var(--a);
   border: none;
-  border-radius: 100px;
+  border-radius: 8px;
   font-family: Manrope, sans-serif;
   font-size: 12px;
   font-weight: 600;
   color: #fff;
   cursor: pointer;
   transition: all .15s;
-  box-shadow: 0 4px 16px rgba(91,95,199,.3);
+  letter-spacing: -.01em;
 }
-.kb-add-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(91,95,199,.4); }
+.kb-add-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
 .kb-sql-note {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 14px;
-  background: rgba(245,158,11,.06);
-  border: 1px solid rgba(245,158,11,.18);
-  border-radius: 10px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  color: rgba(245,158,11,.7);
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-.kb-sql-note code { color: rgba(245,158,11,.5); font-size: 9px; }
-.kb-sql-btn {
-  margin-left: auto;
-  background: rgba(245,158,11,.12);
-  border: 1px solid rgba(245,158,11,.2);
-  border-radius: 6px;
-  padding: 4px 12px;
-  color: rgba(245,158,11,.8);
+  margin: 0 24px 14px;
+  padding: 9px 13px;
+  background: rgba(245,158,11,.05);
+  border: 1px solid rgba(245,158,11,.15);
+  border-radius: 8px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 9px;
+  color: rgba(245,158,11,.6);
+  flex-wrap: wrap;
+}
+.kb-sql-note code { color: rgba(245,158,11,.4); font-size: 8px; }
+.kb-sql-btn {
+  margin-left: auto;
+  background: rgba(245,158,11,.1);
+  border: 1px solid rgba(245,158,11,.2);
+  border-radius: 5px;
+  padding: 3px 10px;
+  color: rgba(245,158,11,.7);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
   cursor: pointer;
 }
-/* Board */
+
+/* ── BOARD ── */
 .kb-board {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  align-items: start;
-  min-height: 480px;
+  gap: 0;
+  height: calc(100vh - 220px);
+  min-height: 500px;
+  overflow: hidden;
 }
-/* Column */
+
+/* ── COLUMN ── */
 .kb-col {
-  border-radius: 16px;
-  background: rgba(255,255,255,.02);
-  border: 1px solid rgba(255,255,255,.05);
-  padding: 14px;
-  min-height: 400px;
-  transition: background .15s, border-color .15s;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  border-right: 1px solid rgba(255,255,255,.05);
+  overflow: hidden;
+  transition: background .15s;
 }
-.kb-col.kb-drag-over {
-  background: rgba(91,95,199,.06);
-  border-color: rgba(91,95,199,.25);
-}
-.kb-col-active-wrap {
-  background: rgba(91,95,199,.04);
-  border-color: rgba(91,95,199,.12);
-}
+.kb-col:last-child { border-right: none; }
+.kb-col.kb-drag-over { background: rgba(91,95,199,.04); }
+#kb-col-active { background: rgba(129,140,248,.02); }
+
 .kb-col-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(255,255,255,.05);
+  padding: 14px 16px 12px;
+  position: sticky;
+  top: 0;
+  background: inherit;
+  z-index: 1;
+  border-bottom: 1px solid rgba(255,255,255,.04);
 }
 .kb-col-title {
   font-family: Manrope, sans-serif;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  color: rgba(255,255,255,.5);
-  letter-spacing: .02em;
+  letter-spacing: .01em;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
 }
 .kb-col-waiting-h .kb-col-title { color: rgba(255,255,255,.4); }
-.kb-col-active-h  .kb-col-title { color: #818cf8; }
-.kb-col-done-h    .kb-col-title { color: #34d399; }
+.kb-col-active-h  .kb-col-title { color: #a5b4fc; }
+.kb-col-done-h    .kb-col-title { color: #6ee7b7; }
 .kb-col-count {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
-  padding: 2px 8px;
-  border-radius: 20px;
+  font-weight: 700;
+  min-width: 20px;
+  height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 6px;
   background: rgba(255,255,255,.05);
   color: rgba(255,255,255,.3);
+  padding: 0 6px;
 }
-.kb-count-active { background: rgba(129,140,248,.12); color: #818cf8; }
+.kb-count-active { background: rgba(129,140,248,.15); color: #a5b4fc; }
 .kb-active-pulse {
   display: inline-block;
-  width: 6px; height: 6px;
+  width: 5px; height: 5px;
   border-radius: 50%;
-  background: #818cf8;
+  background: #a5b4fc;
   animation: pulse 2s ease infinite;
+  flex-shrink: 0;
 }
+
+/* ── CARDS SCROLL AREA ── */
 .kb-cards {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 12px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  flex: 1;
-  min-height: 40px;
+  gap: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,.06) transparent;
 }
-/* Card */
+.kb-cards::-webkit-scrollbar { width: 3px; }
+.kb-cards::-webkit-scrollbar-track { background: transparent; }
+.kb-cards::-webkit-scrollbar-thumb { background: rgba(255,255,255,.07); border-radius: 2px; }
+
+/* ── CARD ── */
 .kb-card {
-  background: var(--bg3);
-  border: 1px solid rgba(255,255,255,.06);
-  border-radius: 12px;
-  padding: 14px 14px 12px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 10px;
+  padding: 11px 13px;
   cursor: grab;
-  transition: all .18s cubic-bezier(.4,0,.2,1);
+  transition: border-color .15s, background .15s, box-shadow .15s, transform .1s;
   position: relative;
-  overflow: hidden;
   user-select: none;
+  flex-shrink: 0;
 }
 .kb-card::before {
   content: '';
   position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 3px;
-  border-radius: 12px 0 0 12px;
+  left: 0; top: 8px; bottom: 8px;
+  width: 2.5px;
+  border-radius: 0 2px 2px 0;
   background: transparent;
   transition: background .15s;
 }
+.kb-card[data-priority="urgent"]::before { background: rgba(248,113,113,.7); }
+.kb-card[data-priority="high"]::before   { background: rgba(251,191,36,.7); }
+.kb-card[data-priority="normal"]::before { background: rgba(165,180,252,.4); }
+.kb-card[data-priority="low"]::before    { background: rgba(255,255,255,.08); }
+
 .kb-card:hover {
-  border-color: rgba(255,255,255,.12);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,.25);
+  border-color: rgba(255,255,255,.13);
+  background: rgba(255,255,255,.05);
+  box-shadow: 0 4px 16px rgba(0,0,0,.2), 0 0 0 1px rgba(255,255,255,.04);
+  transform: translateY(-1px);
 }
-.kb-card:active { cursor: grabbing; transform: scale(.97); opacity: .85; }
-.kb-card.kb-dragging { opacity: .4; transform: scale(.96); box-shadow: none; }
-/* Priority left border */
-.kb-card[data-priority="urgent"]::before { background: #f87171; }
-.kb-card[data-priority="high"]::before   { background: #fbbf24; }
-.kb-card[data-priority="normal"]::before { background: #818cf8; }
-.kb-card[data-priority="low"]::before    { background: rgba(255,255,255,.1); }
-/* Active card glow */
+.kb-card:active { cursor: grabbing; transform: scale(.98); }
+.kb-card.kb-dragging { opacity: .35; transform: scale(.95); box-shadow: none; }
+
+/* Active card */
 .kb-card-active {
-  border-color: rgba(129,140,248,.2);
-  background: rgba(129,140,248,.05);
+  background: rgba(129,140,248,.06);
+  border-color: rgba(165,180,252,.15);
 }
-.kb-card-active::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 12px;
-  box-shadow: inset 0 0 0 1px rgba(129,140,248,.15);
-  pointer-events: none;
-}
+.kb-card-active:hover { background: rgba(129,140,248,.1); border-color: rgba(165,180,252,.25); }
+
 /* Done card */
-.kb-card-done { opacity: .5; }
-.kb-card-done .kb-card-title { text-decoration: line-through; }
-/* Card content */
+.kb-card-done {
+  opacity: .45;
+  background: rgba(255,255,255,.015);
+}
+.kb-card-done .kb-card-title { text-decoration: line-through; color: rgba(255,255,255,.4); }
+
+/* Card stage tag */
 .kb-card-stage-tag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 8px;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: rgba(255,255,255,.25);
+  color: rgba(255,255,255,.2);
   margin-bottom: 7px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
 }
 .kb-card-title {
   font-family: Manrope, sans-serif;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
-  color: var(--txt);
-  line-height: 1.4;
-  margin-bottom: 10px;
+  color: rgba(255,255,255,.88);
+  line-height: 1.45;
+  margin-bottom: 9px;
+  letter-spacing: -.01em;
 }
 .kb-card-meta {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 .kb-card-assignee {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 9px;
-  padding: 2px 8px;
-  border-radius: 20px;
-  background: rgba(91,95,199,.12);
-  color: rgba(129,140,248,.8);
+  color: rgba(165,180,252,.7);
+  background: rgba(129,140,248,.1);
+  padding: 2px 7px;
+  border-radius: 5px;
 }
 .kb-card-deadline {
   font-family: 'JetBrains Mono', monospace;
   font-size: 9px;
-  color: rgba(255,255,255,.3);
+  color: rgba(255,255,255,.28);
 }
-.kb-card-deadline.overdue { color: #f87171; }
+.kb-card-deadline.overdue { color: rgba(248,113,113,.75); font-weight: 600; }
 .kb-card-timer {
   font-family: 'JetBrains Mono', monospace;
   font-size: 9px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 20px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 5px;
   margin-left: auto;
 }
 .kb-timer-live {
-  background: rgba(248,113,113,.12);
-  color: #f87171;
-  animation: timerPulse 1.5s ease infinite;
+  background: rgba(248,113,113,.1);
+  color: rgba(248,113,113,.8);
+  animation: timerPulse 2s ease infinite;
 }
-.kb-timer-logged { background: rgba(34,211,238,.1); color: rgba(34,211,238,.7); }
-/* Move buttons inside card */
+.kb-timer-logged { background: rgba(52,211,153,.08); color: rgba(52,211,153,.6); }
+
+/* Card actions — appear on hover */
 .kb-card-actions {
   display: none;
   align-items: center;
   gap: 5px;
-  margin-top: 10px;
+  margin-top: 9px;
   padding-top: 8px;
   border-top: 1px solid rgba(255,255,255,.05);
 }
 .kb-card:hover .kb-card-actions { display: flex; }
 .kb-move-btn {
   flex: 1;
-  padding: 5px 0;
-  background: rgba(255,255,255,.04);
+  padding: 4px 0;
+  background: transparent;
   border: 1px solid rgba(255,255,255,.07);
-  border-radius: 7px;
+  border-radius: 6px;
   font-family: Manrope, sans-serif;
   font-size: 10px;
   font-weight: 600;
-  color: rgba(255,255,255,.4);
+  color: rgba(255,255,255,.35);
   cursor: pointer;
   transition: all .12s;
   text-align: center;
+  letter-spacing: -.01em;
 }
-.kb-move-btn:hover { background: rgba(255,255,255,.08); color: rgba(255,255,255,.8); border-color: rgba(255,255,255,.14); }
-.kb-move-btn.to-active:hover { background: rgba(129,140,248,.12); color: #818cf8; border-color: rgba(129,140,248,.2); }
-.kb-move-btn.to-done:hover   { background: rgba(52,211,153,.1);  color: #34d399;  border-color: rgba(52,211,153,.2); }
-.kb-move-btn.to-waiting:hover{ background: rgba(255,255,255,.06); }
+.kb-move-btn:hover { color: rgba(255,255,255,.75); border-color: rgba(255,255,255,.15); background: rgba(255,255,255,.04); }
+.kb-move-btn.to-active:hover { border-color: rgba(165,180,252,.3); color: #a5b4fc; background: rgba(129,140,248,.08); }
+.kb-move-btn.to-done:hover   { border-color: rgba(52,211,153,.3); color: #6ee7b7; background: rgba(52,211,153,.07); }
 .kb-del-btn {
-  width: 28px; height: 28px;
+  width: 26px; height: 26px;
   background: transparent;
-  border: 1px solid rgba(255,255,255,.07);
-  border-radius: 7px;
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 6px;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
-  color: rgba(255,255,255,.25);
+  color: rgba(255,255,255,.2);
   transition: all .12s;
   flex-shrink: 0;
 }
-.kb-del-btn:hover { background: rgba(248,113,113,.1); border-color: rgba(248,113,113,.2); color: #f87171; }
-/* Column add button */
+.kb-del-btn:hover { background: rgba(248,113,113,.08); border-color: rgba(248,113,113,.2); color: rgba(248,113,113,.7); }
+
+/* Column bottom add button */
 .kb-col-add {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 10px;
-  padding: 8px 10px;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px 12px;
+  margin: 6px 12px 12px;
   background: transparent;
-  border: 1px dashed rgba(255,255,255,.08);
-  border-radius: 10px;
+  border: 1px dashed rgba(255,255,255,.07);
+  border-radius: 8px;
   font-family: Manrope, sans-serif;
   font-size: 11px;
   font-weight: 500;
-  color: rgba(255,255,255,.25);
+  color: rgba(255,255,255,.2);
   cursor: pointer;
-  width: 100%;
   transition: all .15s;
+  flex-shrink: 0;
 }
 .kb-col-add:hover {
-  border-color: rgba(255,255,255,.15);
-  color: rgba(255,255,255,.5);
+  border-color: rgba(255,255,255,.13);
+  color: rgba(255,255,255,.45);
   background: rgba(255,255,255,.02);
 }
-/* Empty col state */
+
+/* Empty state */
 .kb-col-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 28px 12px;
+  padding: 32px 16px;
   font-family: Manrope, sans-serif;
   font-size: 11px;
-  color: rgba(255,255,255,.15);
+  color: rgba(255,255,255,.12);
   text-align: center;
-  gap: 6px;
+  gap: 7px;
+  border: 1px dashed rgba(255,255,255,.05);
+  border-radius: 10px;
+  margin: 4px;
 }
+
+
 
 /* ── Finance modal sections ── */
 .fin-section {
