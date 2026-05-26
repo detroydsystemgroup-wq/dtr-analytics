@@ -2478,39 +2478,131 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
 
 /* ── Reels grid ── */
 .smm-reels-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
+/* ══ REEL CARDS — PREMIUM REDESIGN ══ */
+.smm-reels-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
 .smm-reel-card {
-  background:var(--smm-bg4); border:1px solid var(--smm-brd); border-radius:10px; overflow:hidden;
-  transition:transform .3s, box-shadow .3s; position:relative;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: transform .2s cubic-bezier(.34,1.56,.64,1), border-color .2s, box-shadow .2s;
 }
-.smm-reel-card:hover { transform:translateY(-4px); box-shadow:0 12px 32px rgba(0,0,0,.5); }
-.smm-reel-thumb {
-  aspect-ratio:9/16; background:var(--smm-bg2); position:relative;
-  display:flex; align-items:center; justify-content:center; overflow:hidden;
+.smm-reel-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255,255,255,.14);
+  box-shadow: 0 12px 32px rgba(0,0,0,.35);
 }
-.smm-reel-rank-wm {
-  position:absolute; top:8px; left:10px;
-  font-family:var(--bebas); font-size:36px; color:rgba(255,255,255,.12); line-height:1;
+/* Top accent bar — changes by rank */
+.smm-reel-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: rgba(255,255,255,.07);
+  z-index: 1;
 }
-.smm-reel-rank-badge {
-  position:absolute; top:8px; left:8px;
-  font-family:var(--bebas); font-size:13px;
-  background:rgba(0,0,0,.65); backdrop-filter:blur(8px);
-  border-radius:20px; padding:3px 10px; color:#fff;
+.smm-reel-card.rrc-1::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.smm-reel-card.rrc-2::before { background: linear-gradient(90deg, #9ca3af, #d1d5db); }
+.smm-reel-card.rrc-3::before { background: linear-gradient(90deg, #b45309, #d97706); }
+
+/* Rank badge + title row */
+.smm-reel-top {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 14px 14px 0;
 }
-.smm-reel-rank-badge.rrb1 { background:rgba(251,191,36,.9); color:#000; }
-.smm-reel-rank-badge.rrb2 { background:rgba(156,163,175,.8); }
-.smm-reel-rank-badge.rrb3 { background:rgba(180,83,9,.8); }
-.smm-reel-play {
-  width:40px; height:40px; border-radius:50%;
-  background:rgba(184,146,58,.25); border:1px solid var(--smm-accent);
-  display:flex; align-items:center; justify-content:center; color:var(--smm-accent2);
+.smm-reel-rank {
+  width: 26px; height: 26px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: Manrope, sans-serif;
+  font-size: 11px; font-weight: 800;
+  flex-shrink: 0;
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.3);
+  letter-spacing: -.01em;
 }
-.smm-reel-body { padding:12px; }
-.smm-reel-title { font-size:11px; font-weight:500; color:var(--smm-text); margin-bottom:10px; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:30px; }
-.smm-reel-stats { display:grid; grid-template-columns:1fr 1fr; gap:4px; }
-.smm-reel-stat { font-family:var(--font-mono); font-size:10px; color:var(--smm-muted); }
-.smm-reel-stat span { color:var(--smm-text); display:block; font-size:11px; }
-.smm-reel-er { font-family:var(--font-mono); font-size:9px; margin-top:8px; padding:2px 7px; border-radius:20px; background:rgba(184,146,58,.12); color:var(--smm-accent2); display:inline-flex; }
+.smm-reel-card.rrc-1 .smm-reel-rank { background: rgba(251,191,36,.15); color: #fbbf24; }
+.smm-reel-card.rrc-2 .smm-reel-rank { background: rgba(156,163,175,.12); color: #d1d5db; }
+.smm-reel-card.rrc-3 .smm-reel-rank { background: rgba(180,83,9,.15);  color: #d97706; }
+
+.smm-reel-title-new {
+  font-family: Manrope, sans-serif;
+  font-size: 12px; font-weight: 600;
+  color: rgba(255,255,255,.75);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  letter-spacing: -.01em;
+}
+
+/* Views — hero number */
+.smm-reel-views-wrap {
+  padding: 12px 14px 6px;
+}
+.smm-reel-views-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px; letter-spacing: .14em; text-transform: uppercase;
+  color: rgba(255,255,255,.25);
+  margin-bottom: 3px;
+}
+.smm-reel-views-num {
+  font-family: Manrope, sans-serif;
+  font-size: 28px; font-weight: 800;
+  letter-spacing: -.05em; line-height: 1;
+  color: rgba(255,255,255,.9);
+}
+
+/* ER badge — single clear metric */
+.smm-reel-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px 13px;
+}
+.smm-reel-er-new {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: .02em;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+.smm-reel-er-hot {
+  background: rgba(239,68,68,.12);
+  color: #f87171;
+  border: 1px solid rgba(239,68,68,.2);
+}
+.smm-reel-er-good {
+  background: rgba(52,211,153,.1);
+  color: #34d399;
+  border: 1px solid rgba(52,211,153,.18);
+}
+.smm-reel-er-avg {
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.4);
+  border: 1px solid rgba(255,255,255,.08);
+}
+.smm-reel-link-btn {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,.3);
+  transition: all .15s;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.smm-reel-link-btn:hover { background: rgba(255,255,255,.1); color: rgba(255,255,255,.8); }
 
 /* ── Rubrics ── */
 .smm-rubric-winner {
@@ -22455,29 +22547,41 @@ function renderSMMReelsGrid() {
   const grid = g('smm-reels-grid'); if (!grid) return
   const reels = [...smmData.reels].sort((a,b) => b.er - a.er)
   if (!reels.length) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px;font-family:\'DM Mono\',monospace;font-size:12px;letter-spacing:.1em;color:var(--smm-muted);">Добавьте Reels во вкладке «Данные»</div>'; return }
-  const fmtK = n => n >= 1000 ? (n/1000).toFixed(1)+'K' : (n||0)
+  const fmtK = n => n >= 1000000 ? (n/1000000).toFixed(1)+'M' : n >= 1000 ? (n/1000).toFixed(1)+'K' : (n||0)
+
   grid.innerHTML = reels.slice(0,10).map((r,i) => {
-    const rank = i+1
-    const bCls = rank===1?'rrb1':(rank===2?'rrb2':(rank===3?'rrb3':''))
-    const medal = rank===1?'🥇':(rank===2?'🥈':(rank===3?'🥉':rank))
-    return `<div class="smm-reel-card">
-      <div class="smm-reel-thumb">
-        <div class="smm-reel-rank-wm">${rank}</div>
-        <div class="smm-reel-play">
-          ${r.link ? `<a href="${/^https?:\/\//i.test(r.link)?r.link:'#'}" rel="noopener noreferrer" target="_blank" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:var(--smm-accent2);"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></a>` : '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:var(--smm-accent2)"><polygon points="5 3 19 12 5 21 5 3"/></svg>'}
-        </div>
-        <div class="smm-reel-rank-badge ${bCls}">${medal}</div>
+    const rank = i + 1
+    const rankCls = rank <= 3 ? `rrc-${rank}` : ''
+    const rankLabel = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`
+
+    const er = +(r.er || 0)
+    const erFmt = er.toFixed(2) + '%'
+    const erCls = er >= 10 ? 'smm-reel-er-hot' : er >= 5 ? 'smm-reel-er-good' : 'smm-reel-er-avg'
+    const erLabel = er >= 10 ? '🔥 ' + erFmt : 'ER ' + erFmt
+
+    const linkHtml = r.link
+      ? `<a href="${/^https?:\/\//i.test(r.link) ? r.link : '#'}" target="_blank" rel="noopener" class="smm-reel-link-btn">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </a>`
+      : ''
+
+    return `<div class="smm-reel-card ${rankCls}">
+
+      <div class="smm-reel-top">
+        <div class="smm-reel-rank">${rankLabel}</div>
+        <div class="smm-reel-title-new">${esc(r.title || 'Reel #' + rank)}</div>
       </div>
-      <div class="smm-reel-body">
-        <div class="smm-reel-title">${esc(r.title || 'Reel #'+rank)}</div>
-        <div class="smm-reel-stats">
-          <div class="smm-reel-stat">👁 просм.<span>${fmtK(r.views)}</span></div>
-          <div class="smm-reel-stat">❤️ лайки<span>${fmtK(r.likes)}</span></div>
-          <div class="smm-reel-stat">💬 комм.<span>${fmtK(r.comments)}</span></div>
-          <div class="smm-reel-stat">🔖 сохр.<span>${fmtK(r.saves)}</span></div>
-        </div>
-        <span class="smm-reel-er">ER ${(+r.er||0).toFixed(2)}%</span>
+
+      <div class="smm-reel-views-wrap">
+        <div class="smm-reel-views-label">Просмотры</div>
+        <div class="smm-reel-views-num">${fmtK(r.views)}</div>
       </div>
+
+      <div class="smm-reel-footer">
+        <span class="smm-reel-er-new ${erCls}">${erLabel}</span>
+        ${linkHtml}
+      </div>
+
     </div>`
   }).join('')
 }
