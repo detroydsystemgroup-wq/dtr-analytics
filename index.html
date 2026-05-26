@@ -30209,7 +30209,7 @@ function renderTasksForStage(stageIndex) {
   const pb = g('task-pb-' + stageIndex)
   if (pb) pb.style.width = tasks.length ? Math.round((done/tasks.length)*100)+'%' : '0%'
   if (!tasks.length) {
-    container.innerHTML = isClient ? '' : `<div style="font-family:var(--font-display);font-size:11px;color:var(--txt3);padding:4px 2px;">Нет задач — нажми + чтобы добавить</div>`
+    container.innerHTML = ''
     return
   }
   const today = new Date().toISOString().slice(0,10)
@@ -30410,10 +30410,7 @@ function renderTracker() {
             Задачи
             <span class="task-count-pill${stageTasks.length?' has-tasks':''}" id="task-badge-${i}">${stageTasks.length?tasksDone+'/'+stageTasks.length:'0'}</span>
           </div>
-          ${!hideEdit ? `<button class="task-add-btn" onclick="openAddTask(${i})">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Задача
-          </button>` : ''}
+          ${!hideEdit ? `` : ''}
         </div>
         ${stageTasks.length ? `<div class="task-progress-bar"><div class="task-progress-fill" id="task-pb-${i}" style="width:${Math.round((tasksDone/stageTasks.length)*100)}%"></div></div>` : `<div class="task-progress-bar"><div class="task-progress-fill" id="task-pb-${i}" style="width:0%"></div></div>`}
         <div class="task-list" id="task-list-${i}"></div>
