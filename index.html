@@ -2294,6 +2294,73 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
   -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
 }
 .smm-hdr-sub { font-family: var(--font-mono); font-size:10px; color:var(--smm-muted2); letter-spacing:.06em; }
+
+/* ── SMM COMPACT TOPBAR ── */
+.smm-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 48px; padding: 0 20px;
+  background: rgba(8,8,8,.97);
+  border-bottom: 1px solid rgba(184,146,58,.1);
+  position: sticky; top: 0; z-index: 100; gap: 16px;
+}
+.smm-topbar-left { display:flex; align-items:center; gap:12px; flex-shrink:0; }
+.smm-back-btn {
+  width:30px; height:30px; display:flex; align-items:center; justify-content:center;
+  background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.09);
+  border-radius:8px; color:rgba(255,255,255,.5); cursor:pointer; transition:all .15s; flex-shrink:0;
+}
+.smm-back-btn:hover { background:rgba(255,255,255,.1); color:#fff; border-color:rgba(255,255,255,.18); }
+.smm-topbar-divider { width:1px; height:18px; background:rgba(255,255,255,.08); }
+.smm-topbar-brand { display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11px; letter-spacing:.06em; }
+.smm-topbar-agency { color:rgba(184,146,58,.75); font-weight:600; }
+.smm-topbar-dot { color:rgba(255,255,255,.15); }
+.smm-topbar-report { color:rgba(255,255,255,.28); text-transform:uppercase; letter-spacing:.1em; font-size:10px; }
+
+.smm-topbar-center {
+  display:flex; align-items:center; gap:12px; flex:1; justify-content:center;
+}
+.smm-topbar-client {
+  font-family:Manrope,sans-serif; font-size:13px; font-weight:700;
+  color:rgba(255,255,255,.85); letter-spacing:-.01em;
+}
+.smm-topbar-sep { width:3px; height:3px; border-radius:50%; background:rgba(255,255,255,.15); }
+.smm-topbar-period { font-family:var(--font-mono); font-size:10px; color:rgba(255,255,255,.3); letter-spacing:.06em; }
+.smm-topbar-status {
+  display:flex; align-items:center; gap:6px;
+  font-family:var(--font-mono); font-size:9px; letter-spacing:.1em; text-transform:uppercase;
+  color:rgba(74,222,128,.65); padding:3px 9px;
+  background:rgba(74,222,128,.07); border:1px solid rgba(74,222,128,.12); border-radius:20px;
+}
+.smm-status-pulse {
+  width:5px; height:5px; border-radius:50%;
+  background:#4ade80; animation:pulse 2s ease infinite; flex-shrink:0;
+}
+.smm-topbar-right { display:flex; align-items:center; gap:6px; flex-shrink:0; }
+
+/* ── Unified action buttons — same height, same padding ── */
+.smm-topbar-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  height:30px; padding:0 12px; border-radius:8px;
+  font-family:Manrope,sans-serif; font-size:11px; font-weight:600;
+  letter-spacing:-.01em; cursor:pointer; transition:all .15s;
+  white-space:nowrap; border:1px solid transparent;
+}
+.smm-topbar-ai {
+  background:rgba(184,146,58,.1); border-color:rgba(184,146,58,.25);
+  color:rgba(184,146,58,.9);
+}
+.smm-topbar-ai:hover { background:rgba(184,146,58,.2); border-color:rgba(184,146,58,.5); }
+.smm-topbar-ai:disabled { opacity:.35; cursor:not-allowed; }
+.smm-topbar-save {
+  background:linear-gradient(135deg,#5b5fc7,#7c3aed);
+  border-color:transparent; color:#fff;
+  box-shadow:0 2px 8px rgba(91,95,199,.3);
+}
+.smm-topbar-save:hover { filter:brightness(1.12); box-shadow:0 4px 14px rgba(91,95,199,.4); }
+.smm-topbar-logout {
+  background:transparent; border-color:rgba(255,255,255,.08); color:rgba(255,255,255,.3);
+}
+.smm-topbar-logout:hover { border-color:rgba(255,255,255,.16); color:rgba(255,255,255,.6); }
 .smm-hdr-right { display:flex; flex-direction:column; gap:10px; align-items:flex-end; }
 .smm-client-pill {
   background: var(--smm-bg4); border: 1px solid var(--smm-brd2);
@@ -2309,13 +2376,13 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
 
 /* ── SMM Nav ── */
 .smm-nav {
-  display:flex; gap:0; padding:0 56px;
+  display:flex; gap:0; padding:0 20px;
   border-bottom: 1px solid var(--smm-brd);
-  position:sticky; top:52px; z-index:50;
-  background: rgba(8,8,8,0.92); backdrop-filter:blur(20px);
+  position:sticky; top:48px; z-index:50;
+  background: rgba(8,8,8,0.95); backdrop-filter:blur(20px);
 }
 .smm-nav-item {
-  padding:16px 22px; font-family:var(--font-mono);
+  padding:12px 20px; font-family:var(--font-mono);
   font-size:11px; font-weight:500; letter-spacing:.1em; text-transform:uppercase;
   color:var(--smm-muted2); cursor:pointer; border-bottom:2px solid transparent;
   transition:all .2s; position:relative; top:1px;
@@ -14622,45 +14689,48 @@ select:focus {
      PAGE: SMM REPORT
 ═══════════════════════════════════════════ -->
 <div class="page" id="page-smm">
-  <!-- global nav header (reuse app-header style) -->
-  <header class="app-header" style="background:rgba(8,8,8,.9);">
-    <div style="font-family:var(--font-mono);font-size:10px;color:var(--smm-muted);letter-spacing:.12em;text-transform:uppercase;">DTR Analytics</div>
-    <div class="header-right">
-      <div class="user-pill"><div style="width:6px;height:6px;border-radius:50%;background:var(--smm-green);animation:pulse 2s ease infinite;"></div><span id="header-user-smm">—</span></div>
-      <button class="logout-btn" onclick="doLogout()">Выйти</button>
-    </div>
-  </header>
 
-  <!-- SMM branded header -->
-  <div class="smm-hdr" style="position:relative;overflow:hidden;">
-    <div class="smm-scan"></div>
-    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 100% at 80% 50%,rgba(184,146,58,.07) 0%,transparent 70%);pointer-events:none;"></div>
-    <div class="smm-hdr-logo">
-      <div class="smm-hdr-agency">DeTroyd System Group</div>
-      <div class="smm-hdr-name">DTR Analytics</div>
-      <div class="smm-hdr-sub">SMM Performance Report</div>
+  <!-- ── SMM COMPACT TOPBAR ── -->
+  <div class="smm-topbar">
+    <!-- Left: brand + breadcrumb -->
+    <div class="smm-topbar-left">
+      <button class="smm-back-btn" onclick="goBackToProject()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      </button>
+      <div class="smm-topbar-divider"></div>
+      <div class="smm-topbar-brand">
+        <span class="smm-topbar-agency">DeTroyd</span>
+        <span class="smm-topbar-dot">·</span>
+        <span class="smm-topbar-report">SMM Report</span>
+      </div>
     </div>
-    <div class="smm-hdr-right">
-      <div class="smm-client-pill">
-        <div class="smm-client-pill-lbl">Клиент</div>
-        <div class="smm-client-pill-val" id="smm-client-name">—</div>
+
+    <!-- Center: client + period + status -->
+    <div class="smm-topbar-center">
+      <div class="smm-topbar-client" id="smm-client-name">—</div>
+      <div class="smm-topbar-sep"></div>
+      <div class="smm-topbar-period" id="smm-period-lbl">—</div>
+      <div class="smm-topbar-status" id="smm-status-dot">
+        <span class="smm-status-pulse"></span>
+        Активный
       </div>
-      <div style="font-family:var(--font-mono);font-size:10px;color:var(--smm-muted);letter-spacing:.1em;" id="smm-period-lbl">—</div>
-      <div class="smm-status-dot" id="smm-status-dot">Активный</div>
-      <div style="display:flex;gap:10px;margin-top:4px;">
-        <button class="smm-run-ai-btn agency-only" onclick="runSMMAnalysis()" id="smm-ai-btn">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
-          AI Анализ
-        </button>
-        <button class="smm-save-bar-btn agency-only" onclick="saveSMMData(true)" id="smm-save-btn">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Сохранить
-        </button>
-        <div style="display:flex;gap:6px;align-items:center;" class="back-btn" onclick="goBackToProject()" style="margin:0;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
-          <span style="font-family:var(--font-mono);font-size:11px;">Назад</span>
-        </div>
+    </div>
+
+    <!-- Right: actions -->
+    <div class="smm-topbar-right">
+      <div class="user-pill" style="border-color:rgba(255,255,255,.08);">
+        <div style="width:5px;height:5px;border-radius:50%;background:var(--smm-green);animation:pulse 2s ease infinite;flex-shrink:0;"></div>
+        <span id="header-user-smm" style="font-size:11px;color:rgba(255,255,255,.45);"></span>
       </div>
+      <button class="smm-topbar-btn smm-topbar-ai agency-only" onclick="runSMMAnalysis()" id="smm-ai-btn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3"/></svg>
+        AI Анализ
+      </button>
+      <button class="smm-topbar-btn smm-topbar-save agency-only" onclick="saveSMMData(true)" id="smm-save-btn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Сохранить
+      </button>
+      <button class="smm-topbar-btn smm-topbar-logout" onclick="doLogout()">Выйти</button>
     </div>
   </div>
 
