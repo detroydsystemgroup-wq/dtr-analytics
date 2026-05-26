@@ -26026,22 +26026,14 @@ ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS timer_started_at timestamptz;</
       <label>Название задачи</label>
       <input type="text" id="kb-task-title-inp" placeholder="Что нужно сделать?" maxlength="120" onkeydown="if(event.key==='Enter')saveKanbanTask()">
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-      <div class="field" style="margin-bottom:0;">
-        <label>Исполнитель</label>
-        <select id="kb-task-assignee-inp" style="width:100%;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--r-sm);padding:10px 14px;color:var(--txt);font-family:var(--font-display);font-size:13px;outline:none;">
-          <option value="">— не назначен —</option>
-        </select>
-      </div>
-      <div class="field" style="margin-bottom:0;">
-        <label>Приоритет</label>
-        <select id="kb-task-priority-inp" style="width:100%;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--r-sm);padding:10px 14px;color:var(--txt);font-family:var(--font-display);font-size:13px;outline:none;">
-          <option value="normal">🔵 Обычный</option>
-          <option value="high">🟡 Высокий</option>
-          <option value="urgent">🔴 Срочный</option>
-          <option value="low">⚪ Низкий</option>
-        </select>
-      </div>
+    <div class="field">
+      <label>Приоритет</label>
+      <select id="kb-task-priority-inp" style="width:100%;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--r-sm);padding:10px 14px;color:var(--txt);font-family:var(--font-display);font-size:13px;outline:none;">
+        <option value="normal">🔵 Обычный</option>
+        <option value="high">🟡 Высокий</option>
+        <option value="urgent">🔴 Срочный</option>
+        <option value="low">⚪ Низкий</option>
+      </select>
     </div>
     <div class="field" style="margin-top:12px;">
       <label>Дедлайн <span style="color:var(--txt3);font-size:9px;">(опционально)</span></label>
@@ -26069,22 +26061,14 @@ ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS timer_started_at timestamptz;</
       <label>Название задачи</label>
       <input type="text" id="task-title-inp" placeholder="Например: собрать референсы" maxlength="120">
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-      <div class="field" style="margin-bottom:0">
-        <label>Исполнитель</label>
-        <select id="task-assignee-inp" style="width:100%;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--r-sm);padding:10px 14px;color:var(--txt);font-family:var(--font-display);font-size:13px;outline:none;">
-          <option value="">— не назначен —</option>
-        </select>
-      </div>
-      <div class="field" style="margin-bottom:0">
-        <label>Приоритет</label>
-        <select id="task-priority-inp" style="width:100%;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--r-sm);padding:10px 14px;color:var(--txt);font-family:var(--font-display);font-size:13px;outline:none;">
-          <option value="normal">🔵 Обычный</option>
-          <option value="high">🟡 Высокий</option>
-          <option value="urgent">🔴 Срочный</option>
-          <option value="low">⚪ Низкий</option>
-        </select>
-      </div>
+    <div class="field">
+      <label>Приоритет</label>
+      <select id="task-priority-inp" style="width:100%;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--r-sm);padding:10px 14px;color:var(--txt);font-family:var(--font-display);font-size:13px;outline:none;">
+        <option value="normal">🔵 Обычный</option>
+        <option value="high">🟡 Высокий</option>
+        <option value="urgent">🔴 Срочный</option>
+        <option value="low">⚪ Низкий</option>
+      </select>
     </div>
     <div class="field" style="margin-top:12px;">
       <label>Дедлайн (опционально)</label>
@@ -30066,11 +30050,6 @@ function openKanbanAddTask(defaultStatus = 'waiting') {
   g('kb-task-deadline-inp').value = ''
   g('kb-task-priority-inp').value = 'normal'
 
-  // Populate assignee
-  const sel = g('kb-task-assignee-inp')
-  sel.innerHTML = '<option value="">— не назначен —</option>' +
-    teamMembers.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('')
-
   // Stage hint
   const hint = g('kb-stage-hint')
   if (hint) hint.textContent = `Задача будет привязана к активному этапу: ${STAGES[activeIdx]?.icon||''} ${stageName}`
@@ -30088,7 +30067,6 @@ async function saveKanbanTask() {
   if (!title) { g('kb-task-title-inp').style.borderColor='var(--red)'; setTimeout(()=>g('kb-task-title-inp').style.borderColor='',1500); return }
 
   const kanbanStatus = g('kb-task-status-inp').value || 'waiting'
-  const assignee = g('kb-task-assignee-inp').value
   const priority = g('kb-task-priority-inp').value
   const deadline = g('kb-task-deadline-inp').value || null
   const stageIndex = getActiveStageIndex()
@@ -30097,7 +30075,7 @@ async function saveKanbanTask() {
   const insertData = {
     project_id: currentProject.id,
     stage_index: stageIndex,
-    title, assignee, priority, deadline,
+    title, assignee: '', priority, deadline,
     done: kanbanStatus === 'done',
     kanban_status: kanbanStatus,
     timer_started_at: kanbanStatus === 'active' ? now : null,
@@ -30295,9 +30273,6 @@ function openAddTask(stageIndex) {
   g('task-modal-title').textContent = (STAGES[stageIndex]?.icon||'') + ' ' + (STAGES[stageIndex]?.name||'Этап')
   g('task-title-inp').value = ''
   g('task-deadline-inp').value = ''
-  const sel = g('task-assignee-inp')
-  sel.innerHTML = '<option value="">— не назначен —</option>' +
-    teamMembers.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('')
   g('task-priority-inp').value = 'normal'
   openModal('modal-task', 'task-title-inp')
   setTimeout(() => g('task-title-inp').focus(), 100)
@@ -30307,19 +30282,18 @@ async function saveTask() {
   const title = g('task-title-inp').value.trim()
   if (!title) { g('task-title-inp').style.borderColor='var(--red)'; setTimeout(()=>g('task-title-inp').style.borderColor='',1500); return }
   const stageIndex = parseInt(g('task-stage-index').value)
-  const assignee = g('task-assignee-inp').value
   const priority = g('task-priority-inp').value
   const deadline = g('task-deadline-inp').value || null
   const editingId = g('task-editing-id').value
   try {
     if (editingId) {
-      await sb.from('stage_tasks').update({ title, assignee, priority, deadline }).eq('id', editingId)
+      await sb.from('stage_tasks').update({ title, assignee: '', priority, deadline }).eq('id', editingId)
       const t = (tasksData[stageIndex]||[]).find(x => x.id === editingId)
-      if (t) Object.assign(t, { title, assignee, priority, deadline })
+      if (t) Object.assign(t, { title, assignee: '', priority, deadline })
     } else {
       const { data, error } = await sb.from('stage_tasks').insert({
         project_id: currentProject.id, stage_index: stageIndex,
-        title, assignee, priority, deadline, done: false,
+        title, assignee: '', priority, deadline, done: false,
         created_by: currentUser?.id || null
       }).select().single()
       if (error) throw error
