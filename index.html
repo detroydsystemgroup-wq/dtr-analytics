@@ -14348,7 +14348,9 @@ select:focus {
   font-size: 13px;
   color: var(--txt2);
   font-family: var(--font-body);
+  font-weight: 400;
 }
+.fin-pnl-row span { font-weight: 400; }
 .fin-pnl-sep {
   height: 1px;
   background: var(--brd);
@@ -14457,13 +14459,13 @@ select:focus {
             <span id="fpv-total-cost" style="font-family:var(--font-mono);color:var(--red);">—</span>
           </div>
           <div class="fin-pnl-sep"></div>
-          <div class="fin-pnl-row" style="font-weight:700;font-size:14px;">
-            <span style="color:var(--txt);">Маржа</span>
-            <span id="fpv-margin" style="font-family:var(--font-mono);">—</span>
+          <div class="fin-pnl-row" style="margin-top:2px;padding-top:6px;">
+            <span style="color:var(--txt);font-size:13px;">Маржа</span>
+            <span id="fpv-margin" style="font-family:var(--font-mono);font-size:13px;">—</span>
           </div>
-          <div class="fin-pnl-row" style="margin-top:2px;">
+          <div class="fin-pnl-row" style="margin-top:1px;">
             <span>Маржинальность</span>
-            <span id="fpv-margin-pct" style="font-family:var(--font-mono);font-weight:700;">—</span>
+            <span id="fpv-margin-pct" style="font-family:var(--font-mono);">—</span>
           </div>
         </div>
       </div>
@@ -14472,7 +14474,7 @@ select:focus {
 
     <!-- Footer (sticky) -->
     <div class="modal-footer" style="margin-top:0;position:sticky;bottom:0;background:var(--bg3);padding:14px 24px;border-top:1px solid var(--brd);">
-      <button class="btn-ghost" onclick="closeModal('modal-finance')">Отмена</button>
+      <button class="btn-ghost" style="flex:1;" onclick="closeModal('modal-finance')">Отмена</button>
       <button class="btn-primary" style="flex:1;" onclick="saveFinanceSettings()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
         Сохранить P&L
@@ -37078,6 +37080,393 @@ async function cpRenderMilestone(project) {
   padding: 4px 10px !important;
 }
 
+</style>
+
+<style id="dtr-kanban-css">
+/* ══════════════════════════════════════════
+   KANBAN BOARD — Операционка
+   DTR Design System: Obsidian · Gold · Warm
+══════════════════════════════════════════ */
+
+/* ── Header ── */
+.kb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0 16px;
+  border-bottom: 1px solid var(--brd);
+  margin-bottom: 20px;
+}
+.kb-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -.03em;
+  color: var(--txt);
+  margin-bottom: 4px;
+}
+.kb-subtitle {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--txt3);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.kb-legend {
+  display: flex;
+  align-items: center;
+  font-family: var(--font-display);
+  font-size: 11px;
+  color: var(--txt3);
+  gap: 4px;
+}
+.kb-leg-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.kb-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: var(--a);
+  border: none;
+  border-radius: var(--r-sm);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.15);
+}
+.kb-add-btn:hover { background: var(--a2); }
+
+/* ── SQL error note ── */
+.kb-sql-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(224,82,82,.08);
+  border: 1px solid rgba(224,82,82,.2);
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  color: var(--red);
+  margin-bottom: 16px;
+}
+.kb-sql-btn {
+  margin-left: auto;
+  padding: 4px 10px;
+  background: rgba(224,82,82,.12);
+  border: 1px solid rgba(224,82,82,.25);
+  border-radius: 5px;
+  color: var(--red);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: background .15s;
+}
+.kb-sql-btn:hover { background: rgba(224,82,82,.2); }
+
+/* ── 3-column board ── */
+.kb-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+/* ── Column ── */
+.kb-col {
+  background: var(--bg2);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  transition: border-color .15s, box-shadow .15s;
+  min-height: 200px;
+}
+.kb-col.kb-drag-over {
+  border-color: var(--a2);
+  box-shadow: 0 0 0 3px var(--a-glow);
+}
+
+/* ── Column header ── */
+.kb-col-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--brd);
+}
+.kb-col-waiting-h  { border-top: 2px solid rgba(255,255,255,.12); }
+.kb-col-active-h   { border-top: 2px solid var(--a2); }
+.kb-col-done-h     { border-top: 2px solid var(--green); }
+
+.kb-col-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--txt2);
+  letter-spacing: -.01em;
+}
+.kb-col-count {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--txt3);
+  background: rgba(255,255,255,.06);
+  padding: 2px 7px;
+  border-radius: 20px;
+  min-width: 22px;
+  text-align: center;
+}
+.kb-count-active {
+  background: rgba(184,146,58,.18);
+  color: var(--a2);
+}
+
+/* Pulse for active column */
+.kb-active-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--a2);
+  flex-shrink: 0;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* ── Cards area ── */
+.kb-cards {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 80px;
+}
+
+/* ── Empty state ── */
+.kb-col-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 28px 16px;
+  color: var(--txt3);
+  font-size: 11px;
+  font-family: var(--font-display);
+  text-align: center;
+}
+
+/* ── Column add button ── */
+.kb-col-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--brd);
+  color: var(--txt3);
+  font-family: var(--font-display);
+  font-size: 11px;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.kb-col-add:hover {
+  background: rgba(184,146,58,.06);
+  color: var(--a2);
+}
+
+/* ── Card ── */
+.kb-card {
+  background: var(--bg3);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  cursor: grab;
+  transition: border-color .15s, box-shadow .15s, transform .15s;
+  position: relative;
+}
+.kb-card:hover {
+  border-color: var(--brd2);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+.kb-card.kb-dragging {
+  opacity: .45;
+  transform: rotate(1.5deg) scale(.98);
+  cursor: grabbing;
+}
+.kb-card-active {
+  border-color: rgba(184,146,58,.22);
+  background: rgba(184,146,58,.04);
+}
+.kb-card-done {
+  opacity: .65;
+}
+
+/* Card coloured top stripe */
+.kb-card-cap {
+  height: 2px;
+  background: var(--brd2);
+}
+.kb-card-active .kb-card-cap { background: var(--a2); }
+.kb-card-done   .kb-card-cap { background: var(--green); }
+
+/* Card body */
+.kb-card-body {
+  padding: 10px 12px 8px;
+}
+
+/* Top row: priority badge + timer */
+.kb-card-toprow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 7px;
+  gap: 6px;
+}
+
+/* Priority badge */
+.kb-pri-badge {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.pri-urgent { background: rgba(224,82,82,.14);  color: var(--red);   }
+.pri-high   { background: rgba(232,153,58,.14); color: var(--amber); }
+.pri-normal { background: rgba(56,178,172,.12); color: var(--cyan);  }
+.pri-low    { background: rgba(255,255,255,.06); color: var(--txt3); }
+
+/* Timer */
+.kb-card-timer {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.kb-timer-live   { background: rgba(184,146,58,.14); color: var(--a2); }
+.kb-timer-logged { background: rgba(62,207,142,.10); color: var(--green); }
+
+/* Card title */
+.kb-card-title {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--txt);
+  line-height: 1.4;
+  margin-bottom: 8px;
+  letter-spacing: -.01em;
+}
+
+/* Card footer: assignee + deadline */
+.kb-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  min-height: 20px;
+}
+.kb-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 8px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+.kb-card-assignee-name {
+  font-size: 10px;
+  color: var(--txt3);
+  font-family: var(--font-display);
+}
+.kb-card-deadline {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--txt3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255,255,255,.04);
+}
+.kb-card-deadline.overdue {
+  background: rgba(224,82,82,.12);
+  color: var(--red);
+}
+
+/* ── Card action buttons ── */
+.kb-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px 8px;
+  border-top: 1px solid var(--brd);
+}
+.kb-move-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: rgba(255,255,255,.05);
+  border: 1px solid var(--brd);
+  border-radius: 5px;
+  color: var(--txt2);
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .14s;
+}
+.kb-move-btn:hover { background: rgba(255,255,255,.09); color: var(--txt); border-color: var(--brd2); }
+.kb-move-btn.to-active { border-color: rgba(184,146,58,.3); color: var(--a2); }
+.kb-move-btn.to-active:hover { background: rgba(184,146,58,.1); }
+.kb-move-btn.to-done   { border-color: rgba(62,207,142,.3); color: var(--green); }
+.kb-move-btn.to-done:hover   { background: rgba(62,207,142,.08); }
+
+.kb-del-btn {
+  margin-left: auto;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  color: var(--txt3);
+  cursor: pointer;
+  opacity: 0;
+  transition: all .14s;
+  flex-shrink: 0;
+}
+.kb-card:hover .kb-del-btn { opacity: 1; }
+.kb-del-btn:hover {
+  background: rgba(224,82,82,.12);
+  border-color: rgba(224,82,82,.2);
+  color: var(--red);
+}
 </style>
 
 </body>
