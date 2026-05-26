@@ -18257,75 +18257,8 @@ function globalSearch(q) {
 }
 
 // ══════════════════════════════════════════════
-// ACTIVITY FEED
+// ACTIVITY FEED — see overridden version below (dtr-activity-upgrade-js)
 // ══════════════════════════════════════════════
-async function loadActivityFeed() {
-  const feed = g('activity-feed')
-  if (!feed) return
-
-  if (!_allProjects.length) { feed.innerHTML = '<div class="activity-loading">Нет проектов</div>'; return }
-
-  const ids = _allProjects.map(p => p.id)
-  const { data: hist } = await sb.from('stage_history')
-    .select('*')
-    .in('project_id', ids)
-    .order('created_at', { ascending: false })
-    .limit(60)
-
-  const items = (hist || []).map(h => {
-    const proj = _allProjects.find(p => p.id === h.project_id)
-    const stage = STAGES[h.stage_index]
-    if (!proj || !stage) return null
-    return { ...h, proj, stage }
-  }).filter(Boolean)
-
-  if (!items.length) {
-    feed.innerHTML = '<div class="activity-loading">Активности пока нет — начни работу с этапами проектов</div>'
-    return
-  }
-
-  // Group by date
-  const groups = {}
-  const today = new Date(); today.setHours(0,0,0,0)
-  const yesterday = new Date(today); yesterday.setDate(today.getDate()-1)
-  items.forEach(item => {
-    const d = new Date(item.created_at); d.setHours(0,0,0,0)
-    let label
-    if (d.getTime() === today.getTime()) label = 'Сегодня'
-    else if (d.getTime() === yesterday.getTime()) label = 'Вчера'
-    else label = d.toLocaleDateString('ru-RU', {day:'numeric',month:'long'})
-    if (!groups[label]) groups[label] = []
-    groups[label].push(item)
-  })
-
-  const eventColors = { 'Начат': 'var(--a2)', 'Завершён': 'var(--green)', 'Возвращён в ожидание': 'var(--amber)' }
-  const eventEmoji = { 'Начат': '🔵', 'Завершён': '✅', 'Возвращён в ожидание': '⏳' }
-
-  feed.innerHTML = Object.entries(groups).map(([label, items]) => `
-    <div class="act-day-group">
-      <div class="act-day-label">${label}</div>
-      ${items.map(item => {
-        const col = item.proj.brand_color || '#b8923a'
-        const evCol = eventColors[item.event] || 'var(--a2)'
-        const evEmoji = eventEmoji[item.event] || '•'
-        const time = new Date(item.created_at).toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'})
-        return `<div class="act-item">
-          <div class="act-dot-wrap">
-            <div class="act-dot" style="background:${evCol};"></div>
-          </div>
-          <div class="act-body">
-            <div class="act-text">
-              ${evEmoji} <b>${item.stage.name}</b> — ${item.event}
-              <span class="act-project-chip" style="background:${col}18;color:${col};">${esc(item.proj.name)}</span>
-            </div>
-            ${item.note ? `<div class="act-meta">💬 ${esc(item.note)}</div>` : ''}
-            <div class="act-meta">${time}</div>
-          </div>
-          <button class="act-goto" onclick="openProject('${item.proj.id}')">Открыть →</button>
-        </div>`
-      }).join('')}
-    </div>`).join('')
-}
 
 // ══════════════════════════════════════════════
 // OVERVIEW / SUMMARY
@@ -19237,9 +19170,7 @@ async function publishReport() {
 // ══════════════════════════════════════════════
 // FILE UPLOAD
 // ══════════════════════════════════════════════
-function dv(e,k){e.preventDefault();g('z-'+k).classList.add('drag');}
-function dl(k){g('z-'+k).classList.remove('drag');}
-function dd(e,k){e.preventDefault();dl(k);const f=e.dataTransfer.files[0];if(f)processFile(f,k);}
+// dv/dl/dd defined later (DRAG & DROP section) — keeping single source of truth
 
 function loadFile(e, key) {
   const f = e.target.files[0]
@@ -25381,7 +25312,7 @@ function showSQLHint() {
       </div>
       <div>
         <label style="display:block;font-family:var(--font-mono);font-size:9px;color:rgba(184,146,58,.7);letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px;">Цвет</label>
-        <input type="color" id="ps-color-inp" value="var(--a)" style="width:44px;height:44px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:transparent;cursor:pointer;padding:3px;" oninput="updatePSAvatarColor()">
+        <input type="color" id="ps-color-inp" value="#b8923a" style="width:44px;height:44px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:transparent;cursor:pointer;padding:3px;" oninput="updatePSAvatarColor()">
       </div>
     </div>
     <input type="file" id="ps-photo-file" accept="image/*" style="display:none" onchange="handlePSPhoto(this)">
