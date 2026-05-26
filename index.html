@@ -37474,8 +37474,143 @@ async function cpRenderMilestone(project) {
 }
 </style>
 
+<script>
+/* ═══════════════════════════════════════════════════════════
+   PASSPORT ENGINE v2 — ppTab + ppLive + openPassport patch
+   Реализует все функции, вызываемые из HTML нового паспорта
+═══════════════════════════════════════════════════════════ */
+
+const _ppTabLabels = {
+  basic:'Профиль', brand:'Бренд', audience:'Аудитория',
+  competitors:'Конкуренты', kpi:'KPI', media:'Медиа',
+  notes:'Заметки', ai:'AI-Бриф'
+}
+
+window.ppTab = (function() {
+  const _aiHook = window.ppTab
+  return function ppTabImpl(tab, btn) {
+    document.querySelectorAll('#page-passport .pp-form-panel')
+      .forEach(p => p.classList.remove('pp-fp-active'))
+    const panel = document.getElementById('ppf-' + tab)
+    if (panel) panel.classList.add('pp-fp-active')
+
+    document.querySelectorAll('#page-passport .pp-tab')
+      .forEach(t => t.classList.remove('pp-tab-active'))
+    if (btn) btn.classList.add('pp-tab-active')
+
+    document.querySelectorAll('#page-passport .pp-preview-panel')
+      .forEach(p => p.classList.remove('pp-pv-active'))
+    const preview = document.getElementById('ppv-' + tab)
+    if (preview) preview.classList.add('pp-pv-active')
+
+    const lbl = document.getElementById('pp-preview-tab-label')
+    if (lbl) lbl.textContent = _ppTabLabels[tab] || tab
+
+    if (_aiHook && _aiHook !== window.ppTab) {
+      try { _aiHook(tab, btn) } catch(e) {}
+    }
+  }
+})()
+
+window.ppLive = function ppLiveImpl() {
+  const v  = id => (document.getElementById(id)?.value || '').trim()
+  const sv = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val || '—' }
+
+  const name    = v('be-name')
+  const category = v('be-category')
+  const address  = v('be-address')
+
+  const av = document.getElementById('ppv-avatar')
+  if (av) av.textContent = name ? name[0].toUpperCase() : 'S'
+
+  const nameEl = document.getElementById('ppv-name')
+  if (nameEl) nameEl.textContent = name || 'Название заведения'
+
+  const city  = address.split(',')[0].replace(/^г\.?\s*/i, '').trim()
+  const catEl = document.getElementById('ppv-category')
+  if (catEl) {
+    const parts = [category, city].filter(Boolean)
+    catEl.textContent = parts.length ? parts.join(' · ') : 'Категория · Город'
+  }
+
+  sv('ppv-address', address)
+  sv('ppv-phone',   v('be-phone'))
+  sv('ppv-email',   v('be-email'))
+  sv('ppv-site',    v('be-website'))
+  sv('ppv-hours',   v('be-hours'))
+
+  const ig = document.getElementById('ppv-ig')
+  const tg = document.getElementById('ppv-tg')
+  if (ig) ig.textContent = v('be-instagram') || 'Instagram'
+  if (tg) tg.textContent = v('be-telegram')  || 'Telegram'
+
+  const fields = ['be-name','be-category','be-address','be-phone','be-email','be-instagram','be-hours']
+  const filled = fields.filter(id => v(id)).length
+  const bar = document.getElementById('pp-tpp-bar')
+  const pillLbl = document.getElementById('pp-tpp-label')
+  if (bar)     bar.style.width = Math.round(filled / fields.length * 100) + '%'
+  if (pillLbl) pillLbl.textContent = filled + ' / ' + fields.length
+}
+
+window.ppSelectTone = function(btn) {
+  document.querySelectorAll('#page-passport .pp-tone-btn')
+    .forEach(b => b.classList.remove('pp-tone-btn-active'))
+  btn.classList.add('pp-tone-btn-active')
+  if (typeof selectedTone !== 'undefined') selectedTone = btn.dataset.tone || ''
+}
+
+;(function() {
+  const _orig = window.openPassport
+  window.openPassport = async function() {
+    if (_orig) await _orig.call(this)
+    const firstTab = document.querySelector('#page-passport .pp-tab[data-tab="basic"]')
+    ppTab('basic', firstTab)
+    _ppFillFields()
+  }
+})()
+
+;(function() {
+  const _orig = window.loadPassport
+  if (!_orig) return
+  window.loadPassport = async function() {
+    await _orig.call(this)
+    _ppFillFields()
+  }
+})()
+
+function _ppFillFields() {
+  setTimeout(function() {
+    const pd = (typeof passportData !== 'undefined') ? passportData : {}
+    const b  = pd.basic  || {}
+    const br = pd.brand  || {}
+    const m  = pd.media  || {}
+    const sv = (id, val) => {
+      const el = document.getElementById(id)
+      if (el && val !== undefined && val !== null) el.value = val
+    }
+    sv('be-name', b.name); sv('be-category', b.category)
+    sv('be-address', b.address); sv('be-phone', b.phone)
+    sv('be-email', b.email); sv('be-website', b.website)
+    sv('be-instagram', b.instagram); sv('be-telegram', b.telegram)
+    sv('be-hours', b.hours)
+    sv('bre-messages', (br.messages||[]).join(', '))
+    sv('bre-forbidden', (br.forbidden||[]).join(', '))
+    sv('bre-colors',   (br.colors||[]).join(', '))
+    sv('bre-style', br.style)
+    if (br.tone) {
+      document.querySelectorAll('#page-passport .pp-tone-btn').forEach(btn => {
+        btn.classList.toggle('pp-tone-btn-active', btn.dataset.tone === br.tone)
+      })
+    }
+    sv('me-photo', m.photo); sv('me-video', m.video)
+    sv('me-refs',  m.refs);  sv('me-extra', m.extra)
+    sv('me-rules', m.rules)
+    ppLive()
+  }, 150)
+}
+</script>
+
 <style id="dtr-passport-editor-css">
-/* ══════════════════════════════════════════
    ПАСПОРТ КЛИЕНТА — левая панель (редактор)
    DTR Design System: Obsidian · Gold · Warm
 ══════════════════════════════════════════ */
