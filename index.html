@@ -31109,21 +31109,34 @@ async function loadSMMReports() {
     var timeStr = new Date(r.created_at).toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'});
     // ── SMM metrics ──
     var sm2 = r.metrics || {};
-    var er  = sm2.er  != null ? sm2.er.toFixed(2)  + '%' : null;
-    var lr  = sm2.lr  != null ? sm2.lr.toFixed(2)  + '%' : null;
-    var shr = sm2.shr != null ? sm2.shr.toFixed(2) + '%' : null;
-    var sr  = sm2.sr  != null ? sm2.sr.toFixed(2)  + '%' : null;
-    var tr2 = sm2.tr  != null ? sm2.tr.toFixed(2)  + '%' : null;
+    var er  = sm2.er  != null && sm2.er  !== '' ? (+sm2.er).toFixed(2)  + '%' : null;
+    var lr  = sm2.lr  != null && sm2.lr  !== '' ? (+sm2.lr).toFixed(2)  + '%' : null;
+    var shr = sm2.shr != null && sm2.shr !== '' ? (+sm2.shr).toFixed(2) + '%' : null;
+    var sr  = sm2.sr  != null && sm2.sr  !== '' ? (+sm2.sr).toFixed(2)  + '%' : null;
+    var tr2 = sm2.tr  != null && sm2.tr  !== '' ? (+sm2.tr).toFixed(2)  + '%' : null;
 
-    var hasSMMMetrics = er || lr || shr;
+    // Extra reach/content metrics
+    var totalReach = (sm2.reels_reach||0) + (sm2.posts_reach||0) + (sm2.stories_reach||0);
+    var totalViews = (sm2.reels_views||0) + (sm2.posts_views||0);
+    var reachStr   = totalReach > 0 ? fmtSMMNum(totalReach) : null;
+    var viewsStr   = totalViews > 0 ? fmtSMMNum(totalViews) : null;
+    var reelsStr   = sm2.reels_count > 0 ? sm2.reels_count + ' Reels' : null;
+    var follStr    = sm2.followers != null && sm2.followers !== '' && sm2.followers !== 0
+                     ? (sm2.followers > 0 ? '+' : '') + fmtSMMNum(sm2.followers) : null;
+
+    var hasSMMMetrics = er || lr || shr || sr || tr2 || reachStr || viewsStr || reelsStr || follStr;
 
     var smmMetricsStrip = hasSMMMetrics
       ? '<div class="rp-metrics-strip">'
-        + (er  ? rpSMMMetric('ER', er,  'var(--a2)', 'rgba(184,146,58,.08)') : '')
-        + (lr  ? rpSMMMetric('LR', lr,  '#22d3ee', 'rgba(34,211,238,.07)') : '')
-        + (tr2 ? rpSMMMetric('C/R', tr2, '#fbbf24', 'rgba(251,191,36,.07)') : '')
-        + (shr ? rpSMMMetric('SH/R', shr, '#e879f9', 'rgba(232,121,249,.07)') : '')
-        + (sr  ? rpSMMMetric('SR',  sr,  '#34d399', 'rgba(52,211,153,.07)') : '')
+        + (er       ? rpSMMMetric('ER',     er,       'var(--a2)',  'rgba(184,146,58,.08)') : '')
+        + (lr       ? rpSMMMetric('LR',     lr,       '#22d3ee',   'rgba(34,211,238,.07)') : '')
+        + (tr2      ? rpSMMMetric('C/R',    tr2,      '#fbbf24',   'rgba(251,191,36,.07)') : '')
+        + (shr      ? rpSMMMetric('SH/R',   shr,      '#e879f9',   'rgba(232,121,249,.07)') : '')
+        + (sr       ? rpSMMMetric('SR',     sr,       '#34d399',   'rgba(52,211,153,.07)') : '')
+        + (reachStr ? rpSMMMetric('Охват',  reachStr, '#3ecf8e',   'rgba(62,207,142,.07)') : '')
+        + (viewsStr ? rpSMMMetric('Просмотры', viewsStr, '#38b2ac','rgba(56,178,172,.07)') : '')
+        + (reelsStr ? rpSMMMetric('Reels',  reelsStr, 'var(--a3)', 'rgba(184,146,58,.06)') : '')
+        + (follStr  ? rpSMMMetric('Прирост',follStr,  '#f472b6',   'rgba(244,114,182,.07)') : '')
         + '</div>'
       : '';
 
@@ -33446,6 +33459,14 @@ function rpMetricFull(label, val, col, bg, arrow, hasData) {
 // rpMetric — legacy alias
 function rpMetric(label, val, col, bg, arrow) {
   return rpMetricFull(label, val, col, bg, arrow, val !== '—');
+}
+// fmtSMMNum — compact number for SMM card chips
+function fmtSMMNum(n) {
+  if (!n && n !== 0) return '—';
+  var a = Math.abs(+n);
+  if (a >= 1000000) return (+n/1000000).toFixed(1).replace(/\.0$/, '') + 'М';
+  if (a >= 1000)    return (+n/1000).toFixed(1).replace(/\.0$/, '') + 'К';
+  return String(Math.round(+n));
 }
 // rpSMMMetric — SMM metric chip
 function rpSMMMetric(label, val, col, bg) {
