@@ -37480,6 +37480,36 @@ async function cpRenderMilestone(project) {
    Реализует все функции, вызываемые из HTML нового паспорта
 ═══════════════════════════════════════════════════════════ */
 
+// ── Безопасный патч psEdit / psCancel — старые элементы (#basic-view) 
+//    отсутствуют в новом HTML, не даём краша ──
+;(function() {
+  const _origEdit   = window.psEdit
+  const _origCancel = window.psCancel
+  window.psEdit = function(sec) {
+    if (!document.getElementById(sec + '-view')) return  // новый HTML — пропуск
+    if (_origEdit) _origEdit.call(this, sec)
+  }
+  window.psCancel = function(sec) {
+    if (!document.getElementById(sec + '-view')) return
+    if (_origCancel) _origCancel.call(this, sec)
+  }
+})()
+
+// ── Безопасный патч switchPassportTab — .passport-tab не существует в новом HTML ──
+;(function() {
+  const _orig = window.switchPassportTab
+  window.switchPassportTab = function(id, btn) {
+    // Если новый HTML активен — используем ppTab вместо старой системы
+    if (document.getElementById('ppf-' + id)) {
+      const newBtn = document.querySelector('#page-passport .pp-tab[data-tab="' + id + '"]')
+      if (typeof ppTab === 'function') ppTab(id, newBtn)
+      return
+    }
+    if (_orig) _orig.call(this, id, btn)
+  }
+})()
+
+
 const _ppTabLabels = {
   basic:'Профиль', brand:'Бренд', audience:'Аудитория',
   competitors:'Конкуренты', kpi:'KPI', media:'Медиа',
