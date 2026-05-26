@@ -15377,38 +15377,22 @@ select:focus {
       </div>
 
       <!-- Охват breakdown -->
-      <div class="smm-block">
-        <div class="smm-block-title">
-          <div class="smm-block-dot" style="background:var(--smm-accent);"></div>
-          Охват и просмотры
-        </div>
-        <div style="display:grid;grid-template-columns:140px 1fr 1fr;gap:40px;align-items:start;">
+      <div class="smm-block" style="padding:0 !important;">
 
-          <!-- Totals column -->
-          <div style="display:flex;flex-direction:column;gap:20px;">
-            <div>
-              <div style="font-size:11px;color:rgba(255,255,255,.28);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;font-family:'DM Mono',monospace;">Охват</div>
-              <div style="font-size:36px;font-weight:800;letter-spacing:-.06em;line-height:1;color:#3ecf8e;font-family:'DM Sans',sans-serif;" id="sv-total-reach">—</div>
-              <div style="font-size:11px;color:rgba(255,255,255,.25);margin-top:4px;font-family:'DM Sans',sans-serif;">уникальных аккаунтов</div>
-            </div>
-            <div>
-              <div style="font-size:11px;color:rgba(255,255,255,.28);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;font-family:'DM Mono',monospace;">Просмотры</div>
-              <div style="font-size:36px;font-weight:800;letter-spacing:-.06em;line-height:1;color:#c9a84c;font-family:'DM Sans',sans-serif;" id="sv-total-views">—</div>
-              <div style="font-size:11px;color:rgba(255,255,255,.25);margin-top:4px;font-family:'DM Sans',sans-serif;">суммарно</div>
-            </div>
-          </div>
+        <!-- БАРЫ СВЕРХУ -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;padding:22px 28px 18px;">
 
           <!-- Охват по форматам -->
-          <div>
-            <div style="font-size:11px;color:rgba(255,255,255,.28);letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:8px;">
+          <div style="padding-right:28px;border-right:1px solid rgba(255,255,255,.05);">
+            <div style="font-size:10px;font-family:'DM Mono',monospace;letter-spacing:.14em;color:rgba(255,255,255,.25);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:7px;">
               <span style="width:10px;height:2px;background:#3ecf8e;border-radius:2px;display:inline-block;flex-shrink:0;"></span>
               Охват по форматам
             </div>
             <div class="smm-prog-wrap">
               <div class="smm-prog-hdr">
                 <span class="smm-prog-lbl">Reels</span>
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <span style="font-size:11px;font-family:'DM Mono',monospace;color:rgba(255,255,255,.3);" id="sp-reels-pct">—</span>
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <span style="font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:#c9a84c;letter-spacing:.01em;" id="sp-reels-pct">—</span>
                   <span class="smm-prog-val" id="sp-reels">—</span>
                 </div>
               </div>
@@ -15417,8 +15401,8 @@ select:focus {
             <div class="smm-prog-wrap">
               <div class="smm-prog-hdr">
                 <span class="smm-prog-lbl">Посты</span>
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <span style="font-size:11px;font-family:'DM Mono',monospace;color:rgba(255,255,255,.3);" id="sp-posts-pct">—</span>
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <span style="font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:#9b6fc0;letter-spacing:.01em;" id="sp-posts-pct">—</span>
                   <span class="smm-prog-val" id="sp-posts">—</span>
                 </div>
               </div>
@@ -15427,8 +15411,8 @@ select:focus {
             <div class="smm-prog-wrap">
               <div class="smm-prog-hdr">
                 <span class="smm-prog-lbl">Сторис</span>
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <span style="font-size:11px;font-family:'DM Mono',monospace;color:rgba(255,255,255,.3);" id="sp-stories-pct">—</span>
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <span style="font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:#38b2ac;letter-spacing:.01em;" id="sp-stories-pct">—</span>
                   <span class="smm-prog-val" id="sp-stories">—</span>
                 </div>
               </div>
@@ -15437,16 +15421,16 @@ select:focus {
           </div>
 
           <!-- Просмотры по форматам -->
-          <div>
-            <div style="font-size:11px;color:rgba(255,255,255,.28);letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:8px;">
+          <div style="padding-left:28px;">
+            <div style="font-size:10px;font-family:'DM Mono',monospace;letter-spacing:.14em;color:rgba(255,255,255,.25);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:7px;">
               <span style="width:10px;height:2px;background:#c9a84c;border-radius:2px;display:inline-block;flex-shrink:0;"></span>
               Просмотры по форматам
             </div>
             <div class="smm-prog-wrap">
               <div class="smm-prog-hdr">
                 <span class="smm-prog-lbl">Reels</span>
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <span style="font-size:11px;font-family:'DM Mono',monospace;color:rgba(255,255,255,.3);" id="sv-reels-views-pct">—</span>
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <span style="font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:#c9a84c;letter-spacing:.01em;" id="sv-reels-views-pct">—</span>
                   <span class="smm-prog-val" id="sv-reels-views">—</span>
                 </div>
               </div>
@@ -15455,8 +15439,8 @@ select:focus {
             <div class="smm-prog-wrap">
               <div class="smm-prog-hdr">
                 <span class="smm-prog-lbl">Посты</span>
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <span style="font-size:11px;font-family:'DM Mono',monospace;color:rgba(255,255,255,.3);" id="sv-posts-views-pct">—</span>
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <span style="font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:#9b6fc0;letter-spacing:.01em;" id="sv-posts-views-pct">—</span>
                   <span class="smm-prog-val" id="sv-posts-views">—</span>
                 </div>
               </div>
@@ -15465,16 +15449,34 @@ select:focus {
             <div class="smm-prog-wrap" style="opacity:.35;">
               <div class="smm-prog-hdr">
                 <span class="smm-prog-lbl">Сторис</span>
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <span style="font-size:11px;font-family:'DM Mono',monospace;color:rgba(255,255,255,.3);">—</span>
-                  <span class="smm-prog-val">нет данных</span>
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <span style="font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:rgba(255,255,255,.2);">—</span>
+                  <span class="smm-prog-val" style="color:rgba(255,255,255,.2);">нет данных</span>
                 </div>
               </div>
               <div class="smm-prog-bar"></div>
             </div>
           </div>
-
         </div>
+
+        <!-- ИТОГИ СНИЗУ -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid rgba(255,255,255,.05);">
+          <div style="padding:16px 28px;display:flex;align-items:center;gap:16px;border-right:1px solid rgba(255,255,255,.05);">
+            <div style="font-size:32px;font-weight:800;letter-spacing:-.06em;line-height:1;color:#3ecf8e;font-family:'DM Sans',sans-serif;" id="sv-total-reach">—</div>
+            <div>
+              <div style="font-size:10px;font-family:'DM Mono',monospace;letter-spacing:.1em;color:rgba(255,255,255,.25);text-transform:uppercase;margin-bottom:3px;">Охват</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.3);font-family:'DM Sans',sans-serif;">уникальных аккаунтов</div>
+            </div>
+          </div>
+          <div style="padding:16px 28px;display:flex;align-items:center;gap:16px;">
+            <div style="font-size:32px;font-weight:800;letter-spacing:-.06em;line-height:1;color:#c9a84c;font-family:'DM Sans',sans-serif;" id="sv-total-views">—</div>
+            <div>
+              <div style="font-size:10px;font-family:'DM Mono',monospace;letter-spacing:.1em;color:rgba(255,255,255,.25);text-transform:uppercase;margin-bottom:3px;">Просмотры</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.3);font-family:'DM Sans',sans-serif;">суммарно</div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <!-- Section 02: Метрики -->
