@@ -35068,4 +35068,475 @@ async function cpRenderMilestone(project) {
 </script>
 
 
+
+<!-- ═══════════════════════════════════════════════════════
+     DTR SMM REPORT · EDITORIAL REDESIGN v1.0
+     Approved design: 2 hero cards + metrics strip + breakdown card
+═══════════════════════════════════════════════════════ -->
+<style id="dtr-smm-editorial-v1">
+
+/* ══════════════════════════════════════════════════════
+   HEADER — clean, compact
+══════════════════════════════════════════════════════ */
+#page-smm .smm-topbar {
+  height: 50px !important;
+  background: #09090c !important;
+  border-bottom: 1px solid rgba(255,255,255,.05) !important;
+  padding: 0 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 50 !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+/* Back button */
+#page-smm .smm-back-btn {
+  width: 28px !important; height: 28px !important;
+  border-radius: 8px !important;
+  background: rgba(255,255,255,.05) !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  color: rgba(255,255,255,.45) !important;
+  cursor: pointer !important;
+  transition: all .15s !important;
+}
+#page-smm .smm-back-btn:hover { background: rgba(255,255,255,.09) !important; }
+
+/* Brand */
+#page-smm .smm-topbar-divider { display: none !important; }
+#page-smm .smm-topbar-brand {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 11px !important;
+  display: flex !important; align-items: center !important; gap: 6px !important;
+}
+#page-smm .smm-topbar-agency {
+  color: rgba(255,255,255,.35) !important;
+  font-weight: 500 !important;
+}
+#page-smm .smm-topbar-dot { color: rgba(255,255,255,.12) !important; }
+#page-smm .smm-topbar-report {
+  color: rgba(255,255,255,.2) !important;
+  letter-spacing: .12em !important;
+  font-size: 10px !important;
+  text-transform: uppercase !important;
+}
+
+/* Center */
+#page-smm .smm-topbar-center {
+  display: flex !important; align-items: center !important; gap: 8px !important;
+  position: absolute !important; left: 50% !important;
+  transform: translateX(-50%) !important;
+}
+#page-smm .smm-topbar-client {
+  font-size: 15px !important; font-weight: 700 !important;
+  letter-spacing: -.025em !important; color: #f0ece6 !important;
+  font-family: 'DM Sans', sans-serif !important;
+}
+#page-smm .smm-topbar-sep { display: none !important; }
+#page-smm .smm-topbar-period {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important; color: rgba(255,255,255,.3) !important;
+  letter-spacing: .06em !important;
+}
+#page-smm .smm-topbar-status {
+  font-size: 9px !important; font-family: 'DM Mono', monospace !important;
+  padding: 3px 9px !important; border-radius: 5px !important;
+  background: rgba(62,207,142,.1) !important; color: #3ecf8e !important;
+  letter-spacing: .04em !important;
+  display: flex !important; align-items: center !important; gap: 5px !important;
+  border: none !important;
+}
+#page-smm .smm-status-pulse {
+  width: 5px !important; height: 5px !important;
+  border-radius: 50% !important; background: #3ecf8e !important;
+  flex-shrink: 0 !important;
+  animation: livePing 2.4s ease-in-out infinite !important;
+  box-shadow: none !important;
+}
+
+/* Right buttons */
+#page-smm .smm-topbar-btn {
+  height: 30px !important;
+  padding: 0 14px !important;
+  border-radius: 8px !important;
+  font-size: 11px !important;
+  font-family: 'DM Sans', sans-serif !important;
+  cursor: pointer !important;
+  transition: all .15s !important;
+  display: flex !important; align-items: center !important; gap: 5px !important;
+}
+#page-smm .smm-topbar-logout {
+  background: rgba(255,255,255,.05) !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  color: rgba(255,255,255,.5) !important;
+}
+#page-smm .smm-topbar-logout:hover { background: rgba(255,255,255,.09) !important; color: rgba(255,255,255,.8) !important; }
+#page-smm .smm-topbar-ai {
+  background: rgba(255,255,255,.05) !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  color: rgba(255,255,255,.5) !important;
+}
+#page-smm .smm-topbar-ai:hover { background: rgba(255,255,255,.09) !important; color: rgba(255,255,255,.8) !important; }
+#page-smm .smm-topbar-save {
+  background: #b8923a !important;
+  border: none !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  position: relative !important; overflow: hidden !important;
+}
+#page-smm .smm-topbar-save::before {
+  content: '' !important; position: absolute !important; inset: 0 !important;
+  background: linear-gradient(135deg,rgba(255,255,255,.12) 0%,transparent 60%) !important;
+  pointer-events: none !important;
+}
+#page-smm .smm-topbar-save:hover { background: #c9a84c !important; }
+
+/* ══ NAV TABS ══ */
+#page-smm .smm-nav {
+  display: flex !important;
+  padding: 0 24px !important;
+  border-bottom: 1px solid rgba(255,255,255,.05) !important;
+  background: #09090c !important;
+  gap: 0 !important;
+  margin: 0 !important;
+}
+#page-smm .smm-nav-item {
+  padding: 10px 14px !important;
+  font-size: 12px !important; font-weight: 500 !important;
+  color: rgba(255,255,255,.3) !important;
+  border-bottom: 2px solid transparent !important;
+  cursor: pointer !important;
+  position: relative !important; bottom: -1px !important;
+  transition: color .15s !important;
+  font-family: 'DM Sans', sans-serif !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  letter-spacing: 0 !important;
+}
+#page-smm .smm-nav-item:hover { color: rgba(255,255,255,.6) !important; }
+#page-smm .smm-nav-item.sni-active {
+  color: #f0ece6 !important;
+  border-bottom-color: #b8923a !important;
+}
+
+/* ══ BODY ══ */
+#page-smm .smm-body {
+  padding: 28px 24px 40px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  background: #070709 !important;
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+}
+
+/* Period label */
+#page-smm .smm-sec-heading {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0 !important;
+  margin-bottom: 4px !important;
+}
+#page-smm .smm-sec-num {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 11px !important;
+  letter-spacing: .14em !important;
+  color: rgba(255,255,255,.25) !important;
+  text-transform: uppercase !important;
+  margin-right: 10px !important;
+}
+#page-smm .smm-sec-title {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 11px !important;
+  letter-spacing: .14em !important;
+  color: rgba(255,255,255,.25) !important;
+  text-transform: uppercase !important;
+  font-weight: 400 !important;
+}
+#page-smm .smm-sec-line {
+  flex: 1 !important;
+  height: 1px !important;
+  background: rgba(255,255,255,.05) !important;
+  margin-left: 10px !important;
+}
+
+/* Hide old group labels with emojis */
+#page-smm .kpi-group-label { display: none !important; }
+
+/* ══════════════════════════════════════════════════════
+   SHARED CARD BASE — одна система для всех блоков
+══════════════════════════════════════════════════════ */
+#page-smm .kpi-group,
+#page-smm .kpi-group-content,
+#page-smm .kpi-group-digital,
+#page-smm .kpi-group-audience,
+#page-smm .smm-block {
+  background: #0c0c10 !important;
+  border: 1px solid rgba(255,255,255,.07) !important;
+  border-radius: 14px !important;
+  position: relative !important;
+  overflow: hidden !important;
+  box-shadow: none !important;
+  margin-bottom: 0 !important;
+  padding: 0 !important;
+}
+/* Gold top line */
+#page-smm .kpi-group::before,
+#page-smm .kpi-group-content::before,
+#page-smm .kpi-group-digital::before,
+#page-smm .kpi-group-audience::before,
+#page-smm .smm-block::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important; left: 0 !important; right: 0 !important;
+  height: 2px !important;
+  background: var(--card-ac, rgba(184,146,58,.5)) !important;
+  opacity: .75 !important;
+  z-index: 2 !important;
+}
+/* Ambient glow */
+#page-smm .kpi-group::after,
+#page-smm .kpi-group-content::after,
+#page-smm .kpi-group-digital::after,
+#page-smm .kpi-group-audience::after,
+#page-smm .smm-block::after {
+  content: '' !important;
+  position: absolute !important;
+  top: -50px !important; left: -30px !important;
+  width: 220px !important; height: 140px !important;
+  background: radial-gradient(ellipse, var(--card-glow, rgba(184,146,58,.06)) 0%, transparent 70%) !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+
+/* ══ HERO: Охват + Просмотры ══ */
+/* Скрываем цифровые показатели (отдельная группа) — заменяем на hero layout */
+#page-smm .kpi-group-content {
+  --card-ac: #3ecf8e;
+  --card-glow: rgba(62,207,142,.07);
+}
+#page-smm .kpi-group-digital {
+  --card-ac: #c9a84c;
+  --card-glow: rgba(184,146,58,.07);
+}
+#page-smm .kpi-group-audience {
+  --card-ac: rgba(255,255,255,.15);
+  --card-glow: rgba(255,255,255,.03);
+}
+#page-smm .smm-block {
+  --card-ac: #b8923a;
+  --card-glow: rgba(184,146,58,.05);
+}
+
+/* ── Контент: Reels / Stories / Kreatives grid ── */
+#page-smm .kpi-group-content,
+#page-smm .kpi-group-digital {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr 1fr !important;
+  gap: 0 !important;
+}
+#page-smm .kpi-group-audience {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 0 !important;
+}
+
+/* KPI card inside groups */
+#page-smm .kpi-card {
+  padding: 24px 26px !important;
+  background: transparent !important;
+  border: none !important;
+  border-right: 1px solid rgba(255,255,255,.05) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  position: relative !important; z-index: 1 !important;
+  transition: background .15s !important;
+}
+#page-smm .kpi-card:last-child { border-right: none !important; }
+#page-smm .kpi-card:hover { background: rgba(255,255,255,.02) !important; transform: none !important; }
+
+/* Hide old icons */
+#page-smm .kpi-card-icon { display: none !important; }
+
+/* Labels — крупнее */
+#page-smm .kpi-card-name {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: rgba(255,255,255,.55) !important;
+  letter-spacing: .01em !important;
+  margin-bottom: 6px !important;
+  font-family: 'DM Sans', sans-serif !important;
+  text-transform: none !important;
+}
+#page-smm .kpi-card-sub {
+  font-size: 11px !important;
+  color: rgba(255,255,255,.28) !important;
+  margin-top: 6px !important;
+  font-family: 'DM Sans', sans-serif !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+/* Values */
+#page-smm .kpi-card-val {
+  font-size: 38px !important;
+  font-weight: 800 !important;
+  letter-spacing: -.06em !important;
+  line-height: 1 !important;
+  font-family: 'DM Sans', sans-serif !important;
+  margin-bottom: 6px !important;
+  animation: none !important;
+}
+#page-smm .kpi-card-val.kpi-big {
+  font-size: 34px !important;
+}
+/* Маленькие числа (Reels=12, Stories=60) */
+#page-smm .kpi-group-content .kpi-card-val {
+  font-size: 40px !important;
+  color: #c9a84c !important;
+}
+#page-smm .kpi-group-content .kpi-card:nth-child(2) .kpi-card-val {
+  color: #38b2ac !important;
+}
+#page-smm .kpi-group-content .kpi-card:nth-child(3) .kpi-card-val {
+  color: rgba(255,255,255,.35) !important;
+  font-size: 28px !important;
+  padding-top: 6px !important;
+}
+
+/* Цифровые — охват зелёный, просмотры золото */
+#page-smm .kpi-group-digital .kpi-card:nth-child(1) .kpi-card-val { color: #3ecf8e !important; }
+#page-smm .kpi-group-digital .kpi-card:nth-child(2) .kpi-card-val { color: #c9a84c !important; }
+#page-smm .kpi-group-digital .kpi-card:nth-child(3) .kpi-card-val { color: rgba(255,255,255,.35) !important; font-size:28px !important; padding-top:6px !important; }
+
+/* Audience cards */
+#page-smm .kpi-card-audience {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 22px 26px !important;
+}
+#page-smm .kpi-card-audience .kpi-card-name {
+  font-size: 12px !important;
+  color: rgba(255,255,255,.4) !important;
+  margin-bottom: 8px !important;
+}
+#page-smm .kpi-card-audience .kpi-card-val.kpi-big {
+  font-size: 36px !important;
+}
+
+/* ══ METRICS STRIP — контент (4 числа) ══ */
+/* Переопределяем кpi group как горизонтальную полосу для секции 02 */
+#page-smm .smm-metrics-grid {
+  background: #0c0c10 !important;
+  border: 1px solid rgba(255,255,255,.06) !important;
+  border-radius: 11px !important;
+  overflow: hidden !important;
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr) !important;
+  gap: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* ══ BREAKDOWN BLOCK (охват/просмотры) ══ */
+#page-smm .smm-block {
+  padding: 24px 28px !important;
+}
+#page-smm .smm-block-title {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: rgba(255,255,255,.45) !important;
+  letter-spacing: .01em !important;
+  margin-bottom: 20px !important;
+  display: flex !important; align-items: center !important; gap: 8px !important;
+  font-family: 'DM Sans', sans-serif !important;
+  text-transform: none !important;
+}
+#page-smm .smm-block-dot {
+  width: 4px !important; height: 4px !important;
+  border-radius: 50% !important;
+  background: #b8923a !important;
+}
+
+/* Big numbers in breakdown */
+#page-smm #sv-total-reach,
+#page-smm #sv-total-views {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 40px !important;
+  font-weight: 800 !important;
+  letter-spacing: -.06em !important;
+  line-height: 1 !important;
+}
+#page-smm #sv-total-reach { color: #3ecf8e !important; }
+#page-smm #sv-total-views { color: #c9a84c !important; }
+
+/* Labels above big numbers in breakdown */
+#page-smm .smm-block [style*="Общий охват"],
+#page-smm .smm-block [style*="Общее количество"] {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 11px !important;
+  color: rgba(255,255,255,.28) !important;
+  letter-spacing: .1em !important;
+  text-transform: uppercase !important;
+  margin-bottom: 8px !important;
+}
+
+/* Progress bars in breakdown */
+#page-smm .smm-prog-wrap { margin-bottom: 14px !important; }
+#page-smm .smm-prog-hdr {
+  display: flex !important; justify-content: space-between !important;
+  margin-bottom: 6px !important;
+}
+#page-smm .smm-prog-lbl {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: rgba(255,255,255,.6) !important;
+  font-family: 'DM Sans', sans-serif !important;
+}
+#page-smm .smm-prog-val {
+  font-size: 13px !important;
+  font-family: 'DM Mono', monospace !important;
+  color: rgba(255,255,255,.5) !important;
+  font-weight: 500 !important;
+  letter-spacing: .02em !important;
+}
+#page-smm .smm-prog-bar {
+  height: 5px !important;
+  background: rgba(255,255,255,.06) !important;
+  border-radius: 5px !important;
+  overflow: hidden !important;
+}
+#page-smm .smm-prog-fill {
+  height: 100% !important;
+  border-radius: 5px !important;
+  position: relative !important;
+  transition: width .8s cubic-bezier(.16,1,.3,1) !important;
+}
+#page-smm .smm-prog-fill::after {
+  content: '' !important;
+  position: absolute !important;
+  right: 0 !important; top: 0 !important; bottom: 0 !important; width: 12px !important;
+  background: linear-gradient(90deg,transparent,rgba(255,255,255,.28)) !important;
+  border-radius: 0 5px 5px 0 !important;
+}
+
+/* ══ SECTION HEADINGS (02, 03, 04) ══ */
+#page-smm .smm-sec-heading { margin-top: 8px !important; }
+
+/* ══ MISC ══ */
+#page-smm .smm-sec.ssa { display: flex !important; flex-direction: column !important; gap: 10px !important; }
+
+/* User pill */
+#page-smm .user-pill {
+  background: rgba(255,255,255,.04) !important;
+  border: 1px solid rgba(255,255,255,.07) !important;
+  border-radius: 20px !important;
+  padding: 4px 10px !important;
+}
+
+</style>
+
 </body>
