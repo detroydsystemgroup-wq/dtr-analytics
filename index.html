@@ -24300,9 +24300,6 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
         SMM
         <span class="pp-tab-count" id="pptab-count-smm">0</span>
-      </button>      <button class="pp-tab agency-only" id="pptab-team" onclick="openTeamManager()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-        Команда
       </button>
       <button class="pp-tab agency-only" id="pptab-history" onclick="switchProjTab('history',this)">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 13.5"/></svg>
@@ -26104,31 +26101,6 @@ ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS timer_started_at timestamptz;</
 </div>
 
 <!-- MODAL: TEAM MEMBERS (Phase 2) -->
-<div class="modal-overlay" id="modal-team">
-  <div class="modal" style="max-width:420px;">
-    <div class="modal-title">👥 Команда проекта</div>
-    <div style="font-size:11px;color:var(--txt3);font-family:var(--font-display);margin-bottom:14px;line-height:1.5;">Добавь участников команды — они будут доступны как исполнители задач</div>
-    <div class="field">
-      <label>Имя участника</label>
-      <div style="display:flex;gap:8px;">
-        <input type="text" id="team-member-inp" placeholder="Алишер, Малика, Тимур..." style="flex:1;" onkeydown="if(event.key==='Enter')addTeamMember()">
-        <button class="btn-ghost" onclick="addTeamMember()" style="flex-shrink:0;">+ Добавить</button>
-      </div>
-    </div>
-    <div class="team-row" id="team-chips-list" style="min-height:32px;"></div>
-    <div style="margin-top:12px;padding:10px 12px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.15);border-radius:8px;font-size:10px;font-family:var(--font-mono);color:rgba(245,158,11,.6);">
-      SQL (один раз): ALTER TABLE projects ADD COLUMN IF NOT EXISTS team_members jsonb DEFAULT '[]';
-      <button onclick="navigator.clipboard.writeText(`ALTER TABLE projects ADD COLUMN IF NOT EXISTS team_members jsonb DEFAULT '[]';`).then(()=>{this.textContent='✓';setTimeout(()=>this.textContent='SQL',1500)})" style="margin-left:8px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);border-radius:4px;padding:2px 8px;font-family:var(--font-mono);font-size:9px;color:rgba(245,158,11,.7);cursor:pointer;">SQL</button>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-ghost" onclick="closeModal('modal-team')">Закрыть</button>
-      <button class="btn-primary" style="flex:1;" onclick="saveTeamMembers()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-        Сохранить команду
-      </button>
-    </div>
-  </div>
-</div>
 
 <div class="modal-overlay" id="modal-stage">
   <div class="modal" style="max-width:480px;">
@@ -30366,33 +30338,6 @@ async function saveTask() {
   }
 }
 
-function openTeamManager() {
-  _teamEditing = [...teamMembers]
-  renderTeamChips()
-  g('team-member-inp').value = ''
-  openModal('modal-team', 'team-member-inp')
-  setTimeout(() => g('team-member-inp').focus(), 100)
-}
-function renderTeamChips() {
-  const list = g('team-chips-list'); if (!list) return
-  if (!_teamEditing.length) { list.innerHTML = '<span style="font-size:11px;color:var(--txt3);font-family:var(--font-display);">Участников пока нет</span>'; return }
-  list.innerHTML = _teamEditing.map((m,i) =>
-    `<span class="team-chip">${esc(m)} <span onclick="_rmTeamMember(${i})" style="margin-left:4px;cursor:pointer;color:var(--red);font-weight:700;">×</span></span>`
-  ).join('')
-}
-function _rmTeamMember(i) { _teamEditing.splice(i,1); renderTeamChips() }
-function addTeamMember() {
-  const val = g('team-member-inp').value.trim()
-  if (!val || _teamEditing.includes(val)) return
-  _teamEditing.push(val); g('team-member-inp').value = ''
-  renderTeamChips(); g('team-member-inp').focus()
-}
-async function saveTeamMembers() {
-  teamMembers = [..._teamEditing]
-  try { await sb.from('projects').update({ team_members: teamMembers }).eq('id', currentProject.id) }
-  catch(e) { console.warn('Save team failed:', e) }
-  closeModal('modal-team')
-}
 
 // ══════════════════════════════════════════════
 // TRACKER
