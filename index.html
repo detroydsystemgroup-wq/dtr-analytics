@@ -20144,25 +20144,47 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 
 /* Progress mini in project header */
 #page-project .pp-progress-mini {
-  width: 100px !important;
-  height: 3px !important;
-  background: rgba(255,255,255,.08) !important;
+  width: 160px !important;
+  height: 6px !important;
+  background: rgba(255,255,255,.06) !important;
   border-radius: 99px !important;
   overflow: hidden !important;
+  position: relative !important;
 }
 #page-project .pp-progress-bar-mini {
   height: 100% !important;
-  background: linear-gradient(90deg, #b8923a, var(--a2)) !important;
+  background: linear-gradient(90deg, #b8923a, #c9a84c, #dec17a) !important;
   border-radius: 99px !important;
-  transition: width .8s cubic-bezier(.4,0,.2,1) !important;
+  transition: width 1s cubic-bezier(.16,1,.3,1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+#page-project .pp-progress-bar-mini::after {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important; left: -60% !important;
+  width: 50% !important; height: 100% !important;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent) !important;
+  animation: ppMiniShimmer 2.2s ease-in-out infinite !important;
+}
+@keyframes ppMiniShimmer {
+  0%   { left: -60% }
+  100% { left: 130% }
 }
 #page-project .pp-pct-mini {
   font-family: var(--font-mono) !important;
-  font-size: 12px !important;
+  font-size: 11px !important;
   font-weight: 700 !important;
-  color: rgba(184,146,58,.8) !important;
-  min-width: 36px !important;
+  color: rgba(184,146,58,.7) !important;
+  min-width: 32px !important;
   text-align: right !important;
+  letter-spacing: .02em !important;
+  font-variant-numeric: tabular-nums !important;
+  transition: color .4s !important;
+}
+#page-project .pp-pct-mini[data-full="true"] {
+  color: #34d399 !important;
+}
 }
 
 /* ══ 3. PROJECT TAB BAR ══ */
@@ -26494,8 +26516,14 @@ function updateProjTabCounts(perfCount, smmCount) {
 function updateProjMiniProgress(pct) {
   const bar = g('pp-bar-mini')
   const lbl = g('pp-pct-mini')
-  if (bar) bar.style.width = pct + '%'
-  if (lbl) lbl.textContent = pct + '%'
+  if (bar) {
+    // Defer to next frame so CSS transition fires after element is visible
+    requestAnimationFrame(() => { bar.style.width = pct + '%' })
+  }
+  if (lbl) {
+    lbl.textContent = pct + '%'
+    lbl.dataset.full = pct >= 100 ? 'true' : 'false'
+  }
 }
 
 
@@ -31026,19 +31054,19 @@ async function loadSMMReports() {
     var timeStr = new Date(r.created_at).toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'});
     // ── SMM metrics ──
     var sm2 = r.metrics || {};
-    var er  = sm2.er  != null && sm2.er  !== '' ? (+sm2.er).toFixed(2)  + '%' : null;
-    var lr  = sm2.lr  != null && sm2.lr  !== '' ? (+sm2.lr).toFixed(2)  + '%' : null;
-    var shr = sm2.shr != null && sm2.shr !== '' ? (+sm2.shr).toFixed(2) + '%' : null;
-    var sr  = sm2.sr  != null && sm2.sr  !== '' ? (+sm2.sr).toFixed(2)  + '%' : null;
-    var tr2 = sm2.tr  != null && sm2.tr  !== '' ? (+sm2.tr).toFixed(2)  + '%' : null;
+    var er  = sm2.er  != null && sm2.er  !== '' && sm2.er  !== 0 ? (+sm2.er).toFixed(2)  + '%' : null;
+    var lr  = sm2.lr  != null && sm2.lr  !== '' && sm2.lr  !== 0 ? (+sm2.lr).toFixed(2)  + '%' : null;
+    var shr = sm2.shr != null && sm2.shr !== '' && sm2.shr !== 0 ? (+sm2.shr).toFixed(2) + '%' : null;
+    var sr  = sm2.sr  != null && sm2.sr  !== '' && sm2.sr  !== 0 ? (+sm2.sr).toFixed(2)  + '%' : null;
+    var tr2 = sm2.tr  != null && sm2.tr  !== '' && sm2.tr  !== 0 ? (+sm2.tr).toFixed(2)  + '%' : null;
 
     // Extra reach/content metrics
     var totalReach = (sm2.reels_reach||0) + (sm2.posts_reach||0) + (sm2.stories_reach||0);
     var totalViews = (sm2.reels_views||0) + (sm2.posts_views||0);
     var reachStr   = totalReach > 0 ? fmtSMMNum(totalReach) : null;
     var viewsStr   = totalViews > 0 ? fmtSMMNum(totalViews) : null;
-    var reelsStr   = sm2.reels_count > 0 ? sm2.reels_count + ' Reels' : null;
-    var follStr    = sm2.followers != null && sm2.followers !== '' && sm2.followers !== 0
+    var reelsStr   = (sm2.reels_count != null && sm2.reels_count > 0) ? sm2.reels_count + ' Reels' : null;
+    var follStr    = (sm2.followers != null && sm2.followers !== 0)
                      ? (sm2.followers > 0 ? '+' : '') + fmtSMMNum(sm2.followers) : null;
 
     var hasSMMMetrics = er || lr || shr || sr || tr2 || reachStr || viewsStr || reelsStr || follStr;
@@ -31159,7 +31187,7 @@ function fillSMMDataForm() {
 }
 
 function collectSMMData() {
-  const n = id => { const el = g(id); return el ? +el.value || 0 : 0 }
+  const n = id => { const el = g(id); if (!el) return null; const v = el.value.trim(); return v === '' ? null : +v || null }
   smmData.metrics = {
     reels_count: n('sd-reels-count'), posts_count: n('sd-posts-count'), stories_count: n('sd-stories-count'),
     reels_reach: n('sd-reels-reach'), posts_reach: n('sd-posts-reach'), stories_reach: n('sd-stories-reach'),
