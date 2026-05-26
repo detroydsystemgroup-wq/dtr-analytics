@@ -25680,21 +25680,47 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
     <!-- ── TAB: CALENDAR / DEADLINES ── UPGRADED ── -->
     <div id="dtab-timeline-panel" style="display:none;">
 
-      <!-- Внутренний переключатель -->
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
-        <div style="display:flex;gap:3px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:3px;">
-          <button id="tl-btn-deadlines" onclick="switchTimelineMode('deadlines')"
-            style="display:flex;align-items:center;gap:7px;padding:7px 16px;border-radius:8px;border:none;font-family:var(--font-display);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;background:rgba(184,146,58,.15);color:var(--a2);">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            Дедлайны
-          </button>
-          <button id="tl-btn-activity" onclick="switchTimelineMode('activity')"
-            style="display:flex;align-items:center;gap:7px;padding:7px 16px;border-radius:8px;border:none;font-family:var(--font-display);font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;background:transparent;color:rgba(255,255,255,.38);">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            Активность
-          </button>
-        </div>
-      </div>
+      <!-- CSS для тумблера -->
+      <style>
+      .tl-tumbler {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: rgba(255,255,255,.05);
+        border: 1px solid rgba(255,255,255,.1);
+        border-radius: 20px;
+        padding: 3px;
+        gap: 0;
+        flex-shrink: 0;
+        margin-left: auto;
+      }
+      .tl-tumbler-track {
+        position: absolute;
+        top: 3px; bottom: 3px; left: 3px;
+        width: calc(50% - 3px);
+        background: rgba(184,146,58,.2);
+        border: 1px solid rgba(184,146,58,.4);
+        border-radius: 16px;
+        transition: transform .25s cubic-bezier(.34,1.2,.64,1);
+        pointer-events: none;
+      }
+      .tl-tumbler.tl-act .tl-tumbler-track {
+        transform: translateX(100%);
+      }
+      .tl-tumbler-btn {
+        position: relative;
+        z-index: 1;
+        display: flex; align-items: center; gap: 5px;
+        padding: 5px 14px;
+        border: none; background: transparent;
+        font-family: var(--font-display); font-size: 11px; font-weight: 500;
+        cursor: pointer; transition: color .2s;
+        border-radius: 14px;
+        white-space: nowrap;
+        color: rgba(255,255,255,.4);
+      }
+      .tl-tumbler-btn.tl-active { color: var(--a2); font-weight: 600; }
+      </style>
 
       <!-- Дедлайны секция -->
       <div id="tl-deadlines-wrap">
@@ -25733,6 +25759,18 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
         <button class="dl-reset-btn" id="dl-reset-btn" onclick="resetDLFilters()" title="Сбросить фильтры" style="display:none;">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
         </button>
+        <!-- Тумблер режима -->
+        <div class="tl-tumbler" id="tl-tumbler-dl">
+          <div class="tl-tumbler-track"></div>
+          <button class="tl-tumbler-btn tl-active" id="tl-btn-deadlines" onclick="switchTimelineMode('deadlines')">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Дедлайны
+          </button>
+          <button class="tl-tumbler-btn" id="tl-btn-activity" onclick="switchTimelineMode('activity')">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Активность
+          </button>
+        </div>
       </div>
       <div class="dl-stats-strip">
         <div class="dl-stat-item"><div class="dl-stat-val" id="dl-stat-all">—</div><div class="dl-stat-lbl">Всего</div></div>
@@ -25789,6 +25827,18 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
         <button class="act-reset-btn" id="act-reset-btn" onclick="resetActFilters()" title="Сбросить фильтры" style="display:none;">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
         </button>
+        <!-- Тумблер режима -->
+        <div class="tl-tumbler tl-act" id="tl-tumbler-act">
+          <div class="tl-tumbler-track"></div>
+          <button class="tl-tumbler-btn" onclick="switchTimelineMode('deadlines')">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Дедлайны
+          </button>
+          <button class="tl-tumbler-btn tl-active" onclick="switchTimelineMode('activity')">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Активность
+          </button>
+        </div>
       </div>
 
       <!-- Stats Strip -->
@@ -30260,18 +30310,20 @@ function switchTimelineMode(mode) {
   _tlMode = mode
   const dlWrap  = g('tl-deadlines-wrap')
   const actWrap = g('tl-activity-wrap')
-  const dlBtn   = g('tl-btn-deadlines')
-  const actBtn  = g('tl-btn-activity')
-
   if (dlWrap)  dlWrap.style.display  = mode === 'deadlines' ? 'block' : 'none'
   if (actWrap) actWrap.style.display = mode === 'activity'  ? 'block' : 'none'
 
-  const ACTIVE  = { background:'rgba(184,146,58,.15)', color:'var(--a2)', fontWeight:'600' }
-  const PASSIVE = { background:'transparent', color:'rgba(255,255,255,.38)', fontWeight:'500' }
-  const apply = (btn, styles) => { if (btn) { btn.style.background = styles.background; btn.style.color = styles.color; btn.style.fontWeight = styles.fontWeight } }
+  // Animate both tumblers
+  ;['tl-tumbler-dl', 'tl-tumbler-act'].forEach(tid => {
+    const t = g(tid)
+    if (!t) return
+    if (mode === 'activity') t.classList.add('tl-act')
+    else t.classList.remove('tl-act')
+  })
 
-  apply(dlBtn,  mode === 'deadlines' ? ACTIVE : PASSIVE)
-  apply(actBtn, mode === 'activity'  ? ACTIVE : PASSIVE)
+  // Update active state on buttons
+  document.querySelectorAll('#tl-btn-deadlines').forEach(b => b.classList.toggle('tl-active', mode === 'deadlines'))
+  document.querySelectorAll('#tl-btn-activity').forEach(b => b.classList.toggle('tl-active', mode === 'activity'))
 
   if (mode === 'activity') loadActivityFeed()
 }
