@@ -22723,59 +22723,64 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 /* Projects table */
 .apl-table-card {
   background: var(--bg3);
-  border: 1px solid rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.09);
   border-radius: 16px;
   overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,.35);
 }
 .apl-thead {
   display: flex;
   align-items: center;
-  padding: 12px 20px;
-  border-bottom: 1px solid rgba(255,255,255,.05);
+  padding: 10px 20px;
+  background: rgba(255,255,255,.03);
+  border-bottom: 1px solid rgba(255,255,255,.08);
 }
 .apl-th {
   font-family: var(--font-mono);
   font-size: 9px;
-  letter-spacing: .14em;
-  color: rgba(255,255,255,.22);
+  letter-spacing: .18em;
+  color: rgba(255,255,255,.45);
   text-transform: uppercase;
+  font-weight: 500;
 }
 .apl-th-name { flex: 1.8; }
-.apl-th-r { width: 100px; text-align: right; flex-shrink: 0; }
+.apl-th-r { width: 110px; text-align: right; flex-shrink: 0; }
 
 /* Table rows */
 .apl-proj-row {
   display: flex;
   align-items: center;
-  padding: 14px 20px;
-  border-bottom: 1px solid rgba(255,255,255,.03);
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.055);
   cursor: pointer;
-  transition: background .12s;
+  transition: background .15s;
   position: relative;
 }
 .apl-proj-row::after {
   content: '';
   position: absolute;
   left: 0; top: 0; bottom: 0;
-  width: 2px;
+  width: 3px;
   background: transparent;
+  border-radius: 0 2px 2px 0;
   transition: background .15s;
 }
-.apl-proj-row:hover { background: rgba(255,255,255,.025); }
-.apl-proj-row:hover::after { background: rgba(255,255,255,.1); }
+.apl-proj-row:hover { background: rgba(255,255,255,.04); }
+.apl-proj-row:hover::after { background: rgba(184,146,58,.5); }
 .apl-proj-row:last-child { border-bottom: none; }
 .apl-row-selected { background: rgba(184,146,58,.08) !important; }
 .apl-row-selected::after { background: var(--a) !important; }
 .apl-proj-name-col { flex: 1.8; min-width: 0; }
 .apl-pname {
   font-family: var(--font-display);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--txt);
+  font-size: 14px;
+  font-weight: 700;
+  color: #f0ece6;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   margin-bottom: 4px;
+  letter-spacing: -.02em;
 }
 .apl-pmeta {
   display: flex;
@@ -22783,36 +22788,47 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   gap: 8px;
   font-family: var(--font-mono);
   font-size: 9px;
-  color: rgba(255,255,255,.25);
+  color: rgba(255,255,255,.32);
+  letter-spacing: .04em;
 }
 .apl-cell {
-  width: 100px;
+  width: 110px;
   text-align: right;
   font-family: var(--font-mono);
-  font-size: 11px;
-  color: rgba(255,255,255,.4);
+  font-size: 12px;
+  color: rgba(255,255,255,.5);
   flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.01em;
 }
-.apl-cell-rev  { color: rgba(255,255,255,.75); font-weight: 600; }
-.apl-cell-cost { color: rgba(248,113,113,.75); }
-.apl-cell-pos  { color: rgba(74,222,128,.85); font-weight: 700; }
-.apl-cell-neg  { color: rgba(248,113,113,.85); font-weight: 700; }
-.apl-cell-hrs  { color: rgba(34,211,238,.6); }
+.apl-cell-rev  {
+  color: rgba(255,255,255,.9);
+  font-size: 13px;
+  font-weight: 600;
+}
+.apl-cell-cost { color: rgba(248,113,113,.9); font-weight: 500; }
+.apl-cell-pos  { color: #4ade80; font-weight: 700; font-size: 13px; }
+.apl-cell-neg  { color: rgba(248,113,113,.95); font-weight: 700; font-size: 13px; }
+.apl-cell-hrs  {
+  color: rgba(34,211,238,.85);
+  font-weight: 600;
+}
 .apl-margin-pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 48px;
-  padding: 3px 8px;
+  min-width: 52px;
+  padding: 4px 10px;
   border-radius: 100px;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: .02em;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.1);
 }
-.apl-row-actions { width: 88px; display: flex; justify-content: flex-end; flex-shrink: 0; }
+.apl-row-actions { width: 100px; display: flex; justify-content: flex-end; flex-shrink: 0; }
 .apl-row-actions button {
-  padding: 5px 12px;
+  padding: 6px 14px;
   border-radius: 8px;
   font-size: 11px;
   font-weight: 600;
@@ -22822,8 +22838,8 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 .apl-status {
   font-family: var(--font-mono);
   font-size: 8px;
-  letter-spacing: .06em;
-  padding: 2px 7px;
+  letter-spacing: .07em;
+  padding: 2px 8px;
   border-radius: 20px;
   font-weight: 600;
 }
