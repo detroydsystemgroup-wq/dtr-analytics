@@ -37469,4 +37469,175 @@ async function cpRenderMilestone(project) {
 }
 </style>
 
+<style id="dtr-passport-editor-css">
+/* ══════════════════════════════════════════
+   ПАСПОРТ КЛИЕНТА — левая панель (редактор)
+   DTR Design System: Obsidian · Gold · Warm
+══════════════════════════════════════════ */
+
+/* ── Header right side ── */
+.pp-hdr-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── Progress pill (0/7 indicator) ── */
+.pp-tpp-bar {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  background: var(--a);
+  border-radius: inherit;
+  transition: width .4s cubic-bezier(.16,1,.3,1);
+}
+
+/* ── Form panel ── */
+.pp-form-group {
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--brd);
+}
+.pp-form-group:last-of-type {
+  border-bottom: none;
+  margin-bottom: 12px;
+}
+
+/* ── Section label (Основная информация, Контакты…) ── */
+.pp-form-section-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--txt3);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+/* ── Field wrapper ── */
+.pp-field {
+  margin-bottom: 10px;
+}
+.pp-field:last-child { margin-bottom: 0; }
+.pp-field label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--txt3);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.pp-field input,
+.pp-field textarea,
+.pp-field select {
+  width: 100%;
+  background: var(--bg4);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-sm);
+  padding: 9px 12px;
+  color: var(--txt);
+  font-family: var(--font-body);
+  font-size: 13px;
+  outline: none;
+  transition: border-color .18s, box-shadow .18s;
+  resize: vertical;
+}
+.pp-field input:focus,
+.pp-field textarea:focus {
+  border-color: var(--a2);
+  box-shadow: 0 0 0 3px rgba(184,146,58,.1);
+}
+.pp-field input::placeholder,
+.pp-field textarea::placeholder { color: var(--txt3); }
+
+/* ── Tone of voice grid ── */
+.pp-tone-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.pp-tone-btn {
+  padding: 5px 12px;
+  background: var(--bg4);
+  border: 1px solid var(--brd2);
+  border-radius: 20px;
+  color: var(--txt3);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .15s;
+}
+.pp-tone-btn:hover {
+  border-color: var(--a2);
+  color: var(--txt2);
+  background: rgba(184,146,58,.06);
+}
+.pp-tone-btn.pp-tone-btn-active,
+.pp-tone-btn.active {
+  background: rgba(184,146,58,.16);
+  border-color: rgba(184,146,58,.45);
+  color: var(--a2);
+}
+
+/* ── Save button ── */
+.pp-save-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  background: var(--a);
+  border: none;
+  border-radius: var(--r-sm);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.15), var(--shadow-sm);
+  margin-top: 4px;
+}
+.pp-save-btn:hover { background: var(--a2); }
+
+/* ── Add item button (Добавить персонаж / конкурента / цель) ── */
+.pp-add-item-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 7px 14px;
+  background: transparent;
+  border: 1px dashed var(--brd2);
+  border-radius: var(--r-sm);
+  color: var(--txt3);
+  font-family: var(--font-display);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.pp-add-item-btn:hover {
+  border-color: var(--a2);
+  color: var(--a2);
+  background: rgba(184,146,58,.06);
+}
+
+/* ── Empty state ── */
+.pp-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 28px 16px;
+  color: var(--txt3);
+  font-family: var(--font-display);
+  font-size: 12px;
+  text-align: center;
+  background: rgba(255,255,255,.018);
+  border: 1px dashed var(--brd);
+  border-radius: var(--r-sm);
+}
+</style>
+
 </body>
