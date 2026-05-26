@@ -2404,6 +2404,75 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
 .smm-sec-line { flex:1; height:1px; background:linear-gradient(90deg,var(--smm-brd2),transparent); }
 
 /* ── Stat Cards ── */
+/* ══ KPI GROUPS — 3-section layout ══ */
+.kpi-group-label {
+  display: flex; align-items: center; gap: 9px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 600; letter-spacing: .16em;
+  text-transform: uppercase; color: rgba(255,255,255,.35);
+  margin-bottom: 12px;
+}
+.kpi-group-icon { font-size: 14px; }
+
+/* Content group — 3 equal cards */
+.kpi-group-content {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+}
+/* Digital group — 3 equal wider cards */
+.kpi-group-digital {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+}
+/* Audience group — 2 horizontal cards */
+.kpi-group-audience {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+}
+
+/* Base card */
+.kpi-card {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 16px; padding: 18px 20px;
+  position: relative; overflow: hidden;
+  transition: transform .18s cubic-bezier(.34,1.56,.64,1), border-color .15s, box-shadow .15s;
+}
+.kpi-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,.13);
+  box-shadow: 0 8px 24px rgba(0,0,0,.25);
+}
+/* Icon chip */
+.kpi-card-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 14px; flex-shrink: 0;
+}
+/* Value — hero number */
+.kpi-card-val {
+  font-family: Manrope, sans-serif;
+  font-size: 36px; font-weight: 900; letter-spacing: -.05em; line-height: 1;
+  margin-bottom: 6px;
+}
+.kpi-card-val.kpi-big {
+  font-size: 32px;
+}
+/* Name & sub */
+.kpi-card-name {
+  font-family: Manrope, sans-serif;
+  font-size: 12px; font-weight: 600; color: rgba(255,255,255,.6);
+  letter-spacing: -.01em; margin-bottom: 2px;
+}
+.kpi-card-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; letter-spacing: .08em; color: rgba(255,255,255,.25);
+  text-transform: uppercase;
+}
+/* Audience card — horizontal layout */
+.kpi-card-audience {
+  display: flex; align-items: center; gap: 16px; padding: 20px 22px;
+}
+.kpi-card-audience .kpi-card-icon { margin-bottom: 0; flex-shrink: 0; }
+.kpi-card-audience .kpi-card-val  { font-size: 30px; margin-bottom: 3px; }
+
 .smm-stat-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:40px; }
 .smm-stat-card {
   background:var(--smm-bg3); border:1px solid var(--smm-brd);
@@ -2603,7 +2672,7 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
 .smm-reel-card.rrc-2::before { background: linear-gradient(90deg,#9ca3af,#e5e7eb,#9ca3af); }
 .smm-reel-card.rrc-3::before { background: linear-gradient(90deg,#b45309,#d97706,#b45309); }
 
-/* Cover image area — 9:16 ratio */
+/* Cover image area — 9:16 full-bleed */
 .smm-reel-cover {
   aspect-ratio: 9/16;
   position: relative;
@@ -2611,112 +2680,100 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 16px;
 }
-/* Overlay gradient for text readability */
+/* Deep bottom overlay for readability */
 .smm-reel-cover-overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(0,0,0,.35) 0%,
-    transparent 30%,
-    transparent 55%,
-    rgba(0,0,0,.75) 100%
+    rgba(0,0,0,.25) 0%,
+    transparent 25%,
+    transparent 45%,
+    rgba(0,0,0,.5)  65%,
+    rgba(0,0,0,.88) 100%
   );
   pointer-events: none;
 }
-/* Rank badge */
+/* Rank badge top-left */
 .smm-reel-rank-pill {
   position: absolute;
-  top: 10px; left: 10px;
-  z-index: 2;
+  top: 10px; left: 10px; z-index: 2;
   font-family: Manrope, sans-serif;
-  font-size: 11px;
-  font-weight: 800;
-  padding: 3px 9px;
-  border-radius: 20px;
-  background: rgba(0,0,0,.65);
+  font-size: 11px; font-weight: 800;
+  padding: 3px 9px; border-radius: 20px;
+  background: rgba(0,0,0,.55);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   color: rgba(255,255,255,.9);
-  border: 1px solid rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.12);
   letter-spacing: -.01em;
 }
-.smm-reel-card.rrc-1 .smm-reel-rank-pill { background: rgba(251,191,36,.9); color: #000; border-color: transparent; }
-.smm-reel-card.rrc-2 .smm-reel-rank-pill { background: rgba(209,213,219,.85); color: #111; border-color: transparent; }
-.smm-reel-card.rrc-3 .smm-reel-rank-pill { background: rgba(180,83,9,.9); color: #fff; border-color: transparent; }
-/* Views on cover — bottom left */
-.smm-reel-cover-views {
-  position: absolute;
-  bottom: 10px; left: 10px; right: 10px;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-family: Manrope, sans-serif;
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: -.04em;
-  color: #fff;
-  text-shadow: 0 2px 8px rgba(0,0,0,.8);
-  line-height: 1;
-}
-/* Play/link button — center */
+.smm-reel-card.rrc-1 .smm-reel-rank-pill { background: rgba(251,191,36,.92); color: #000; border-color: transparent; }
+.smm-reel-card.rrc-2 .smm-reel-rank-pill { background: rgba(209,213,219,.9); color: #111; border-color: transparent; }
+.smm-reel-card.rrc-3 .smm-reel-rank-pill { background: rgba(180,83,9,.92); color: #fff; border-color: transparent; }
+
+/* Play button — center hover */
 .smm-reel-play-btn {
   position: absolute;
   top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 3;
-  width: 44px; height: 44px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.15);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1.5px solid rgba(255,255,255,.3);
-  display: flex; align-items: center; justify-content: center;
-  color: #fff;
-  text-decoration: none;
-  opacity: 0;
-  transition: opacity .18s, transform .18s;
   transform: translate(-50%, -50%) scale(.85);
+  z-index: 3;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(255,255,255,.18);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(255,255,255,.35);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; text-decoration: none;
+  opacity: 0;
+  transition: opacity .18s cubic-bezier(.4,0,.2,1), transform .18s cubic-bezier(.34,1.56,.64,1);
 }
 .smm-reel-card:hover .smm-reel-play-btn {
   opacity: 1;
   transform: translate(-50%, -50%) scale(1);
 }
 
-/* Card info below cover */
-.smm-reel-info {
-  padding: 11px 12px 12px;
+/* ── Overlay footer — inside the cover ── */
+.smm-reel-overlay-footer {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: 2;
+  padding: 14px 12px 13px;
 }
-.smm-reel-title-new {
+.smm-reel-overlay-title {
   font-family: Manrope, sans-serif;
-  font-size: 12px; font-weight: 600;
-  color: rgba(255,255,255,.8);
-  line-height: 1.35;
+  font-size: 12.5px; font-weight: 700;
+  color: rgba(255,255,255,.95);
+  line-height: 1.35; letter-spacing: -.01em;
+  margin-bottom: 8px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  margin-bottom: 9px;
-  letter-spacing: -.01em;
-  min-height: 32px;
+  text-shadow: 0 1px 4px rgba(0,0,0,.5);
 }
-.smm-reel-er-row {
+.smm-reel-overlay-row {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
-/* ER badge */
-.smm-reel-er-new {
+.smm-reel-overlay-views {
+  display: flex; align-items: center; gap: 5px;
+  font-family: Manrope, sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: -.02em;
+  color: rgba(255,255,255,.8);
+  text-shadow: 0 1px 4px rgba(0,0,0,.6);
+}
+/* ER pill — compact */
+.smm-reel-er-pill {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 11px; font-weight: 700;
-  letter-spacing: .01em;
-  padding: 4px 10px;
-  border-radius: 8px;
+  font-size: 10px; font-weight: 700; letter-spacing: .02em;
+  padding: 3px 9px; border-radius: 20px;
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  white-space: nowrap;
 }
-.smm-reel-er-hot  { background: rgba(239,68,68,.12);  color: #f87171; border: 1px solid rgba(239,68,68,.2); }
-.smm-reel-er-good { background: rgba(52,211,153,.1);  color: #34d399; border: 1px solid rgba(52,211,153,.18); }
-.smm-reel-er-avg  { background: rgba(255,255,255,.05); color: rgba(255,255,255,.35); border: 1px solid rgba(255,255,255,.07); }
 
 /* ── Rubrics ── */
   display: grid;
@@ -2815,21 +2872,9 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
   padding: 4px 10px;
   border-radius: 8px;
 }
-.smm-reel-er-hot {
-  background: rgba(239,68,68,.12);
-  color: #f87171;
-  border: 1px solid rgba(239,68,68,.2);
-}
-.smm-reel-er-good {
-  background: rgba(52,211,153,.1);
-  color: #34d399;
-  border: 1px solid rgba(52,211,153,.18);
-}
-.smm-reel-er-avg {
-  background: rgba(255,255,255,.06);
-  color: rgba(255,255,255,.4);
-  border: 1px solid rgba(255,255,255,.08);
-}
+.smm-reel-er-hot  { background: rgba(220,38,38,.75); color: #fff; border: 1px solid rgba(239,68,68,.5); }
+.smm-reel-er-good { background: rgba(16,185,129,.7); color: #fff; border: 1px solid rgba(52,211,153,.5); }
+.smm-reel-er-avg  { background: rgba(0,0,0,.55); color: rgba(255,255,255,.65); border: 1px solid rgba(255,255,255,.18); }
 .smm-reel-link-btn {
   width: 28px; height: 28px;
   border-radius: 8px;
@@ -15245,31 +15290,94 @@ select:focus {
         <div class="smm-sec-line"></div>
       </div>
 
-      <div class="smm-stat-grid">
-        <div class="smm-stat-card ssc-accent">
-          <div class="smm-stat-lbl">Публикаций</div>
-          <div class="smm-stat-val" id="sv-posts" style="color:var(--smm-accent2);">—</div>
-          <div class="smm-stat-sub">Reels + Посты</div>
+      <!-- GROUP 1: Объём контента -->
+      <div class="kpi-group-label">
+        <span class="kpi-group-icon">📱</span>
+        Объём опубликованного контента
+      </div>
+      <div class="kpi-group kpi-group-content">
+        <div class="kpi-card">
+          <div class="kpi-card-icon" style="background:rgba(184,146,58,.1);color:var(--smm-accent2);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+          </div>
+          <div class="kpi-card-val" id="sv-reels-count" style="color:var(--smm-accent2);">—</div>
+          <div class="kpi-card-name">Reels</div>
+          <div class="kpi-card-sub">опубликовано</div>
         </div>
-        <div class="smm-stat-card">
-          <div class="smm-stat-lbl">Сторис</div>
-          <div class="smm-stat-val" id="sv-stories" style="color:var(--smm-cyan);">—</div>
-          <div class="smm-stat-sub">за период</div>
+        <div class="kpi-card">
+          <div class="kpi-card-icon" style="background:rgba(34,211,238,.1);color:var(--smm-cyan);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="kpi-card-val" id="sv-stories" style="color:var(--smm-cyan);">—</div>
+          <div class="kpi-card-name">Stories</div>
+          <div class="kpi-card-sub">за период</div>
         </div>
-        <div class="smm-stat-card">
-          <div class="smm-stat-lbl">Общий охват</div>
-          <div class="smm-stat-val" id="sv-reach" style="color:var(--smm-green);">—</div>
-          <div class="smm-stat-sub" id="sv-reach-sub">уникальных аккаунтов</div>
+        <div class="kpi-card">
+          <div class="kpi-card-icon" style="background:rgba(244,114,182,.1);color:var(--smm-pink);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <div class="kpi-card-val" id="sv-ad-creatives" style="color:var(--smm-pink);">—</div>
+          <div class="kpi-card-name">Рекл. Креативы</div>
+          <div class="kpi-card-sub">запущено</div>
         </div>
-        <div class="smm-stat-card">
-          <div class="smm-stat-lbl">Просмотры</div>
-          <div class="smm-stat-val" id="sv-views" style="color:var(--smm-pink);">—</div>
-          <div class="smm-stat-sub" id="sv-views-sub">суммарно</div>
+      </div>
+
+      <!-- GROUP 2: Цифровые показатели -->
+      <div class="kpi-group-label" style="margin-top:24px;">
+        <span class="kpi-group-icon">📊</span>
+        Цифровые показатели
+      </div>
+      <div class="kpi-group kpi-group-digital">
+        <div class="kpi-card kpi-card-large">
+          <div class="kpi-card-icon" style="background:rgba(52,211,153,.1);color:var(--smm-green);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="kpi-card-val" id="sv-reach" style="color:var(--smm-green);">—</div>
+          <div class="kpi-card-name">Охват</div>
+          <div class="kpi-card-sub">уникальных аккаунтов</div>
         </div>
-        <div class="smm-stat-card">
-          <div class="smm-stat-lbl">Прирост аудитории</div>
-          <div class="smm-stat-val" id="sv-followers" style="color:var(--smm-amber);">—</div>
-          <div id="sv-followers-delta" style="margin-top:6px;"></div>
+        <div class="kpi-card kpi-card-large">
+          <div class="kpi-card-icon" style="background:rgba(244,114,182,.1);color:var(--smm-pink);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+          </div>
+          <div class="kpi-card-val" id="sv-views" style="color:var(--smm-pink);">—</div>
+          <div class="kpi-card-name">Просмотры</div>
+          <div class="kpi-card-sub">суммарно</div>
+        </div>
+        <div class="kpi-card kpi-card-large">
+          <div class="kpi-card-icon" style="background:rgba(251,191,36,.1);color:var(--smm-amber);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          </div>
+          <div class="kpi-card-val" id="sv-frequency" style="color:var(--smm-amber);">—</div>
+          <div class="kpi-card-name">Частота</div>
+          <div class="kpi-card-sub">просмотров</div>
+        </div>
+      </div>
+
+      <!-- GROUP 3: Аудитория -->
+      <div class="kpi-group-label" style="margin-top:24px;">
+        <span class="kpi-group-icon">👥</span>
+        Аудитория Instagram
+      </div>
+      <div class="kpi-group kpi-group-audience">
+        <div class="kpi-card kpi-card-audience">
+          <div class="kpi-card-icon" style="background:rgba(129,140,248,.12);color:#a5b4fc;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div>
+            <div class="kpi-card-name" style="margin-bottom:4px;">Подписчики сейчас</div>
+            <div class="kpi-card-val kpi-big" id="sv-subscribers" style="color:#a5b4fc;">—</div>
+          </div>
+        </div>
+        <div class="kpi-card kpi-card-audience">
+          <div class="kpi-card-icon" style="background:rgba(251,191,36,.1);color:var(--smm-amber);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+          </div>
+          <div>
+            <div class="kpi-card-name" style="margin-bottom:4px;">Прирост подписчиков</div>
+            <div class="kpi-card-val kpi-big" id="sv-followers" style="color:var(--smm-amber);">—</div>
+            <div id="sv-followers-delta" style="margin-top:4px;"></div>
+          </div>
         </div>
       </div>
 
@@ -15420,6 +15528,19 @@ select:focus {
             <div><input class="smm-inp" id="sd-followers" type="number" placeholder="тек."><div class="smm-inp-hint">текущий</div></div>
             <div><input class="smm-inp" id="sd-prev-followers" type="number" placeholder="пред."><div class="smm-inp-hint">прошлый</div></div>
           </div>
+        </div>
+        <div class="smm-input-card">
+          <div class="smm-input-lbl">Подписчиков сейчас</div>
+          <input class="smm-inp" id="sd-subscribers-current" type="number" placeholder="0">
+        </div>
+        <div class="smm-input-card">
+          <div class="smm-input-lbl">Рекламные Креативы</div>
+          <input class="smm-inp" id="sd-ad-creatives" type="number" placeholder="0">
+        </div>
+        <div class="smm-input-card">
+          <div class="smm-input-lbl">Частота просмотров</div>
+          <input class="smm-inp" id="sd-frequency" type="number" step="0.1" placeholder="0.0">
+          <div class="smm-inp-hint">сколько раз смотрели 1 пост</div>
         </div>
       </div>
 
@@ -22771,6 +22892,9 @@ function fillSMMDataForm() {
     ['sd-reels-reach', m.reels_reach], ['sd-posts-reach', m.posts_reach], ['sd-stories-reach', m.stories_reach],
     ['sd-reels-views', m.reels_views], ['sd-posts-views', m.posts_views],
     ['sd-followers', m.followers], ['sd-prev-followers', p.followers],
+    ['sd-subscribers-current', m.subscribers_current],
+    ['sd-ad-creatives', m.ad_creatives],
+    ['sd-frequency', m.frequency],
     ['sd-er', m.er], ['sd-prev-er', p.er], ['sd-goal-er', go.er],
     ['sd-lr', m.lr], ['sd-prev-lr', p.lr], ['sd-goal-lr', go.lr],
     ['sd-tr', m.tr], ['sd-prev-tr', p.tr], ['sd-goal-tr', go.tr],
@@ -22789,6 +22913,9 @@ function collectSMMData() {
     reels_reach: n('sd-reels-reach'), posts_reach: n('sd-posts-reach'), stories_reach: n('sd-stories-reach'),
     reels_views: n('sd-reels-views'), posts_views: n('sd-posts-views'),
     followers: n('sd-followers'),
+    subscribers_current: n('sd-subscribers-current'),
+    ad_creatives: n('sd-ad-creatives'),
+    frequency: n('sd-frequency'),
     er: n('sd-er'), lr: n('sd-lr'), tr: n('sd-tr'),
     shr: n('sd-shr'), sr: n('sd-sr')
   }
@@ -22841,12 +22968,16 @@ function renderSMMPresentation() {
   const totalViews = (m.reels_views||0) + (m.posts_views||0)
   const maxReach = Math.max(m.reels_reach||0, m.posts_reach||0, m.stories_reach||0, 1)
 
-  if(g('sv-posts')) g('sv-posts').textContent = totalPubs || '—'
+  if(g('sv-reels-count')) g('sv-reels-count').textContent = fmtBig(m.reels_count)
   if(g('sv-stories')) g('sv-stories').textContent = fmtBig(m.stories_count)
+  if(g('sv-ad-creatives')) g('sv-ad-creatives').textContent = fmtBig(m.ad_creatives)
   if(g('sv-reach')) g('sv-reach').textContent = fmtBig(totalReach)
   if(g('sv-views')) g('sv-views').textContent = fmtBig(totalViews)
-  if(g('sv-followers')) g('sv-followers').textContent = m.followers ? (m.followers>0?'+':'') + m.followers : '—'
+  if(g('sv-frequency')) g('sv-frequency').textContent = m.frequency ? (+m.frequency).toFixed(1)+'x' : '—'
+  if(g('sv-subscribers')) g('sv-subscribers').textContent = m.subscribers_current ? fmtBig(m.subscribers_current) : '—'
+  if(g('sv-followers')) g('sv-followers').textContent = m.followers ? (m.followers>0?'+':'') + fmtBig(m.followers) : '—'
   if(g('sv-followers-delta')) g('sv-followers-delta').innerHTML = delta(m.followers, p.followers)
+  if(g('sv-posts')) g('sv-posts').textContent = totalPubs || '—'
   if(g('sv-total-reach')) g('sv-total-reach').textContent = fmtBig(totalReach)
   if(g('sv-total-views')) g('sv-total-views').textContent = fmtBig(totalViews)
 
@@ -23027,34 +23158,36 @@ function renderSMMReelsGrid() {
       ? `href="${r.link}" target="_blank" rel="noopener"`
       : `href="#" onclick="return false"`
 
+    const title = r.title || 'Reel #' + rank
+
     return `<div class="smm-reel-card ${rankCls}">
 
-      <!-- Cover thumbnail -->
+      <!-- Full-bleed cover — everything inside -->
       <div class="smm-reel-cover" style="${coverStyle}">
-        <!-- Rank badge top-left -->
-        <div class="smm-reel-rank-pill">${rankLabel}</div>
 
-        <!-- Overlay gradient at bottom -->
+        <!-- Deep overlay for readability -->
         <div class="smm-reel-cover-overlay"></div>
 
-        <!-- Views on cover -->
-        <div class="smm-reel-cover-views">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".7"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          ${fmtFull(r.views)}
-        </div>
+        <!-- Rank — top left -->
+        <div class="smm-reel-rank-pill">${rankLabel}</div>
 
-        <!-- Play / link button -->
+        <!-- Play btn — center, on hover -->
         <a class="smm-reel-play-btn" ${linkAttrs}>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         </a>
-      </div>
 
-      <!-- Card body -->
-      <div class="smm-reel-info">
-        <div class="smm-reel-title-new">${esc(r.title || 'Reel #' + rank)}</div>
-        <div class="smm-reel-er-row">
-          <span class="smm-reel-er-new ${erCls}">${erLabel}</span>
+        <!-- Bottom info block — fully inside cover -->
+        <div class="smm-reel-overlay-footer">
+          <div class="smm-reel-overlay-title">${esc(title)}</div>
+          <div class="smm-reel-overlay-row">
+            <div class="smm-reel-overlay-views">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".7"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              ${fmtFull(r.views)}
+            </div>
+            <span class="smm-reel-er-pill ${erCls}">${erLabel}</span>
+          </div>
         </div>
+
       </div>
 
     </div>`
