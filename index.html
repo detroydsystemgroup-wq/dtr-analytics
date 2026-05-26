@@ -2478,6 +2478,99 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
 
 /* ── Reels grid ── */
 .smm-reels-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
+/* ══ REEL COVER UPLOADER ══ */
+.rl-cover-section { margin-bottom: 4px; }
+.rl-dropzone {
+  position: relative;
+  height: 160px;
+  border: 2px dashed rgba(255,255,255,.12);
+  border-radius: 14px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color .18s, background .18s;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,.02);
+}
+.rl-dropzone:hover { border-color: rgba(184,146,58,.4); background: rgba(184,146,58,.03); }
+.rl-dropzone.rl-drag-active { border-color: var(--smm-accent); background: rgba(184,146,58,.06); }
+.rl-dropzone-empty {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 8px; pointer-events: none;
+}
+.rl-dz-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08);
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,.25); margin-bottom: 4px;
+}
+.rl-dz-title {
+  font-family: Manrope, sans-serif; font-size: 13px; font-weight: 600;
+  color: rgba(255,255,255,.5); letter-spacing: -.01em;
+}
+.rl-dz-sub {
+  font-family: 'JetBrains Mono', monospace; font-size: 9px;
+  color: rgba(255,255,255,.2); letter-spacing: .06em;
+}
+/* Preview state */
+.rl-preview-wrap {
+  position: absolute; inset: 0;
+}
+.rl-preview-img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center;
+}
+.rl-remove-btn {
+  position: absolute; top: 8px; right: 8px;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: rgba(0,0,0,.65); backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.2);
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,.7); cursor: pointer;
+  transition: all .15s; z-index: 10;
+}
+.rl-remove-btn:hover { background: rgba(239,68,68,.7); color: #fff; border-color: transparent; }
+/* Upload overlay */
+.rl-upload-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,.65); backdrop-filter: blur(4px);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 10px; z-index: 20;
+}
+.rl-upload-spinner {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 2.5px solid rgba(255,255,255,.15);
+  border-top-color: var(--smm-accent);
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.rl-upload-pct {
+  font-family: 'JetBrains Mono', monospace; font-size: 13px;
+  font-weight: 700; color: var(--smm-accent2); letter-spacing: .06em;
+}
+/* Status bar */
+.rl-status {
+  margin-top: 8px; padding: 6px 12px;
+  border-radius: 8px; font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: .05em;
+}
+.rl-status.ok   { background: rgba(52,211,153,.1); color: #34d399; border: 1px solid rgba(52,211,153,.2); }
+.rl-status.err  { background: rgba(239,68,68,.1); color: #f87171; border: 1px solid rgba(239,68,68,.2); }
+.rl-status.info { background: rgba(184,146,58,.08); color: var(--smm-accent2); border: 1px solid rgba(184,146,58,.15); }
+/* SQL note */
+.rl-sql-note {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 8px; padding: 7px 12px;
+  background: rgba(245,158,11,.06); border: 1px solid rgba(245,158,11,.15);
+  border-radius: 8px; font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; color: rgba(245,158,11,.6);
+}
+.rl-sql-btn {
+  margin-left: auto; padding: 3px 10px;
+  background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.2);
+  border-radius: 5px; color: rgba(245,158,11,.8);
+  font-family: 'JetBrains Mono', monospace; font-size: 9px; cursor: pointer;
+}
+
 /* ══ REEL CARDS — PREMIUM REDESIGN v2 (with cover) ══ */
 .smm-reels-grid {
   display: grid;
@@ -15249,11 +15342,55 @@ select:focus {
 
 <!-- MODAL: Add Reel -->
 <div class="modal-overlay" id="modal-reel">
-  <div class="modal" style="max-width:520px;background:var(--smm-bg3);border-color:var(--smm-brd2);">
+  <div class="modal" style="max-width:560px;background:var(--smm-bg3);border-color:var(--smm-brd2);">
     <div class="modal-title" style="font-family:var(--bebas);font-size:24px;letter-spacing:.04em;color:var(--smm-text);">Добавить Reel</div>
-    <div class="ps-grid">
-      <div class="ps-field full"><label style="color:var(--smm-muted2);">Ссылка на Reel</label><input type="url" id="rl-link" placeholder="https://www.instagram.com/reel/..." style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
-      <div class="ps-field full"><label style="color:var(--smm-muted2);">Обложка (URL изображения) <span style="opacity:.5;font-size:9px;">необязательно</span></label><input type="url" id="rl-cover" placeholder="https://..." style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
+
+    <!-- Cover uploader -->
+    <div class="rl-cover-section">
+      <input type="file" id="rl-cover-file" accept="image/*" style="display:none;" onchange="handleReelCoverFile(this)">
+      <input type="hidden" id="rl-cover">
+
+      <!-- Drop zone -->
+      <div class="rl-dropzone" id="rl-dropzone"
+        ondragover="rlDragOver(event)" ondragleave="rlDragLeave(event)" ondrop="rlDrop(event)"
+        onclick="g('rl-cover-file').click()">
+
+        <!-- Preview (hidden by default) -->
+        <div class="rl-preview-wrap" id="rl-preview-wrap" style="display:none;">
+          <img id="rl-preview-img" class="rl-preview-img" alt="обложка">
+          <button class="rl-remove-btn" onclick="event.stopPropagation();rlRemoveCover()" title="Удалить">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          <!-- Upload progress overlay -->
+          <div class="rl-upload-overlay" id="rl-upload-overlay" style="display:none;">
+            <div class="rl-upload-spinner"></div>
+            <div class="rl-upload-pct" id="rl-upload-pct">0%</div>
+          </div>
+        </div>
+
+        <!-- Empty state -->
+        <div class="rl-dropzone-empty" id="rl-dropzone-empty">
+          <div class="rl-dz-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </div>
+          <div class="rl-dz-title">Перетащи обложку или нажми</div>
+          <div class="rl-dz-sub">JPG, PNG, WEBP · до 5 MB</div>
+        </div>
+      </div>
+
+      <!-- Upload status -->
+      <div class="rl-status" id="rl-status" style="display:none;"></div>
+
+      <!-- SQL note for bucket -->
+      <div class="rl-sql-note" id="rl-sql-note" style="display:none;">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Нужен бакет в Supabase Storage:
+        <button onclick="copyReelBucketSQL()" class="rl-sql-btn">Скопировать SQL</button>
+      </div>
+    </div>
+
+    <div class="ps-grid" style="margin-top:14px;">
+      <div class="ps-field full"><label style="color:var(--smm-muted2);">Ссылка на Reel <span style="opacity:.5;font-size:9px;">необязательно</span></label><input type="url" id="rl-link" placeholder="https://www.instagram.com/reel/..." style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
       <div class="ps-field full"><label style="color:var(--smm-muted2);">Описание / заголовок</label><input type="text" id="rl-title" placeholder="Краткое описание контента" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
       <div class="ps-field"><label style="color:var(--smm-muted2);">Просмотры</label><input type="number" id="rl-views" placeholder="0" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
       <div class="ps-field"><label style="color:var(--smm-muted2);">Охват</label><input type="number" id="rl-reach" placeholder="0" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
@@ -15264,7 +15401,7 @@ select:focus {
     </div>
     <div class="modal-footer">
       <button class="btn-ghost" onclick="closeModal('modal-reel')">Отмена</button>
-      <button class="btn-primary" style="flex:1;background:var(--smm-accent);" onclick="addReel()">Добавить</button>
+      <button class="btn-primary" style="flex:1;background:var(--smm-accent);" onclick="addReel()" id="rl-add-btn">Добавить</button>
     </div>
   </div>
 </div>
@@ -22849,16 +22986,174 @@ function renderRubricsInputList() {
     </div>`).join('')
 }
 
-function openAddReel() {
-  if (smmData.reels.length >= 10) { alert('Максимум 10 Reels'); return }
-  g('modal-reel').classList.add('open'); setTimeout(() => g('rl-link').focus(), 50)
+// openAddReel is defined in the cover uploader section above
+// ══════════════════════════════════════════════
+// REEL COVER UPLOADER — Supabase Storage
+// SQL (run once in Supabase Dashboard):
+// INSERT INTO storage.buckets (id, name, public)
+//   VALUES ('reel-covers', 'reel-covers', true)
+//   ON CONFLICT DO NOTHING;
+// CREATE POLICY "Public read" ON storage.objects
+//   FOR SELECT USING (bucket_id = 'reel-covers');
+// CREATE POLICY "Auth upload" ON storage.objects
+//   FOR INSERT WITH CHECK (bucket_id = 'reel-covers');
+// ══════════════════════════════════════════════
+
+const RL_BUCKET = 'reel-covers'
+let _rlUploading = false
+
+function rlSetStatus(msg, type='info') {
+  const el = g('rl-status'); if (!el) return
+  el.textContent = msg; el.className = 'rl-status ' + type
+  el.style.display = msg ? 'block' : 'none'
 }
+
+function rlShowPreview(url) {
+  const img = g('rl-preview-img')
+  const wrap = g('rl-preview-wrap')
+  const empty = g('rl-dropzone-empty')
+  if (!img || !wrap || !empty) return
+  img.src = url
+  wrap.style.display = 'block'
+  empty.style.display = 'none'
+}
+
+function rlRemoveCover() {
+  setVal('rl-cover', '')
+  const wrap = g('rl-preview-wrap')
+  const empty = g('rl-dropzone-empty')
+  const img = g('rl-preview-img')
+  if (wrap) wrap.style.display = 'none'
+  if (empty) empty.style.display = 'flex'
+  if (img) img.src = ''
+  rlSetStatus('', '')
+}
+
+function rlDragOver(e) {
+  e.preventDefault(); e.stopPropagation()
+  g('rl-dropzone')?.classList.add('rl-drag-active')
+}
+function rlDragLeave(e) {
+  e.preventDefault(); e.stopPropagation()
+  g('rl-dropzone')?.classList.remove('rl-drag-active')
+}
+function rlDrop(e) {
+  e.preventDefault(); e.stopPropagation()
+  g('rl-dropzone')?.classList.remove('rl-drag-active')
+  const file = e.dataTransfer?.files?.[0]
+  if (file) rlUploadCover(file)
+}
+
+function handleReelCoverFile(input) {
+  const file = input?.files?.[0]
+  if (file) rlUploadCover(file)
+}
+
+async function rlUploadCover(file) {
+  if (_rlUploading) return
+  if (!file.type.startsWith('image/')) { rlSetStatus('Только изображения (JPG, PNG, WEBP)', 'err'); return }
+  if (file.size > 5 * 1024 * 1024) { rlSetStatus('Файл слишком большой — максимум 5 MB', 'err'); return }
+
+  // Show preview immediately from local file
+  const localUrl = URL.createObjectURL(file)
+  rlShowPreview(localUrl)
+
+  // Show upload overlay
+  _rlUploading = true
+  const overlay = g('rl-upload-overlay')
+  const pctEl = g('rl-upload-pct')
+  const addBtn = g('rl-add-btn')
+  if (overlay) overlay.style.display = 'flex'
+  if (addBtn) addBtn.disabled = true
+  rlSetStatus('Загружаю в Supabase Storage...', 'info')
+
+  try {
+    // Build unique file path
+    const ext = file.name.split('.').pop().toLowerCase() || 'jpg'
+    const projId = currentProject?.id || 'shared'
+    const fileName = `${projId}/${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`
+
+    // Simulate progress (Supabase JS SDK doesn't expose upload progress)
+    let fakeProgress = 0
+    const fakeTimer = setInterval(() => {
+      fakeProgress = Math.min(fakeProgress + 15, 85)
+      if (pctEl) pctEl.textContent = fakeProgress + '%'
+    }, 120)
+
+    const { data, error } = await sb.storage.from(RL_BUCKET).upload(fileName, file, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: file.type
+    })
+
+    clearInterval(fakeTimer)
+    if (pctEl) pctEl.textContent = '100%'
+
+    if (error) throw error
+
+    // Get public URL
+    const { data: urlData } = sb.storage.from(RL_BUCKET).getPublicUrl(fileName)
+    const publicUrl = urlData?.publicUrl
+
+    if (!publicUrl) throw new Error('Не удалось получить URL')
+
+    setVal('rl-cover', publicUrl)
+    rlShowPreview(publicUrl)
+    URL.revokeObjectURL(localUrl)
+    rlSetStatus('✓ Обложка загружена', 'ok')
+
+  } catch(err) {
+    console.warn('Cover upload failed:', err)
+    // If bucket doesn't exist, show SQL hint
+    if (err.message?.includes('bucket') || err.message?.includes('not found') || err.statusCode === 404) {
+      rlSetStatus('Бакет не создан', 'err')
+      const note = g('rl-sql-note')
+      if (note) note.style.display = 'flex'
+    } else {
+      rlSetStatus('Ошибка загрузки: ' + (err.message || 'неизвестная'), 'err')
+    }
+    // Keep local preview
+    setVal('rl-cover', localUrl)
+  } finally {
+    _rlUploading = false
+    if (overlay) overlay.style.display = 'none'
+    if (addBtn) addBtn.disabled = false
+  }
+}
+
+function copyReelBucketSQL() {
+  const sql = `INSERT INTO storage.buckets (id, name, public)
+VALUES ('reel-covers', 'reel-covers', true)
+ON CONFLICT DO NOTHING;
+
+CREATE POLICY "Public read reel covers" ON storage.objects
+FOR SELECT USING (bucket_id = 'reel-covers');
+
+CREATE POLICY "Auth upload reel covers" ON storage.objects
+FOR INSERT WITH CHECK (bucket_id = 'reel-covers');`
+  navigator.clipboard.writeText(sql).then(() => {
+    const btn = document.querySelector('.rl-sql-btn')
+    if (btn) { btn.textContent = '✓ Скопировано'; setTimeout(() => btn.textContent = 'Скопировать SQL', 2000) }
+  })
+}
+
+function openAddReel() {
+  rlRemoveCover()
+  rlSetStatus('', '')
+  const note = g('rl-sql-note'); if (note) note.style.display = 'none'
+  ;['rl-link','rl-title','rl-views','rl-reach','rl-likes','rl-comments','rl-saves','rl-shares'].forEach(id => setVal(id,''))
+  g('modal-reel').classList.add('open')
+  setTimeout(() => g('rl-title').focus(), 100)
+}
+
 async function addReel() {
+  if (_rlUploading) { rlSetStatus('Подожди — обложка ещё загружается...', 'info'); return }
   const views=+getVal('rl-views')||0, reach=+getVal('rl-reach')||views
   const likes=+getVal('rl-likes')||0, comments=+getVal('rl-comments')||0
   const saves=+getVal('rl-saves')||0, shares=+getVal('rl-shares')||0
   const er = reach>0 ? +((likes+comments+saves)/reach*100).toFixed(2) : 0
-  smmData.reels.push({ link:getVal('rl-link'), cover:getVal('rl-cover'), title:getVal('rl-title'), views, reach, likes, comments, saves, shares, er })
+  const cover = getVal('rl-cover') || ''
+  smmData.reels.push({ link:getVal('rl-link'), cover, title:getVal('rl-title'), views, reach, likes, comments, saves, shares, er })
   ;['rl-link','rl-cover','rl-title','rl-views','rl-reach','rl-likes','rl-comments','rl-saves','rl-shares'].forEach(id=>setVal(id,''))
   closeModal('modal-reel'); renderReelsInputList(); await saveSMMData(false)
 }
