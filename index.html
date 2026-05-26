@@ -31179,12 +31179,9 @@ async function loadSMMReports() {
 
     var projCol  = (currentProject && currentProject.brand_color) ? currentProject.brand_color : '#b8923a';
     var projName = (currentProject && currentProject.name) ? currentProject.name : '?';
-    var projPhoto = currentProject && currentProject.photo_url;
-    var smmIconHtml = projPhoto
-      ? '<img src="' + projPhoto + '" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">'
-      : '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>';
-    var smmAvatarBg  = projPhoto ? projCol + '20' : 'rgba(139,92,246,.12)';
-    var smmAvatarBdr = projPhoto ? projCol + '40' : 'rgba(139,92,246,.3)';
+    var smmIconHtml = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>';
+    var smmAvatarBg  = 'rgba(139,92,246,.12)';
+    var smmAvatarBdr = 'rgba(139,92,246,.3)';
 
     return '<div class="rp-card rp-card-smm" onclick="loadAndOpenSMM(\'' + r.id + '\')" style="animation-delay:' + (i*0.05) + 's">'
 
