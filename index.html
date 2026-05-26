@@ -22772,7 +22772,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px 20px;
+  padding: 18px 20px;
   border-bottom: 1px solid rgba(255,255,255,.05);
   cursor: pointer;
   transition: background .15s;
@@ -22811,8 +22811,9 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  padding: 10px 8px;
+  gap: 6px;
+  padding: 14px 10px;
+  min-height: 64px;
   background: rgba(255,255,255,.04);
   border: 1px solid rgba(255,255,255,.07);
   border-radius: 10px;
@@ -31845,13 +31846,15 @@ function biRenderTable() {
     return `<div class="bi-proj-row${isSelected?' bi-row-selected':''}" onclick="biSelectProject('${p.id}')">
 
       <div class="bi-proj-info">
-        <div style="display:flex;align-items:center;gap:9px;margin-bottom:6px;">
-          <div style="width:28px;height:28px;border-radius:7px;background:${col}18;border:1px solid ${col}33;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:12px;font-weight:800;color:${col};flex-shrink:0;">${p.name[0]}</div>
-          <div style="font-family:var(--font-display);font-size:14px;font-weight:700;color:#f0ece6;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(p.name)}</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px;padding-left:37px;">
-          <span style="font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.04em;">${esc(p.category||'—')}</span>
-          ${statusHtml}
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:44px;height:44px;border-radius:10px;background:${col}18;border:1.5px solid ${col}44;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:18px;font-weight:800;color:${col};flex-shrink:0;${p.photo_url?'overflow:hidden;padding:0;':''}">${p.photo_url?`<img src="${p.photo_url}" style="width:100%;height:100%;object-fit:cover;">`:p.name[0]}</div>
+          <div style="min-width:0;">
+            <div style="font-family:var(--font-display);font-size:14px;font-weight:700;color:#f0ece6;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:5px;">${esc(p.name)}</div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.04em;">${esc(p.category||'—')}</span>
+              ${statusHtml}
+            </div>
+          </div>
         </div>
       </div>
 
