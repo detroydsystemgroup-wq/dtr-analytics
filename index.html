@@ -34268,11 +34268,18 @@ async function loadSMMReports() {
         + '</div>'
       : '';
 
+    var projCol  = (currentProject && currentProject.brand_color) ? currentProject.brand_color : '#b8923a';
+    var projName = (currentProject && currentProject.name) ? currentProject.name : '?';
+    var projPhoto = currentProject && currentProject.photo_url;
+    var smmIconHtml = projPhoto
+      ? '<img src="' + projPhoto + '" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">'
+      : '<span style="font-size:18px;font-weight:800;color:' + projCol + ';font-family:var(--font-display);">' + projName[0].toUpperCase() + '</span>';
+
     return '<div class="rp-card rp-card-smm" onclick="loadAndOpenSMM(\'' + r.id + '\')" style="animation-delay:' + (i*0.05) + 's">'
       + '<div class="rp-card-top">'
       +   '<div class="rp-card-left">'
-      +     '<div class="rp-card-icon" style="background:rgba(139,92,246,.1);border-color:rgba(139,92,246,.25);">'
-      +       '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--a3)" stroke-width="1.6" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>'
+      +     '<div class="rp-card-icon" style="background:' + projCol + '18;border-color:' + projCol + '44;overflow:hidden;display:flex;align-items:center;justify-content:center;">'
+      +       smmIconHtml
       +     '</div>'
       +     '<div class="rp-card-info">'
       +       '<div class="rp-card-title">' + r.period_label + '</div>'
@@ -37411,14 +37418,15 @@ async function cpRenderMilestone(project) {
           '</div>' +
         '</div>' +
 
-        '<div style="display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(255,255,255,.05);margin-top:auto;">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(255,255,255,.05);margin-top:auto;" onclick="event.stopPropagation()">' +
           '<div style="display:flex;gap:6px;">' +
             statusBadge(p.status) +
             (p.category ? '<span style="font-size:10px;font-family:\'DM Mono\',monospace;padding:3px 8px;border-radius:5px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.4);">' + p.category + '</span>' : '') +
           '</div>' +
-          '<div style="font-size:11px;font-family:\'DM Mono\',monospace;color:rgba(184,146,58,.55);display:flex;align-items:center;gap:4px;">' +
-            'Обновлён ' + updatedStr +
-            '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>' +
+          '<div style="display:flex;align-items:center;gap:6px;">' +
+            '<button class="pcard-action-btn" title="Статус / заметка" onclick="openQuickNote(\'' + p.id + '\',\'' + (p.name||'').replace(/'/g,"\\'") + '\',\'' + (p.quick_note||'').replace(/'/g,"\\'") + '\')">💬</button>' +
+            '<button class="pcard-action-btn" title="Настройки проекта" onclick="openProjectSettings(\'' + p.id + '\')">⚙</button>' +
+            '<button class="pcard-action-btn" title="Открыть" onclick="openProject(\'' + p.id + '\')">→</button>' +
           '</div>' +
         '</div>' +
 
