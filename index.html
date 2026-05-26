@@ -31338,6 +31338,22 @@ function runNewBlocks() {
 
 /* dotPulse animation on title dot — kill it */
 .ov2-health-title-dot { animation: none !important; }
+
+/* Full-width guarantee */
+#page-smm,
+#page-smm .smm-sec,
+#page-smm #ss-smm,
+#page-smm #ss-data,
+#page-smm #ss-ai {
+  max-width: none !important;
+  width: 100% !important;
+}
+#page-smm .kpi-group-content,
+#page-smm .kpi-group-digital,
+#page-smm .kpi-group-audience,
+#page-smm .smm-block {
+  width: 100% !important;
+}
 </style>
 
 <!-- ═══════════════════════════════════════════════════════
@@ -35224,13 +35240,15 @@ async function cpRenderMilestone(project) {
 
 /* ══ BODY ══ */
 #page-smm .smm-body {
-  padding: 28px 24px 40px !important;
+  padding: 28px 48px 56px !important;
   display: flex !important;
   flex-direction: column !important;
   gap: 10px !important;
   background: #070709 !important;
-  max-width: 1200px !important;
-  margin: 0 auto !important;
+  max-width: none !important;
+  width: 100% !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
 }
 
 /* Period label */
@@ -35527,7 +35545,7 @@ async function cpRenderMilestone(project) {
 #page-smm .smm-sec-heading { margin-top: 8px !important; }
 
 /* ══ MISC ══ */
-#page-smm .smm-sec.ssa { display: flex !important; flex-direction: column !important; gap: 10px !important; }
+#page-smm .smm-sec.ssa { display: flex !important; flex-direction: column !important; gap: 10px !important; width: 100% !important; max-width: none !important; }
 
 /* User pill */
 #page-smm .user-pill {
