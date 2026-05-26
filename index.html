@@ -4,11 +4,45 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTR Performance Analytics</title>
 <meta name="description" content="DTR Performance Analytics — операционная панель агентства Detroyd System Group.">
 <meta name="theme-color" content="#080808">
 <meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex, nofollow">
+
+<!-- Open Graph -->
+<meta property="og:type"        content="website">
+<meta property="og:title"       content="DTR Performance Analytics">
+<meta property="og:description" content="Операционная панель агентства Detroyd System Group — аналитика, трекер, SMM.">
+<meta property="og:locale"      content="ru_RU">
+
+<!-- Twitter Card -->
+<meta name="twitter:card"        content="summary">
+<meta name="twitter:title"       content="DTR Performance Analytics">
+<meta name="twitter:description" content="Операционная панель агентства Detroyd System Group — аналитика, трекер, SMM.">
+
+<!-- Content Security Policy -->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src  'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
+  style-src   'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src    https://fonts.gstatic.com;
+  img-src     'self' data: blob:;
+  connect-src https://ygxfvmpfhrfxqzoylddo.supabase.co
+              wss://ygxfvmpfhrfxqzoylddo.supabase.co
+              https://api.anthropic.com;
+  frame-ancestors 'none';
+  base-uri    'self';
+  form-action 'self';
+">
+
+<!-- Favicon -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23080808'/%3E%3Crect x='6' y='6' width='9' height='9' rx='2' fill='%23b8923a'/%3E%3Crect x='17' y='6' width='9' height='9' rx='2' fill='%23b8923a' opacity='.55'/%3E%3Crect x='6' y='17' width='9' height='9' rx='2' fill='%23b8923a' opacity='.55'/%3E%3Crect x='17' y='17' width='9' height='9' rx='2' fill='%23b8923a' opacity='.3'/%3E%3C/svg%3E">
-<title>DTR Performance Analytics</title>
+
+<!-- DNS prefetch → preconnect для внешних зависимостей -->
+<link rel="dns-prefetch" href="https://ygxfvmpfhrfxqzoylddo.supabase.co">
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@300;400;500&family=Bebas+Neue&display=swap" rel="stylesheet">
@@ -51,7 +85,6 @@
   /* ── Borders: barely-there warmth ── */
   --brd:  rgba(240,236,230,.055);
   --brd2: rgba(240,236,230,.11);
-  --brd3: rgba(240,236,230,.055);
 
   /* ── Type system: 2 families only ── */
   --font-display: 'DM Sans', sans-serif;
@@ -3337,9 +3370,9 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
 
 /* ── Override font stack ── */
 :root {
-  --font-display: var(--font-display) !important;
-  --font-body: var(--font-display) !important;
-  --font-mono: var(--font-mono) !important;
+  --font-display: 'DM Sans', sans-serif !important;
+  --font-body:    'DM Sans', sans-serif !important;
+  --font-mono:    'DM Mono', monospace !important;
 
   /* ── Richer color palette ── */
   --bg:   #080808 !important;
@@ -3369,7 +3402,6 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
   /* ── Borders: purple-tinted glass ── */
   --brd:  rgba(184,146,58,.08) !important;
   --brd2: rgba(184,146,58,.18) !important;
-  --brd3: rgba(184,146,58,.05) !important;
 
   /* ── Radii: more generous ── */
   --r-xs:  8px !important;
@@ -5165,9 +5197,9 @@ body::after {
 /* Clean modern font system */
 
 :root {
-  --font-display: var(--font-display) !important;
-  --font-body:    'Inter', -apple-system, 'Helvetica Neue', sans-serif !important;
-  --font-mono:    var(--font-mono) !important;
+  --font-display: 'DM Sans', sans-serif !important;
+  --font-body:    'DM Sans', -apple-system, 'Helvetica Neue', sans-serif !important;
+  --font-mono:    'DM Mono', monospace !important;
 }
 
 /* Force apply everywhere */
@@ -5262,9 +5294,9 @@ code, pre, kbd {
 <style id="dtr-numeric-fix">
 /* ── Crisp tabular numbers everywhere ── */
 :root {
-  --font-display: var(--font-display) !important;
-  --font-body:    'Inter', -apple-system, 'Helvetica Neue', sans-serif !important;
-  --font-mono:    var(--font-mono) !important;
+  --font-display: 'DM Sans', sans-serif !important;
+  --font-body:    'DM Sans', -apple-system, 'Helvetica Neue', sans-serif !important;
+  --font-mono:    'DM Mono', monospace !important;
 }
 
 body {
@@ -12088,7 +12120,6 @@ canvas {
   /* ── Borders: warm, not purple ── */
   --brd:  rgba(240,236,230,.055) !important;
   --brd2: rgba(240,236,230,.11)  !important;
-  --brd3: rgba(240,236,230,.055) !important;
 
   /* ── Fonts: DM Sans system ── */
   --font-display: 'DM Sans', -apple-system, 'Helvetica Neue', sans-serif !important;
@@ -15181,7 +15212,6 @@ select:focus {
   /* Border system — warm glass */
   --brd:   rgba(240,236,230,.055);
   --brd2:  rgba(240,236,230,.11);
-  --brd3:  rgba(240,236,230,.055);
 
   /* Typography */
   --font-display: 'DM Sans', -apple-system, sans-serif;
@@ -25082,7 +25112,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 }
 </style>
 <style id="dtr-passport-editor-css">
-   ПАСПОРТ КЛИЕНТА — левая панель (редактор)
+/* ПАСПОРТ КЛИЕНТА — левая панель (редактор)
    DTR Design System: Obsidian · Gold · Warm
 ══════════════════════════════════════════ */
 
@@ -26097,7 +26127,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   <!-- Sticky project header -->
   <div class="pp-header" id="pp-sticky-header">
     <div class="pp-header-left">
-      <button class="pp-back-btn agency-only" onclick="showPage('page-dashboard');loadProjects()">
+      <button class="pp-back-btn agency-only" onclick="backToDashboard()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
       </button>
       <div class="pp-icon" id="proj-icon"></div>
@@ -28359,7 +28389,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
     <div style="border-top:1px solid var(--brd);padding-top:16px;margin-top:4px;">
       <div style="font-size:9px;font-family:var(--font-display);color:var(--a2);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;">Доступ клиента</div>
       <div class="field"><label>Логин клиента</label><input type="text" id="proj-client-login" placeholder="uzbek_doner" oninput="updateClientLoginPreview()"></div>
-      <div class="field"><label>Пароль клиента</label><input type="password" id="proj-client-pass" placeholder="Минимум 8 символов" value="dtr2026"></div>
+      <div class="field"><label>Пароль клиента</label><input type="password" id="proj-client-pass" placeholder="Минимум 8 символов"></div>
       <div style="background:rgba(184,146,58,.08);border:1px solid rgba(184,146,58,.2);border-radius:9px;padding:10px 14px;margin-bottom:4px;font-size:12px;color:var(--txt2);font-family:var(--font-display);">
         Логин клиента: <span style="color:var(--a2);" id="client-login-preview">uzbek_doner@dtr.agency</span>
       </div>
@@ -28609,8 +28639,57 @@ ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS timer_started_at timestamptz;</
 // ══════════════════════════════════════════════
 const SUPABASE_URL = 'https://ygxfvmpfhrfxqzoylddo.supabase.co'
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlneGZ2bXBmaHJmeHF6b3lsZGRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjcxMDksImV4cCI6MjA5NDk0MzEwOX0.HEte3FOCSEztbZMQ1YgqjeYSn0IxBbP-gTdZ1zLhisk'
-// !! Вставь свой Anthropic API ключ (https://console.anthropic.com)
-const ANTHROPIC_KEY = '' // <-- сюда вставить sk-ant-...
+
+// ── Anthropic AI ──────────────────────────────
+// РЕКОМЕНДУЕТСЯ: вместо прямого вызова из браузера используй Edge Function.
+// Тогда ANTHROPIC_KEY останется на сервере и не будет виден пользователям.
+//
+// Как создать Edge Function в Supabase:
+//   supabase/functions/ai-proxy/index.ts:
+//   ──────────────────────────────────────────
+//   import { serve } from "https://deno.land/std/http/server.ts"
+//   const KEY = Deno.env.get("ANTHROPIC_KEY")!
+//   serve(async (req) => {
+//     if (req.method === "OPTIONS") return new Response(null, { headers: { "Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"*" } })
+//     const body = await req.json()
+//     const r = await fetch("https://api.anthropic.com/v1/messages", {
+//       method: "POST",
+//       headers: { "Content-Type":"application/json","x-api-key":KEY,"anthropic-version":"2023-06-01" },
+//       body: JSON.stringify(body)
+//     })
+//     const data = await r.json()
+//     return new Response(JSON.stringify(data), { headers: { "Content-Type":"application/json","Access-Control-Allow-Origin":"*" } })
+//   })
+//   ──────────────────────────────────────────
+//   Деплой: supabase functions deploy ai-proxy --no-verify-jwt
+//   Затем укажи URL ниже и очисти ANTHROPIC_KEY.
+//
+// AI_PROXY_URL — URL Edge Function (если пустой, запросы идут напрямую с ключом из браузера)
+const AI_PROXY_URL = '' // <-- вставить: SUPABASE_URL + '/functions/v1/ai-proxy'
+const ANTHROPIC_KEY = '' // <-- временно: sk-ant-... (убрать после настройки Edge Function)
+
+// ── AI хелпер: прокси → прямой вызов ─────────
+// Если AI_PROXY_URL задан — запрос уходит в Edge Function (ключ на сервере).
+// Если нет — прямой вызов из браузера с ANTHROPIC_KEY (только для разработки).
+async function _callAI(body) {
+  if (AI_PROXY_URL) {
+    const r = await fetch(AI_PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY },
+      body: JSON.stringify(body)
+    })
+    if (!r.ok) throw new Error('AI Proxy HTTP ' + r.status)
+    return r.json()
+  }
+  if (!ANTHROPIC_KEY) throw new Error('AI ключ не задан. Укажи ANTHROPIC_KEY или настрой AI_PROXY_URL.')
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': ANTHROPIC_KEY, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+    body: JSON.stringify(body)
+  })
+  if (!r.ok) throw new Error('Anthropic HTTP ' + r.status)
+  return r.json()
+}
 // Agency domain: клиентские логины превращаются в email вида login@dtr.agency
 // SQL: добавь колонки в projects если их нет:
 // ALTER TABLE projects ADD COLUMN IF NOT EXISTS quick_note text DEFAULT '';
@@ -28765,6 +28844,12 @@ function showPage(id) {
     if (current) current.classList.remove('active')
     next.classList.add('active')
   }
+}
+
+// Безопасный возврат на дашборд — loadProjects async с обработкой ошибки
+function backToDashboard() {
+  showPage('page-dashboard')
+  loadProjects().catch(e => console.warn('backToDashboard: loadProjects failed:', e))
 }
 
 // ══════════════════════════════════════════════
@@ -28957,7 +29042,7 @@ function openTelegramSetup() {
   const chatId = currentProject?.telegram_chat_id || ''
   if (g('tg-chat-id-inp')) g('tg-chat-id-inp').value = chatId
   if (g('tg-test-result')) g('tg-test-result').textContent = ''
-  g('modal-telegram').classList.add('open')
+  openModal('modal-telegram')
   setTimeout(() => g('tg-chat-id-inp')?.focus(), 100)
 }
 
@@ -29985,7 +30070,7 @@ function openQuickNote(id, name, currentNote) {
   _qnProjectId = id
   if (g('qn-project-name')) g('qn-project-name').textContent = name
   if (g('qn-text')) g('qn-text').value = currentNote || ''
-  g('modal-quicknote').classList.add('open')
+  openModal('modal-quicknote')
   setTimeout(() => g('qn-text').focus(), 50)
 }
 async function saveQuickNote() {
@@ -30000,7 +30085,7 @@ async function saveQuickNote() {
 }
 
 function openCreateProject() {
-  g('modal-project').classList.add('open')
+  openModal('modal-project')
   g('proj-name-inp').focus()
 }
 
@@ -30022,10 +30107,11 @@ async function createProject() {
   const desc = g('proj-desc-inp').value.trim()
   const color = g('proj-color-inp').value
   const clientLogin = (g('proj-client-login').value || name).trim().toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_а-яё]/gi,'')
-  const clientPass = g('proj-client-pass').value || 'dtr2026'
+  const clientPass = g('proj-client-pass').value.trim()
 
   if (!name) { g('proj-err').textContent = 'Введи название'; g('proj-err').style.display = 'block'; return }
   if (!clientLogin) { g('proj-err').textContent = 'Введи логин клиента'; g('proj-err').style.display = 'block'; return }
+  if (!clientPass || clientPass.length < 8) { g('proj-err').textContent = 'Придумай пароль — минимум 8 символов'; g('proj-err').style.display = 'block'; return }
 
   const btn = g('btn-create-project')
   btn.disabled = true
@@ -30071,7 +30157,7 @@ async function createProject() {
   g('proj-name-inp').value = ''
   g('proj-desc-inp').value = ''
   g('proj-client-login').value = ''
-  g('proj-client-pass').value = 'dtr2026'
+  g('proj-client-pass').value = ''
   delete g('proj-client-login').dataset.manual
   // Reset photo
   const pf = document.getElementById('proj-photo-file')
@@ -30232,7 +30318,7 @@ async function checkIsClient() {
 }
 
 function openCreateReport() {
-  g('modal-report').classList.add('open')
+  openModal('modal-report', 'rep-title-inp')
   g('rep-title-inp').focus()
 }
 
@@ -30818,7 +30904,7 @@ function runAnalysis() {
   if (Math.abs(ex)>0) ins.push({ic:'💰',t:`Суммарная доп. выручка за период: <b>${fmtM(Math.round(ex))} сум</b>.`})
   if (tr>0) ins.push({ic:'👥',t:`Трафик вырос на <b>+${fmt(Math.round(tr))} чеков/день</b> — пришли новые гости.`})
   if (Math.abs(ad)>1000) ins.push({ic:'🧾',t:ad>0?`Средний чек вырос на ${fmtM(Math.round(ad))} сум.`:`Средний чек снизился на ${fmtM(Math.round(Math.abs(ad)))} сум — нормально для новой аудитории.`})
-  g('ins-block').innerHTML = ins.map(x=>`<div class="ins-row"><div class="ins-ic">${x.ic}</div><div>${x.t}</div></div>`).join('')
+  g('ins-block').innerHTML = ins.map(x=>`<div class="ins-row"><div class="ins-ic">${x.ic}</div><div>${esc(x.t)}</div></div>`).join('')
 
   // Always render weekday trend (b1/d1 always available)
   renderWeekdayTrend()
@@ -31158,14 +31244,7 @@ ${LABEL_D} (${dD} дн): выручка/день ${fmtM(Math.round(dRD))} | че
   const aiColors = {'🎯':'var(--a)','📊':'var(--cyan)','💡':'var(--green)','⚠️':'var(--red)'}
 
   try {
-    if (!ANTHROPIC_KEY) throw new Error('API ключ не задан. Вставь свой Anthropic ключ в константу ANTHROPIC_KEY в файле.')
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json', 'x-api-key': ANTHROPIC_KEY, 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
-      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:800, messages:[{role:'user',content:prompt}] })
-    })
-    if (!resp.ok) throw new Error('HTTP ' + resp.status)
-    const data = await resp.json()
+    const data = await _callAI({ model:'claude-sonnet-4-20250514', max_tokens:800, messages:[{role:'user',content:prompt}] })
     if (data.error) throw new Error(data.error.message)
     const text = data.content?.[0]?.text || 'Ошибка'
 
@@ -31187,7 +31266,7 @@ ${LABEL_D} (${dD} дн): выручка/день ${fmtM(Math.round(dRD))} | че
     }
     g('ai-status').innerHTML = '<span style="color:var(--green);">● Готово</span>'
   } catch(err) {
-    g('ai-output').innerHTML = `<div style="background:rgba(255,61,107,.08);border:1px solid rgba(255,61,107,.25);border-radius:10px;padding:16px 18px;margin:12px;"><div style="color:var(--red);font-size:13px;font-weight:600;margin-bottom:6px;">⚠️ Ошибка подключения</div><div style="color:var(--txt2);font-size:12px;font-family:var(--font-display);">${err.message}</div><div style="color:var(--txt2);font-size:12px;margin-top:8px;">AI анализ работает только через сервер (не через file://). Остальные функции работают нормально.</div></div>`
+    g('ai-output').innerHTML = `<div style="background:rgba(255,61,107,.08);border:1px solid rgba(255,61,107,.25);border-radius:10px;padding:16px 18px;margin:12px;"><div style="color:var(--red);font-size:13px;font-weight:600;margin-bottom:6px;">⚠️ Ошибка подключения</div><div style="color:var(--txt2);font-size:12px;font-family:var(--font-display);">${esc(err.message)}</div><div style="color:var(--txt2);font-size:12px;margin-top:8px;">AI анализ работает только через сервер (не через file://). Остальные функции работают нормально.</div></div>`
     g('ai-status').innerHTML = '<span style="color:var(--red);">● Ошибка</span>'
   }
 
@@ -31924,7 +32003,7 @@ async function openFinanceModal(projId, projName) {
   renderFinExpenses()
   finRecalc()
 
-  g('modal-finance').classList.add('open')
+  openModal('modal-finance')
   setTimeout(() => g('fin-budget-inp').focus(), 100)
 }
 
@@ -32244,12 +32323,6 @@ async function runPassportAI() {
   const prompt = paiBuildPrompt(_paiMode)
   if (!prompt) return
 
-  if (!ANTHROPIC_KEY) {
-    g('pai-output-body').innerHTML = `<div style="padding:14px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:8px;font-size:12px;color:var(--red);">API ключ не задан. Вставь свой Anthropic ключ в константу <code>ANTHROPIC_KEY</code> в начале файла.</div>`
-    g('pai-output-wrap').style.display = 'block'
-    return
-  }
-
   _paiRunning = true
   const btn = g('pai-gen-btn')
   btn.disabled = true
@@ -32258,22 +32331,11 @@ async function runPassportAI() {
   g('pai-output-wrap').style.display = 'none'
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_KEY,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1200,
-        messages: [{ role: 'user', content: prompt }]
-      })
+    const data = await _callAI({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1200,
+      messages: [{ role: 'user', content: prompt }]
     })
-    if (!resp.ok) throw new Error('HTTP ' + resp.status)
-    const data = await resp.json()
     if (data.error) throw new Error(data.error.message)
     const text = data.content?.[0]?.text || ''
     _paiCurrentText = text
@@ -32748,7 +32810,7 @@ function openKanbanAddTask(defaultStatus = 'waiting') {
   const labels = { waiting:'В ожидании', active:'Активные', done:'Завершённые' }
   g('kb-task-modal-title').textContent = `Новая задача → ${labels[defaultStatus]||'—'}`
 
-  g('modal-kanban-task').classList.add('open')
+  openModal('modal-kanban-task', 'kb-task-title-inp')
   setTimeout(() => g('kb-task-title-inp').focus(), 100)
 }
 
@@ -32861,7 +32923,7 @@ function copyAllSQL() {
 }
 
 function openSQLSetup() {
-  g('modal-sql-setup').classList.add('open')
+  openModal('modal-sql-setup')
 }
 
 async function loadTasks() {
@@ -32968,7 +33030,7 @@ function openAddTask(stageIndex) {
   sel.innerHTML = '<option value="">— не назначен —</option>' +
     teamMembers.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('')
   g('task-priority-inp').value = 'normal'
-  g('modal-task').classList.add('open')
+  openModal('modal-task', 'task-title-inp')
   setTimeout(() => g('task-title-inp').focus(), 100)
 }
 
@@ -33011,7 +33073,7 @@ function openTeamManager() {
   _teamEditing = [...teamMembers]
   renderTeamChips()
   g('team-member-inp').value = ''
-  g('modal-team').classList.add('open')
+  openModal('modal-team', 'team-member-inp')
   setTimeout(() => g('team-member-inp').focus(), 100)
 }
 function renderTeamChips() {
@@ -33249,7 +33311,7 @@ function openEditStage(i) {
   g('stage-link-inp').value = rec.link || ''
   selectedStageStatus = rec.status || 'pending'
   updateStageStatusBtns()
-  g('modal-stage').classList.add('open')
+  openModal('modal-stage')
 }
 
 function selectStageStatus(status) {
@@ -33796,7 +33858,7 @@ function selectTone(btn) {
 }
 
 // ── Persona ──
-function openAddPersona() { g('modal-persona').classList.add('open'); g('pn-name').focus(); }
+function openAddPersona() { openModal('modal-persona', 'pn-name') }
 async function addPersona() {
   const name = getVal('pn-name'); if (!name) return
   passportData.audience.push({
@@ -33816,7 +33878,7 @@ async function deletePersona(i) {
 }
 
 // ── Competitor ──
-function openAddCompetitor() { g('modal-competitor').classList.add('open'); g('co-name').focus(); }
+function openAddCompetitor() { openModal('modal-competitor', 'co-name') }
 async function addCompetitor() {
   const name = getVal('co-name'); if (!name) return
   passportData.competitors.push({
@@ -33862,7 +33924,7 @@ function kpiMetricTypeChange() {
 
 // ── KPI ──
 function openAddKPI() {
-  g('modal-kpi').classList.add('open')
+  openModal('modal-kpi', 'ki-goal')
   // reset
   ;['ki-goal','ki-current','ki-target','ki-metric','ki-plan-value','ki-unit'].forEach(id => setVal(id,''))
   setVal('ki-deadline','')
@@ -33899,7 +33961,7 @@ async function deleteKPI(i) {
 }
 
 // ── Notes ──
-function openAddNote() { g('modal-note').classList.add('open'); g('nt-text').focus(); }
+function openAddNote() { openModal('modal-note', 'nt-text') }
 async function addNote() {
   const text = getVal('nt-text'); if (!text) return
   const name = currentUser.user_metadata?.login_name || currentUser.email.split('@')[0]
@@ -34152,7 +34214,7 @@ const SMM_PALETTES = [
 ]
 
 function openCreateSMMReport() {
-  g('modal-smm-create').classList.add('open')
+  openModal('modal-smm-create', 'smm-period-inp')
   setTimeout(() => g('smm-period-inp').focus(), 50)
 }
 
@@ -34869,7 +34931,7 @@ function openAddReel() {
   rlSetStatus('', '')
   const note = g('rl-sql-note'); if (note) note.style.display = 'none'
   ;['rl-link','rl-title','rl-views','rl-reach','rl-likes','rl-comments','rl-saves','rl-shares'].forEach(id => setVal(id,''))
-  g('modal-reel').classList.add('open')
+  openModal('modal-reel')
   setTimeout(() => g('rl-title').focus(), 100)
 }
 
@@ -34886,7 +34948,7 @@ async function addReel() {
 }
 async function deleteReel(idx) { smmData.reels.splice(idx,1); renderReelsInputList(); await saveSMMData(false) }
 
-function openAddRubric() { g('modal-rubric').classList.add('open'); setTimeout(()=>g('rb-name').focus(),50) }
+function openAddRubric() { openModal('modal-rubric', 'rb-name') }
 async function addRubric() {
   const name=getVal('rb-name'); if(!name) return
   smmData.rubrics.push({ name, posts:+getVal('rb-posts')||0, er:+getVal('rb-er')||0, reach:+getVal('rb-reach')||0, views:+getVal('rb-views')||0 })
@@ -34931,13 +34993,7 @@ ${topRub?('Лучшая рубрика: "'+topRub.name+'", ER '+topRub.er+'%'):'
 ## ⚠️ Что просело
 ## 💡 Рекомендации`
   try {
-    if (!ANTHROPIC_KEY) throw new Error('API ключ не задан. Вставь свой Anthropic ключ в константу ANTHROPIC_KEY в файле.')
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:900,messages:[{role:'user',content:prompt}]})
-    })
-    if(!resp.ok) throw new Error('HTTP ' + resp.status)
-    const data=await resp.json()
+    const data=await _callAI({model:'claude-sonnet-4-20250514',max_tokens:900,messages:[{role:'user',content:prompt}]})
     if(data.error) throw new Error(data.error.message)
     const text=data.content?.[0]?.text||''
     renderSMMAnalysis(text)
@@ -34945,7 +35001,7 @@ ${topRub?('Лучшая рубрика: "'+topRub.name+'", ER '+topRub.er+'%'):'
     if(g('smm-ai-status')) g('smm-ai-status').innerHTML='<span style="color:var(--smm-green)">● Готово</span>'
     switchSMMTab('ai',document.querySelectorAll('.smm-nav-item')[2])
   } catch(err) {
-    if(g('smm-ai-output')) g('smm-ai-output').innerHTML=`<div style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);border-radius:10px;padding:16px 18px;font-family:var(--font-mono);font-size:12px;color:var(--smm-red);">${err.message}</div>`
+    if(g('smm-ai-output')) g('smm-ai-output').innerHTML=`<div style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);border-radius:10px;padding:16px 18px;font-family:var(--font-mono);font-size:12px;color:var(--smm-red);">${esc(err.message)}</div>`
     if(g('smm-ai-status')) g('smm-ai-status').innerHTML='<span style="color:var(--smm-red)">● Ошибка</span>'
   }
   smmAiRunning=false
@@ -34976,6 +35032,15 @@ function renderSMMAnalysis(text) {
 // ══════════════════════════════════════════════
 // MODALS
 // ══════════════════════════════════════════════
+function openModal(id, focusId) {
+  const m = g(id)
+  if (!m) return
+  m.classList.add('open')
+  if (focusId) {
+    const el = g(focusId)
+    if (el) setTimeout(() => el.focus(), 50)
+  }
+}
 function closeModal(id) {
   g(id).classList.remove('open')
 }
@@ -35145,7 +35210,7 @@ function openProjectSettings(id) {
     }
   }
 
-  document.getElementById('modal-proj-settings').classList.add('open')
+  openModal('modal-proj-settings')
   setTimeout(() => nameInp && nameInp.focus(), 80)
 }
 
