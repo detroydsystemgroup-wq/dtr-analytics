@@ -25578,18 +25578,12 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
             <span class="cc-nav-text">Проекты</span>
             <span class="cc-nav-count" id="cc-proj-count">—</span>
           </button>
-          <button class="dash-tab cc-nav-item" id="dtab-calendar" onclick="switchDashTab('calendar',this)">
+          <button class="dash-tab cc-nav-item" id="dtab-timeline" onclick="switchDashTab('timeline',this)">
             <span class="cc-nav-icon">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
             </span>
             <span class="cc-nav-text">Дедлайны</span>
             <span class="dash-tab-badge" id="dtab-badge-cal">0</span>
-          </button>
-          <button class="dash-tab cc-nav-item" id="dtab-activity" onclick="switchDashTab('activity',this)">
-            <span class="cc-nav-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            </span>
-            <span class="cc-nav-text">Активность</span>
           </button>
           <button class="dash-tab cc-nav-item" id="dtab-overview" onclick="switchDashTab('overview',this)">
             <span class="cc-nav-icon">
@@ -25684,7 +25678,26 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
     </div>
 
     <!-- ── TAB: CALENDAR / DEADLINES ── UPGRADED ── -->
-    <div id="dtab-calendar-panel" style="display:none;">
+    <div id="dtab-timeline-panel" style="display:none;">
+
+      <!-- Внутренний переключатель -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+        <div style="display:flex;gap:3px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:3px;">
+          <button id="tl-btn-deadlines" onclick="switchTimelineMode('deadlines')"
+            style="display:flex;align-items:center;gap:7px;padding:7px 16px;border-radius:8px;border:none;font-family:var(--font-display);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;background:rgba(184,146,58,.15);color:var(--a2);">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Дедлайны
+          </button>
+          <button id="tl-btn-activity" onclick="switchTimelineMode('activity')"
+            style="display:flex;align-items:center;gap:7px;padding:7px 16px;border-radius:8px;border:none;font-family:var(--font-display);font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;background:transparent;color:rgba(255,255,255,.38);">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Активность
+          </button>
+        </div>
+      </div>
+
+      <!-- Дедлайны секция -->
+      <div id="tl-deadlines-wrap">
       <div class="dl-command-bar">
         <div class="dl-search-wrap">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
@@ -25733,10 +25746,10 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
         <div class="dl-stat-item"><div class="dl-stat-val" id="dl-stat-future" style="color:var(--a2);">—</div><div class="dl-stat-lbl">Будущие</div></div>
       </div>
       <div class="deadline-panel" id="deadline-panel"></div>
-    </div>
+      </div><!-- /tl-deadlines-wrap -->
 
-    <!-- ── TAB: ACTIVITY ── UPGRADED ── -->
-    <div id="dtab-activity-panel" style="display:none;">
+      <!-- Активность секция -->
+      <div id="tl-activity-wrap" style="display:none;">
 
       <!-- Command Bar -->
       <div class="act-command-bar">
@@ -25810,7 +25823,9 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
       <div class="activity-feed" id="activity-feed">
         <div class="activity-loading">Загрузка активности...</div>
       </div>
-    </div>
+      </div><!-- /tl-activity-wrap -->
+
+    </div><!-- /dtab-timeline-panel -->
 
     <!-- ── TAB: OVERVIEW — McKinsey Command Center ── -->
     <div id="dtab-overview-panel" style="display:none;">
@@ -30221,14 +30236,44 @@ function renderProjectGrid() {
 function switchDashTab(tab, btn) {
   document.querySelectorAll('.dash-tab').forEach(b => b.classList.remove('dt-active'))
   btn.classList.add('dt-active')
-  g('dtab-projects-panel').style.display  = tab === 'projects' ? 'block' : 'none'
-  g('dtab-calendar-panel').style.display  = tab === 'calendar' ? 'block' : 'none'
-  g('dtab-activity-panel').style.display  = tab === 'activity' ? 'block' : 'none'
-  g('dtab-overview-panel').style.display  = tab === 'overview' ? 'block' : 'none'
-  g('dtab-finance-panel').style.display   = tab === 'finance'  ? 'block' : 'none'
-  if (tab === 'activity') loadActivityFeed()
+  g('dtab-projects-panel').style.display  = tab === 'projects'  ? 'block' : 'none'
+  g('dtab-timeline-panel').style.display  = tab === 'timeline'  ? 'block' : 'none'
+  g('dtab-overview-panel').style.display  = tab === 'overview'  ? 'block' : 'none'
+  g('dtab-finance-panel').style.display   = tab === 'finance'   ? 'block' : 'none'
+  // legacy compat
+  const calPanel = g('dtab-calendar-panel')
+  const actPanel = g('dtab-activity-panel')
+  if (calPanel) calPanel.style.display = 'none'
+  if (actPanel) actPanel.style.display = 'none'
+  if (tab === 'timeline') {
+    // default mode — deadlines, load feed only if activity was last shown
+    if (g('tl-activity-wrap') && g('tl-activity-wrap').style.display !== 'none') {
+      loadActivityFeed()
+    }
+  }
   if (tab === 'overview') { if (_allProjects.length) { loadOverview(); loadSMMLb(); } else { loadProjects().then(() => { loadOverview(); loadSMMLb(); }) } }
   if (tab === 'finance')  loadFinance()
+}
+
+let _tlMode = 'deadlines'
+function switchTimelineMode(mode) {
+  _tlMode = mode
+  const dlWrap  = g('tl-deadlines-wrap')
+  const actWrap = g('tl-activity-wrap')
+  const dlBtn   = g('tl-btn-deadlines')
+  const actBtn  = g('tl-btn-activity')
+
+  if (dlWrap)  dlWrap.style.display  = mode === 'deadlines' ? 'block' : 'none'
+  if (actWrap) actWrap.style.display = mode === 'activity'  ? 'block' : 'none'
+
+  const ACTIVE  = { background:'rgba(184,146,58,.15)', color:'var(--a2)', fontWeight:'600' }
+  const PASSIVE = { background:'transparent', color:'rgba(255,255,255,.38)', fontWeight:'500' }
+  const apply = (btn, styles) => { if (btn) { btn.style.background = styles.background; btn.style.color = styles.color; btn.style.fontWeight = styles.fontWeight } }
+
+  apply(dlBtn,  mode === 'deadlines' ? ACTIVE : PASSIVE)
+  apply(actBtn, mode === 'activity'  ? ACTIVE : PASSIVE)
+
+  if (mode === 'activity') loadActivityFeed()
 }
 
 // Quick note modal
