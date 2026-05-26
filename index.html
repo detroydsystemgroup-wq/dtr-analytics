@@ -22717,19 +22717,38 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 }
 .apl-pill-active span { background: rgba(255,255,255,.15); color: rgba(255,255,255,.8); }
 .apl-sort-sel {
-  background: rgba(255,255,255,.05);
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 100px;
-  padding: 6px 14px;
-  color: rgba(255,255,255,.6);
+  background: var(--bg4);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 10px;
+  padding: 9px 14px;
+  height: 40px;
+  color: rgba(255,255,255,.7);
   font-family: var(--font-display);
   font-size: 12px;
+  font-weight: 500;
   outline: none;
   cursor: pointer;
-  transition: all .15s;
+  transition: all .18s;
   flex-shrink: 0;
+  appearance: auto;
+  -webkit-appearance: auto;
 }
-.apl-sort-sel:hover { border-color: rgba(255,255,255,.14); color: rgba(255,255,255,.8); }
+.apl-sort-sel:hover {
+  border-color: rgba(255,255,255,.22);
+  color: rgba(255,255,255,.95);
+  background: var(--bg5);
+}
+.apl-sort-sel:focus {
+  border-color: rgba(184,146,58,.4);
+  box-shadow: 0 0 0 3px rgba(184,146,58,.08);
+}
+.apl-sort-sel option {
+  background: #1a1a1a;
+  color: rgba(255,255,255,.85);
+  padding: 8px 12px;
+  font-family: var(--font-display);
+  font-size: 13px;
+}
 
 /* Body grid */
 .apl-body-grid {
