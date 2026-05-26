@@ -22764,121 +22764,128 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   overflow: hidden;
   box-shadow: 0 4px 24px rgba(0,0,0,.35);
 }
-.apl-thead {
-  display: flex;
-  align-items: center;
-  padding: 10px 20px;
-  background: rgba(255,255,255,.03);
-  border-bottom: 1px solid rgba(255,255,255,.08);
-}
-.apl-th {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: .18em;
-  color: rgba(255,255,255,.45);
-  text-transform: uppercase;
-  font-weight: 500;
-}
-.apl-th-name { flex: 1.8; }
-.apl-th-r { width: 110px; text-align: right; flex-shrink: 0; }
+/* Скрываем старый thead — блоки сами несут лейблы */
+.apl-thead { display: none !important; }
 
-/* Table rows */
-.apl-proj-row {
+/* ── Новые строки ── */
+.bi-proj-row {
   display: flex;
   align-items: center;
+  gap: 12px;
   padding: 16px 20px;
-  border-bottom: 1px solid rgba(255,255,255,.055);
+  border-bottom: 1px solid rgba(255,255,255,.05);
   cursor: pointer;
   transition: background .15s;
   position: relative;
 }
-.apl-proj-row::after {
+.bi-proj-row::before {
   content: '';
   position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 3px;
+  left: 0; top: 0; bottom: 0; width: 3px;
   background: transparent;
   border-radius: 0 2px 2px 0;
-  transition: background .15s;
+  transition: background .2s;
 }
-.apl-proj-row:hover { background: rgba(255,255,255,.04); }
-.apl-proj-row:hover::after { background: rgba(184,146,58,.5); }
-.apl-proj-row:last-child { border-bottom: none; }
-.apl-row-selected { background: rgba(184,146,58,.08) !important; }
-.apl-row-selected::after { background: var(--a) !important; }
-.apl-proj-name-col { flex: 1.8; min-width: 0; }
-.apl-pname {
+.bi-proj-row:hover { background: rgba(255,255,255,.03); }
+.bi-proj-row:hover::before { background: rgba(184,146,58,.5); }
+.bi-proj-row:last-child { border-bottom: none; }
+.bi-row-selected { background: rgba(184,146,58,.07) !important; }
+.bi-row-selected::before { background: var(--a) !important; }
+
+/* Левая колонка — название */
+.bi-proj-info {
+  flex: 0 0 200px;
+  min-width: 0;
+}
+
+/* Метрики — 5 блоков одинакового размера */
+.bi-metrics-row {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  align-items: stretch;
+}
+.bi-mblock {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 10px 8px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 10px;
+  min-width: 0;
+  transition: border-color .15s, background .15s;
+}
+.bi-proj-row:hover .bi-mblock {
+  border-color: rgba(255,255,255,.11);
+  background: rgba(255,255,255,.055);
+}
+.bi-mb-lbl {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.3);
+  white-space: nowrap;
+}
+.bi-mb-val {
   font-family: var(--font-display);
   font-size: 14px;
   font-weight: 700;
-  color: #f0ece6;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-bottom: 4px;
-  letter-spacing: -.02em;
-}
-.apl-pmeta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  color: rgba(255,255,255,.32);
-  letter-spacing: .04em;
-}
-.apl-cell {
-  width: 110px;
-  text-align: right;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: rgba(255,255,255,.5);
-  flex-shrink: 0;
+  letter-spacing: -.03em;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -.01em;
+  line-height: 1;
+  white-space: nowrap;
 }
-.apl-cell-rev  {
-  color: rgba(255,255,255,.9);
-  font-size: 13px;
-  font-weight: 600;
-}
-.apl-cell-cost { color: rgba(248,113,113,.9); font-weight: 500; }
-.apl-cell-pos  { color: #4ade80; font-weight: 700; font-size: 13px; }
-.apl-cell-neg  { color: rgba(248,113,113,.95); font-weight: 700; font-size: 13px; }
-.apl-cell-hrs  {
-  color: rgba(34,211,238,.85);
-  font-weight: 600;
-}
-.apl-margin-pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 52px;
-  padding: 4px 10px;
-  border-radius: 100px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .02em;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.1);
-}
-.apl-row-actions { width: 100px; display: flex; justify-content: flex-end; flex-shrink: 0; }
-.apl-row-actions button {
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-size: 11px;
-  font-weight: 600;
-}
+/* Маржа — особый стиль блока */
+.bi-mb-margin { border-width: 1px; }
 
-/* Status badge */
-.apl-status {
+/* Кнопка действия */
+.bi-row-action { flex-shrink: 0; }
+.bi-action-btn {
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.1);
+  color: rgba(255,255,255,.5);
+}
+.bi-action-btn:hover {
+  background: rgba(255,255,255,.09);
+  border-color: rgba(255,255,255,.2);
+  color: rgba(255,255,255,.85);
+}
+.bi-action-btn.bi-action-primary {
+  background: rgba(184,146,58,.15);
+  border-color: rgba(184,146,58,.35);
+  color: var(--a2);
+}
+.bi-action-btn.bi-action-primary:hover {
+  background: rgba(184,146,58,.25);
+  border-color: rgba(184,146,58,.55);
+  color: var(--a3);
+}
+/* Статус-бейдж внутри строки */
+.bi-status-badge {
   font-family: var(--font-mono);
   font-size: 8px;
-  letter-spacing: .07em;
-  padding: 2px 8px;
+  letter-spacing: .06em;
+  padding: 2px 7px;
   border-radius: 20px;
+  border: 1px solid;
   font-weight: 600;
 }
+/* Старые классы — сохраняем совместимость но скрываем */
+.apl-proj-row { display: none !important; }
+.apl-cell, .apl-th, .apl-th-r, .apl-proj-name-col { display: none !important; }
 
 /* Detail card */
 .apl-detail-card {
@@ -31817,41 +31824,69 @@ function biRenderTable() {
   tbody.innerHTML = rows.map(r=>{
     const {p,budget,totalCost,profit,marginPct,hours,hasBudget} = r
     const isSelected = p.id === _biSelectedId
+    const col = p.brand_color || '#b8923a'
 
-    let mColor='rgba(255,255,255,.2)', mBg='rgba(255,255,255,.05)'
+    // Margin color system
+    let mColor='rgba(255,255,255,.5)', mBg='rgba(255,255,255,.06)', mBdr='rgba(255,255,255,.1)'
     if(marginPct!==null) {
-      if(marginPct>=60){mColor='rgba(34,211,238,.9)';mBg='rgba(34,211,238,.1)'}
-      else if(marginPct>=20){mColor='rgba(74,222,128,.9)';mBg='rgba(74,222,128,.1)'}
-      else{mColor='rgba(248,113,113,.9)';mBg='rgba(248,113,113,.1)'}
+      if(marginPct>=60){mColor='#22d3ee';mBg='rgba(34,211,238,.1)';mBdr='rgba(34,211,238,.25)'}
+      else if(marginPct>=20){mColor='#4ade80';mBg='rgba(74,222,128,.1)';mBdr='rgba(74,222,128,.25)'}
+      else{mColor='#f87171';mBg='rgba(248,113,113,.1)';mBdr='rgba(248,113,113,.25)'}
     }
 
     let statusHtml=''
-    if(!hasBudget) statusHtml=`<span class="apl-status" style="background:rgba(255,255,255,.04);color:rgba(255,255,255,.25);">нет бюджета</span>`
-    else if(marginPct!==null && marginPct>=60) statusHtml=`<span class="apl-status" style="background:rgba(34,211,238,.08);color:rgba(34,211,238,.7);">Апселл</span>`
-    else if(marginPct!==null && marginPct<20)  statusHtml=`<span class="apl-status" style="background:rgba(248,113,113,.08);color:rgba(248,113,113,.7);">At-Risk</span>`
+    if(!hasBudget) statusHtml=`<span class="bi-status-badge" style="background:rgba(255,255,255,.05);color:rgba(255,255,255,.3);border-color:rgba(255,255,255,.08);">нет бюджета</span>`
+    else if(marginPct!==null && marginPct>=60) statusHtml=`<span class="bi-status-badge" style="background:rgba(34,211,238,.08);color:#22d3ee;border-color:rgba(34,211,238,.2);">Апселл ↑</span>`
+    else if(marginPct!==null && marginPct<20)  statusHtml=`<span class="bi-status-badge" style="background:rgba(248,113,113,.08);color:#f87171;border-color:rgba(248,113,113,.2);">At-Risk ⚠</span>`
 
-    return `<div class="apl-proj-row${isSelected?' apl-row-selected':''}" onclick="biSelectProject('${p.id}')">
-      <div class="apl-proj-name-col">
-        <div class="apl-pname">${esc(p.name)}</div>
-        <div class="apl-pmeta">
-          <span>${esc(p.category||'—')}</span>
+    const profitColor = profit===null?'rgba(255,255,255,.4)':profit>=0?'#4ade80':'#f87171'
+    const profitVal   = profit===null?'—':(profit>=0?'+':'')+fmtM(profit)
+
+    return `<div class="bi-proj-row${isSelected?' bi-row-selected':''}" onclick="biSelectProject('${p.id}')">
+
+      <div class="bi-proj-info">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:6px;">
+          <div style="width:28px;height:28px;border-radius:7px;background:${col}18;border:1px solid ${col}33;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:12px;font-weight:800;color:${col};flex-shrink:0;">${p.name[0]}</div>
+          <div style="font-family:var(--font-display);font-size:14px;font-weight:700;color:#f0ece6;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(p.name)}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;padding-left:37px;">
+          <span style="font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.04em;">${esc(p.category||'—')}</span>
           ${statusHtml}
         </div>
       </div>
-      <div class="apl-cell${hasBudget?' apl-cell-rev':''}">${hasBudget?fmtM(budget):'—'}</div>
-      <div class="apl-cell${totalCost>0?' apl-cell-cost':''}">${totalCost>0?fmtM(totalCost):'—'}</div>
-      <div class="apl-cell${profit!==null?(profit>=0?' apl-cell-pos':' apl-cell-neg'):''}">${profit!==null?(profit>=0?'+':'')+fmtM(profit):'—'}</div>
-      <div class="apl-cell">
-        ${marginPct!==null
-          ? `<span class="apl-margin-pill" style="background:${mBg};color:${mColor};">${marginPct}%</span>`
-          : '<span style="color:rgba(255,255,255,.15);">—</span>'}
+
+      <div class="bi-metrics-row">
+
+        <div class="bi-mblock bi-mb-budget">
+          <div class="bi-mb-lbl">Бюджет</div>
+          <div class="bi-mb-val" style="color:${hasBudget?'rgba(255,255,255,.9)':'rgba(255,255,255,.2)'};">${hasBudget?fmtM(budget):'—'}</div>
+        </div>
+
+        <div class="bi-mblock bi-mb-cost">
+          <div class="bi-mb-lbl">Расходы</div>
+          <div class="bi-mb-val" style="color:${totalCost>0?'#f87171':'rgba(255,255,255,.2)'};">${totalCost>0?fmtM(totalCost):'—'}</div>
+        </div>
+
+        <div class="bi-mblock bi-mb-profit">
+          <div class="bi-mb-lbl">Прибыль</div>
+          <div class="bi-mb-val" style="color:${profitColor};">${profitVal}</div>
+        </div>
+
+        <div class="bi-mblock bi-mb-margin" style="background:${mBg};border-color:${mBdr};">
+          <div class="bi-mb-lbl" style="color:${mColor};opacity:.7;">Маржа</div>
+          <div class="bi-mb-val" style="color:${mColor};font-size:18px;font-weight:800;">${marginPct!==null?marginPct+'%':'—'}</div>
+        </div>
+
+        <div class="bi-mblock bi-mb-hours">
+          <div class="bi-mb-lbl">Часы</div>
+          <div class="bi-mb-val" style="color:${hours>0?'rgba(34,211,238,.9)':'rgba(255,255,255,.2)'};">${hours>0?hours+'h':'—'}</div>
+        </div>
+
       </div>
-      <div class="apl-cell${hours>0?' apl-cell-hrs':''}">${hours>0?hours+'h':'—'}</div>
-      <div class="apl-row-actions">
-        <button class="${!hasBudget?'btn-primary':'btn-ghost'}" style="font-size:10px;padding:5px 10px;${!hasBudget?'background:var(--a);':'opacity:.6;'}"
-          onclick="event.stopPropagation();openFinanceModal('${p.id}','${esc(p.name)}')">
-          ${!hasBudget?'Задать':'Изменить'}
-        </button>
+
+      <div class="bi-row-action" onclick="event.stopPropagation()">
+        <button class="bi-action-btn${!hasBudget?' bi-action-primary':''}"
+          onclick="openFinanceModal('${p.id}','${esc(p.name)}')">${!hasBudget?'+ Задать':'Изменить'}</button>
       </div>
     </div>`
   }).join('')
