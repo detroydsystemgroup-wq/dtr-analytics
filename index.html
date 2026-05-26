@@ -2844,21 +2844,182 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
 .smm-reel-link-btn:hover { background: rgba(255,255,255,.1); color: rgba(255,255,255,.8); }
 
 /* ── Rubrics ── */
-.smm-rubric-winner {
-  display:none; margin-bottom:18px; padding:14px 18px; border-radius:10px;
-  background:linear-gradient(135deg,rgba(52,211,153,.08),rgba(184,146,58,.06));
-  border:1px solid rgba(52,211,153,.25); align-items:center; gap:14px;
+/* ══ RUBRIC WINNER HERO ══ */
+.rb-winner-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 20px;
+  padding: 20px 24px;
+  border-radius: 18px;
+  background: linear-gradient(135deg,
+    rgba(184,146,58,.1) 0%,
+    rgba(52,211,153,.06) 50%,
+    rgba(91,95,199,.08) 100%);
+  border: 1px solid rgba(184,146,58,.2);
+  position: relative;
+  overflow: hidden;
 }
-.smm-rubric-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
-.smm-rubric-card {
-  border-radius:14px; padding:20px; position:relative; overflow:hidden;
-  transition:transform .2s, box-shadow .2s;
+.rb-winner-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 40% 80% at 0% 50%, rgba(184,146,58,.08) 0%, transparent 70%);
+  pointer-events: none;
 }
-.smm-rubric-card:hover { transform:translateY(-3px); box-shadow:0 12px 32px rgba(0,0,0,.4); }
-.smm-rubric-blob {
-  position:absolute; top:-30px; right:-30px; width:90px; height:90px;
-  border-radius:50%; opacity:.07; filter:blur(20px); pointer-events:none;
+.rb-winner-left {
+  display: flex; align-items: center; gap: 16px;
 }
+.rb-winner-crown {
+  font-size: 32px; line-height: 1; flex-shrink: 0;
+  filter: drop-shadow(0 0 12px rgba(251,191,36,.5));
+}
+.rb-winner-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; letter-spacing: .18em; text-transform: uppercase;
+  color: rgba(184,146,58,.7); margin-bottom: 5px;
+}
+.rb-winner-name {
+  font-family: Manrope, sans-serif;
+  font-size: 24px; font-weight: 800; letter-spacing: -.03em;
+  color: rgba(255,255,255,.95); line-height: 1;
+}
+.rb-winner-stats {
+  display: flex; align-items: center; gap: 10px;
+  flex-wrap: wrap; justify-content: flex-end;
+}
+.rb-winner-stat {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 8px 14px;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px;
+  min-width: 72px;
+}
+.rb-winner-stat-val {
+  font-family: Manrope, sans-serif;
+  font-size: 20px; font-weight: 800; letter-spacing: -.04em; line-height: 1;
+  color: rgba(255,255,255,.9); margin-bottom: 3px;
+}
+.rb-winner-stat-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px; letter-spacing: .12em; text-transform: uppercase;
+  color: rgba(255,255,255,.3);
+}
+
+/* ══ RUBRIC GRID ══ */
+.smm-rubric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+/* ══ RUBRIC CARD — NEW ══ */
+.rb-card {
+  border-radius: 18px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.07);
+  background: rgba(255,255,255,.03);
+  transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s, border-color .15s;
+  cursor: default;
+}
+.rb-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0,0,0,.3);
+  border-color: rgba(255,255,255,.13);
+}
+/* Top gradient accent stripe */
+.rb-card-stripe {
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  border-radius: 18px 18px 0 0;
+}
+/* Glow blob */
+.rb-card-blob {
+  position: absolute; top: -40px; right: -40px;
+  width: 120px; height: 120px; border-radius: 50%;
+  opacity: .12; filter: blur(30px); pointer-events: none;
+}
+/* Winner card */
+.rb-card-winner {
+  border-color: rgba(184,146,58,.25);
+  background: rgba(184,146,58,.05);
+}
+/* Header row: name + posts */
+.rb-card-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.rb-card-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px; letter-spacing: .15em; text-transform: uppercase;
+  color: rgba(255,255,255,.3); margin-bottom: 5px;
+}
+.rb-card-name {
+  font-family: Manrope, sans-serif;
+  font-size: 16px; font-weight: 800; letter-spacing: -.02em;
+  color: rgba(255,255,255,.9); line-height: 1.2;
+}
+.rb-card-winner-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  margin-top: 5px;
+  font-family: 'JetBrains Mono', monospace; font-size: 8px;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: rgba(184,146,58,.8);
+  padding: 2px 8px;
+  background: rgba(184,146,58,.12);
+  border: 1px solid rgba(184,146,58,.2);
+  border-radius: 20px;
+}
+.rb-card-posts-block { text-align: right; }
+.rb-card-posts-val {
+  font-family: Manrope, sans-serif;
+  font-size: 36px; font-weight: 900; letter-spacing: -.05em;
+  line-height: 1; color: rgba(255,255,255,.9);
+}
+.rb-card-posts-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px; letter-spacing: .12em; text-transform: uppercase;
+  color: rgba(255,255,255,.25); margin-top: 2px;
+}
+/* Divider */
+.rb-card-divider {
+  height: 1px; background: rgba(255,255,255,.06); margin-bottom: 14px;
+}
+/* Metrics list */
+.rb-metric {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.rb-metric:last-child { margin-bottom: 0; }
+.rb-metric-left {
+  display: flex; align-items: center; gap: 8px; flex: 1;
+}
+.rb-metric-dot {
+  width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+}
+.rb-metric-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; letter-spacing: .1em; text-transform: uppercase;
+  color: rgba(255,255,255,.3);
+}
+.rb-metric-bar-wrap { flex: 1; margin: 0 12px; }
+.rb-metric-bar-track {
+  height: 3px; background: rgba(255,255,255,.07);
+  border-radius: 3px; overflow: hidden;
+}
+.rb-metric-bar-fill {
+  height: 100%; border-radius: 3px;
+  transition: width 1s cubic-bezier(.4,0,.2,1);
+}
+.rb-metric-val {
+  font-family: Manrope, sans-serif;
+  font-size: 14px; font-weight: 700; letter-spacing: -.02em;
+  color: rgba(255,255,255,.85); text-align: right;
+  min-width: 52px;
+}
+
 .smm-bar { height:3px; background:rgba(255,255,255,.07); border-radius:2px; overflow:hidden; margin-top:5px; }
 .smm-bar-fill { height:100%; border-radius:2px; transition:width 1s ease; }
 
@@ -15192,16 +15353,19 @@ select:focus {
         <div class="smm-sec-line"></div>
       </div>
 
-      <!-- Winner banner -->
-      <div class="smm-rubric-winner" id="smm-rubric-winner">
-        <div style="width:40px;height:40px;border-radius:50%;background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.4);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🏆</div>
-        <div>
-          <div style="font-family:var(--font-mono);font-size:9px;color:var(--smm-green);letter-spacing:.15em;text-transform:uppercase;margin-bottom:3px;">Самая эффективная рубрика</div>
-          <div style="font-family:var(--bebas);font-size:22px;color:var(--smm-text);" id="smm-winner-name">—</div>
-          <div style="font-family:var(--font-mono);font-size:11px;color:var(--smm-muted);margin-top:2px;" id="smm-winner-stats">—</div>
+      <!-- Winner hero banner -->
+      <div class="rb-winner-hero" id="smm-rubric-winner" style="display:none;">
+        <div class="rb-winner-left">
+          <div class="rb-winner-crown">👑</div>
+          <div class="rb-winner-body">
+            <div class="rb-winner-label">Самая эффективная рубрика</div>
+            <div class="rb-winner-name" id="smm-winner-name">—</div>
+          </div>
         </div>
+        <div class="rb-winner-stats" id="smm-winner-stats-row"></div>
       </div>
 
+      <!-- Rubric grid -->
       <div class="smm-rubric-grid" id="smm-rubric-grid">
         <div style="grid-column:1/-1;text-align:center;padding:40px;font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;color:var(--smm-muted);">Рубрики ещё не добавлены</div>
       </div>
@@ -22898,65 +23062,89 @@ function renderSMMReelsGrid() {
 }
 
 function renderSMMRubricGrid() {
-  const grid = g('smm-rubric-grid'); if (!grid) return
+  const grid   = g('smm-rubric-grid'); if (!grid) return
   const winner = g('smm-rubric-winner')
-  const rubs = [...smmData.rubrics].sort((a,b) => b.er-a.er)
-  if (!rubs.length) {
-    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;font-family:\'DM Mono\',monospace;font-size:12px;letter-spacing:.1em;color:var(--smm-muted);">Добавьте рубрики во вкладке «Данные»</div>'
-    if (winner) winner.style.display = 'none'; return
-  }
-  const best = rubs[0]
-  const maxER = Math.max(...rubs.map(r=>r.er||0),.01)
-  const maxReach = Math.max(...rubs.map(r=>r.reach||0),1)
-  const maxViews = Math.max(...rubs.map(r=>r.views||0),1)
-  const fmtM = n => n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(0)+'K':(n||0)
+  const rubs   = [...smmData.rubrics].sort((a,b) => b.er - a.er)
 
+  if (!rubs.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px;font-family:\'DM Mono\',monospace;font-size:12px;letter-spacing:.1em;color:var(--smm-muted);">Добавьте рубрики во вкладке «Данные»</div>'
+    if (winner) winner.style.display = 'none'
+    return
+  }
+
+  const best     = rubs[0]
+  const maxER    = Math.max(...rubs.map(r => r.er    || 0), .01)
+  const maxReach = Math.max(...rubs.map(r => r.reach || 0), 1)
+  const maxViews = Math.max(...rubs.map(r => r.views || 0), 1)
+  const fmtFull  = n => !n ? '—' : Number(n).toLocaleString('ru-RU')
+
+  // ── Winner hero banner ──
   if (winner && best.er > 0) {
     winner.style.display = 'flex'
-    if(g('smm-winner-name')) g('smm-winner-name').textContent = best.name
-    const stats=[]
-    if(best.er) stats.push('ER: '+best.er.toFixed(1)+'%')
-    if(best.reach) stats.push('Охват: '+fmtM(best.reach))
-    if(best.posts) stats.push('Постов: '+best.posts)
-    if(g('smm-winner-stats')) g('smm-winner-stats').textContent = stats.join('  ·  ')
-  } else if(winner) { winner.style.display='none' }
+    if (g('smm-winner-name')) g('smm-winner-name').textContent = best.name
 
-  grid.innerHTML = rubs.map((r,i) => {
-    const pal = SMM_PALETTES[i%SMM_PALETTES.length]
-    const isWin = best && r.name===best.name && best.er>0
-    const erPct = (r.er/maxER*100).toFixed(1), rePct = (r.reach/maxReach*100).toFixed(1), viPct = ((r.views||0)/maxViews*100).toFixed(1)
-    return `<div class="smm-rubric-card" style="background:${isWin?pal.bg:'var(--smm-bg4)'};border:${isWin?('1px solid '+pal.a):'1px solid rgba(255,255,255,.06)'};">
-      <div class="smm-rubric-blob" style="background:${pal.a};"></div>
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+    const statsRow = g('smm-winner-stats-row')
+    if (statsRow) {
+      const stats = [
+        { val: best.er.toFixed(1) + '%', lbl: 'ER', color: '#fbbf24' },
+        { val: fmtFull(best.reach),      lbl: 'Охват', color: '#34d399' },
+        { val: fmtFull(best.views),      lbl: 'Просмотры', color: '#a5b4fc' },
+        { val: best.posts || '—',         lbl: 'Постов', color: 'rgba(255,255,255,.6)' },
+      ].filter(s => s.val && s.val !== '—')
+      statsRow.innerHTML = stats.map(s => `
+        <div class="rb-winner-stat">
+          <div class="rb-winner-stat-val" style="color:${s.color};">${s.val}</div>
+          <div class="rb-winner-stat-lbl">${s.lbl}</div>
+        </div>`).join('')
+    }
+  } else if (winner) { winner.style.display = 'none' }
+
+  // ── Cards ──
+  grid.innerHTML = rubs.map((r, i) => {
+    const pal    = SMM_PALETTES[i % SMM_PALETTES.length]
+    const isWin  = best && r.name === best.name && best.er > 0
+    const erPct  = maxER    > 0 ? (r.er    / maxER    * 100).toFixed(1) : 0
+    const rePct  = maxReach > 0 ? (r.reach / maxReach * 100).toFixed(1) : 0
+    const viPct  = maxViews > 0 ? ((r.views || 0) / maxViews * 100).toFixed(1) : 0
+
+    const metrics = [
+      { name: 'Engagement Rate', val: r.er ? r.er.toFixed(1) + '%' : '—', pct: erPct, color: pal.a },
+      { name: 'Охват',           val: fmtFull(r.reach),                   pct: rePct, color: '#34d399' },
+      { name: 'Просмотры',       val: fmtFull(r.views),                   pct: viPct, color: 'rgba(255,255,255,.4)' },
+    ]
+
+    return `<div class="rb-card${isWin ? ' rb-card-winner' : ''}">
+      <div class="rb-card-stripe" style="background:${pal.a};"></div>
+      <div class="rb-card-blob" style="background:${pal.a};"></div>
+
+      <div class="rb-card-head">
         <div>
-          ${isWin?`<div style="font-size:9px;font-family:var(--font-mono);color:${pal.a};letter-spacing:.15em;text-transform:uppercase;margin-bottom:4px;">🏆 Лучшая</div>`:'<div style="height:17px;"></div>'}
-          <div style="font-size:15px;font-weight:600;color:#fff;">${esc(r.name)}</div>
+          <div class="rb-card-label">Рубрика</div>
+          <div class="rb-card-name">${esc(r.name)}</div>
+          ${isWin ? `<div class="rb-card-winner-badge">👑 Лучшая</div>` : ''}
         </div>
-        <div style="text-align:right;">
-          <div style="font-size:9px;color:rgba(255,255,255,.35);font-family:var(--font-mono);letter-spacing:.1em;margin-bottom:2px;">ПОСТОВ</div>
-          <div style="font-family:var(--bebas);font-size:34px;color:${pal.a};line-height:1;">${r.posts||0}</div>
+        <div class="rb-card-posts-block">
+          <div class="rb-card-posts-val" style="color:${pal.a};">${r.posts || 0}</div>
+          <div class="rb-card-posts-lbl">постов</div>
         </div>
       </div>
-      <div style="margin-bottom:12px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-          <span style="font-size:10px;color:rgba(255,255,255,.4);font-family:var(--font-mono);letter-spacing:.1em;">ENGAGEMENT RATE</span>
-          <span style="font-family:var(--bebas);font-size:22px;color:${pal.a};">${r.er?r.er.toFixed(1)+'%':'—'}</span>
-        </div>
-        <div class="smm-bar"><div class="smm-bar-fill" style="width:${erPct}%;background:${pal.a};"></div></div>
-      </div>
-      <div style="margin-bottom:12px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-          <span style="font-size:10px;color:rgba(255,255,255,.4);font-family:var(--font-mono);letter-spacing:.1em;">ОХВАТ</span>
-          <span style="font-family:var(--bebas);font-size:20px;color:var(--smm-cyan);">${r.reach?fmtM(r.reach):'—'}</span>
-        </div>
-        <div class="smm-bar"><div class="smm-bar-fill" style="width:${rePct}%;background:linear-gradient(90deg,var(--smm-cyan),var(--smm-accent2));"></div></div>
-      </div>
+
+      <div class="rb-card-divider"></div>
+
       <div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-          <span style="font-size:10px;color:rgba(255,255,255,.4);font-family:var(--font-mono);letter-spacing:.1em;">ПРОСМОТРЫ</span>
-          <span style="font-family:var(--bebas);font-size:20px;color:rgba(255,255,255,.7);">${r.views?fmtM(r.views):'—'}</span>
-        </div>
-        <div class="smm-bar"><div class="smm-bar-fill" style="width:${viPct}%;background:rgba(255,255,255,.25);"></div></div>
+        ${metrics.map(m => `
+          <div class="rb-metric">
+            <div class="rb-metric-left">
+              <div class="rb-metric-dot" style="background:${m.color};"></div>
+              <div class="rb-metric-name">${m.name}</div>
+            </div>
+            <div class="rb-metric-bar-wrap">
+              <div class="rb-metric-bar-track">
+                <div class="rb-metric-bar-fill" style="width:${m.pct}%;background:${m.color};"></div>
+              </div>
+            </div>
+            <div class="rb-metric-val" style="color:${m.color};">${m.val}</div>
+          </div>`).join('')}
       </div>
     </div>`
   }).join('')
