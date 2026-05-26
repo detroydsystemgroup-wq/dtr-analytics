@@ -1719,6 +1719,30 @@ input[type=file] { display: none; }
 }
 .tg-connect-btn:hover { border-color: rgba(0,136,204,.4); color: #2AABEE; }
 .tg-connect-btn.connected { border-color: rgba(0,136,204,.35); color: #2AABEE; background: rgba(0,136,204,.06); }
+
+/* ── Project time badge ── */
+.global-timer-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg3);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-xs);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--txt2);
+  transition: border-color .2s;
+  user-select: none;
+}
+.global-timer-badge:not(.gtb-running):hover {
+  border-color: var(--brd2);
+}
+.global-timer-badge.gtb-running {
+  border-color: rgba(224,82,82,.35);
+  background: rgba(224,82,82,.06);
+  color: var(--txt);
+}
 .tg-status-dot {
   width: 6px; height: 6px; border-radius: 50%; background: var(--txt3);
 }
@@ -26182,11 +26206,21 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
       </button>
     </div>
     <div class="pp-tabs-actions">
-      <!-- Global timer badge — shows when timer is running -->
-      <div class="global-timer-badge agency-only" id="global-timer-badge" onclick="stopActiveTimer()">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-        <span id="global-timer-display">00:00</span>
-        <span id="global-timer-task" style="opacity:.7;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+      <!-- Project time badge — always visible, shows total logged time -->
+      <div class="global-timer-badge agency-only" id="global-timer-badge">
+        <!-- Static mode: clock icon + total time -->
+        <span id="gtb-static" style="display:flex;align-items:center;gap:5px;">
+          <svg id="gtb-icon-clock" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span id="global-timer-display" style="font-variant-numeric:tabular-nums;">—</span>
+          <span id="gtb-label" style="opacity:.5;font-size:9px;letter-spacing:.08em;text-transform:uppercase;">всего</span>
+        </span>
+        <!-- Running mode: pulse dot + live timer + stop btn -->
+        <span id="gbt-running" style="display:none;align-items:center;gap:6px;">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--red);animation:pulse 1s ease infinite;flex-shrink:0;"></span>
+          <span id="gbt-live" style="font-variant-numeric:tabular-nums;font-family:var(--font-mono);font-size:11px;">00:00</span>
+          <span id="global-timer-task" style="opacity:.6;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;"></span>
+          <button onclick="stopActiveTimer()" style="background:rgba(224,82,82,.15);border:1px solid rgba(224,82,82,.3);border-radius:4px;padding:1px 7px;font-size:10px;color:var(--red);cursor:pointer;flex-shrink:0;font-family:var(--font-mono);">■ стоп</button>
+        </span>
       </div>
       <button class="tg-connect-btn agency-only" onclick="openSQLSetup()" title="SQL настройка БД" style="color:rgba(245,158,11,.7);border-color:rgba(245,158,11,.2);background:rgba(245,158,11,.05);" id="btn-sql-setup">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/></svg>
@@ -31922,22 +31956,68 @@ let _finExpenses    = []   // [{category, amount}]
 let _activeTimer = null    // {taskId, stageIndex, taskTitle, startMs}
 let _timerInterval = null
 
+// ── Форматирование суммарного времени проекта ──
+function _fmtProjectTime(totalMin) {
+  if (!totalMin || totalMin <= 0) return '—'
+  const h = Math.floor(totalMin / 60)
+  const m = totalMin % 60
+  if (h === 0) return m + 'м'
+  if (m === 0) return h + 'ч'
+  return h + 'ч ' + m + 'м'
+}
+
+// ── Обновить бейдж суммарным временем проекта ──
+function updateProjectTimeDisplay() {
+  if (!currentProject) return
+  // Считаем из tasksData (уже загружено loadTasks)
+  let totalMin = 0
+  if (typeof tasksData === 'object' && tasksData) {
+    Object.values(tasksData).forEach(arr => {
+      arr.forEach(t => { totalMin += (t.time_logged || 0) })
+    })
+  }
+  // Fallback — из _finTaskHours если tasksData ещё не загружен
+  if (totalMin === 0 && typeof _finTaskHours === 'object') {
+    totalMin = _finTaskHours[currentProject.id] || 0
+  }
+  const el = g('global-timer-display')
+  if (el) el.textContent = _fmtProjectTime(totalMin)
+  // Убираем running-режим, показываем static
+  const badge = g('global-timer-badge')
+  if (badge) {
+    badge.classList.remove('gtb-running')
+    badge.style.display = 'flex'
+  }
+  const stat = g('gtb-static')
+  const run  = g('gbt-running')
+  if (stat) stat.style.display = 'flex'
+  if (run)  run.style.display  = 'none'
+}
+
 function startTaskTimer(taskId, stageIndex, taskTitle) {
   // Stop any running timer first
   if (_activeTimer) stopActiveTimer()
   _activeTimer = { taskId, stageIndex, taskTitle, startMs: Date.now() }
+
+  // Switch badge to running mode
   const badge = g('global-timer-badge')
+  if (badge) { badge.classList.add('gtb-running'); badge.style.display = 'flex' }
+  const stat = g('gtb-static')
+  const run  = g('gbt-running')
+  if (stat) stat.style.display = 'none'
+  if (run)  { run.style.display = 'flex' }
+
   const taskEl = g('global-timer-task')
-  if (badge) badge.classList.add('visible')
   if (taskEl) taskEl.textContent = taskTitle
 
-  // Update timer btn UI
+  // Update task btn UI
   document.querySelectorAll('.task-timer-btn').forEach(b => {
     b.classList.toggle('running', b.dataset.taskid === taskId)
   })
 
-  // Start interval
+  // Start interval — обновляет живой счётчик текущей сессии
   _timerInterval = setInterval(() => {
+    if (!_activeTimer) return
     const elapsed = Math.floor((Date.now() - _activeTimer.startMs) / 1000)
     const h = Math.floor(elapsed / 3600)
     const m = Math.floor((elapsed % 3600) / 60)
@@ -31945,7 +32025,7 @@ function startTaskTimer(taskId, stageIndex, taskTitle) {
     const display = h > 0
       ? `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
       : `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
-    const el = g('global-timer-display')
+    const el = g('gbt-live')
     if (el) el.textContent = display
   }, 1000)
 }
@@ -31957,19 +32037,20 @@ async function stopActiveTimer() {
   const { taskId, stageIndex } = _activeTimer
   _activeTimer = null
 
-  const badge = g('global-timer-badge')
-  if (badge) badge.classList.remove('visible')
   document.querySelectorAll('.task-timer-btn.running').forEach(b => b.classList.remove('running'))
 
-  if (elapsedMin < 1) return  // don't log < 1 min
+  if (elapsedMin < 1) {
+    // Меньше минуты — просто возвращаем статичный режим
+    updateProjectTimeDisplay()
+    return
+  }
 
   // Save to DB
   try {
-    // Read current time_logged
     const { data: t } = await sb.from('stage_tasks').select('time_logged').eq('id', taskId).single()
     const current = t?.time_logged || 0
     await sb.from('stage_tasks').update({ time_logged: current + elapsedMin }).eq('id', taskId)
-    // Update local state
+    // Update local tasksData
     const arr = tasksData[stageIndex] || []
     const task = arr.find(x => x.id === taskId)
     if (task) task.time_logged = (task.time_logged || 0) + elapsedMin
@@ -31980,6 +32061,9 @@ async function stopActiveTimer() {
     }
     showAlertToast('⏱', `+${elapsedMin} мин записано`, 'Время добавлено к задаче')
   } catch(e) { console.warn('Timer save failed:', e) }
+
+  // Возвращаем бейдж в режим суммарного времени
+  updateProjectTimeDisplay()
 }
 
 // ── Finance modal open ──
@@ -33119,6 +33203,9 @@ async function loadTracker() {
   renderTracker()
   renderHistory(hist || [])
   setupRealtimeTracker()
+
+  // Обновляем бейдж суммарным временем проекта (данные из loadTasks)
+  updateProjectTimeDisplay()
 
   // ── Phase 3: check overdue alerts after tracker+tasks are ready ──
   checkOverdueAlerts().catch(e => console.warn('Overdue check failed:', e))
