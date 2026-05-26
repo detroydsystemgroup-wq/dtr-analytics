@@ -37762,24 +37762,19 @@ async function cpRenderMilestone(project) {
         '</div>' +
 
         '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;">' +
-          '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:7px 9px;">' +
-            '<div style="font-size:8px;font-family:\'DM Mono\',monospace;letter-spacing:.14em;color:rgba(255,255,255,.25);text-transform:uppercase;margin-bottom:4px;display:flex;align-items:center;gap:4px;">' +
-              '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>LTV' +
-            '</div>' +
-            '<div style="font-size:13px;font-weight:700;color:#c9a84c;letter-spacing:-.02em;font-family:\'DM Sans\',sans-serif;">' + ltv + '</div>' +
+
+          '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 10px;display:flex;align-items:center;justify-content:center;">' +
+            '<div style="font-size:15px;font-weight:700;color:#c9a84c;letter-spacing:-.02em;font-family:\'DM Sans\',sans-serif;text-align:center;">' + ltv + '</div>' +
           '</div>' +
-          '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:7px 9px;">' +
-            '<div style="font-size:8px;font-family:\'DM Mono\',monospace;letter-spacing:.14em;color:rgba(255,255,255,.25);text-transform:uppercase;margin-bottom:4px;display:flex;align-items:center;gap:4px;">' +
-              '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Тариф' +
-            '</div>' +
-            tariffBadge(tariff) +
+
+          '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 10px;display:flex;align-items:center;justify-content:center;">' +
+            (tariff ? tariffBadge(tariff) : '<span style="font-size:13px;color:rgba(255,255,255,.15);font-family:\'DM Mono\',monospace;">—</span>') +
           '</div>' +
-          '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:7px 9px;">' +
-            '<div style="font-size:8px;font-family:\'DM Mono\',monospace;letter-spacing:.14em;color:rgba(255,255,255,.25);text-transform:uppercase;margin-bottom:4px;display:flex;align-items:center;gap:4px;">' +
-              '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Довольство' +
-            '</div>' +
-            (rating > 0 ? renderStars(rating) : '<span style="font-size:10px;color:rgba(255,255,255,.2);font-family:\'DM Mono\',monospace;">—</span>') +
+
+          '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 10px;display:flex;align-items:center;justify-content:center;">' +
+            (rating > 0 ? renderStars(rating) : '<span style="font-size:13px;color:rgba(255,255,255,.15);font-family:\'DM Mono\',monospace;">—</span>') +
           '</div>' +
+
         '</div>' +
 
         '<div style="display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(255,255,255,.05);margin-top:auto;" onclick="event.stopPropagation()">' +
