@@ -2478,8 +2478,154 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
 
 /* ── Reels grid ── */
 .smm-reels-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
-/* ══ REEL CARDS — PREMIUM REDESIGN ══ */
+/* ══ REEL CARDS — PREMIUM REDESIGN v2 (with cover) ══ */
 .smm-reels-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+.smm-reel-card {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: transform .22s cubic-bezier(.34,1.56,.64,1), border-color .18s, box-shadow .18s;
+}
+.smm-reel-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  border-color: rgba(255,255,255,.16);
+  box-shadow: 0 16px 40px rgba(0,0,0,.45);
+}
+/* Top accent line by rank */
+.smm-reel-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 2px; z-index: 10;
+  background: rgba(255,255,255,.06);
+  border-radius: 16px 16px 0 0;
+}
+.smm-reel-card.rrc-1::before { background: linear-gradient(90deg,#f59e0b,#fbbf24,#f59e0b); }
+.smm-reel-card.rrc-2::before { background: linear-gradient(90deg,#9ca3af,#e5e7eb,#9ca3af); }
+.smm-reel-card.rrc-3::before { background: linear-gradient(90deg,#b45309,#d97706,#b45309); }
+
+/* Cover image area — 9:16 ratio */
+.smm-reel-cover {
+  aspect-ratio: 9/16;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Overlay gradient for text readability */
+.smm-reel-cover-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,.35) 0%,
+    transparent 30%,
+    transparent 55%,
+    rgba(0,0,0,.75) 100%
+  );
+  pointer-events: none;
+}
+/* Rank badge */
+.smm-reel-rank-pill {
+  position: absolute;
+  top: 10px; left: 10px;
+  z-index: 2;
+  font-family: Manrope, sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: rgba(0,0,0,.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: rgba(255,255,255,.9);
+  border: 1px solid rgba(255,255,255,.1);
+  letter-spacing: -.01em;
+}
+.smm-reel-card.rrc-1 .smm-reel-rank-pill { background: rgba(251,191,36,.9); color: #000; border-color: transparent; }
+.smm-reel-card.rrc-2 .smm-reel-rank-pill { background: rgba(209,213,219,.85); color: #111; border-color: transparent; }
+.smm-reel-card.rrc-3 .smm-reel-rank-pill { background: rgba(180,83,9,.9); color: #fff; border-color: transparent; }
+/* Views on cover — bottom left */
+.smm-reel-cover-views {
+  position: absolute;
+  bottom: 10px; left: 10px; right: 10px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: Manrope, sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,.8);
+  line-height: 1;
+}
+/* Play/link button — center */
+.smm-reel-play-btn {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255,255,255,.3);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity .18s, transform .18s;
+  transform: translate(-50%, -50%) scale(.85);
+}
+.smm-reel-card:hover .smm-reel-play-btn {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Card info below cover */
+.smm-reel-info {
+  padding: 11px 12px 12px;
+}
+.smm-reel-title-new {
+  font-family: Manrope, sans-serif;
+  font-size: 12px; font-weight: 600;
+  color: rgba(255,255,255,.8);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 9px;
+  letter-spacing: -.01em;
+  min-height: 32px;
+}
+.smm-reel-er-row {
+  display: flex;
+  align-items: center;
+}
+/* ER badge */
+.smm-reel-er-new {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: .01em;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+.smm-reel-er-hot  { background: rgba(239,68,68,.12);  color: #f87171; border: 1px solid rgba(239,68,68,.2); }
+.smm-reel-er-good { background: rgba(52,211,153,.1);  color: #34d399; border: 1px solid rgba(52,211,153,.18); }
+.smm-reel-er-avg  { background: rgba(255,255,255,.05); color: rgba(255,255,255,.35); border: 1px solid rgba(255,255,255,.07); }
+
+/* ── Rubrics ── */
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 10px;
@@ -15107,6 +15253,7 @@ select:focus {
     <div class="modal-title" style="font-family:var(--bebas);font-size:24px;letter-spacing:.04em;color:var(--smm-text);">Добавить Reel</div>
     <div class="ps-grid">
       <div class="ps-field full"><label style="color:var(--smm-muted2);">Ссылка на Reel</label><input type="url" id="rl-link" placeholder="https://www.instagram.com/reel/..." style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
+      <div class="ps-field full"><label style="color:var(--smm-muted2);">Обложка (URL изображения) <span style="opacity:.5;font-size:9px;">необязательно</span></label><input type="url" id="rl-cover" placeholder="https://..." style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
       <div class="ps-field full"><label style="color:var(--smm-muted2);">Описание / заголовок</label><input type="text" id="rl-title" placeholder="Краткое описание контента" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
       <div class="ps-field"><label style="color:var(--smm-muted2);">Просмотры</label><input type="number" id="rl-views" placeholder="0" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
       <div class="ps-field"><label style="color:var(--smm-muted2);">Охват</label><input type="number" id="rl-reach" placeholder="0" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
@@ -22382,7 +22529,7 @@ async function saveSMMData(showFeedback) {
 
 function renderSMMPresentation() {
   const m = smmData.metrics, p = smmData.prev
-  const fmtBig = n => !n ? '—' : n >= 1e6 ? (n/1e6).toFixed(1)+'M' : n >= 1e3 ? (n/1e3).toFixed(0)+'K' : String(n)
+  const fmtBig = n => !n ? '—' : Number(n).toLocaleString('ru-RU')
   const delta = (cur, prev) => {
     if (!cur || !prev) return ''
     const d = ((cur-prev)/prev*100).toFixed(1)
@@ -22547,7 +22694,18 @@ function renderSMMReelsGrid() {
   const grid = g('smm-reels-grid'); if (!grid) return
   const reels = [...smmData.reels].sort((a,b) => b.er - a.er)
   if (!reels.length) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px;font-family:\'DM Mono\',monospace;font-size:12px;letter-spacing:.1em;color:var(--smm-muted);">Добавьте Reels во вкладке «Данные»</div>'; return }
-  const fmtK = n => n >= 1000000 ? (n/1000000).toFixed(1)+'M' : n >= 1000 ? (n/1000).toFixed(1)+'K' : (n||0)
+
+  // Full numbers — no abbreviation
+  const fmtFull = n => !n ? '—' : Number(n).toLocaleString('ru-RU')
+
+  // Gradient palettes for cards without cover
+  const gradients = [
+    'linear-gradient(160deg,#1a1a3e 0%,#2d1b69 50%,#0f0f1e 100%)',
+    'linear-gradient(160deg,#0f2027 0%,#203a43 50%,#2c5364 100%)',
+    'linear-gradient(160deg,#1a0f0f 0%,#3d1515 50%,#1a0505 100%)',
+    'linear-gradient(160deg,#0f1a0f 0%,#1a3d1a 50%,#051a05 100%)',
+    'linear-gradient(160deg,#1a1500 0%,#3d3000 50%,#1a0a00 100%)',
+  ]
 
   grid.innerHTML = reels.slice(0,10).map((r,i) => {
     const rank = i + 1
@@ -22559,27 +22717,43 @@ function renderSMMReelsGrid() {
     const erCls = er >= 10 ? 'smm-reel-er-hot' : er >= 5 ? 'smm-reel-er-good' : 'smm-reel-er-avg'
     const erLabel = er >= 10 ? '🔥 ' + erFmt : 'ER ' + erFmt
 
-    const linkHtml = r.link
-      ? `<a href="${/^https?:\/\//i.test(r.link) ? r.link : '#'}" target="_blank" rel="noopener" class="smm-reel-link-btn">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        </a>`
-      : ''
+    const hasCover = r.cover && r.cover.trim()
+    const coverStyle = hasCover
+      ? `background: url('${r.cover}') center/cover no-repeat, #111;`
+      : `background: ${gradients[i % gradients.length]};`
+
+    const linkAttrs = r.link && /^https?:\/\//i.test(r.link)
+      ? `href="${r.link}" target="_blank" rel="noopener"`
+      : `href="#" onclick="return false"`
 
     return `<div class="smm-reel-card ${rankCls}">
 
-      <div class="smm-reel-top">
-        <div class="smm-reel-rank">${rankLabel}</div>
+      <!-- Cover thumbnail -->
+      <div class="smm-reel-cover" style="${coverStyle}">
+        <!-- Rank badge top-left -->
+        <div class="smm-reel-rank-pill">${rankLabel}</div>
+
+        <!-- Overlay gradient at bottom -->
+        <div class="smm-reel-cover-overlay"></div>
+
+        <!-- Views on cover -->
+        <div class="smm-reel-cover-views">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".7"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          ${fmtFull(r.views)}
+        </div>
+
+        <!-- Play / link button -->
+        <a class="smm-reel-play-btn" ${linkAttrs}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </a>
+      </div>
+
+      <!-- Card body -->
+      <div class="smm-reel-info">
         <div class="smm-reel-title-new">${esc(r.title || 'Reel #' + rank)}</div>
-      </div>
-
-      <div class="smm-reel-views-wrap">
-        <div class="smm-reel-views-label">Просмотры</div>
-        <div class="smm-reel-views-num">${fmtK(r.views)}</div>
-      </div>
-
-      <div class="smm-reel-footer">
-        <span class="smm-reel-er-new ${erCls}">${erLabel}</span>
-        ${linkHtml}
+        <div class="smm-reel-er-row">
+          <span class="smm-reel-er-new ${erCls}">${erLabel}</span>
+        </div>
       </div>
 
     </div>`
@@ -22684,8 +22858,8 @@ async function addReel() {
   const likes=+getVal('rl-likes')||0, comments=+getVal('rl-comments')||0
   const saves=+getVal('rl-saves')||0, shares=+getVal('rl-shares')||0
   const er = reach>0 ? +((likes+comments+saves)/reach*100).toFixed(2) : 0
-  smmData.reels.push({ link:getVal('rl-link'), title:getVal('rl-title'), views, reach, likes, comments, saves, shares, er })
-  ;['rl-link','rl-title','rl-views','rl-reach','rl-likes','rl-comments','rl-saves','rl-shares'].forEach(id=>setVal(id,''))
+  smmData.reels.push({ link:getVal('rl-link'), cover:getVal('rl-cover'), title:getVal('rl-title'), views, reach, likes, comments, saves, shares, er })
+  ;['rl-link','rl-cover','rl-title','rl-views','rl-reach','rl-likes','rl-comments','rl-saves','rl-shares'].forEach(id=>setVal(id,''))
   closeModal('modal-reel'); renderReelsInputList(); await saveSMMData(false)
 }
 async function deleteReel(idx) { smmData.reels.splice(idx,1); renderReelsInputList(); await saveSMMData(false) }
