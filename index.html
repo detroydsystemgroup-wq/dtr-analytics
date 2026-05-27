@@ -26901,7 +26901,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
         <div style="font-family:var(--font-display);font-size:28px;font-weight:800;letter-spacing:-.03em;" id="report-title-display">—</div>
       </div>
       <div style="display:flex;gap:8px;align-items:center;">
-        <button onclick="exportReportPDF()" class="btn-ghost" style="display:none;" id="btn-pdf">
+        <button onclick="showPdfComingSoon(this)" class="btn-ghost" style="display:none;" id="btn-pdf">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
           Скачать PDF
         </button>
@@ -37193,6 +37193,170 @@ async function cpRenderMilestone(project) {
      DTR SMM REPORT · EDITORIAL REDESIGN v1.0
      Approved design: 2 hero cards + metrics strip + breakdown card
 ═══════════════════════════════════════════════════════ -->
+
+<style id="dtr-coming-soon-toast">
+/* ── COMING SOON TOAST ── */
+@keyframes cstIn {
+  0%   { opacity: 0; transform: translateY(14px) scale(.94); }
+  60%  { opacity: 1; transform: translateY(-3px) scale(1.01); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes cstOut {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(8px) scale(.96); }
+}
+@keyframes cstShimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+@keyframes cstOrbit {
+  from { transform: rotate(0deg) translateX(20px) rotate(0deg); }
+  to   { transform: rotate(360deg) translateX(20px) rotate(-360deg); }
+}
+@keyframes cstGlyphFloat {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-3px); }
+}
+
+#dtr-cs-toast {
+  position: fixed;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99999;
+  pointer-events: none;
+  display: none;
+}
+#dtr-cs-toast.cst-show {
+  display: block;
+  animation: cstIn .45s cubic-bezier(.16,1,.3,1) both;
+}
+#dtr-cs-toast.cst-hide {
+  animation: cstOut .3s cubic-bezier(.4,0,1,1) both;
+}
+
+.cst-card {
+  position: relative;
+  background: linear-gradient(145deg, #0f0e0a, #131109);
+  border: 1px solid rgba(184,146,58,.35);
+  border-radius: 18px;
+  padding: 20px 28px 18px;
+  min-width: 300px;
+  text-align: center;
+  box-shadow:
+    0 24px 64px rgba(0,0,0,.75),
+    0 0 0 1px rgba(255,255,255,.04),
+    0 0 60px rgba(184,146,58,.1);
+  overflow: hidden;
+}
+
+/* Золотая полоса сверху */
+.cst-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%, #b8923a 25%, #dec17a 50%, #b8923a 75%, transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: cstShimmer 2.2s linear infinite;
+}
+
+/* Ambient glow */
+.cst-card::after {
+  content: '';
+  position: absolute;
+  top: -40px; left: 50%; transform: translateX(-50%);
+  width: 160px; height: 80px;
+  background: radial-gradient(ellipse, rgba(184,146,58,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cst-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+  display: block;
+  animation: cstGlyphFloat 2.8s ease-in-out infinite;
+  line-height: 1;
+}
+
+.cst-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: rgba(184,146,58,.55);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.cst-headline {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  line-height: 1.1;
+  background: linear-gradient(135deg, #f0ece6 30%, #c9a84c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200% 100%;
+  animation: cstShimmer 3s linear infinite;
+  margin-bottom: 6px;
+}
+
+.cst-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: rgba(240,236,230,.28);
+  letter-spacing: .04em;
+}
+</style>
+
+<!-- COMING SOON TOAST NODE -->
+<div id="dtr-cs-toast">
+  <div class="cst-card">
+    <span class="cst-icon">⚡</span>
+    <div class="cst-label">DTR Analytics</div>
+    <div class="cst-headline">Уже скоро</div>
+    <div class="cst-sub">PDF-экспорт в разработке</div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var _csTimer = null;
+
+  window.showPdfComingSoon = function(btn) {
+    var toast = document.getElementById('dtr-cs-toast');
+    if (!toast) return;
+
+    // Микро-вибрация кнопки
+    if (btn) {
+      btn.style.transition = 'transform .08s ease';
+      btn.style.transform = 'scale(.93)';
+      setTimeout(function() {
+        btn.style.transform = 'scale(1.04)';
+        setTimeout(function() { btn.style.transform = ''; }, 100);
+      }, 80);
+    }
+
+    // Если уже показан — перезапускаем таймер
+    clearTimeout(_csTimer);
+    toast.classList.remove('cst-hide');
+    toast.classList.add('cst-show');
+    toast.style.display = 'block';
+
+    _csTimer = setTimeout(function() {
+      toast.classList.remove('cst-show');
+      toast.classList.add('cst-hide');
+      setTimeout(function() {
+        toast.style.display = 'none';
+        toast.classList.remove('cst-hide');
+      }, 320);
+    }, 2800);
+  };
+})();
+</script>
 
 </body>
 </html>
