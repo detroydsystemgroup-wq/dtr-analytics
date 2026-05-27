@@ -26482,7 +26482,11 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 //
 // AI_PROXY_URL — URL Edge Function (если пустой, запросы идут напрямую с ключом из браузера)
 const AI_PROXY_URL = '' // <-- вставить: SUPABASE_URL + '/functions/v1/ai-proxy'
-const ANTHROPIC_KEY = '' // <-- временно: sk-ant-... (убрать после настройки Edge Function)
+const ANTHROPIC_KEY = '' // НЕ вставляй ключ сюда в продакшн! Используй AI_PROXY_URL через Edge Function.
+// Если ключ нужен только для локального теста — вставь и сразу удали перед деплоем.
+if (ANTHROPIC_KEY && !AI_PROXY_URL && typeof window !== 'undefined') {
+  console.warn('[DTR] ⚠️ ANTHROPIC_KEY задан в клиентском коде — небезопасно в продакшн!')
+}
 
 // ── AI хелпер: прокси → прямой вызов ─────────
 // Если AI_PROXY_URL задан — запрос уходит в Edge Function (ключ на сервере).
@@ -26879,11 +26883,11 @@ function updateTelegramButton() {
 
 async function saveTelegramChatId() {
   const chatId = (g('tg-chat-id-inp')?.value || '').trim()
-  if (!chatId) { alert('Введи Chat ID'); return }
+  if (!chatId) { showToast('Введи Chat ID', 'warn'); return }
   const { error } = await sb.from('projects')
     .update({ telegram_chat_id: chatId })
     .eq('id', currentProject.id)
-  if (error) { alert('Ошибка: ' + error.message); return }
+  if (error) { showToast('Ошибка: ' + error.message, 'error'); return }
   currentProject.telegram_chat_id = chatId
   closeModal('modal-telegram')
   updateTelegramButton()
@@ -26891,7 +26895,7 @@ async function saveTelegramChatId() {
 
 async function sendTestTelegram() {
   const chatId = (g('tg-chat-id-inp')?.value || '').trim()
-  if (!chatId) { alert('Сначала введи Chat ID'); return }
+  if (!chatId) { showToast('Сначала введи Chat ID', 'warn'); return }
   const btn = g('tg-test-btn')
   const res = g('tg-test-result')
   if (btn) { btn.disabled = true; btn.textContent = 'Отправляем...' }
@@ -27217,6 +27221,18 @@ function renderAlertLog() {
 function clearAlertLog() { alertLog = []; renderAlertLog() }
 
 // ── Toast notification ──
+// ── Simple toast for errors/warnings ──
+function showToast(msg, type) {
+  type = type || 'warn'
+  const colors = { warn:'#f59e0b', error:'#f87171', ok:'#34d399', info:'var(--a2)' }
+  const col = colors[type] || colors.warn
+  const t = document.createElement('div')
+  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;background:var(--bg3);border:1px solid '+col+';color:var(--txt);border-radius:10px;padding:12px 20px;font-family:var(--font-display);font-size:13px;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:420px;animation:fadeUp .3s ease both;pointer-events:none;'
+  t.innerHTML = '<span style="color:'+col+';flex-shrink:0;">'+( type==='error'?'⚠️':type==='ok'?'✓':'ℹ')+'</span><span>'+msg.replace(/</g,'&lt;')+'</span>'
+  document.body.appendChild(t)
+  setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),350) }, 3500)
+}
+
 function showAlertToast(icon, title, body) {
   const existing = document.querySelector('.alert-toast')
   if (existing) existing.remove()
@@ -28318,10 +28334,27 @@ async function publishReport() {
 
 function loadFile(e, key) {
   const f = e.target.files[0]
-  if (f) processFile(f, key)
+  if (!f) return
+  // Show immediate feedback on the drop zone
+  const zone = g('z-' + key)
+  if (zone) zone.classList.add('drag')
+  processFile(f, key)
 }
 
 function processFile(file, key) {
+  // Size guard: 10MB max for XLSX
+  if (file.size > 10 * 1024 * 1024) {
+    showToast('⚠️ Файл слишком большой (макс. 10MB): ' + file.name, 'warn')
+    return
+  }
+
+  // Loading indicator on drop zone
+  const zone = g('z-' + key)
+  if (zone) {
+    const cta = zone.querySelector('.drop-cta')
+    if (cta) cta.innerHTML = '<span style="font-size:11px;opacity:.7;">Загружаю...</span>'
+  }
+
   const r = new FileReader()
   r.onload = async e => {
     try {
@@ -28365,7 +28398,11 @@ function processFile(file, key) {
       const ok = g('ok-'+key)
       if (ok) { ok.textContent = '✓ '+file.name.slice(0,22); ok.style.display = 'block' }
       updateCounter()
-    } catch(err) { alert('Ошибка чтения файла: ' + err.message) }
+    } catch(err) {
+      const zone2 = g('z-' + key)
+      if (zone2) { const cta2 = zone2.querySelector('.drop-cta'); if(cta2) cta2.innerHTML = '<span>Выбрать файл</span>' }
+      showToast('⚠️ Ошибка файла: ' + err.message, 'error')
+    }
   }
   r.readAsArrayBuffer(file)
 }
@@ -28411,10 +28448,15 @@ function parseSheet(rows, key) {
   const tc = H.findIndex(h => h.includes('тип заказа'))
 
   const isBranch = key === 'b5' || key === 'd5'
-  const isItems = H[0]?.includes('блюд')
+  // Improved type detection: check multiple header cells, not just H[0]
+  const headerStr = H.join(' ')
+  const isItems = H.some(h => h.includes('блюд') || h.includes('меню') || h.includes('блюда'))
   const isTypes = tc >= 0
-  const isHourly = H[0]?.includes('час')
-  const type = isBranch ? 'branch' : isItems ? 'items' : isTypes ? 'types' : isHourly ? 'hourly' : 'daily'
+  const isHourly = H.some(h => h.includes('час') || h.includes('time') || h.match(/\d{1,2}:\d{2}/))
+  // key-based override: b2/d2 = hourly, b3/d3 = items, b4/d4 = types
+  const keyTypeMap = { b2:'hourly', d2:'hourly', b3:'items', d3:'items', b4:'types', d4:'types' }
+  const keyType = keyTypeMap[key]
+  const type = isBranch ? 'branch' : keyType || (isItems ? 'items' : isTypes ? 'types' : isHourly ? 'hourly' : 'daily')
 
   if (type === 'branch') return parseBranch(rows, hi, rc, cc)
 
@@ -28502,8 +28544,10 @@ function parseBranch(rows, hi, rc, cc) {
 // ANALYSIS
 // ══════════════════════════════════════════════
 function mkChart(id, type, data, opts) {
-  if (CH[id]) CH[id].destroy()
-  CH[id] = new Chart(g(id), { type, data, options: { responsive:true, maintainAspectRatio:false, ...opts } })
+  const canvas = g(id)
+  if (!canvas) { console.warn('mkChart: canvas not found:', id); return }
+  if (CH[id]) { try { CH[id].destroy() } catch(e) {} }
+  CH[id] = new Chart(canvas, { type, data, options: { responsive:true, maintainAspectRatio:false, ...opts } })
 }
 
 function runAnalysis() {
@@ -28625,8 +28669,15 @@ function runAnalysis() {
     const tog = g('branch-toggles')
     tog.innerHTML = allBranches.map((name,i)=>{
       const col = BCOLS[i%BCOLS.length]
-      return `<div id="bt_${i}" onclick="toggleBranch('${name.replace(/'/g,"\\'")}',${i})" style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:20px;border:1.5px solid ${col};background:rgba(0,0,0,.2);cursor:pointer;user-select:none;transition:all .2s;"><span style="width:8px;height:8px;border-radius:50%;background:${col};flex-shrink:0;"></span><span style="font-size:12px;font-weight:600;">${name}</span><span style="font-size:10px;font-family:var(--font-display);color:${col};" id="btl_${i}">вкл</span></div>`
+      const safeName = name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+      return `<div id="bt_${i}" data-bname="${safeName.replace(/`/g,'&#96;')}" data-bidx="${i}" style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:20px;border:1.5px solid ${col};background:rgba(0,0,0,.2);cursor:pointer;user-select:none;transition:all .2s;"><span style="width:8px;height:8px;border-radius:50%;background:${col};flex-shrink:0;"></span><span style="font-size:12px;font-weight:600;">${safeName}</span><span style="font-size:10px;font-family:var(--font-display);color:${col};" id="btl_${i}">вкл</span></div>`
     }).join('')
+    // Safe event delegation — no inline onclick with user data
+    tog.onclick = function(e) {
+      const div = e.target.closest('[data-bname]')
+      if (!div) return
+      toggleBranch(div.dataset.bname, parseInt(div.dataset.bidx))
+    }
     renderBranch()
   }
 
@@ -29099,9 +29150,11 @@ async function runAI() {
   if (aiRunning || !S['b1'] || !S['d1']) return
   aiRunning = true
   const btn = g('ai-btn')
+  if (!btn) { aiRunning = false; return }
   btn.innerHTML = '<span class="spinner"></span> Анализирую...'
   btn.style.opacity = '.65'
-  g('ai-status').innerHTML = '<span style="color:var(--amber);">● Обрабатываю...</span>'
+  const aiStatus = g('ai-status')
+  if (aiStatus) aiStatus.innerHTML = '<span style="color:var(--amber);">● Обрабатываю...</span>'
 
   const b=S['b1'],d=S['d1']
   const bD=b.meta.days||1,dD=d.meta.days||1
@@ -29130,19 +29183,23 @@ ${LABEL_D} (${dD} дн): выручка/день ${fmtM(Math.round(dRD))} | че
   try {
     const data = await _callAI({ model:'claude-sonnet-4-20250514', max_tokens:800, messages:[{role:'user',content:prompt}] })
     if (data.error) throw new Error(data.error.message)
-    const text = data.content?.[0]?.text || 'Ошибка'
+    const text = data.content?.[0]?.text || ''
+    if (!text) throw new Error('Пустой ответ от AI')
 
+    // Sanitize text to prevent XSS from AI response
+    const _sanitize = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
     const html = text.split(/(?=## )/).filter(s=>s.trim()).map(sec=>{
       const lines=sec.trim().split('\n')
-      const title=lines[0].replace(/^## /,'').trim()
+      const title=_sanitize(lines[0].replace(/^## /,'').trim())
       const body=lines.slice(1).join('\n').trim()
       const icon=Object.keys(aiColors).find(ic=>title.includes(ic))
       const col=aiColors[icon]||'var(--a2)'
-      const bodyHtml=body.split('\n').map(l=>{l=l.trim();if(!l)return'';if(l.startsWith('- '))return`<div style="display:flex;gap:7px;margin-bottom:5px;"><span style="color:${col};flex-shrink:0;">▸</span><span>${l.slice(2)}</span></div>`;return`<p style="margin-bottom:7px;">${l}</p>`}).join('')
+      const bodyHtml=body.split('\n').map(l=>{l=l.trim();if(!l)return'';if(l.startsWith('- '))return`<div style="display:flex;gap:7px;margin-bottom:5px;"><span style="color:${col};flex-shrink:0;">▸</span><span>${_sanitize(l.slice(2))}</span></div>`;return`<p style="margin-bottom:7px;">${_sanitize(l)}</p>`}).join('')
       return`<div class="ai-section" style="border-left-color:${col};"><div class="ai-section-title" style="color:${col};">${title}</div><div class="ai-section-text">${bodyHtml}</div></div>`
     }).join('')
 
-    g('ai-output').innerHTML = html
+    const aiOut = g('ai-output')
+    if (aiOut) aiOut.innerHTML = html
 
     // Save to DB
     if (currentReport) {
@@ -29152,11 +29209,13 @@ ${LABEL_D} (${dD} дн): выручка/день ${fmtM(Math.round(dRD))} | че
   } catch(err) {
     g('ai-output').innerHTML = `<div style="background:rgba(255,61,107,.08);border:1px solid rgba(255,61,107,.25);border-radius:10px;padding:16px 18px;margin:12px;"><div style="color:var(--red);font-size:13px;font-weight:600;margin-bottom:6px;">⚠️ Ошибка подключения</div><div style="color:var(--txt2);font-size:12px;font-family:var(--font-display);">${esc(err.message)}</div><div style="color:var(--txt2);font-size:12px;margin-top:8px;">AI анализ работает только через сервер (не через file://). Остальные функции работают нормально.</div></div>`
     g('ai-status').innerHTML = '<span style="color:var(--red);">● Ошибка</span>'
+  } finally {
+    if (btn) {
+      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 100 .49"/></svg> Обновить анализ'
+      btn.style.opacity = '1'
+    }
+    aiRunning = false
   }
-
-  btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 100 .49"/></svg> Обновить анализ'
-  btn.style.opacity = '1'
-  aiRunning = false
 }
 
 // ══════════════════════════════════════════════
@@ -31626,7 +31685,7 @@ async function saveSMMData(showFeedback) {
   }).eq('id', currentSMMReport.id)
   if (error) {
     console.error('SMM save error:', error)
-    alert('Ошибка сохранения: ' + error.message)
+    showToast('Ошибка сохранения: ' + error.message, 'error')
     return
   }
   renderSMMPresentation()
@@ -32355,7 +32414,7 @@ function previewProjectPhoto(input) {
   const file = input.files[0]
   if (!file) return
   if (file.size > 2 * 1024 * 1024) {
-    alert('Файл слишком большой. Максимум 2MB.')
+    showToast('Файл слишком большой. Максимум 2MB.', 'warn')
     input.value = ''
     return
   }
@@ -32516,7 +32575,7 @@ function updatePSAvatarColor() {
 function handlePSPhoto(input) {
   const file = input.files[0]
   if (!file) return
-  if (file.size > 2 * 1024 * 1024) { alert('Файл > 2MB'); input.value = ''; return }
+  if (file.size > 2 * 1024 * 1024) { showToast('Файл > 2MB', 'warn'); input.value = ''; return }
   _psNewPhotoFile = file
   const reader = new FileReader()
   reader.onload = e => {
@@ -32542,7 +32601,7 @@ async function saveProjectSettings() {
   const color    = document.getElementById('ps-color-inp')?.value
 
   if (!name) {
-    alert('Название не может быть пустым')
+    showToast('Название не может быть пустым', 'warn')
     if (btn) { btn.disabled = false; btn.textContent = 'Сохранить' }
     return
   }
@@ -32559,7 +32618,7 @@ async function saveProjectSettings() {
   const { error: baseErr } = await sb.from('projects').update(baseUpdates).eq('id', _psProjectId)
 
   if (baseErr) {
-    alert('Ошибка сохранения: ' + baseErr.message)
+    showToast('Ошибка сохранения: ' + baseErr.message, 'error')
     if (btn) { btn.disabled = false; btn.textContent = 'Сохранить' }
     return
   }
@@ -32642,7 +32701,7 @@ async function deleteProject(id) {
     set('stat-total',  _allProjects.length)
     set('stat-active', _allProjects.filter(p => p.status !== 'archived').length)
   } else {
-    alert('Ошибка удаления: ' + error.message)
+    showToast('Ошибка удаления: ' + error.message, 'error')
     if (btn) { btn.disabled = false; btn.textContent = 'Удалить' }
   }
 }
