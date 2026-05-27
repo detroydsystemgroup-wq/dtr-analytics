@@ -23714,6 +23714,113 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   .rp-block-badge { display: none; }
 }
 </style>
+
+<style id="dtr-overview-blocks">
+/* ══ OVERVIEW PAGE — block system overrides ══ */
+
+/* The ov2-topbar sits above blocks without outer card */
+.ov-block { margin-bottom: 20px; }
+
+/* Block body for overview — less padding, sections already padded */
+.ov-block-body {
+  padding: 0 !important;
+  gap: 0 !important;
+}
+
+/* KPI strip — just padding */
+.ov-block-body .ov2-kpi-strip {
+  padding: 20px 22px;
+  gap: 12px;
+}
+
+/* Projects grid — padding */
+.ov-block-body .ov2-proj-grid {
+  padding: 0 22px 20px;
+}
+
+/* Project header row inside block — sub-header style */
+.ov2-proj-header {
+  padding: 12px 22px 10px !important;
+  border-bottom: 1px solid var(--brd);
+  background: var(--bg4);
+}
+
+/* SMM leaderboard padding */
+.ov-block-body #smm-leaderboard {
+  padding: 0;
+}
+
+/* Deadline grid padding */
+.ov-block-body .ov2-dl-grid {
+  padding: 20px 22px;
+  gap: 14px;
+}
+
+/* Health grid padding */
+.ov-block-body .ov2-health-grid {
+  padding: 20px 22px;
+  gap: 14px;
+}
+
+/* Badge pills (SMM metric selectors in header) */
+.rp-block-badge-pills {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* ov2-section-head is now replaced by rp-block-hdr — hide if any remain */
+.ov-block .ov2-section-head { display: none !important; }
+
+/* KPI cards inside block — full width */
+.ov-block-body .ov2-kpi-strip {
+  grid-template-columns: repeat(5,1fr);
+}
+
+/* Proj rows have their own border — no extra from block */
+.ov2-proj-row {
+  border-radius: 0 !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+  border-bottom: 1px solid var(--brd) !important;
+}
+.ov2-proj-row:last-child { border-bottom: none !important; }
+.ov2-proj-row:hover { border-color: rgba(184,146,58,.2) !important; background: rgba(184,146,58,.03) !important; }
+
+/* SMM leaderboard nested in block — clean borders */
+.ov-block-body .smm-lb-table {
+  border: none !important;
+  border-radius: 0 !important;
+}
+.ov-block-body .smm-lb-col-hdr {
+  border-radius: 0 !important;
+}
+
+/* Deadline zones inside block */
+.ov-block-body .ov2-dl-zone {
+  border-radius: var(--r-md) !important;
+}
+
+/* Health cards inside block */
+.ov-block-body .ov2-health-card {
+  border-radius: var(--r-md) !important;
+}
+
+/* Stagger animation for overview blocks */
+#ov-block-kpi       { animation-delay: .04s; }
+#ov-block-projects  { animation-delay: .09s; }
+#ov-block-smm       { animation-delay: .14s; }
+#ov-block-deadlines { animation-delay: .19s; }
+#ov-block-health    { animation-delay: .24s; }
+
+@media (max-width: 900px) {
+  .ov-block-body .ov2-kpi-strip { grid-template-columns: repeat(2,1fr) !important; }
+  .ov-block-body .ov2-dl-grid { grid-template-columns: 1fr !important; }
+  .ov-block-body .ov2-health-grid { grid-template-columns: 1fr !important; }
+}
+</style>
 </head>
 <body>
 
@@ -24269,7 +24376,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
     <!-- ── TAB: OVERVIEW — McKinsey Command Center ── -->
     <div id="dtab-overview-panel" style="display:none;">
 
-      <!-- ══ HEADER BAR ══ -->
+      <!-- ══ HEADER ══ -->
       <div class="ov2-topbar">
         <div class="ov2-topbar-left">
           <div class="ov2-title">Генеральная <span>сводка</span></div>
@@ -24286,36 +24393,45 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
         </div>
       </div>
 
-      <!-- ══ SECTION 1: MEGA KPI STRIP ══ -->
-      <div class="ov2-section" id="ov2-sec-kpi">
-        <div class="ov2-section-head">
-          <div class="ov2-sh-label">01</div>
-          <div class="ov2-sh-title">Ключевые показатели</div>
-          <div class="ov2-sh-line"></div>
+      <!-- ════ КЛЮЧЕВЫЕ ПОКАЗАТЕЛИ ════ -->
+      <div class="rp-block ov-block" id="ov-block-kpi">
+        <div class="rp-block-hdr" id="ov2-sec-kpi">
+          <div class="rp-block-icon" style="background:#c9a84c22;border:1.5px solid #c9a84c44;color:#c9a84c;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><polyline points="2 20 22 20"/></svg></div>
+          <div class="rp-block-text">
+            <div class="rp-block-title">Ключевые показатели</div>
+            <div class="rp-block-sub">Метрики агентства · Прогресс · Активность</div>
+          </div>
+          <div class="rp-block-badge" style="background:rgba(201,168,76,.12);color:#c9a84c;border:1px solid rgba(201,168,76,.25);">Реальное время</div>
         </div>
-        <div class="ov2-kpi-strip" id="ov2-kpi-strip">
-          <!-- filled by JS -->
+        <div class="rp-block-body ov-block-body">
+          <div class="ov2-kpi-strip" id="ov2-kpi-strip"></div>
         </div>
       </div>
 
-      <!-- ══ SECTION 2: PROJECTS ══ -->
-      <div class="ov2-section" id="ov2-sec-projects">
-        <div class="ov2-section-head">
-          <div class="ov2-sh-label">02</div>
-          <div class="ov2-sh-title">Статус проектов</div>
-          <div class="ov2-sh-line"></div>
-          <div class="ov2-sh-meta" id="ov2-proj-meta"></div>
+      <!-- ════ СТАТУС ПРОЕКТОВ ════ -->
+      <div class="rp-block ov-block" id="ov-block-projects">
+        <div class="rp-block-hdr" id="ov2-sec-projects">
+          <div class="rp-block-icon" style="background:#c9a84c22;border:1.5px solid #c9a84c44;color:#c9a84c;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+          <div class="rp-block-text">
+            <div class="rp-block-title">Статус проектов</div>
+            <div class="rp-block-sub">Прогресс и дедлайны по всем проектам</div>
+          </div>
+          <div class="rp-block-badge" id="ov2-proj-meta" style="background:rgba(201,168,76,.12);color:#c9a84c;border:1px solid rgba(201,168,76,.25);"></div>
         </div>
-        <div class="ov2-proj-grid" id="ov2-proj-grid"></div>
+        <div class="rp-block-body ov-block-body">
+          <div class="ov2-proj-grid" id="ov2-proj-grid"></div>
+        </div>
       </div>
 
-      <!-- ══ SECTION 3: SMM INTELLIGENCE ══ -->
-      <div class="ov2-section" id="ov2-sec-smm">
-        <div class="ov2-section-head">
-          <div class="ov2-sh-label">03</div>
-          <div class="ov2-sh-title">SMM Рейтинг</div>
-          <div class="ov2-sh-line"></div>
-          <div class="smm-lb-metric-pills" id="smm-lb-pills" style="flex-shrink:0;">
+      <!-- ════ SMM РЕЙТИНГ ════ -->
+      <div class="rp-block ov-block" id="ov-block-smm">
+        <div class="rp-block-hdr" id="ov2-sec-smm">
+          <div class="rp-block-icon" style="background:#8b5cf622;border:1.5px solid #8b5cf644;color:#8b5cf6;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M22 4s-2.5 3.5-7 4c-1.5.2-3-.2-4-1-2-1.7-2.5-4.5-.5-6 2.5-1.9 6.5-.5 8 2 .3.5.5 1 .5 1z"/><path d="M15.5 9c-.5 4-3 8-7.5 11"/><path d="M2 21c1.5-1 4.5-3 8-3s6 2 8 1"/></svg></div>
+          <div class="rp-block-text">
+            <div class="rp-block-title">SMM Рейтинг</div>
+            <div class="rp-block-sub">Сравнительный анализ по каналам и метрикам</div>
+          </div>
+          <div class="rp-block-badge-pills">
             <button class="slp slp-active" data-metric="er" onclick="setLBMetric('er',this)">ER</button>
             <button class="slp" data-metric="lr" onclick="setLBMetric('lr',this)">LR</button>
             <button class="slp" data-metric="tr" onclick="setLBMetric('tr',this)">C/R</button>
@@ -24323,28 +24439,41 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
             <button class="slp" data-metric="sr" onclick="setLBMetric('sr',this)">SR</button>
           </div>
         </div>
-        <div id="smm-leaderboard"></div>
+        <div class="rp-block-body ov-block-body">
+          <div id="smm-leaderboard"></div>
+        </div>
       </div>
 
-      <!-- ══ SECTION 4: DEADLINES RADAR ══ -->
-      <div class="ov2-section" id="ov2-sec-deadlines">
-        <div class="ov2-section-head">
-          <div class="ov2-sh-label">04</div>
-          <div class="ov2-sh-title">Радар дедлайнов</div>
-          <div class="ov2-sh-line"></div>
+      <!-- ════ РАДАР ДЕДЛАЙНОВ ════ -->
+      <div class="rp-block ov-block" id="ov-block-deadlines">
+        <div class="rp-block-hdr" id="ov2-sec-deadlines">
+          <div class="rp-block-icon" style="background:#f8717122;border:1.5px solid #f8717144;color:#f87171;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="8" cy="15" r="1" fill="currentColor"/><circle cx="12" cy="15" r="1" fill="currentColor"/></svg></div>
+          <div class="rp-block-text">
+            <div class="rp-block-title">Радар дедлайнов</div>
+            <div class="rp-block-sub">Просрочено · Сегодня · На этой неделе · Будущие</div>
+          </div>
+          <div class="rp-block-badge" style="background:rgba(248,113,113,.1);color:#f87171;border:1px solid rgba(248,113,113,.22);">Все дедлайны</div>
         </div>
-        <div class="ov2-dl-grid" id="ov2-dl-grid"></div>
+        <div class="rp-block-body ov-block-body">
+          <div class="ov2-dl-grid" id="ov2-dl-grid"></div>
+        </div>
       </div>
 
-      <!-- ══ SECTION 5: AGENCY HEALTH ══ -->
-      <div class="ov2-section" id="ov2-sec-health">
-        <div class="ov2-section-head">
-          <div class="ov2-sh-label">05</div>
-          <div class="ov2-sh-title">Здоровье агентства</div>
-          <div class="ov2-sh-line"></div>
+      <!-- ════ ЗДОРОВЬЕ АГЕНТСТВА ════ -->
+      <div class="rp-block ov-block" id="ov-block-health">
+        <div class="rp-block-hdr" id="ov2-sec-health">
+          <div class="rp-block-icon" style="background:#3ecf8e22;border:1.5px solid #3ecf8e44;color:#3ecf8e;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+          <div class="rp-block-text">
+            <div class="rp-block-title">Здоровье агентства</div>
+            <div class="rp-block-sub">Загрузка команды · Завершённость · Риски</div>
+          </div>
+          <div class="rp-block-badge" style="background:rgba(62,207,142,.1);color:#3ecf8e;border:1px solid rgba(62,207,142,.22);">Агентство</div>
         </div>
-        <div class="ov2-health-grid" id="ov2-health-grid"></div>
+        <div class="rp-block-body ov-block-body">
+          <div class="ov2-health-grid" id="ov2-health-grid"></div>
+        </div>
       </div>
+
 
       <div style="height:60px;"></div>
     </div>
