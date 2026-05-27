@@ -26696,13 +26696,21 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
         </div>
       </div>
       <!-- END WATERFALL + HEALTH SCORE -->
-      <div class="cb">
+      <div class="cb" data-ob="ВЫРУЧКА ПО ДНЯМ
+Каждая точка = один день работы.
+→ Золотая линия = новый период
+→ Красная пунктирная = среднее базы
+Дни выше красной линии = лучше нормы.">
         <div class="cb-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--a2)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Выручка по дням</div>
         <div class="cb-sub">// каждая точка = один день · красная = средняя базового периода</div>
         <div style="position:relative;height:260px"><canvas id="cDay"></canvas></div>
       </div>
       <div class="two">
-        <div class="cb">
+        <div class="cb" data-ob="ЧЕКОВ В ДЕНЬ
+Количество заказов каждый день.
+Каждый чек = один гость или заказ.
+→ Рост = больше гостей приходит
+→ Падение = меньше трафика">
           <div class="cb-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Чеков в день</div>
           <div style="position:relative;height:200px"><canvas id="cChk"></canvas></div>
         </div>
@@ -26715,7 +26723,12 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
       <!-- HOURS -->
       <div id="weekday-section">
         <div class="sh"><div class="sh-num">📅</div><div class="sh-title">По дням недели</div><div class="sh-line"></div></div>
-        <div class="cb" id="weekday-block">
+        <div class="cb" id="weekday-block" data-ob="ВЫРУЧКА И ЧЕКИ ПО ДНЯМ НЕДЕЛИ
+В какие дни недели бизнес работает лучше?
+→ Левый график = выручка по дням
+→ Правый = количество гостей
+Используйте для планирования акций
+и расстановки персонала.">
           <div class="cb-title">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
             Выручка и чеки по дням недели — <span id="lbl-wd-b">Период 1</span> vs <span id="lbl-wd-d">Период 2</span>
@@ -26996,8 +27009,16 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
         </div>
         <div class="cb"><div class="cb-title">Сравнение выручки/день по филиалам</div><div id="branch-table"></div></div>
         <div class="two">
-          <div class="cb"><div class="cb-title">Выручка/день по филиалам</div><div style="position:relative;height:240px"><canvas id="cBrR"></canvas></div></div>
-          <div class="cb"><div class="cb-title">Рост % по филиалам</div><div style="position:relative;height:240px"><canvas id="cBrG"></canvas></div></div>
+          <div class="cb" data-ob="ВЫРУЧКА/ДЕНЬ ПО ФИЛИАЛАМ
+Сравнение точек сети по дневной выручке.
+Серый = базовый период, цветной = новый.
+→ Чем выше цветной столбец — тем лучше
+→ Нормировано на дни работы = честное сравнение"><div class="cb-title">Выручка/день по филиалам</div><div style="position:relative;height:240px"><canvas id="cBrR"></canvas></div></div>
+          <div class="cb" data-ob="РОСТ % ПО ФИЛИАЛАМ
+На сколько % выросла каждая точка.
+→ Зелёный = вырос
+→ Красный = упал
+Быстро видно кто лидер, а кто отстаёт."><div class="cb-title">Рост % по филиалам</div><div style="position:relative;height:240px"><canvas id="cBrG"></canvas></div></div>
         </div>
         <div class="cb"><div class="cb-title">Рейтинг филиалов</div><div id="branch-rating" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px;"></div></div>
       </div>
