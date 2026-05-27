@@ -37515,14 +37515,14 @@ async function cpRenderMilestone(project) {
   font-family:var(--font-mono); font-size:9px; color:var(--txt3);
   letter-spacing:.18em; text-transform:uppercase; padding:0 6px 6px;
 }
-.kb-proj-list { flex:1; overflow-y:auto; padding:0 6px; }
+.kb-proj-list { flex:1; overflow-y:auto; padding:0 6px; width:100%; }
 .kb-proj-list::-webkit-scrollbar { width:3px; }
 .kb-proj-list::-webkit-scrollbar-thumb { background:rgba(255,255,255,.08); border-radius:3px; }
 .kb-proj-item {
-  display:flex; align-items:center; gap:9px; padding:8px 6px;
+  display:flex; align-items:center; gap:9px; padding:8px 8px;
   border-radius:12px; cursor:pointer; margin-bottom:3px;
   border:1px solid transparent; transition:all .18s;
-  position:relative;
+  position:relative; width:100%;
 }
 .kb-proj-item:hover { background:rgba(255,255,255,.04); border-color:var(--brd); }
 .kb-proj-item.kb-proj-active { background:rgba(184,146,58,.08); border-color:rgba(184,146,58,.25); border-left:3px solid #b8923a; padding-left:5px; }
@@ -37534,7 +37534,7 @@ async function cpRenderMilestone(project) {
   border:1px solid rgba(255,255,255,.08); color:#fff;
 }
 .kb-proj-info { flex:1; min-width:0; }
-.kb-proj-name { font-family:var(--font-display); font-size:11px; font-weight:700; letter-spacing:.02em; color:var(--txt2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-transform:uppercase; }
+.kb-proj-name { font-family:var(--font-display); font-size:11px; font-weight:700; letter-spacing:.02em; color:var(--txt2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-transform:uppercase; flex:1; }
 .kb-proj-item.kb-proj-active .kb-proj-name { color:var(--txt); }
 .kb-proj-sub  { display:none; }
 .kb-proj-cnt  { font-family:var(--font-mono); font-size:10px; color:var(--txt3); background:var(--bg4); border:1px solid var(--brd); border-radius:8px; padding:2px 7px; flex-shrink:0; }
