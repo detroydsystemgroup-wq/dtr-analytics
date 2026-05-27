@@ -8126,68 +8126,88 @@ input, select, textarea {
         +   'letter-spacing:0;}';
       document.head.appendChild(_s);
 
-      // Один tooltip div
+      // Tooltip div
       var _tip = document.createElement('div');
       _tip.id = 'dtr-ob-tip';
       document.body.appendChild(_tip);
 
-      var _tipTimer = null;
-      var _tipShown = false;
+      var _curEl  = null;  // текущий ob-элемент под курсором
+      var _timer  = null;  // таймер первого появления
+      var _vis    = false; // тултип сейчас виден?
+      var _mx = 0, _my = 0; // последние координаты мыши
 
-      function _positionTip(e) {
-        var x = e.clientX, y = e.clientY;
-        var tw = _tip.offsetWidth  || 280;
-        var th = _tip.offsetHeight || 120;
-        var vw = window.innerWidth, vh = window.innerHeight;
-        var G = 14;
-        var left = x + G;
-        var top  = y + G;
-        if (left + tw > vw - 8) left = x - tw - G;
-        if (top  + th > vh - 8) top  = y - th - G;
-        if (left < 8) left = 8;
-        if (top  < 8) top  = 8;
-        _tip.style.left = left + 'px';
-        _tip.style.top  = top  + 'px';
+      function _findOb(target) {
+        var el = target, d = 0;
+        while (el && d < 6) {
+          if (el.getAttribute) {
+            var t = el.getAttribute('data-ob') || el.getAttribute('data-ob-r');
+            if (t) return { el: el, txt: t };
+          }
+          el = el.parentElement; d++;
+        }
+        return null;
       }
 
-      document.addEventListener('mousemove', function(e) {
-        if (_tipShown) _positionTip(e);
-      });
+      function _place() {
+        var x = _mx, y = _my;
+        var tw = _tip.offsetWidth  || 260;
+        var th = _tip.offsetHeight || 100;
+        var vw = window.innerWidth, vh = window.innerHeight;
+        var G  = 16;
+        var lf = (x + G + tw > vw - 4) ? x - tw - G : x + G;
+        var tp = (y + G + th > vh - 4) ? y - th - G : y + G;
+        _tip.style.left = Math.max(4, lf) + 'px';
+        _tip.style.top  = Math.max(4, tp) + 'px';
+      }
 
-      document.addEventListener('mouseover', function(e) {
-        var el = e.target;
-        // Ищем data-ob на элементе или его родителях (до 5 уровней)
-        var found = null, txt = null, depth = 0;
-        while (el && depth < 5) {
-          txt = el.getAttribute && (el.getAttribute('data-ob') || el.getAttribute('data-ob-r'));
-          if (txt) { found = el; break; }
-          el = el.parentElement;
-          depth++;
-        }
-        if (!found || !txt) return;
-        clearTimeout(_tipTimer);
-        _tipTimer = setTimeout(function() {
-          _tip.textContent = txt;
-          _tip.style.opacity = '1';
-          _tipShown = true;
-        }, 280);
-      });
+      function _show(txt) {
+        _tip.textContent = txt;
+        _place();
+        _tip.style.opacity = '1';
+        _vis = true;
+      }
 
-      document.addEventListener('mouseout', function(e) {
-        var el = e.target;
-        var found = null, depth = 0;
-        while (el && depth < 5) {
-          if (el.getAttribute && (el.getAttribute('data-ob') || el.getAttribute('data-ob-r'))) {
-            found = el; break;
-          }
-          el = el.parentElement;
-          depth++;
-        }
-        if (!found) return;
-        clearTimeout(_tipTimer);
+      function _hide() {
+        clearTimeout(_timer);
         _tip.style.opacity = '0';
-        _tipShown = false;
+        _vis = false;
+        _curEl = null;
+      }
+
+      // pointermove: обновляем позицию + определяем ob-элемент
+      document.addEventListener('pointermove', function(e) {
+        _mx = e.clientX; _my = e.clientY;
+        if (_vis) _place();
+
+        var res = _findOb(e.target);
+
+        if (!res) {
+          // Курсор не над ob-элементом
+          if (_curEl) _hide();
+          return;
+        }
+
+        if (res.el === _curEl) {
+          // Тот же элемент — ничего не делаем
+          return;
+        }
+
+        // Новый ob-элемент
+        _curEl = res.el;
+        clearTimeout(_timer);
+
+        if (_vis) {
+          // Уже показан — мгновенно обновляем
+          _show(res.txt);
+        } else {
+          // Первый раз — небольшая задержка
+          var _t = res.txt;
+          _timer = setTimeout(function() { _show(_t); }, 260);
+        }
       });
+
+      // Скрываем когда мышь покидает документ
+      document.addEventListener('mouseleave', function() { _hide(); });
     }
 
     function ob(sel, txt, right) {
