@@ -23287,8 +23287,8 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 /* ── Timer display: fixed-width digits prevent layout jitter ── */
 .kb-timer-live {
   font-variant-numeric: tabular-nums;
-  min-width: 72px;   /* enough for MM:SS, expands for H:MM:SS */
-  justify-content: center;
+  min-width: 78px;
+  justify-content: flex-start;
 }
 /* Active card top row — give timer room on the right */
 .kb-card-active .kb-card-toprow {
@@ -23391,40 +23391,40 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   letter-spacing: .02em;
 }
 
-/* ── Live active timer — green badge ── */
-@keyframes kbTimerPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(52,211,153,.5), inset 0 1px 0 rgba(255,255,255,.08); }
-  50%       { box-shadow: 0 0 0 4px rgba(52,211,153,.0), inset 0 1px 0 rgba(255,255,255,.08); }
+/* ── Live active timer — green badge, crisp rendering ── */
+@keyframes kbDotBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: .3; }
 }
 .kb-timer-live {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 10px 5px 7px;
+  gap: 5px;
+  padding: 5px 10px 5px 8px;
   border-radius: 8px;
-  background: rgba(52,211,153,.14);
-  border: 1px solid rgba(52,211,153,.35);
+  background: #0d2318;
+  border: 1.5px solid #34d399;
   color: #34d399;
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: .08em;
+  letter-spacing: .06em;
   white-space: nowrap;
-  animation: kbTimerPulse 2s ease-in-out infinite;
-  text-shadow: 0 0 12px rgba(52,211,153,.55);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+  text-shadow: none;
+  box-shadow: none;
+  animation: none;
 }
 .kb-timer-live-dot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: #34d399;
   flex-shrink: 0;
-  box-shadow: 0 0 6px rgba(52,211,153,.8);
-  animation: kbDotBlink 1s ease-in-out infinite;
-}
-@keyframes kbDotBlink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: .35; }
+  box-shadow: none;
+  animation: kbDotBlink 1s step-end infinite;
 }
 .kb-timer-logged {
   background: rgba(52,211,153,.08);
