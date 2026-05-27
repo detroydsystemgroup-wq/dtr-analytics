@@ -37898,6 +37898,194 @@ function kbTypeIcon(typeId) {
   return m.icon;
 }
 
+/* ══ MAIN ENTRY ══ */
+window.loadKB = async function() {
+  _kbProjectId = null;
+  _kbCats      = [];
+  _kbItems     = [];
+
+  // Ждём проекты если ещё не загружены
+  if (typeof _allProjects === 'undefined' || !_allProjects || !_allProjects.length) {
+    if (typeof loadProjects === 'function') {
+      try { await loadProjects(); } catch(e) {}
+    }
+  }
+  kbRenderProjectSidebar();
+  kbShowNoProject();
+};
+
+/* ══ RENDER PROJECTS SIDEBAR ══ */
+function kbRenderProjectSidebar() {
+  var list = document.getElementById('kb-proj-list');
+  if (!list) return;
+
+  var projects = (typeof _allProjects !== 'undefined' && _allProjects)
+    ? _allProjects.filter(function(p){ return p.status !== 'archived'; })
+    : [];
+
+  var projStat  = document.getElementById('kb-proj-stat-proj');
+  var itemsStat = document.getElementById('kb-proj-stat-items');
+  if (projStat)  projStat.textContent  = projects.length;
+  if (itemsStat) itemsStat.textContent = '—';
+
+  if (!projects.length) {
+    list.innerHTML = '<div style="padding:24px 12px;text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--txt3);letter-spacing:.08em;line-height:1.7;">Нет активных<br>проектов</div>';
+    return;
+  }
+
+  list.innerHTML = projects.map(function(p) {
+    var letter = (p.name||'?')[0].toUpperCase();
+    var col    = p.color || '#b8923a';
+    return '<div class="kb-proj-item" id="kb-proj-row-'+p.id+'" onclick="kbSelectProject(\''+p.id+'\',\''+esc(p.name)+'\')">'+
+      '<div class="kb-proj-avatar" style="background:'+col+'22;border-color:'+col+'44;">'+
+        '<span style="color:'+col+';">'+letter+'</span>'+
+      '</div>'+
+      '<div class="kb-proj-info">'+
+        '<div class="kb-proj-name">'+esc(p.name)+'</div>'+
+        '<div class="kb-proj-meta">'+esc(p.category||'Проект')+'</div>'+
+      '</div>'+
+      '<div class="kb-proj-count" id="kb-proj-cnt-'+p.id+'">—</div>'+
+    '</div>';
+  }).join('');
+}
+
+function kbShowNoProject() {
+  var loading = document.getElementById('kb-loading');
+  var content = document.getElementById('kb-content');
+  var noProj  = document.getElementById('kb-no-project');
+  if (loading) loading.style.display = 'none';
+  if (content) content.style.display = 'none';
+  if (noProj)  noProj.style.display  = '';
+  var addBtn = document.getElementById('kb-add-btn-main');
+  if (addBtn) { addBtn.disabled = true; addBtn.style.opacity = '.35'; addBtn.style.pointerEvents = 'none'; }
+  var catBtn = document.getElementById('kb-add-cat-sidebar');
+  if (catBtn) { catBtn.style.opacity = '.35'; catBtn.style.pointerEvents = 'none'; }
+}
+
+/* ══ SELECT PROJECT ══ */
+window.kbSelectProject = async function(projectId, projectName) {
+  _kbProjectId   = projectId;
+  _kbProjectName = projectName;
+
+  document.querySelectorAll('.kb-proj-item').forEach(function(el){ el.classList.remove('kb-proj-active'); });
+  var row = document.getElementById('kb-proj-row-'+projectId);
+  if (row) row.classList.add('kb-proj-active');
+
+  var sub = document.getElementById('kb-project-subtitle');
+  if (sub) sub.textContent = projectName;
+
+  var addBtn = document.getElementById('kb-add-btn-main');
+  if (addBtn) { addBtn.disabled = false; addBtn.style.opacity = ''; addBtn.style.pointerEvents = ''; }
+  var catBtn = document.getElementById('kb-add-cat-sidebar');
+  if (catBtn) { catBtn.style.opacity = ''; catBtn.style.pointerEvents = ''; }
+
+  var loading = document.getElementById('kb-loading');
+  var content = document.getElementById('kb-content');
+  var noProj  = document.getElementById('kb-no-project');
+  if (noProj)  noProj.style.display  = 'none';
+  if (content) content.style.display = 'none';
+  if (loading) loading.style.display = '';
+
+  await kbLoadProjectData(projectId);
+
+  if (loading) loading.style.display = 'none';
+  if (content) content.style.display = '';
+
+  kbRenderContent();
+
+  var cnt = document.getElementById('kb-proj-cnt-'+projectId);
+  if (cnt) cnt.textContent = _kbItems.length;
+
+  var si = document.getElementById('kb-proj-stat-items');
+  if (si) si.textContent = _kbItems.length;
+
+  var navCnt = document.getElementById('kb-total-count');
+  if (navCnt) { navCnt.textContent = _kbItems.length; navCnt.style.display = _kbItems.length ? '' : 'none'; }
+};
+
+/* ══ LOAD DATA ══ */
+async function kbLoadProjectData(projectId) {
+  try {
+    var res = await sb.from('kb_categories').select('*').eq('project_id', projectId).order('created_at');
+    _kbCats = res.data || [];
+    if (!_kbCats.length) {
+      await kbSeedDefaults(projectId);
+      var res2 = await sb.from('kb_categories').select('*').eq('project_id', projectId).order('created_at');
+      _kbCats = res2.data || [];
+    }
+  } catch(e) { _kbCats = []; }
+  try {
+    var res3 = await sb.from('kb_items').select('*').eq('project_id', projectId).order('created_at', {ascending:false});
+    _kbItems = res3.data || [];
+  } catch(e) { _kbItems = []; }
+}
+
+async function kbSeedDefaults(projectId) {
+  if (typeof currentUser === 'undefined' || !currentUser) return;
+  var defaults = [
+    {name:'Контент-стратегия', color:'#b8923a'},
+    {name:'Аудит профиля',     color:'#38b2ac'},
+    {name:'Анализ конкурентов',color:'#a78bfa'},
+    {name:'Контент-план',      color:'#3ecf8e'},
+    {name:'Прочее',            color:'#7a7672'},
+  ];
+  try {
+    await sb.from('kb_categories').insert(
+      defaults.map(function(c){ return {user_id:currentUser.id, project_id:projectId, name:c.name, color:c.color, mode:'materials'}; })
+    );
+  } catch(e) {}
+}
+
+/* ══ RENDER CONTENT ══ */
+function kbRenderContent() {
+  var area = document.getElementById('kb-cards-area');
+  if (!area) return;
+
+  var modeCats = _kbCats.filter(function(c){ return (c.mode||'materials') === _kbMode; });
+
+  if (!modeCats.length) {
+    area.innerHTML = '<div class="kb-empty" style="margin-top:0;">'+
+      '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(184,146,58,.3)" stroke-width="1.4" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'+
+      '<div class="kb-empty-title" style="margin-top:12px;">Нет категорий</div>'+
+      '<div class="kb-empty-sub">Создайте первую категорию</div>'+
+      '<button class="kb-add-cat-btn" style="margin-top:16px;width:auto;padding:9px 18px;" onclick="kbOpenAddCategory()">'+
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'+
+        'Добавить категорию'+
+      '</button>'+
+    '</div>';
+    return;
+  }
+
+  area.innerHTML = modeCats.map(function(cat, idx) {
+    var items = _kbItems.filter(function(i){ return i.category_id === cat.id; });
+
+    var cardsHtml = items.map(kbBuildCard).join('') +
+      '<div class="kb-card-add" onclick="kbOpenAddItem(\''+cat.id+'\')">'+
+        '<div class="kb-card-add-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>'+
+        '<div class="kb-card-add-lbl">Добавить</div>'+
+      '</div>';
+
+    return '<div class="kb-cat-block" style="animation-delay:'+(idx*0.05)+'s">'+
+      '<div class="kb-cat-header">'+
+        '<div class="kb-cat-icon-box" style="background:'+esc(cat.color)+'22;">'+
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="'+esc(cat.color)+'" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'+
+        '</div>'+
+        '<span class="kb-cat-header-title">'+esc(cat.name)+'</span>'+
+        '<span class="kb-cat-header-count">'+items.length+'</span>'+
+        '<div class="kb-cat-header-acts">'+
+          '<button class="kb-cat-hbtn" onclick="kbOpenEditCategory(\''+cat.id+'\')">'+
+            '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>'+
+          '</button>'+
+          '<button class="kb-cat-hbtn del" onclick="kbDeleteCat(\''+cat.id+'\')">'+
+            '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>'+
+          '</button>'+
+        '</div>'+
+      '</div>'+
+      '<div class="kb-cards-wrap">'+cardsHtml+'</div>'+
+    '</div>';
+  }).join('');
+}
+
 function kbBuildCard(item) {
   var domain = '';
   try { domain = new URL(item.url).hostname.replace('www.',''); } catch(e){}
