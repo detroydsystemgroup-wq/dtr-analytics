@@ -37455,6 +37455,28 @@ async function cpRenderMilestone(project) {
 /* ══ PANEL ══ */
 #dtab-kb-panel { display:none; padding:0; }
 
+/* Когда KB панель активна — убираем padding у cc-main и растягиваем контент на весь экран */
+.cc-main:has(#dtab-kb-panel[style*="block"]) {
+  padding: 0 !important;
+}
+#dtab-kb-panel[style*="block"] .kb-topbar {
+  padding: 20px 48px 20px 48px;
+  border-bottom: 1px solid rgba(240,236,230,.06);
+}
+#dtab-kb-panel[style*="block"] .kb-body {
+  grid-template-columns: 220px 1fr;
+  height: calc(100vh - 60px - 65px);
+  min-height: 0;
+}
+#dtab-kb-panel[style*="block"] .kb-proj-sidebar {
+  padding: 16px 8px 0 16px;
+}
+#dtab-kb-panel[style*="block"] .kb-main {
+  padding: 20px 48px 20px 28px;
+  overflow-y: auto;
+  height: 100%;
+}
+
 /* ══ TOPBAR ══ */
 .kb-topbar {
   display:flex; align-items:center; justify-content:space-between;
