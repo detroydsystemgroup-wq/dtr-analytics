@@ -8179,6 +8179,12 @@ input, select, textarea {
         _mx = e.clientX; _my = e.clientY;
         if (_vis) _place();
 
+        // Если подсказки отключены — скрываем и выходим
+        if (typeof _obEnabled !== 'undefined' && !_obEnabled) {
+          if (_curEl) _hide();
+          return;
+        }
+
         var res = _findOb(e.target);
 
         if (!res) {
@@ -8612,15 +8618,23 @@ input, select, textarea {
 
   } // end applyOnboarding
 
+  // ── Показываем тумблер когда отчёт загружен ──
+  function _showObToggle() {
+    var bar = document.getElementById('ob-toggle-bar');
+    if (bar) bar.style.display = 'flex';
+  }
+
   var _origRAOB = window.runAnalysis;
   if (typeof _origRAOB === 'function') {
     window.runAnalysis = function() {
       _origRAOB.apply(this, arguments);
       setTimeout(applyOnboarding, 300);
+      setTimeout(_showObToggle, 400);
     };
   }
   document.addEventListener('DOMContentLoaded', function() {
     setTimeout(applyOnboarding, 800);
+    setTimeout(_showObToggle, 900);
   });
 
 
@@ -8629,6 +8643,28 @@ input, select, textarea {
     setTimeout(applyPremiumReport, 500);
   });
 })();
+
+// ── Тумблер подсказок ──
+var _obEnabled = true;
+function toggleObOnboarding() {
+  _obEnabled = !_obEnabled;
+  var knob   = document.getElementById('ob-toggle-knob');
+  var track  = document.getElementById('ob-toggle');
+  var label  = document.getElementById('ob-toggle-label');
+  var tip    = document.getElementById('dtr-ob-tip');
+  if (_obEnabled) {
+    knob.style.transform  = 'translateX(0)';
+    track.style.background = 'var(--a2)';
+    label.textContent      = 'Подсказки вкл.';
+    label.style.color      = 'var(--txt2)';
+  } else {
+    knob.style.transform  = 'translateX(20px)';
+    track.style.background = 'rgba(255,255,255,.12)';
+    label.textContent      = 'Подсказки выкл.';
+    label.style.color      = 'var(--txt3)';
+    if (tip) tip.style.opacity = '0';
+  }
+}
 </script>
 
 <style id="dtr-report-animations">
@@ -26634,6 +26670,12 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
     </div><!-- /files-section -->
 
     <!-- ANALYTICS OUTPUT -->
+    <!-- ONBOARDING TOGGLE -->
+    <div id="ob-toggle-bar" style="display:none;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:16px;padding:0 2px;">
+      <span id="ob-toggle-label" style="font-family:var(--font-mono);font-size:11px;color:var(--txt2);letter-spacing:.06em;user-select:none;">Подсказки вкл.</span>
+      <div id="ob-toggle" onclick="toggleObOnboarding()" style="width:44px;height:24px;border-radius:12px;background:var(--a2);border:none;cursor:pointer;position:relative;transition:background .25s ease;flex-shrink:0;">        <div id="ob-toggle-knob" style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .25s cubic-bezier(.34,1.56,.64,1);box-shadow:0 1px 4px rgba(0,0,0,.35);"></div>
+      </div>
+    </div>
     <div class="analytics-wrap" id="analytics-wrap">
 
   <!-- ════ БЛОК 1: ОБЗОР ПЕРИОДА ════ -->
