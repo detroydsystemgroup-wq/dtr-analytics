@@ -34721,81 +34721,104 @@ function renderChannelShare(b4, d4, b1, d1) {
         var intensity = d.chk / typeMaxChk[t]; // 0..1
         var col = CHAN_COLS[t]||'#c9a84c';
         var avg = d.chk > 0 ? Math.round(d.rev/d.chk) : 0;
-        // alpha: min 0 (пусто) → max 0.9 (пик)
-        var alpha = d.chk > 0 ? (0.07 + intensity * 0.83) : 0;
-        // text contrast: светлый текст при высокой интенсивности
-        var txtCol = intensity > 0.55 ? col : 'var(--txt2)';
-        var txtWeight = intensity > 0.55 ? '600' : '400';
 
         // Hex → rgba helper
         var hexToRgba = function(hex, a) {
           var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
           return 'rgba('+r+','+g+','+b+','+a.toFixed(2)+')';
         };
-        var bgCol = d.chk > 0 ? hexToRgba(col.charAt(0)==='#'?col:'#c9a84c', alpha) : 'transparent';
 
-        return '<td style="padding:3px 5px;vertical-align:middle;">'
+        // Контраст: 3 уровня интенсивности
+        // 0..0.2 → почти пусто: тёмный фон, приглушённый текст
+        // 0.2..0.6 → средний: фон канала 30%, белый текст
+        // 0.6..1.0 → пик: фон канала 75%, белый жирный текст + badge
+        var colHex = col.charAt(0)==='#' ? col : '#c9a84c';
+        var bgAlpha, mainTextCol, mainFontSize, mainWeight, subTextCol, barCol;
+        if (d.chk === 0) {
+          bgAlpha = 0; mainTextCol = 'rgba(255,255,255,.15)'; mainFontSize = '12px'; mainWeight = '400'; subTextCol = 'transparent'; barCol = 'transparent';
+        } else if (intensity < 0.2) {
+          bgAlpha = 0.08; mainTextCol = 'rgba(255,255,255,.45)'; mainFontSize = '12px'; mainWeight = '400'; subTextCol = 'rgba(255,255,255,.22)'; barCol = colHex;
+        } else if (intensity < 0.55) {
+          bgAlpha = 0.28; mainTextCol = '#ffffff'; mainFontSize = '13px'; mainWeight = '500'; subTextCol = 'rgba(255,255,255,.55)'; barCol = colHex;
+        } else {
+          bgAlpha = 0.72; mainTextCol = '#ffffff'; mainFontSize = '14px'; mainWeight = '700'; subTextCol = 'rgba(255,255,255,.7)'; barCol = '#ffffff';
+        }
+
+        var bgCol = d.chk > 0 ? hexToRgba(colHex, bgAlpha) : 'transparent';
+        var borderAlpha = intensity > 0.55 ? 0.6 : intensity > 0.2 ? 0.3 : 0.1;
+        var borderCol = hexToRgba(colHex, borderAlpha);
+        var avgStr = avg > 0 ? (avg >= 1000 ? (avg/1000).toFixed(0)+'K' : avg) + ' сум' : '';
+
+        return '<td style="padding:3px 4px;vertical-align:middle;">'
           + (d.chk > 0
-            ? '<div style="border-radius:7px;padding:7px 10px;background:'+bgCol+';border:1px solid '+col+(intensity>0.3?'44':'18')+';text-align:center;position:relative;">'
-              +'<div style="font-size:13px;font-weight:'+txtWeight+';color:'+txtCol+';font-family:var(--font-mono);line-height:1.2;">'+fmt3(d.chk)+'</div>'
-              +'<div style="font-size:9px;color:var(--txt3);font-family:var(--font-mono);margin-top:1px;">'+(avg>0?fmt3(Math.round(avg/1000))+'K':'')+'</div>'
-              +'<div style="position:absolute;bottom:0;left:0;height:2px;width:'+(Math.round(intensity*100))+'%;background:'+col+';border-radius:0 0 0 7px;opacity:.7;"></div>'
+            ? '<div style="border-radius:8px;padding:8px 10px;background:'+bgCol+';border:1px solid '+borderCol+';text-align:center;position:relative;min-height:52px;display:flex;flex-direction:column;justify-content:center;gap:2px;">'
+              + (intensity >= 0.6 ? '<div style="position:absolute;top:4px;right:4px;width:5px;height:5px;border-radius:50%;background:#ffffff;opacity:.5;"></div>' : '')
+              +'<div style="font-size:'+mainFontSize+';font-weight:'+mainWeight+';color:'+mainTextCol+';font-family:var(--font-mono);line-height:1;letter-spacing:.02em;">'+fmt3(d.chk)+'</div>'
+              +(avgStr ? '<div style="font-size:9px;color:'+subTextCol+';font-family:var(--font-mono);letter-spacing:.04em;">'+avgStr+'</div>' : '')
+              +'<div style="position:absolute;bottom:0;left:0;right:0;height:2px;border-radius:0 0 8px 8px;overflow:hidden;">'
+              +'<div style="height:100%;width:'+(Math.round(intensity*100))+'%;background:'+barCol+';opacity:.6;"></div></div>'
               +'</div>'
-            : '<div style="text-align:center;color:var(--txt3);font-size:11px;padding:10px;">—</div>')
+            : '<div style="text-align:center;color:rgba(255,255,255,.1);font-size:13px;min-height:52px;display:flex;align-items:center;justify-content:center;">·</div>')
           +'</td>';
       }).join('');
 
       return '<tr style="border-bottom:1px solid rgba(255,255,255,.03);">'
-        +'<td style="padding:3px 10px 3px 0;white-space:nowrap;vertical-align:middle;">'
-        +'<div style="display:flex;align-items:center;gap:6px;">'
-        +'<div style="width:3px;height:28px;border-radius:2px;background:'+seg.col+';flex-shrink:0;"></div>'
-        +'<div>'
-        +'<div style="font-size:12px;font-weight:500;color:var(--txt);font-family:var(--font-mono);">'+h+':00</div>'
-        +'<div style="font-size:9px;color:var(--txt3);font-family:var(--font-mono);">'+seg.lb+'</div>'
+        +'<td style="padding:3px 12px 3px 0;white-space:nowrap;vertical-align:middle;width:64px;">'
+        +'<div style="display:flex;align-items:center;gap:7px;">'
+        +'<div style="width:3px;height:36px;border-radius:2px;flex-shrink:0;background:'+seg.col+';"></div>'
+        +'<div style="display:flex;flex-direction:column;gap:1px;">'
+        +'<div style="font-size:13px;font-weight:600;color:rgba(255,255,255,.85);font-family:var(--font-mono);letter-spacing:.02em;">'+h+'<span style="font-size:10px;color:rgba(255,255,255,.35);">:00</span></div>'
+        +'<div style="font-size:9px;color:rgba(255,255,255,.25);font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase;">'+seg.lb+'</div>'
         +'</div></div></td>'
         + cells
-        +'<td style="padding:3px 0 3px 8px;white-space:nowrap;vertical-align:middle;">'
-        +'<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);">'+fmt3(rowTotal)+'</div>'
+        +'<td style="padding:3px 0 3px 10px;white-space:nowrap;vertical-align:middle;">'
+        +'<div style="font-family:var(--font-mono);font-size:11px;color:rgba(255,255,255,.35);text-align:right;">'+fmt3(rowTotal)+'</div>'
         +'</td></tr>';
     }).join('');
 
     // Шапка: иконка + полное название + legend bar
-    var thead = '<tr style="border-bottom:2px solid rgba(255,255,255,.08);">'
-      +'<th style="text-align:left;padding:8px 10px 12px 13px;color:var(--txt3);font-size:10px;font-weight:400;font-family:var(--font-mono);">Час</th>'
+    var thead = '<tr style="border-bottom:1px solid rgba(255,255,255,.08);">'
+      +'<th style="text-align:left;padding:10px 12px 10px 13px;color:rgba(255,255,255,.25);font-size:9px;font-weight:500;font-family:var(--font-mono);letter-spacing:.1em;text-transform:uppercase;">ЧАС</th>'
       + types.map(function(t){
           var col = CHAN_COLS[t]||'#c9a84c';
           var icon = CHAN_ICONS[t]||'📦';
           var maxVal = typeMaxChk[t];
-          return '<th style="padding:8px 10px 12px;text-align:center;min-width:110px;">'
-            +'<div style="display:flex;flex-direction:column;align-items:center;gap:4px;">'
-            +'<span style="font-size:18px;">'+icon+'</span>'
-            +'<span style="font-size:11px;font-weight:700;color:'+col+';white-space:nowrap;">'+t+'</span>'
-            +'<div style="display:flex;align-items:center;gap:3px;">'
-            +'<span style="font-size:9px;color:var(--txt3);font-family:var(--font-mono);">0</span>'
-            +'<div style="width:50px;height:4px;border-radius:2px;background:linear-gradient(90deg,rgba(0,0,0,0.2),'+col+');"></div>'
-            +'<span style="font-size:9px;color:'+col+';font-family:var(--font-mono);">'+fmt3(maxVal)+'</span>'
+          var colHex2 = col.charAt(0)==='#'?col:'#c9a84c';
+          var r2=parseInt(colHex2.slice(1,3),16),g2=parseInt(colHex2.slice(3,5),16),b2=parseInt(colHex2.slice(5,7),16);
+          return '<th style="padding:10px 8px;text-align:center;min-width:120px;">'
+            +'<div style="display:inline-flex;flex-direction:column;align-items:center;gap:5px;">'
+            +'<div style="width:32px;height:32px;border-radius:9px;background:rgba('+r2+','+g2+','+b2+',.15);border:1px solid rgba('+r2+','+g2+','+b2+',.3);display:flex;align-items:center;justify-content:center;font-size:16px;">'+icon+'</div>'
+            +'<div style="font-size:11px;font-weight:600;color:'+col+';white-space:nowrap;">'+t+'</div>'
+            +'<div style="display:flex;align-items:center;gap:3px;opacity:.6;">'
+            +'<span style="font-size:8px;color:rgba(255,255,255,.4);font-family:var(--font-mono);">min</span>'
+            +'<div style="width:40px;height:3px;border-radius:2px;background:linear-gradient(90deg,rgba('+r2+','+g2+','+b2+',.08),rgba('+r2+','+g2+','+b2+',.8));"></div>'
+            +'<span style="font-size:8px;color:'+col+';font-family:var(--font-mono);">'+fmt3(maxVal)+'</span>'
             +'</div></div></th>';
         }).join('')
-      +'<th style="padding:8px 8px 12px;text-align:center;min-width:50px;"><span style="font-size:9px;color:var(--txt3);font-family:var(--font-mono);">итого</span></th>'
+      +'<th style="padding:10px 8px;text-align:right;min-width:54px;"><span style="font-size:9px;color:rgba(255,255,255,.2);font-family:var(--font-mono);letter-spacing:.08em;">ИТОГО</span></th>'
       +'</tr>';
 
-    var hmHTML = '<div style="overflow-x:auto;border-radius:14px;border:1px solid var(--brd);">'
+    var hmHTML = '<div style="overflow-x:auto;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.015);">'
       +'<table style="width:100%;border-collapse:collapse;">'
       +'<thead>'+thead+'</thead>'
       +'<tbody>'+rows_html+'</tbody>'
       +'</table></div>';
 
     // Легенда снизу
-    hmHTML += '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:12px;padding:0 4px;">'
-      +'<span style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);">Интенсивность:</span>'
+    hmHTML += '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:10px;padding:0 2px;">'
       + types.map(function(t){
           var col = CHAN_COLS[t]||'#c9a84c';
-          return '<div style="display:flex;align-items:center;gap:5px;">'
-            +'<div style="width:10px;height:10px;border-radius:3px;background:'+col+';"></div>'
-            +'<span style="font-size:10px;color:var(--txt2);">'+t.split(' ').pop()+'</span></div>';
+          var colHex3 = col.charAt(0)==='#'?col:'#c9a84c';
+          var r3=parseInt(colHex3.slice(1,3),16),g3=parseInt(colHex3.slice(3,5),16),b3=parseInt(colHex3.slice(5,7),16);
+          return '<div style="display:flex;align-items:center;gap:6px;">'
+            +'<div style="width:12px;height:12px;border-radius:3px;background:rgba('+r3+','+g3+','+b3+',.7);"></div>'
+            +'<span style="font-size:11px;color:rgba(255,255,255,.5);font-family:var(--font-mono);">'+t+'</span></div>';
         }).join('')
-      +'<div style="display:flex;align-items:center;gap:5px;margin-left:auto;">'
-      +'<span style="font-size:9px;color:var(--txt3);font-family:var(--font-mono);">Число в ячейке = чеков · строка снизу = ср. чек (K сум)</span>'
+      +'<div style="margin-left:auto;display:flex;align-items:center;gap:8px;">'
+      +'<div style="display:flex;align-items:center;gap:4px;"><div style="width:28px;height:14px;border-radius:3px;background:rgba(184,146,58,.08);border:1px solid rgba(184,146,58,.15);"></div><span style="font-size:9px;color:rgba(255,255,255,.25);font-family:var(--font-mono);">низкий</span></div>'
+      +'<div style="display:flex;align-items:center;gap:4px;"><div style="width:28px;height:14px;border-radius:3px;background:rgba(184,146,58,.28);"></div><span style="font-size:9px;color:rgba(255,255,255,.25);font-family:var(--font-mono);">средний</span></div>'
+      +'<div style="display:flex;align-items:center;gap:4px;"><div style="width:28px;height:14px;border-radius:3px;background:rgba(184,146,58,.72);"></div><span style="font-size:9px;color:rgba(255,255,255,.25);font-family:var(--font-mono);">пик</span></div>'
+      +'<span style="font-size:9px;color:rgba(255,255,255,.2);font-family:var(--font-mono);margin-left:4px;">· чисел в ячейке = чеков · серый текст под = ср.чек</span>'
       +'</div></div>';
 
     hmEl.innerHTML = hmHTML;
