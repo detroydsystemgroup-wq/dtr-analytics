@@ -37519,8 +37519,8 @@ async function cpRenderMilestone(project) {
 .kb-proj-list::-webkit-scrollbar { width:3px; }
 .kb-proj-list::-webkit-scrollbar-thumb { background:rgba(255,255,255,.08); border-radius:3px; }
 .kb-proj-item {
-  display:flex; align-items:center; gap:10px; padding:10px 8px;
-  border-radius:11px; cursor:pointer; margin-bottom:2px;
+  display:flex; align-items:center; gap:11px; padding:8px 8px;
+  border-radius:12px; cursor:pointer; margin-bottom:4px;
   border:1px solid transparent; transition:all .18s;
 }
 .kb-proj-item:hover { background:rgba(255,255,255,.04); border-color:var(--brd); }
@@ -37530,15 +37530,15 @@ async function cpRenderMilestone(project) {
   width:3px; background:linear-gradient(180deg,#c9a84c,#b8923a); border-radius:0 3px 3px 0;
 }
 .kb-proj-avatar {
-  width:34px; height:34px; border-radius:9px; flex-shrink:0;
+  width:44px; height:44px; border-radius:12px; flex-shrink:0;
   display:flex; align-items:center; justify-content:center;
-  font-family:var(--font-display); font-size:14px; font-weight:800;
+  font-family:var(--font-display); font-size:18px; font-weight:800;
   border:1px solid rgba(255,255,255,.08); color:#fff;
 }
 .kb-proj-info { flex:1; min-width:0; }
-.kb-proj-name { font-family:var(--font-display); font-size:13px; font-weight:600; color:var(--txt2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.kb-proj-name { font-family:var(--font-display); font-size:13px; font-weight:700; letter-spacing:-.01em; color:var(--txt2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-transform:uppercase; }
 .kb-proj-item.kb-proj-active .kb-proj-name { color:var(--txt); }
-.kb-proj-sub  { font-family:var(--font-mono); font-size:10px; color:var(--txt3); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.kb-proj-sub  { display:none; }
 .kb-proj-cnt  { font-family:var(--font-mono); font-size:10px; color:var(--txt3); background:var(--bg4); border:1px solid var(--brd); border-radius:8px; padding:2px 7px; flex-shrink:0; }
 .kb-proj-item.kb-proj-active .kb-proj-cnt { color:var(--a2); background:rgba(184,146,58,.1); border-color:rgba(184,146,58,.2); }
 .kb-add-cat-btn {
@@ -37598,8 +37598,8 @@ async function cpRenderMilestone(project) {
 
 /* Цветная левая черта категории */
 .kb-cat-stripe {
-  position:absolute; left:0; top:0; bottom:0; width:3px;
-  border-radius:0 2px 2px 0; opacity:0.8;
+  position:absolute; left:0; top:0; bottom:0; width:5px;
+  border-radius:0 3px 3px 0;
   /* цвет задаётся инлайн style */
 }
 
@@ -37609,8 +37609,9 @@ async function cpRenderMilestone(project) {
 }
 
 .kb-cat-header-title {
-  flex:1; font-family:var(--font-display); font-size:14px;
-  font-weight:700; letter-spacing:-.02em; color:var(--txt);
+  flex:1; font-family:var(--font-mono); font-size:11px;
+  font-weight:600; letter-spacing:.14em; color:var(--txt);
+  text-transform:uppercase;
 }
 
 /* Счётчик — читаемый pill */
@@ -37933,12 +37934,11 @@ function kbRenderProjectSidebar() {
     var letter = (p.name||'?')[0].toUpperCase();
     var col    = p.color || '#b8923a';
     return '<div class="kb-proj-item" id="kb-proj-row-'+p.id+'" onclick="kbSelectProject(\''+p.id+'\',\''+esc(p.name)+'\')">'+
-      '<div class="kb-proj-avatar" style="background:'+col+'22;border-color:'+col+'44;">'+
-        '<span style="color:'+col+';">'+letter+'</span>'+
+      '<div class="kb-proj-avatar" style="background:'+col+'28;border-color:'+col+'55;">'+
+        '<span style="color:'+col+';font-size:18px;">'+letter+'</span>'+
       '</div>'+
       '<div class="kb-proj-info">'+
         '<div class="kb-proj-name">'+esc(p.name)+'</div>'+
-        '<div class="kb-proj-meta">'+esc(p.category||'Проект')+'</div>'+
       '</div>'+
       '<div class="kb-proj-count" id="kb-proj-cnt-'+p.id+'">—</div>'+
     '</div>';
@@ -38102,10 +38102,8 @@ var _svgChev  = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" str
       + '<div class="kb-cat-header" onclick="this.closest(\'.kb-cat-block\').classList.toggle(\'kb-cat-open\')">'
           /* Цветная левая полоса */
           + '<div class="kb-cat-stripe" style="background:' + catColor + ';"></div>'
-          /* Иконка */
-          + '<div class="kb-cat-icon-box" style="background:' + catColor + '18;border:1px solid ' + catColor + '30;">'
-              + catSvg
-          + '</div>'
+          /* Зелёный индикатор вместо иконки */
+          + '<div style="width:8px;height:8px;border-radius:50%;background:#3ecf8e;box-shadow:0 0 7px rgba(62,207,142,.55);flex-shrink:0;"></div>'
           /* Название */
           + '<span class="kb-cat-header-title">' + catName + '</span>'
           /* Счётчик */
