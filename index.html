@@ -128,11 +128,14 @@
   --glow-a:    0 0 32px rgba(184,146,58,.22), 0 0 8px rgba(184,146,58,.12);
 
   /* ── Transitions ── */
-  --ease-spring: cubic-bezier(.34,1.28,.64,1);
-  --ease-out:    cubic-bezier(.16,1,.3,1);
-  --ease-in-out: cubic-bezier(.4,0,.2,1);
+  --ease-spring:   cubic-bezier(.34,1.28,.64,1);
+  --ease-out:      cubic-bezier(.16,1,.3,1);
+  --ease-in-out:   cubic-bezier(.4,0,.2,1);
+  --ease-smooth:   cubic-bezier(.4,0,.2,1);
+  --ease-entrance: cubic-bezier(.2,0,0,1);
   --dur-fast:  150ms;
   --dur-base:  220ms;
+  --dur-med:   280ms;
   --dur-slow:  380ms;
 }
 
@@ -5412,10 +5415,6 @@ input, select, textarea {
 }
 </style>
 
-
-
-
-
 <style id="dtr-activity-pro">
 @keyframes actIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes actSlide{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
@@ -5540,14 +5539,6 @@ input, select, textarea {
 .act-empty-title{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-.02em;color:rgba(240,236,230,.6);margin-bottom:8px}
 .act-empty-sub{font-family:var(--font-mono);font-size:11px;color:rgba(184,146,58,.35);letter-spacing:.06em}
 </style>
-
-
-
-
-
-
-
-
 
 <style id="dtr-deadline-v19">
 @keyframes dvIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -8356,9 +8347,6 @@ canvas {
   transition: color .3s !important;
 }
 </style>
-
-
-
 
 <style id="dtr-client-apple-v2-hero">
 /* ── Migrated from removed duplicate <style id="dtr-client-apple-v2"> block 1 ── */
@@ -13733,8 +13721,6 @@ select:focus {
 
 </style>
 
-
-
 <!-- ─── Migrated from body in stage 4 (audit) ─── -->
 <style id="fin-modal-css">
 /* ── Finance Modal — section structure ── */
@@ -15582,8 +15568,6 @@ body::before {
   0%, 100% { border-color: rgba(184,146,58,.25); }
   50%       { border-color: rgba(184,146,58,.5); }
 }
-@keyframes floatUp {
-  0%, 100% { transform: translateY(0); }
   50%       { transform: translateY(-6px); }
 }
 @keyframes cardEntrance {
@@ -18403,7 +18387,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   box-shadow: 0 0 0 3px rgba(184,146,58,.1) !important;
 }
 .dl-search-inp {
-  font-family: var(--font-body, var(--font-display)) !important;
+  font-family: var(--font-body) !important;
   font-size: 13px !important;
   color: #f1f1f5 !important;
 }
@@ -18422,7 +18406,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   border-color: rgba(184,146,58,.4) !important;
 }
 .dl-proj-select {
-  font-family: var(--font-body, var(--font-display)) !important;
+  font-family: var(--font-body) !important;
   font-size: 13px !important;
   color: rgba(255,255,255,.7) !important;
   background: transparent !important;
@@ -18438,7 +18422,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   gap: 7px !important;
 }
 .dl-date-inp {
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 12px !important;
   color: rgba(255,255,255,.65) !important;
 }
@@ -18456,7 +18440,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   padding: 8px 14px !important;
   min-height: 36px !important;
   border-radius: 9px !important;
-  font-family: var(--font-body, var(--font-display)) !important;
+  font-family: var(--font-body) !important;
   font-size: 12px !important;
   font-weight: 500 !important;
   color: rgba(255,255,255,.35) !important;
@@ -18560,7 +18544,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 }
 
 .dl-stat-val {
-  font-family: 'DM Sans', var(--font-display) !important;
+  font-family: var(--font-display) !important;
   font-size: 36px !important;
   font-weight: 800 !important;
   letter-spacing: -.06em !important;
@@ -18570,7 +18554,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 }
 
 .dl-stat-lbl {
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 9px !important;
   color: rgba(255,255,255,.3) !important;
   letter-spacing: .16em !important;
@@ -18611,7 +18595,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   display: flex !important;
   align-items: center !important;
   gap: 10px !important;
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 9px !important;
   color: rgba(255,255,255,.28) !important;
   letter-spacing: .22em !important;
@@ -18738,7 +18722,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 }
 
 .dv-day {
-  font-family: 'DM Sans', var(--font-display) !important;
+  font-family: var(--font-display) !important;
   font-size: 34px !important;
   font-weight: 800 !important;
   line-height: 1 !important;
@@ -18750,7 +18734,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 .dl-card-v17.dv-today  .dv-day  { color: #fde68a !important; }
 
 .dv-mon {
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 9px !important;
   letter-spacing: .18em !important;
   text-transform: uppercase !important;
@@ -18758,7 +18742,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   color: rgba(255,255,255,.35) !important;
 }
 .dv-dow {
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 8px !important;
   letter-spacing: .1em !important;
   text-transform: uppercase !important;
@@ -18781,7 +18765,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   display: flex !important;
   align-items: center !important;
   gap: 10px !important;
-  font-family: 'DM Sans', var(--font-body, var(--font-display)) !important;
+  font-family: 'DM Sans', var(--font-body) !important;
   font-size: 15px !important;
   font-weight: 700 !important;
   color: #f1f1f5 !important;
@@ -18806,7 +18790,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   display: inline-flex !important;
   align-items: center !important;
   gap: 6px !important;
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 10px !important;
   letter-spacing: .04em !important;
   padding: 4px 12px !important;
@@ -18821,7 +18805,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 }
 
 .dv-note {
-  font-family: var(--font-body, var(--font-display)) !important;
+  font-family: var(--font-body) !important;
   font-size: 12px !important;
   color: rgba(255,255,255,.3) !important;
   display: flex !important;
@@ -18861,7 +18845,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 }
 
 .dv-cnt-val {
-  font-family: 'DM Sans', var(--font-display) !important;
+  font-family: var(--font-display) !important;
   font-size: 22px !important;
   font-weight: 800 !important;
   line-height: 1 !important;
@@ -18873,7 +18857,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 .dl-card-v17.dv-today   .dv-cnt-val { color: #fbbf24 !important; }
 
 .dv-cnt-lbl {
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 8px !important;
   letter-spacing: .14em !important;
   text-transform: uppercase !important;
@@ -18897,7 +18881,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   align-items: center !important;
   justify-content: center !important;
   gap: 7px !important;
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 11px !important;
   font-weight: 600 !important;
   letter-spacing: .04em !important;
@@ -18934,7 +18918,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   background: rgba(184,146,58,.14) !important;
   border: 1px solid rgba(184,146,58,.28) !important;
   border-radius: 12px !important;
-  font-family: 'DM Sans', var(--font-body, var(--font-display)) !important;
+  font-family: 'DM Sans', var(--font-body) !important;
   font-size: 14px !important;
   font-weight: 700 !important;
   color: rgba(184,146,58,.9) !important;
@@ -18999,7 +18983,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   animation: floatUp 4s ease infinite !important;
 }
 .dl-empty-title {
-  font-family: 'DM Sans', var(--font-display, var(--font-display)) !important;
+  font-family: var(--font-display) !important;
   font-size: 20px !important;
   font-weight: 700 !important;
   letter-spacing: -.03em !important;
@@ -19007,7 +18991,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   margin-bottom: 10px !important;
 }
 .dl-empty-sub {
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 11px !important;
   color: rgba(255,255,255,.2) !important;
   letter-spacing: .08em !important;
@@ -19018,7 +19002,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 ══════════════════════════════════════════════════════ */
 #dtab-calendar-panel > .dash-title,
 #dtab-calendar-panel .page-title {
-  font-family: 'DM Sans', var(--font-display, var(--font-display)) !important;
+  font-family: var(--font-display) !important;
   font-size: 30px !important;
   font-weight: 800 !important;
   letter-spacing: -.04em !important;
@@ -19070,7 +19054,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 }
 
 .ov2-title {
-  font-family: 'DM Sans', var(--font-display) !important;
+  font-family: var(--font-display) !important;
   font-size: 28px !important;
   font-weight: 800 !important;
   letter-spacing: -.05em !important;
@@ -19081,7 +19065,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 }
 
 .ov2-subtitle {
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 10px !important;
   color: rgba(255,255,255,.28) !important;
   letter-spacing: .14em !important;
@@ -19119,7 +19103,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   border-radius: 10px !important;
   border: none !important;
   background: transparent !important;
-  font-family: var(--font-body, var(--font-display)) !important;
+  font-family: var(--font-body) !important;
   font-size: 12px !important;
   font-weight: 500 !important;
   color: rgba(255,255,255,.33) !important;
@@ -19159,7 +19143,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   margin-bottom: 22px !important;
 }
 .ov2-sh-label {
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 9px !important;
   color: rgba(184,146,58,.6) !important;
   letter-spacing: .2em !important;
@@ -19170,7 +19154,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   flex-shrink: 0 !important;
 }
 .ov2-sh-title {
-  font-family: 'DM Sans', var(--font-display, var(--font-display)) !important;
+  font-family: var(--font-display) !important;
   font-size: 17px !important;
   font-weight: 700 !important;
   letter-spacing: -.03em !important;
@@ -19183,7 +19167,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   background: linear-gradient(90deg, rgba(255,255,255,.1), transparent) !important;
 }
 .ov2-sh-meta {
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 10px !important;
   color: rgba(255,255,255,.25) !important;
   flex-shrink: 0 !important;
@@ -19262,7 +19246,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 
 /* Label — McKinsey: context first */
 .ov2-kpi-label {
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 9px !important;
   letter-spacing: .2em !important;
   text-transform: uppercase !important;
@@ -19272,7 +19256,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 
 /* Value — the signal */
 .ov2-kpi-val {
-  font-family: 'DM Sans', var(--font-display) !important;
+  font-family: var(--font-display) !important;
   font-size: 44px !important;
   font-weight: 800 !important;
   line-height: 1 !important;
@@ -19284,7 +19268,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 
 /* Sub — context below value */
 .ov2-kpi-sub {
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 10px !important;
   color: rgba(255,255,255,.3) !important;
   letter-spacing: .05em !important;
@@ -19296,7 +19280,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   display: inline-flex !important;
   align-items: center !important;
   gap: 4px !important;
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 10px !important;
   font-weight: 600 !important;
   padding: 4px 9px !important;
@@ -19331,7 +19315,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   border-bottom: 1px solid rgba(255,255,255,.06) !important;
 }
 .ov2-ph-cell {
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 9px !important;
   color: rgba(255,255,255,.25) !important;
   letter-spacing: .18em !important;
@@ -19372,7 +19356,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 .ov2-proj-row:hover::before { opacity: 1 !important; }
 
 .ov2-pr-rank {
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 11px !important;
   color: rgba(255,255,255,.2) !important;
   text-align: center !important;
@@ -19386,14 +19370,14 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  font-family: 'DM Sans', var(--font-display, var(--font-display)) !important;
+  font-family: var(--font-display) !important;
   font-size: 14px !important;
   font-weight: 800 !important;
   box-shadow: 0 3px 10px rgba(0,0,0,.3) !important;
 }
 
 .ov2-pr-name {
-  font-family: 'DM Sans', var(--font-body, var(--font-display)) !important;
+  font-family: 'DM Sans', var(--font-body) !important;
   font-size: 14px !important;
   font-weight: 700 !important;
   color: #f1f1f5 !important;
@@ -19403,7 +19387,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   text-overflow: ellipsis !important;
 }
 .ov2-pr-desc {
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 9px !important;
   color: rgba(255,255,255,.25) !important;
   margin-top: 3px !important;
@@ -19429,7 +19413,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 .ov2-pipe-seg.seg-pending { opacity: .18 !important; }
 
 .ov2-pr-pct {
-  font-family: 'DM Sans', var(--font-display) !important;
+  font-family: var(--font-display) !important;
   font-size: 17px !important;
   font-weight: 800 !important;
   letter-spacing: -.04em !important;
@@ -19438,7 +19422,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 }
 
 .ov2-pr-status {
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 10px !important;
   font-weight: 600 !important;
   padding: 6px 12px !important;
@@ -19458,7 +19442,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   border-radius: 10px !important;
   background: rgba(184,146,58,.14) !important;
   border: 1px solid rgba(184,146,58,.25) !important;
-  font-family: var(--font-body, var(--font-display)) !important;
+  font-family: var(--font-body) !important;
   font-size: 12px !important;
   font-weight: 600 !important;
   color: rgba(184,146,58,.85) !important;
@@ -19500,7 +19484,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   background: rgba(255,255,255,.025) !important;
   border-bottom: 1px solid rgba(255,255,255,.06) !important;
   padding: 12px 24px !important;
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 9px !important;
   color: rgba(255,255,255,.25) !important;
   letter-spacing: .18em !important;
@@ -19522,7 +19506,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 .smm-lb-row.lb-top3 { border-left: 3px solid rgba(196,119,34,.4) !important; }
 
 .smm-lb-rank {
-  font-family: 'DM Sans', var(--font-display) !important;
+  font-family: var(--font-display) !important;
   font-size: 22px !important;
   font-weight: 800 !important;
   letter-spacing: -.05em !important;
@@ -19534,20 +19518,20 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 .smm-lb-row.lb-top3 .smm-lb-rank { color: #c47722 !important; }
 
 .smm-lb-proj-name {
-  font-family: 'DM Sans', var(--font-display, var(--font-display)) !important;
+  font-family: var(--font-display) !important;
   font-size: 14px !important;
   font-weight: 700 !important;
   letter-spacing: -.02em !important;
   color: #f1f1f5 !important;
 }
 .smm-lb-proj-period {
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 10px !important;
   color: rgba(255,255,255,.25) !important;
   margin-top: 2px !important;
 }
 .smm-lb-metric-val {
-  font-family: 'DM Sans', var(--font-display) !important;
+  font-family: var(--font-display) !important;
   font-size: 20px !important;
   font-weight: 800 !important;
   letter-spacing: -.04em !important;
@@ -19564,7 +19548,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   width: 38px !important; height: 38px !important;
   border-radius: 11px !important;
   display: flex !important; align-items: center !important; justify-content: center !important;
-  font-family: 'DM Sans', var(--font-display, var(--font-display)) !important;
+  font-family: var(--font-display) !important;
   font-size: 15px !important; font-weight: 800 !important;
   flex-shrink: 0 !important;
   box-shadow: 0 3px 10px rgba(0,0,0,.3) !important;
@@ -19596,7 +19580,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   padding: 9px 16px !important;
   min-height: 36px !important;
   border-radius: 10px !important;
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 11px !important;
   font-weight: 700 !important;
   letter-spacing: .08em !important;
@@ -19653,7 +19637,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   flex-shrink: 0 !important;
 }
 .ov2-dl-zone-title {
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 10px !important;
   letter-spacing: .16em !important;
   text-transform: uppercase !important;
@@ -19661,7 +19645,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   font-weight: 600 !important;
 }
 .ov2-dl-zone-count {
-  font-family: 'DM Sans', var(--font-display) !important;
+  font-family: var(--font-display) !important;
   font-size: 22px !important;
   font-weight: 800 !important;
   letter-spacing: -.04em !important;
@@ -19683,7 +19667,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   padding-left: 22px !important;
 }
 .ov2-dl-item-date {
-  font-family: 'DM Sans', var(--font-display) !important;
+  font-family: var(--font-display) !important;
   font-size: 13px !important;
   font-weight: 700 !important;
   letter-spacing: -.03em !important;
@@ -19693,7 +19677,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 }
 .ov2-dl-item-icon { font-size: 13px !important; flex-shrink: 0 !important; }
 .ov2-dl-item-name {
-  font-family: var(--font-body, var(--font-display)) !important;
+  font-family: var(--font-body) !important;
   font-size: 12px !important;
   font-weight: 600 !important;
   color: rgba(255,255,255,.8) !important;
@@ -19704,7 +19688,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   text-overflow: ellipsis !important;
 }
 .ov2-dl-item-proj {
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 10px !important;
   padding: 3px 10px !important;
   border-radius: 8px !important;
@@ -19714,7 +19698,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 .ov2-dl-empty {
   padding: 28px !important;
   text-align: center !important;
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 11px !important;
   color: rgba(255,255,255,.2) !important;
   letter-spacing: .08em !important;
@@ -19747,7 +19731,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 }
 
 .ov2-health-title {
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 9px !important;
   letter-spacing: .2em !important;
   text-transform: uppercase !important;
@@ -19794,7 +19778,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   justify-content: center !important;
 }
 .ov2-score-num {
-  font-family: 'DM Sans', var(--font-display) !important;
+  font-family: var(--font-display) !important;
   font-size: 20px !important;
   font-weight: 800 !important;
   letter-spacing: -.04em !important;
@@ -19803,7 +19787,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   animation: numberRise .8s cubic-bezier(.16,1,.3,1) both !important;
 }
 .ov2-score-lbl {
-  font-family: var(--font-mono, var(--font-mono)) !important;
+  font-family: var(--font-mono) !important;
   font-size: 7px !important;
   color: rgba(255,255,255,.3) !important;
   letter-spacing: .12em !important;
@@ -19837,7 +19821,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   transform: translateX(2px) !important;
 }
 .ov2-health-row-name {
-  font-family: var(--font-body, var(--font-display)) !important;
+  font-family: var(--font-body) !important;
   font-size: 11px !important;
   font-weight: 500 !important;
   color: rgba(255,255,255,.65) !important;
@@ -19870,7 +19854,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   animation: shimmerSlide 3s ease infinite !important;
 }
 .ov2-health-row-val {
-  font-family: 'DM Sans', var(--font-display) !important;
+  font-family: var(--font-display) !important;
   font-size: 13px !important;
   font-weight: 700 !important;
   letter-spacing: -.03em !important;
@@ -23529,8 +23513,6 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 </div>
 </div>
 
-</div>
-
 <!-- ═══════════════════════════════════════════
      PAGE: REGISTER
 ═══════════════════════════════════════════ -->
@@ -24148,9 +24130,6 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   </div>
 </div>
 
-
-
-
 <!-- MODAL: Finance — full P&L editor -->
 <div class="modal-overlay" id="modal-finance">
   <div class="modal" style="max-width:520px;max-height:90vh;overflow-y:auto;padding:0;">
@@ -24654,8 +24633,6 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   </div>
 </div>
 
-
-
 <!-- ═══════════════════════════════════════════
      PAGE: CLIENT PORTAL
 ═══════════════════════════════════════════ -->
@@ -24818,9 +24795,6 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 <br>
 <!-- ═══════════════════════════════════════════ -->
 
-
-
-
   <div class="cp-stages-wrap">
     <div class="cp-stages-scroll" id="cp-stages-scroll"></div>
   </div>
@@ -24875,8 +24849,6 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
     <div class="cph-footer-copy">© 2026 Все права защищены</div>
   </div>
 </div>
-
-
 
 <!-- ═══════════════════════════════════════════
      PAGE: SMM REPORT
@@ -29919,10 +29891,6 @@ async function renderROIBlock() {
 
 // ══════════════════════════════════════════════
 
-
-
-
-
 // ══════════════════════════════════════════════
 // KANBAN — ОПЕРАЦИОНКА ENGINE
 // SQL (run once):
@@ -30872,13 +30840,7 @@ async function syncKPIFacts(metrics) {
 // ALTER TABLE client_passports ENABLE ROW LEVEL SECURITY;
 // CREATE POLICY "allow_all_passport" ON client_passports FOR ALL USING (true) WITH CHECK (true);
 
-
-
-
 // ── Section: edit/cancel helpers ──
-
-
-
 
 // ── RENDER helpers ──
 function setVal(id, v) { const el = g(id); if (el) el.value = v || ''; }
@@ -30895,13 +30857,6 @@ function viewVal(id, v, isLink) {
     el.textContent = v
   }
 }
-
-
-
-
-
-
-
 
 // ── Tone ──
 function selectTone(btn) {
@@ -32083,8 +32038,6 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 </script>
 
-
-
 <script>
 // ── CC Project count sync ──
 const _origRenderProjects = typeof renderProjectsGrid === 'function' ? renderProjectsGrid : null;
@@ -32474,22 +32427,6 @@ function showSQLHint() {
 
 </script>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <!-- MODAL: Project Settings -->
 <div class="modal-overlay" id="modal-proj-settings">
   <div class="modal" style="max-width:440px;">
@@ -32596,15 +32533,6 @@ function showSQLHint() {
     </div>
   </div>
 </div>
-
-
-
-
-
-
-
-
-
 
 <script id="dtr-dl-upgrade-js">
 // ══════════════════════════════════════════════
@@ -33149,9 +33077,6 @@ function renderActivityFeed() {
 }
 </script>
 
-
-
-
 <script id="dtr-overview-v21-js">
 // ══════════════════════════════════════════════════════════
 // ГЕНЕРАЛЬНАЯ СВОДКА v21 — McKinsey × Bloomberg Terminal
@@ -33499,9 +33424,6 @@ function ov2DlZone(title, color, items, today, MONTHS, isOverdue) {
      "Obsidian Intelligence" — McKinsey × Apple × Studio
      Injected by world-class design system
 ═══════════════════════════════════════════════════════ -->
-
-
-
 
 <script id="dtr-pp-mini-stats">
 // McKinsey mini stats — called from inside renderTracker
@@ -34040,35 +33962,10 @@ function runNewBlocks() {
      SVG icons · Data hierarchy · BI precision
 ═══════════════════════════════════════════════════════ -->
 
-
-
-
 <!-- ═══════════════════════════════════════════════════════
      DTR CLIENT PASSPORT · McKINSEY STRATEGIC BRIEF v2.0
      "New PM opens → knows everything in 60 seconds"
 ═══════════════════════════════════════════════════════ -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 <script id="dtr-client-blocks-js">
 // ══════════════════════════════════════════════════════
@@ -34383,9 +34280,6 @@ async function cpRenderMilestone(project) {
 }
 </script>
 
-
-
-
 <!-- ═══════════════════════════════════════════════════════
      DTR ANALYTICS · DASHBOARD REDESIGN v3.0 — CLEAN FINAL
      All conflicts resolved. Single source of truth.
@@ -34626,20 +34520,10 @@ async function cpRenderMilestone(project) {
 })();
 </script>
 
-
-
 <!-- ═══════════════════════════════════════════════════════
      DTR SMM REPORT · EDITORIAL REDESIGN v1.0
      Approved design: 2 hero cards + metrics strip + breakdown card
 ═══════════════════════════════════════════════════════ -->
-
-
-
-
-<script>
-</script>
-
-
 
 </body>
 </html>
