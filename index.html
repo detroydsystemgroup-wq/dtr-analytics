@@ -23284,6 +23284,17 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 .kb-col-add svg { transition: transform .18s; }
 .kb-col-add:hover svg { transform: rotate(90deg); }
 
+/* ── Timer display: fixed-width digits prevent layout jitter ── */
+.kb-timer-live {
+  font-variant-numeric: tabular-nums;
+  min-width: 72px;   /* enough for MM:SS, expands for H:MM:SS */
+  justify-content: center;
+}
+/* Active card top row — give timer room on the right */
+.kb-card-active .kb-card-toprow {
+  align-items: center;
+}
+
 /* ═══════════════════
    CARD — the hero
 ═══════════════════ */
@@ -23379,8 +23390,52 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   white-space: nowrap;
   letter-spacing: .02em;
 }
-.kb-timer-live   { background: rgba(184,146,58,.15); color: var(--a2); border: 1px solid rgba(184,146,58,.25); }
-.kb-timer-logged { background: rgba(52,211,153,.1);  color: #34d399;   border: 1px solid rgba(52,211,153,.2); }
+
+/* ── Live active timer — green badge ── */
+@keyframes kbTimerPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(52,211,153,.5), inset 0 1px 0 rgba(255,255,255,.08); }
+  50%       { box-shadow: 0 0 0 4px rgba(52,211,153,.0), inset 0 1px 0 rgba(255,255,255,.08); }
+}
+.kb-timer-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px 5px 7px;
+  border-radius: 8px;
+  background: rgba(52,211,153,.14);
+  border: 1px solid rgba(52,211,153,.35);
+  color: #34d399;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  white-space: nowrap;
+  animation: kbTimerPulse 2s ease-in-out infinite;
+  text-shadow: 0 0 12px rgba(52,211,153,.55);
+}
+.kb-timer-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #34d399;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px rgba(52,211,153,.8);
+  animation: kbDotBlink 1s ease-in-out infinite;
+}
+@keyframes kbDotBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: .35; }
+}
+.kb-timer-logged {
+  background: rgba(52,211,153,.08);
+  color: rgba(52,211,153,.6);
+  border: 1px solid rgba(52,211,153,.15);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: .02em;
+}
 
 /* Card title */
 .kb-card-title {
@@ -30010,12 +30065,17 @@ function renderKanbanCol(containerId, tasks, status) {
     // ── Timer ──
     let timerHtml = ''
     if (status === 'active' && t.timer_started_at) {
-      const elMin = Math.round((Date.now() - new Date(t.timer_started_at)) / 60000)
-      const h = Math.floor(elMin/60), m = elMin%60
-      timerHtml = `<span class="kb-card-timer kb-timer-live" id="kbt-${t.id}">⏱ ${h>0?h+'ч ':''} ${m}м</span>`
+      const elSec = Math.floor((Date.now() - new Date(t.timer_started_at)) / 1000)
+      const h = Math.floor(elSec / 3600)
+      const m = Math.floor((elSec % 3600) / 60)
+      const s = elSec % 60
+      const fmt = h > 0
+        ? h + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0')
+        : String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0')
+      timerHtml = '<span class="kb-card-timer kb-timer-live" id="kbt-' + t.id + '"><span class="kb-timer-live-dot"></span>' + fmt + '</span>'
     } else if ((t.time_logged||0) > 0) {
       const h = Math.floor(t.time_logged/60), m = t.time_logged%60
-      timerHtml = `<span class="kb-card-timer kb-timer-logged">✓ ${h>0?h+'ч ':''} ${m}м</span>`
+      timerHtml = '<span class="kb-card-timer kb-timer-logged">✓ ' + (h>0?h+'ч ':' ') + m + 'м</span>'
     }
 
     // ── Deadline ──
@@ -30160,7 +30220,7 @@ async function kbDeleteTask(taskId) {
   } catch(e) { console.warn('Delete kanban task:', e) }
 }
 
-// ── Live timer update every 30s ──
+// ── Live timer update every second (HH:MM:SS) ──
 function startKanbanLiveTimer() {
   if (_kbLiveInterval) clearInterval(_kbLiveInterval)
   _kbLiveInterval = setInterval(() => {
@@ -30168,11 +30228,24 @@ function startKanbanLiveTimer() {
     if (!activeTasks.length) return
     activeTasks.forEach(t => {
       const el = g('kbt-' + t.id); if (!el) return
-      const elMin = Math.round((Date.now() - new Date(t.timer_started_at)) / 60000)
-      const h = Math.floor(elMin/60), m = elMin%60
-      el.textContent = '⏱ ' + (h > 0 ? `${h}ч ${m}м` : `${m}м`)
+      const elSec = Math.floor((Date.now() - new Date(t.timer_started_at)) / 1000)
+      const h = Math.floor(elSec / 3600)
+      const m = Math.floor((elSec % 3600) / 60)
+      const s = elSec % 60
+      const fmt = h > 0
+        ? h + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0')
+        : String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0')
+      // Update only the text node (dot is first child span, text is second child)
+      const dot = el.querySelector('.kb-timer-live-dot')
+      if (dot) {
+        // Remove all text nodes, keep the dot span
+        Array.from(el.childNodes).forEach(n => { if (n.nodeType === 3) el.removeChild(n) })
+        el.appendChild(document.createTextNode(fmt))
+      } else {
+        el.textContent = fmt
+      }
     })
-  }, 30000) // every 30s
+  }, 1000) // every second
 }
 
 // ── Open add task modal for kanban ──
