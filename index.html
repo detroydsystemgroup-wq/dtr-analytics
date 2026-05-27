@@ -34839,55 +34839,144 @@ function renderMenuPareto(b3, d3) {
   var items = src.rows.filter(function(r){return r.rev>0&&r.qty>0;})
     .sort(function(a,b){return b.rev-a.rev;});
   var totalRev = items.reduce(function(s,x){return s+x.rev;},0)||1;
-  var fmt2 = function(v){return new Intl.NumberFormat('ru-RU').format(Math.round(v));};
 
-  // Считаем сколько позиций нужно для 80%
+  var fmtM = function(v){
+    if(v>=1e9) return (v/1e9).toFixed(1)+' млрд';
+    if(v>=1e6) return Math.round(v/1e6)+' млн';
+    return new Intl.NumberFormat('ru-RU').format(Math.round(v));
+  };
+  var fmtFull = function(v){
+    return new Intl.NumberFormat('ru-RU').format(Math.round(v));
+  };
+
+  // Считаем пороги
   var cum = 0, cnt80 = 0, cnt50 = 0;
   for (var i=0; i<items.length; i++) {
     cum += items[i].rev;
     if (!cnt50 && cum >= totalRev*0.5) cnt50 = i+1;
-    if (!cnt80 && cum >= totalRev*0.8) cnt80 = i+1;
-    if (cnt80) break;
+    if (!cnt80 && cum >= totalRev*0.8) { cnt80 = i+1; break; }
   }
 
-  // Summary KPI cards
+  var top1Share = Math.round(items[0].rev/totalRev*100);
+  var top5Share = Math.round(items.slice(0,5).reduce(function(s,x){return s+x.rev;},0)/totalRev*100);
+
+  // ═══ SUMMARY: 3 большие KPI-карточки ═══
   var sumEl = document.getElementById('menu-pareto-summary');
-  if(sumEl) sumEl.innerHTML = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">'
-    +'<div style="background:var(--bg3);border:1px solid var(--brd);border-left:3px solid var(--a2);border-radius:12px;padding:16px;">'
-    +'<div style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);margin-bottom:6px;">Позиций для 50% выручки</div>'
-    +'<div style="font-family:\"Bebas Neue\",sans-serif;font-size:36px;color:var(--a2);">'+cnt50+'</div>'
-    +'<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);">из '+items.length+' позиций</div></div>'
-    +'<div style="background:var(--bg3);border:1px solid var(--brd);border-left:3px solid var(--cyan);border-radius:12px;padding:16px;">'
-    +'<div style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);margin-bottom:6px;">Позиций для 80% выручки</div>'
-    +'<div style="font-family:\"Bebas Neue\",sans-serif;font-size:36px;color:var(--cyan);">'+cnt80+'</div>'
-    +'<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);">'+Math.round(cnt80/items.length*100)+'% ассортимента</div></div>'
-    +'<div style="background:var(--bg3);border:1px solid var(--brd);border-left:3px solid var(--green);border-radius:12px;padding:16px;">'
-    +'<div style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);margin-bottom:6px;">Топ-1 блюдо</div>'
-    +'<div style="font-size:14px;font-weight:700;color:var(--green);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+items[0].label+'</div>'
-    +'<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);">'+Math.round(items[0].rev/totalRev*100)+'% выручки</div></div>'
+  if(sumEl) sumEl.innerHTML =
+    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;">'
+
+    // Карточка 1 — топ-1 блюдо
+    +'<div style="background:var(--bg3);border:1px solid rgba(184,146,58,.25);border-radius:16px;padding:22px 24px;position:relative;overflow:hidden;">'
+    +'<div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--a2);"></div>'
+    +'<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;">Лидер продаж</div>'
+    +'<div style="font-size:22px;font-weight:800;color:var(--a2);line-height:1.2;margin-bottom:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'+items[0].label+'">'+items[0].label+'</div>'
+    +'<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:10px;">'
+    +'<span style="font-family:\"Bebas Neue\",sans-serif;font-size:48px;line-height:1;color:var(--a2);">'+top1Share+'%</span>'
+    +'<span style="font-size:12px;color:var(--txt2);">выручки</span></div>'
+    +'<div style="font-size:12px;color:var(--txt2);">'+fmtFull(items[0].qty)+' шт · '+fmtM(items[0].rev)+'</div>'
+    +'<div style="height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;margin-top:12px;">'
+    +'<div style="height:100%;width:'+top1Share+'%;background:var(--a2);border-radius:2px;"></div></div>'
+    +'</div>'
+
+    // Карточка 2 — правило 80/20
+    +'<div style="background:var(--bg3);border:1px solid rgba(56,178,172,.2);border-radius:16px;padding:22px 24px;position:relative;overflow:hidden;">'
+    +'<div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--cyan);"></div>'
+    +'<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;">Правило 80 / 20</div>'
+    +'<div style="display:flex;align-items:baseline;gap:6px;margin-bottom:6px;">'
+    +'<span style="font-family:\"Bebas Neue\",sans-serif;font-size:64px;line-height:1;color:var(--cyan);">'+cnt80+'</span>'
+    +'<span style="font-size:14px;color:var(--txt2);">позиций</span></div>'
+    +'<div style="font-size:13px;color:var(--txt2);margin-bottom:10px;">генерируют <b style="color:var(--cyan);">80%</b> выручки</div>'
+    +'<div style="font-size:11px;color:var(--txt3);font-family:var(--font-mono);">'+Math.round(cnt80/items.length*100)+'% ассортимента из '+items.length+' позиций</div>'
+    +'<div style="margin-top:14px;display:flex;align-items:center;gap:8px;">'
+    +'<div style="flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;">'
+    +'<div style="height:100%;width:'+Math.round(cnt80/items.length*100)+'%;background:var(--cyan);border-radius:3px;"></div></div>'
+    +'<span style="font-size:10px;color:var(--cyan);font-family:var(--font-mono);flex-shrink:0;">'+Math.round(cnt80/items.length*100)+'%</span>'
+    +'</div></div>'
+
+    // Карточка 3 — топ-5 суммарно
+    +'<div style="background:var(--bg3);border:1px solid rgba(62,207,142,.2);border-radius:16px;padding:22px 24px;position:relative;overflow:hidden;">'
+    +'<div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--green);"></div>'
+    +'<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;">Топ-5 позиций</div>'
+    +'<div style="display:flex;align-items:baseline;gap:6px;margin-bottom:6px;">'
+    +'<span style="font-family:\"Bebas Neue\",sans-serif;font-size:64px;line-height:1;color:var(--green);">'+top5Share+'%</span>'
+    +'<span style="font-size:14px;color:var(--txt2);">выручки</span></div>'
+    +'<div style="font-size:13px;color:var(--txt2);margin-bottom:8px;">пять блюд закрывают больше половины</div>'
+    +'<div style="font-size:11px;color:var(--txt3);font-family:var(--font-mono);">для 50% нужно '+cnt50+' поз.</div>'
+    +'<div style="margin-top:14px;display:flex;align-items:center;gap:8px;">'
+    +'<div style="flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;">'
+    +'<div style="height:100%;width:'+top5Share+'%;background:var(--green);border-radius:3px;"></div></div>'
+    +'<span style="font-size:10px;color:var(--green);font-family:var(--font-mono);flex-shrink:0;">'+top5Share+'%</span>'
+    +'</div></div>'
+
     +'</div>';
 
-  // Cumulative bars — показываем топ-15
+  // ═══ BARS: топ-15 горизонтальные бары ═══
   var barsEl = document.getElementById('menu-pareto-bars');
   cum = 0;
-  if(barsEl) barsEl.innerHTML = '<div style="display:flex;flex-direction:column;gap:5px;">'
+  var maxShare = Math.round(items[0].rev/totalRev*100); // для нормализации ширины
+
+  if(barsEl) barsEl.innerHTML =
+    '<div style="display:flex;flex-direction:column;gap:3px;">'
+
+    // Легенда
+    +'<div style="display:flex;align-items:center;gap:8px;padding:0 0 10px;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:8px;">'
+    +'<div style="width:28px;"></div>'
+    +'<div style="flex:1;font-size:9px;color:var(--txt3);font-family:var(--font-mono);letter-spacing:.1em;text-transform:uppercase;">Позиция</div>'
+    +'<div style="width:120px;font-size:9px;color:var(--txt3);font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase;text-align:right;">Доля · Кумулятивно</div>'
+    +'<div style="width:72px;font-size:9px;color:var(--txt3);font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase;text-align:right;">Выручка</div>'
+    +'</div>'
+
     + items.slice(0,15).map(function(item, i){
         cum += item.rev;
-        var share = Math.round(item.rev/totalRev*100);
+        var share = item.rev/totalRev*100;
+        var shareRnd = Math.round(share);
         var cumShare = Math.round(cum/totalRev*100);
-        var isKey = i < cnt80;
-        var col = i===0?'var(--a2)':i<cnt50?'var(--cyan)':i<cnt80?'var(--green)':'var(--txt3)';
-        return '<div style="display:flex;align-items:center;gap:10px;">'
-          +'<div style="font-family:\"Bebas Neue\",sans-serif;font-size:16px;color:'+col+';width:22px;text-align:center;flex-shrink:0;">'+(i+1)+'</div>'
+        var barW = Math.round(share/maxShare*100); // % от максимума
+
+        // Зоны: золото (топ-1) · голубой (до 50%) · зелёный (до 80%) · серый (хвост)
+        var zone, zoneLbl;
+        if(i===0)         { zone='var(--a2)';    zoneLbl='#1'; }
+        else if(i<cnt50)  { zone='var(--cyan)';  zoneLbl='топ-50%'; }
+        else if(i<cnt80)  { zone='var(--green)'; zoneLbl='50–80%'; }
+        else              { zone='var(--txt3)';  zoneLbl='хвост'; }
+
+        var isTop = i < cnt80;
+        var rowBg = i===0 ? 'rgba(184,146,58,.07)' : (i%2===0 ? 'rgba(255,255,255,.015)' : 'transparent');
+
+        // Milestone маркеры
+        var milestone = '';
+        if(i===cnt50-1) milestone = '<div style="position:absolute;top:0;bottom:0;right:0;display:flex;align-items:center;padding-right:8px;"><span style="font-size:8px;font-family:var(--font-mono);color:var(--cyan);background:rgba(56,178,172,.12);border:1px solid rgba(56,178,172,.25);border-radius:4px;padding:2px 5px;white-space:nowrap;">↑ 50%</span></div>';
+        if(i===cnt80-1) milestone = '<div style="position:absolute;top:0;bottom:0;right:0;display:flex;align-items:center;padding-right:8px;"><span style="font-size:8px;font-family:var(--font-mono);color:var(--green);background:rgba(62,207,142,.12);border:1px solid rgba(62,207,142,.25);border-radius:4px;padding:2px 5px;white-space:nowrap;">↑ 80%</span></div>';
+
+        return '<div style="display:flex;align-items:center;gap:10px;padding:9px 10px 9px 0;background:'+rowBg+';border-radius:10px;position:relative;'+(i===0?'border:1px solid rgba(184,146,58,.15);':'')+'">'
+
+          // Номер
+          +'<div style="width:28px;text-align:center;flex-shrink:0;">'
+          +'<span style="font-family:\"Bebas Neue\",sans-serif;font-size:'+(i===0?'22':'16')+'px;color:'+zone+';">'+(i+1)+'</span>'
+          +'</div>'
+
+          // Название + бар
           +'<div style="flex:1;min-width:0;">'
-          +'<div style="display:flex;justify-content:space-between;margin-bottom:2px;">'
-          +'<span style="font-size:11px;font-weight:'+(isKey?'600':'400')+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:'+(isKey?'var(--txt)':'var(--txt2)')+';" title="'+item.label+'">'+item.label+'</span>'
-          +'<span style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);flex-shrink:0;margin-left:8px;">'+share+'% · cum '+cumShare+'%</span></div>'
-          +'<div style="height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;">'
-          +'<div style="height:100%;width:'+share+'%;background:'+col+';border-radius:3px;"></div></div></div>'
-          +'<div style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);white-space:nowrap;flex-shrink:0;">'+fmt2(item.rev/1e6)+'M</div>'
+          +'<div style="font-size:'+(isTop?'13':'12')+'px;font-weight:'+(isTop?'600':'400')+';color:'+(isTop?'var(--txt)':'var(--txt2)')+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:5px;" title="'+item.label+'">'+item.label+'</div>'
+          +'<div style="height:'+(i===0?'8':'6')+'px;background:rgba(255,255,255,.05);border-radius:4px;overflow:hidden;">'
+          +'<div style="height:100%;width:'+barW+'%;background:'+zone+';border-radius:4px;opacity:'+(isTop?'0.85':'0.45')+';transition:width .8s ease;"></div></div>'
+          +'</div>'
+
+          // Доля + кумулятивная
+          +'<div style="width:120px;text-align:right;flex-shrink:0;">'
+          +'<span style="font-size:'+(isTop?'14':'12')+'px;font-weight:'+(isTop?'600':'400')+';color:'+zone+';font-family:var(--font-mono);">'+shareRnd+'%</span>'
+          +'<span style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);margin-left:6px;">cum '+cumShare+'%</span>'
+          +'</div>'
+
+          // Выручка
+          +'<div style="width:72px;text-align:right;flex-shrink:0;">'
+          +'<span style="font-size:'+(isTop?'13':'11')+'px;font-weight:'+(isTop?'500':'400')+';color:'+(isTop?'var(--txt2)':'var(--txt3)')+';font-family:var(--font-mono);white-space:nowrap;">'+fmtM(item.rev)+'</span>'
+          +'</div>'
+
+          + milestone
           +'</div>';
       }).join('')
+
     +'</div>';
 
   el.style.display = 'block';
