@@ -26195,6 +26195,22 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
         <div class="kpi"><div class="kpi-l">Δ Трафик</div><div class="kpi-v" id="k4" style="color:var(--pink)">—</div><div class="kpi-s">чеков/день</div></div>
         <div class="kpi"><div class="kpi-l">Δ Средний чек</div><div class="kpi-v" id="k5" style="color:var(--amber)">—</div><div class="kpi-s">изменение</div></div>
       </div>
+      <!-- WATERFALL + HEALTH SCORE -->
+      <div id="waterfall-block" style="display:none;margin-bottom:20px;">
+        <div class="sh"><div class="sh-num">⚡</div><div class="sh-title">Декомпозиция роста</div><div class="sh-line"></div></div>
+        <div class="cb"><div class="cb-title">Из чего состоит изменение выручки/день</div>
+          <div class="cb-sub" style="font-family:var(--font-mono);font-size:10px;color:var(--txt2);margin-bottom:14px;">// waterfall: база → вклад трафика → вклад среднего чека → итог</div>
+          <div id="waterfall-inner" style="display:flex;flex-direction:column;gap:8px;"></div>
+        </div>
+      </div>
+      <div id="health-score-block" style="display:none;margin-bottom:20px;">
+        <div class="sh"><div class="sh-num">🏥</div><div class="sh-title">Business Health Score</div><div class="sh-line"></div></div>
+        <div class="cb"><div class="cb-title">Индекс здоровья бизнеса — общая оценка периода</div>
+          <div class="cb-sub" style="font-family:var(--font-mono);font-size:10px;color:var(--txt2);margin-bottom:16px;">// взвешенная оценка по 4 факторам · шкала 0–100</div>
+          <div id="health-score-inner"></div>
+        </div>
+      </div>
+      <!-- END WATERFALL + HEALTH SCORE -->
       <div class="cb">
         <div class="cb-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--a2)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Выручка по дням</div>
         <div class="cb-sub">// каждая точка = один день · красная = средняя базового периода</div>
@@ -26350,6 +26366,13 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   <div class="cb" style="margin-top:14px;">
     <div class="cb-title">Изменение позиции в рейтинге (топ-15 по выручке)</div>
     <div id="menu-rank-change" style="display:flex;flex-direction:column;gap:6px;margin-top:10px;"></div>
+  </div>
+  <div id="sec-menu-efficiency" style="display:none;margin-top:16px;">
+    <div class="sh"><div class="sh-num">💡</div><div class="sh-title">Эффективность позиций</div><div class="sh-line"></div></div>
+    <div class="cb"><div class="cb-title">Аномалии меню: высокий объём при низкой цене</div>
+      <div class="cb-sub" style="font-family:var(--font-mono);font-size:10px;color:var(--txt2);margin-bottom:12px;">// блюда-кандидаты на переоценку и звёзды с высокой маржинальностью</div>
+      <div id="menu-efficiency-inner"></div>
+    </div>
   </div>
 </div>
     </div>
@@ -28898,6 +28921,151 @@ function hideBlock(blockId) {
   const b = document.getElementById(blockId);
   if (b) b.style.display = 'none';
 }
+// ══ WATERFALL ДЕКОМПОЗИЦИЯ ══
+function renderWaterfallBlock(bRD,dRD,bCD,dCD,bA,dA,gr,grP,ex,bD,dD) {
+  var block=g('waterfall-block'),inner=g('waterfall-inner')
+  if(!block||!inner) return
+  var tc=(dCD-bCD)*bA, cc=(dA-bA)*bCD, xc=(dCD-bCD)*(dA-bA)
+  var fmt2=function(v){return new Intl.NumberFormat('ru-RU').format(Math.round(Math.abs(v)))}
+  var steps=[
+    {lb:LABEL_B+' · база',v:bRD,col:'var(--txt2)',base:true,pct:null},
+    {lb:'Вклад роста трафика',v:tc,col:tc>=0?'var(--green)':'var(--red)',pct:bRD?tc/bRD*100:0},
+    {lb:'Вклад роста ср. чека',v:cc,col:cc>=0?'var(--cyan)':'var(--amber)',pct:bRD?cc/bRD*100:0},
+  ]
+  if(Math.abs(xc)>bRD*0.005) steps.push({lb:'Перекрёстный эффект',v:xc,col:'var(--pink)',pct:bRD?xc/bRD*100:0})
+  steps.push({lb:LABEL_D+' · итог',v:dRD,col:grP>=0?'var(--a2)':'var(--red)',result:true,pct:grP})
+  var maxV=Math.max(bRD,dRD)
+  inner.innerHTML=steps.map(function(s,i){
+    var bw=(s.base||s.result)?Math.round(s.v/maxV*100):Math.round(Math.abs(s.v)/maxV*80)
+    var isM=s.base||s.result
+    var dv=isM?new Intl.NumberFormat('ru-RU').format(Math.round(s.v))+' сум/день':(s.v>=0?'+':'-')+fmt2(s.v)+' сум/день'
+    var ps=s.pct!=null?' ('+(s.pct>=0?'+':'')+s.pct.toFixed(1)+'%)':''
+    var ico=s.base?'[·]':s.result?'[=]':(s.v>=0?'↑':'↓')
+    return '<div style="display:flex;align-items:center;gap:12px;padding:'+(isM?'13px 16px':'9px 16px')+';background:'+(isM?'var(--bg3)':'var(--bg4)')+';border:'+(isM?'1px solid var(--brd2)':'1px solid var(--brd)')+';border-left:3px solid '+s.col+';border-radius:12px;margin-bottom:6px;">'
+      +'<div style="width:26px;height:26px;border-radius:7px;background:'+s.col+'22;display:flex;align-items:center;justify-content:center;font-size:11px;color:'+s.col+';flex-shrink:0;">'+ico+'</div>'
+      +'<div style="flex:1;min-width:0;"><div style="font-size:11px;color:var(--txt2);font-family:var(--font-mono);margin-bottom:4px;">'+s.lb+'</div>'
+      +'<div style="height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;"><div style="height:100%;width:'+bw+'%;background:'+s.col+';border-radius:2px;transition:width 1s ease;"></div></div></div>'
+      +'<div style="text-align:right;flex-shrink:0;"><div style="font-family:\"Bebas Neue\",sans-serif;font-size:'+(isM?'21':'17')+'px;color:'+s.col+';">'+dv+'</div>'
+      +(ps?'<div style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);">'+ps+'</div>':'')
+      +'</div></div>'
+  }).join('')
+  block.style.display='block'
+}
+
+// ══ BUSINESS HEALTH SCORE ══
+function renderHealthScore(bRD,dRD,bCD,dCD,bA,dA,grP,bD,dD,b1,d1) {
+  var block=g('health-score-block'),inner=g('health-score-inner')
+  if(!block||!inner) return
+  var f=[]
+  var rs=Math.min(20,Math.max(0,grP>=20?20:grP>=10?16:grP>=5?12:grP>=0?8:grP>=-5?4:0))
+  f.push({lb:'Рост выручки',sc:rs,mx:20,vl:(grP>=0?'+':'')+grP.toFixed(1)+'%',cl:rs>=14?'var(--green)':rs>=8?'var(--amber)':'var(--red)'})
+  var tPct=bCD?(dCD-bCD)/bCD*100:0
+  var ts=Math.min(17,Math.max(0,tPct>=20?17:tPct>=10?14:tPct>=3?10:tPct>=0?7:tPct>=-5?3:0))
+  f.push({lb:'Рост трафика',sc:ts,mx:17,vl:(tPct>=0?'+':'')+tPct.toFixed(1)+'%',cl:ts>=12?'var(--green)':ts>=6?'var(--amber)':'var(--red)'})
+  var aPct=bA?(dA-bA)/bA*100:0
+  var as=Math.min(13,Math.max(0,aPct>=10?13:aPct>=5?11:aPct>=0?8:aPct>=-5?4:1))
+  f.push({lb:'Средний чек',sc:as,mx:13,vl:(aPct>=0?'+':'')+aPct.toFixed(1)+'%',cl:as>=10?'var(--green)':as>=5?'var(--amber)':'var(--red)'})
+  var ss=0,sp=0
+  if(d1&&b1){
+    var bAvg=b1.meta.totalRev/(b1.meta.days||b1.rows.length)
+    var dAb=d1.rows.filter(function(r){return r.rev>bAvg}).length
+    var stPct=d1.rows.length?dAb/d1.rows.length*100:50
+    ss=Math.min(10,Math.max(0,stPct>=70?10:stPct>=50?7:stPct>=30?4:1))
+    sp=Math.round(stPct)
+  }
+  f.push({lb:'Стабильность',sc:ss,mx:10,vl:sp+'% дней > базы',cl:ss>=7?'var(--green)':ss>=4?'var(--amber)':'var(--red)'})
+  var total=f.reduce(function(s,x){return s+x.sc},0)
+  var maxT=f.reduce(function(s,x){return s+x.mx},0)
+  var hp=Math.round(total/maxT*100)
+  var hc=hp>=75?'var(--green)':hp>=50?'var(--amber)':hp>=30?'var(--red)':'#f87171'
+  var hl=hp>=80?'🟢 Отличное':hp>=65?'🟡 Хорошее':hp>=45?'🟠 Среднее':'🔴 Требует внимания'
+  var fHTML=f.map(function(x){
+    var p=Math.round(x.sc/x.mx*100)
+    return '<div style="background:var(--bg4);border:1px solid var(--brd);border-radius:12px;padding:14px;">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
+      +'<div style="font-size:11px;color:var(--txt2);font-family:var(--font-mono);">'+x.lb+'</div>'
+      +'<div style="font-size:10px;font-family:var(--font-mono);color:'+x.cl+';">'+x.vl+'</div></div>'
+      +'<div style="height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;margin-bottom:6px;">'
+      +'<div style="height:100%;width:'+p+'%;background:'+x.cl+';border-radius:2px;transition:width 1s ease;"></div></div>'
+      +'<div style="font-family:\"Bebas Neue\",sans-serif;font-size:20px;color:'+x.cl+';">'+x.sc
+      +'<span style="font-size:11px;color:var(--txt3);font-family:var(--font-mono);">/' + x.mx + '</span></div></div>'
+  }).join('')
+  inner.innerHTML='<div style="display:flex;align-items:center;gap:20px;padding:18px;background:var(--bg3);border:1px solid var(--brd2);border-radius:14px;margin-bottom:14px;">'
+    +'<div style="text-align:center;flex-shrink:0;">'
+    +'<div style="font-family:\"Bebas Neue\",sans-serif;font-size:60px;line-height:1;color:'+hc+';">'+hp+'</div>'
+    +'<div style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);">/ 100</div></div>'
+    +'<div style="flex:1;">'
+    +'<div style="font-size:15px;font-weight:700;margin-bottom:4px;">'+hl+'</div>'
+    +'<div style="font-size:11px;color:var(--txt2);margin-bottom:10px;">Оценка за ' + LABEL_D + '</div>'
+    +'<div style="height:7px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;">'
+    +'<div style="height:100%;width:'+hp+'%;background:'+hc+';border-radius:4px;transition:width 1.2s ease;"></div></div></div></div>'
+    +'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">'+fHTML+'</div>'
+  block.style.display='block'
+}
+
+// ══ ПРОВЕРКА СОВМЕСТИМОСТИ ПЕРИОДОВ ══
+function checkPeriodCompatibility(bD,dD) {
+  var ex=g('period-compat-warn')
+  if(ex) ex.remove()
+  var diff=Math.abs(bD-dD), maxD=Math.max(bD,dD)
+  if(!maxD||diff/maxD<0.15) return
+  var warn=document.createElement('div')
+  warn.id='period-compat-warn'
+  warn.style.cssText='margin-bottom:14px;padding:11px 15px;background:rgba(232,153,58,.08);border:1px solid rgba(232,153,58,.3);border-left:3px solid var(--amber);border-radius:11px;display:flex;align-items:flex-start;gap:10px;'
+  warn.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+    +'<div><div style="font-size:12px;font-weight:600;color:var(--amber);margin-bottom:2px;">Периоды разной длины</div>'
+    +'<div style="font-size:11px;color:var(--txt2);font-family:var(--font-mono);">'+LABEL_B+': '+bD+' дн. · '+LABEL_D+': '+dD+' дн. · Разница '+diff+' дн. — данные нормированы на день, интерпретируй с осторожностью</div></div>'
+  var kr=document.querySelector('.kpi-row')
+  if(kr&&kr.parentNode) kr.parentNode.insertBefore(warn,kr)
+}
+
+// ══ ЭФФЕКТИВНОСТЬ МЕНЮ ══
+function renderMenuEfficiency(b3,d3) {
+  var secEl=g('sec-menu-efficiency'),innerEl=g('menu-efficiency-inner')
+  if(!secEl||!innerEl) return
+  var src=d3||b3; if(!src) return
+  var items=src.rows.filter(function(r){return r.qty>0&&r.rev>0})
+    .map(function(r){return {lb:r.label,qty:r.qty,rev:r.rev,rpu:Math.round(r.rev/r.qty)}})
+  if(!items.length) return
+  var avgRPU=Math.round(items.reduce(function(s,x){return s+x.rpu},0)/items.length)
+  var totalRev=items.reduce(function(s,x){return s+x.rev},0)||1
+  var byQty=[].concat(items).sort(function(a,b){return b.qty-a.qty})
+  var qtyRank={};byQty.forEach(function(r,i){qtyRank[r.lb]=i+1})
+  var anomalies=byQty.slice(0,20).filter(function(r){return r.rpu<avgRPU*0.7}).slice(0,5)
+  var stars=items.filter(function(r){return r.rpu>avgRPU*1.3&&qtyRank[r.lb]<=15})
+    .sort(function(a,b){return b.rev-a.rev}).slice(0,4)
+  var fmt2=function(v){return new Intl.NumberFormat('ru-RU').format(v)}
+  var html=''
+  if(anomalies.length){
+    html+='<div style="margin-bottom:14px;"><div style="font-size:11px;color:var(--amber);font-family:var(--font-mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Высокий объём — низкая цена (кандидаты на переоценку)</div>'
+    anomalies.forEach(function(r){
+      var sh=Math.round(r.rev/totalRev*100),gap=Math.round((avgRPU-r.rpu)/avgRPU*100)
+      html+='<div style="display:flex;align-items:center;gap:12px;padding:9px 13px;background:rgba(232,153,58,.06);border:1px solid rgba(232,153,58,.2);border-left:3px solid var(--amber);border-radius:9px;margin-bottom:7px;">'
+        +'<div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'+r.lb+'">'+r.lb+'</div>'
+        +'<div style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);margin-top:2px;">'+fmt2(r.qty)+' шт · '+sh+'% выручки</div></div>'
+        +'<div style="text-align:right;flex-shrink:0;"><div style="font-family:\"Bebas Neue\",sans-serif;font-size:17px;color:var(--amber);">'+fmt2(r.rpu)+' сум</div>'
+        +'<div style="font-size:9px;color:var(--amber);font-family:var(--font-mono);">-'+gap+'% к avg</div></div></div>'
+    })
+    html+='</div>'
+  }
+  if(stars.length){
+    html+='<div><div style="font-size:11px;color:var(--green);font-family:var(--font-mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Звёзды меню — высокая цена + высокий объём</div>'
+    stars.forEach(function(r){
+      var sh=Math.round(r.rev/totalRev*100),pr=Math.round((r.rpu-avgRPU)/avgRPU*100)
+      html+='<div style="display:flex;align-items:center;gap:12px;padding:9px 13px;background:rgba(0,229,163,.06);border:1px solid rgba(0,229,163,.2);border-left:3px solid var(--green);border-radius:9px;margin-bottom:7px;">'
+        +'<div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'+r.lb+'">'+r.lb+'</div>'
+        +'<div style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);margin-top:2px;">#'+qtyRank[r.lb]+' по объёму · '+sh+'% выручки</div></div>'
+        +'<div style="text-align:right;flex-shrink:0;"><div style="font-family:\"Bebas Neue\",sans-serif;font-size:17px;color:var(--green);">'+fmt2(r.rpu)+' сум</div>'
+        +'<div style="font-size:9px;color:var(--green);font-family:var(--font-mono);">+'+pr+'% к avg</div></div></div>'
+    })
+    html+='</div>'
+  }
+  if(!html) html='<div style="font-size:12px;color:var(--txt2);padding:12px;font-family:var(--font-mono);">Аномалий не обнаружено</div>'
+  innerEl.innerHTML=html
+  secEl.style.display='block'
+  showBlock('block-menu')
+}
+
 function runAnalysis() {
   const b = S['b1'], d = S['d1']
   if (!b || !d) return
@@ -29180,19 +29348,29 @@ function runAnalysis() {
     }
   }
 
-  // Insights
-  const ins = []
-  if (gr>0) ins.push({ic:'📈',t:`Рост выручки <b>+${grP.toFixed(1)}%</b> — это ${fmtM(Math.round(gr))} сум дополнительно каждый день.`})
-  else ins.push({ic:'📉',t:`Выручка снизилась на ${Math.abs(grP).toFixed(1)}% — стоит проверить сезонность или качество трафика.`})
-  if (Math.abs(ex)>0) ins.push({ic:'💰',t:`Суммарная доп. выручка за период: <b>${fmtM(Math.round(ex))} сум</b>.`})
-  if (tr>0) ins.push({ic:'👥',t:`Трафик вырос на <b>+${fmt(Math.round(tr))} чеков/день</b> — пришли новые гости.`})
-  if (Math.abs(ad)>1000) ins.push({ic:'🧾',t:ad>0?`Средний чек вырос на ${fmtM(Math.round(ad))} сум.`:`Средний чек снизился на ${fmtM(Math.round(Math.abs(ad)))} сум — нормально для новой аудитории.`})
-  g('ins-block').innerHTML = ins.map(x=>`<div class="ins-row"><div class="ins-ic">${x.ic}</div><div>${esc(x.t)}</div></div>`).join('')
+  // Enhanced insights with contributor analysis
+  var ins = []
+  var _tc2 = (dCD-bCD)*bA, _cc2 = (dA-bA)*bCD
+  var _totC = Math.abs(_tc2)+Math.abs(_cc2)||1
+  var _tShare = Math.round(Math.abs(_tc2)/_totC*100)
+  if (gr>0) ins.push({ic:'📈',t:'Рост выручки <b>+'+grP.toFixed(1)+'%</b> — это '+fmtM(Math.round(gr))+' сум дополнительно каждый день.'})
+  else if(gr<0) ins.push({ic:'📉',t:'Выручка снизилась на <b>'+Math.abs(grP).toFixed(1)+'%</b> — стоит проверить сезонность или качество трафика.'})
+  if (Math.abs(_tc2)>0||Math.abs(_cc2)>0) {
+    if (Math.abs(_tc2) > Math.abs(_cc2)) ins.push({ic:'👥',t:'Рост обеспечен преимущественно трафиком (<b>'+_tShare+'%</b> вклада) — пришло больше гостей. Средний чек дал '+(100-_tShare)+'%.'})
+    else ins.push({ic:'🧾',t:'Рост обеспечен преимущественно средним чеком (<b>'+(100-_tShare)+'%</b> вклада) — гости тратят больше. Трафик дал '+_tShare+'%.'})
+  }
+  if (Math.abs(ex)>0) ins.push({ic:'💰',t:'Суммарная доп. выручка за период: <b>'+fmtM(Math.round(ex))+' сум</b>.'})
+  if (Math.abs(ad)>1000&&gr>0) ins.push({ic:'💎',t:ad>0?'Средний чек вырос на <b>'+fmtM(Math.round(ad))+' сум</b> — гости покупают дороже.':'Средний чек снизился на '+fmtM(Math.round(Math.abs(ad)))+' сум — рост идёт через объём.'})
+  g('ins-block').innerHTML = ins.map(function(x){return '<div class="ins-row"><div class="ins-ic">'+x.ic+'</div><div>'+x.t+'</div></div>'}).join('')
 
   // Always render weekday trend (b1/d1 always available)
   renderWeekdayTrend()
   // Run new analytical blocks
   runNewBlocks()
+  // New: waterfall, health score, period compat
+  renderWaterfallBlock(bRD,dRD,bCD,dCD,bA,dA,gr,grP,ex,bD,dD)
+  renderHealthScore(bRD,dRD,bCD,dCD,bA,dA,grP,bD,dD,S['b1'],S['d1'])
+  checkPeriodCompatibility(bD,dD)
   g('analytics-wrap').classList.add('visible')
   // Auto-collapse files section after analysis runs
   collapseFilesSection(true)
@@ -29513,23 +29691,85 @@ async function runAI() {
   const bA=bC?bR/bC:0,dA=dC?dR/dC:0
   const gr=dRD-bRD,grP=bRD?(gr/bRD*100):0,ex=gr*dD,tr=dCD-bCD
 
-  const prompt = `Ты — старший аналитик ресторанного маркетинга. Пиши на русском, чётко и конкретно.
+  // Build rich context for AI
+  var _aiHoursCtx = (function(){
+    var src = S['d2'] || S['b2']; if(!src) return ''
+    var agg = {}; src.rows.forEach(function(r){ if(!agg[r.label])agg[r.label]={rev:0,chk:0}; agg[r.label].rev+=r.rev; agg[r.label].chk+=r.chk })
+    var entries = Object.entries(agg)
+    var peakH = entries.reduce(function(m,e){ return e[1].chk>m[1].chk?e:m }, entries[0])
+    var top3 = entries.sort(function(a,b){return b[1].chk-a[1].chk}).slice(0,3).map(function(e){return e[0]+':00'}).join(', ')
+    return 'Пиковый час: ' + peakH[0] + ':00 | Топ-3 по трафику: ' + top3
+  })()
+  var _aiWeekdayCtx = (function(){
+    var b = S['b1'], d = S['d1']; if(!b||!d) return ''
+    var DAYS = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс']
+    var parseDow = function(label) {
+      if(!label) return -1; var s = String(label).trim(); var dt;
+      var num = +s; if(!isNaN(num)&&num>40000&&num<60000) dt=new Date((num-25569)*86400000)
+      else if(s.indexOf('.')>=0){var p=s.split('.');if(p.length>=3){var y=+p[2];if(y<100)y+=2000;dt=new Date(y,+p[1]-1,+p[0])}}
+      else if(s.length>=10&&s[4]==='-') dt=new Date(s.slice(0,10))
+      if(!dt||isNaN(dt)) return -1; return (dt.getDay()+6)%7
+    }
+    var revByDay=new Array(7).fill(0),cnt=new Array(7).fill(0)
+    d.rows.forEach(function(r){var dow=parseDow(r.label);if(dow>=0){revByDay[dow]+=r.rev;cnt[dow]++}})
+    var avg = revByDay.map(function(v,i){return cnt[i]?Math.round(v/cnt[i]):0})
+    var bestIdx = avg.indexOf(Math.max.apply(null,avg))
+    var worstIdx = avg.indexOf(Math.min.apply(null,avg.filter(function(v){return v>0})))
+    return 'Лучший день: ' + DAYS[bestIdx] + ' | Слабый день: ' + DAYS[worstIdx]
+  })()
+  var _aiMenuCtx = (function(){
+    var src = S['d3']; if(!src) return ''
+    var top5 = src.rows.filter(function(r){return r.rev>0}).sort(function(a,b){return b.rev-a.rev}).slice(0,5)
+    return top5.map(function(r,i){return (i+1)+'. '+r.label+' ('+Math.round(r.rev/1e6)+'M сум)'}).join(', ')
+  })()
+  var _aiChCtx = (function(){
+    var src = S['d4']||S['b4']; if(!src) return ''
+    var agg = {}; src.rows.forEach(function(r){var k=r.subtype;if(k){if(!agg[k])agg[k]={chk:0,rev:0};agg[k].chk+=r.chk;agg[k].rev+=r.rev}})
+    var total = Object.values(agg).reduce(function(s,v){return s+v.chk},0)||1
+    return Object.entries(agg).sort(function(a,b){return b[1].chk-a[1].chk}).map(function(e){
+      var k=e[0],v=e[1]; return k+': '+Math.round(v.chk/total*100)+'% трафика'
+    }).join(' | ')
+  })()
+  var _aiBrCtx = (function(){
+    var d5=S['d5'],b5=S['b5']; if(!d5) return ''
+    var dBr=d5.branches||{},bBr=b5?b5.branches||{}:{}
+    return Object.entries(dBr).map(function(e){
+      var name=e[0],v=e[1],bV=bBr[name]
+      var gr=bV&&bV.rpd?((v.rpd-bV.rpd)/bV.rpd*100).toFixed(1):null
+      return name+': '+new Intl.NumberFormat('ru-RU').format(Math.round(v.rpd))+' сум/д'+(gr?' ('+(gr>=0?'+':'')+gr+'%)':'')
+    }).join(' | ')
+  })()
+  var _tcContrib = (dCD - bCD) * bA
+  var _ccContrib = (dA - bA) * bCD
+  var _tcShare = (_tcContrib||_ccContrib) ? Math.round(Math.abs(_tcContrib)/(Math.abs(_tcContrib)+Math.abs(_ccContrib))*100) : 50
 
-ДАННЫЕ (фастфуд, Узбекистан):
-${LABEL_B} (${bD} дн): выручка/день ${fmtM(Math.round(bRD))} | чеков/день ${Math.round(bCD)} | ср.чек ${fmtM(Math.round(bA))}
-${LABEL_D} (${dD} дн): выручка/день ${fmtM(Math.round(dRD))} | чеков/день ${Math.round(dCD)} | ср.чек ${fmtM(Math.round(dA))}
-ΔИТОГ: рост ${grP>=0?'+':''}${grP.toFixed(1)}% | Δтрафик ${tr>=0?'+':''}${Math.round(tr)} чеков/день | доп.выручка ${fmtM(Math.round(ex))}
+  var prompt = 'Ты — старший аналитик ресторанного бизнеса McKinsey уровня. Пиши на русском, чётко, конкретно, без воды. Каждый вывод — с числом из данных.\n\n'
+    + 'РЕСТОРАН: UZBEK DONAR (фастфуд-сеть, Ташкент)\n\n'
+    + '═══ МЕТРИКИ ═══\n'
+    + LABEL_B + ' (' + bD + ' дн): ' + fmtM(Math.round(bRD)) + ' сум/день | ' + Math.round(bCD) + ' чеков/день | ср. чек ' + fmtM(Math.round(bA)) + ' сум\n'
+    + LABEL_D + ' (' + dD + ' дн): ' + fmtM(Math.round(dRD)) + ' сум/день | ' + Math.round(dCD) + ' чеков/день | ср. чек ' + fmtM(Math.round(dA)) + ' сум\n\n'
+    + '═══ ДЕКОМПОЗИЦИЯ РОСТА ═══\n'
+    + 'Общий рост: ' + (grP>=0?'+':'') + grP.toFixed(1) + '% (' + fmtM(Math.round(gr)) + ' сум/день)\n'
+    + 'Вклад трафика: ' + fmtM(Math.round(_tcContrib)) + ' сум/день (' + _tcShare + '% роста)\n'
+    + 'Вклад ср. чека: ' + fmtM(Math.round(_ccContrib)) + ' сум/день (' + (100-_tcShare) + '% роста)\n'
+    + 'Доп. выручка за период: ' + fmtM(Math.round(ex)) + ' сум\n\n'
+    + (_aiHoursCtx ? '═══ ЧАСЫ ═══\n' + _aiHoursCtx + '\n\n' : '')
+    + (_aiWeekdayCtx ? '═══ ДНИ НЕДЕЛИ ═══\n' + _aiWeekdayCtx + '\n\n' : '')
+    + (_aiMenuCtx ? '═══ ТОП МЕНЮ ═══\n' + _aiMenuCtx + '\n\n' : '')
+    + (_aiChCtx ? '═══ КАНАЛЫ ═══\n' + _aiChCtx + '\n\n' : '')
+    + (_aiBrCtx ? '═══ ФИЛИАЛЫ ═══\n' + _aiBrCtx + '\n\n' : '')
+    + 'Напиши отчёт по разделам:\n'
+    + '## 🎯 Главный вывод\n'
+    + '## 📊 Тип роста\n'
+    + '## 💡 Рекомендации\n'
+    + '## ⚠️ Риски\n'
+    + '## 🏆 Точка роста'
 
-Напиши анализ по разделам:
-## 🎯 Главный вывод
-## 📊 Тип роста
-## 💡 Рекомендации
-## ⚠️ Риски`
 
-  const aiColors = {'🎯':'var(--a)','📊':'var(--cyan)','💡':'var(--green)','⚠️':'var(--red)'}
+  const aiColors = {'🎯':'var(--a)','📊':'var(--cyan)','💡':'var(--green)','⚠️':'var(--red)','🏆':'#ffb627'}
 
   try {
-    const data = await _callAI({ model:'claude-sonnet-4-20250514', max_tokens:800, messages:[{role:'user',content:prompt}] })
+    const data = await _callAI({ model:'claude-sonnet-4-20250514', max_tokens:1600, messages:[{role:'user',content:prompt}] })
     if (data.error) throw new Error(data.error.message)
     const text = data.content?.[0]?.text || ''
     if (!text) throw new Error('Пустой ответ от AI')
@@ -34450,6 +34690,8 @@ function runNewBlocks() {
         +'<div style="font-size:11px;font-family:\'DM Mono\',monospace;font-weight:600;padding:3px 9px;border-radius:5px;background:'+(delta===null?'rgba(255,182,39,.12)':delta>0?'rgba(0,229,163,.12)':delta<0?'rgba(248,113,113,.12)':'rgba(255,255,255,.05)')+';color:'+deltaCol+';white-space:nowrap;">'+deltaStr+'</div>'
         +'</div>';
     }).join('');
+    // Menu efficiency
+    renderMenuEfficiency(b3, d3);
   }
 
   // ─────────────────────────────────────────────────────────
