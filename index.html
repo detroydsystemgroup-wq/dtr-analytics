@@ -37865,11 +37865,11 @@ async function cpRenderMilestone(project) {
     </div>
     <div class="field">
       <label>Заметка</label>
-      <input type="text" id="kb-item-note" placeholder="Краткое описание...">
+      <textarea id="kb-item-note" placeholder="Краткое описание..." rows="2" style="width:100%;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--r-sm);padding:11px 14px;color:var(--txt);font-family:var(--font-body);font-size:14px;outline:none;resize:none;line-height:1.5;transition:border-color .2s,box-shadow .2s;"></textarea>
     </div>
     <div class="modal-footer">
-      <button class="btn-ghost" onclick="closeModal('modal-kb-item')" style="flex:1;">Отмена</button>
-      <button class="btn-primary" id="kb-item-save-btn" onclick="kbSaveItem()" style="flex:2;">
+      <button class="btn-ghost" onclick="closeModal('modal-kb-item')">Отмена</button>
+      <button class="btn-primary" id="kb-item-save-btn" onclick="kbSaveItem()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
         Сохранить
       </button>
@@ -37889,8 +37889,8 @@ async function cpRenderMilestone(project) {
       <div id="kb-color-picker" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
     </div>
     <div class="modal-footer">
-      <button class="btn-ghost" onclick="closeModal('modal-kb-cat')" style="flex:1;">Отмена</button>
-      <button class="btn-primary" onclick="kbSaveCategory()" style="flex:2;">
+      <button class="btn-ghost" onclick="closeModal('modal-kb-cat')">Отмена</button>
+      <button class="btn-primary" onclick="kbSaveCategory()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
         Сохранить
       </button>
@@ -37899,11 +37899,60 @@ async function cpRenderMilestone(project) {
 </div>
 
 <style>
+/* ── KB Modal override — симметричный футер ── */
+#modal-kb-item .modal,
+#modal-kb-cat .modal {
+  padding: 28px 28px 24px;
+}
+#modal-kb-item .modal-title,
+#modal-kb-cat .modal-title {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -.025em;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--brd);
+}
+#modal-kb-item .field,
+#modal-kb-cat .field {
+  margin-bottom: 14px;
+}
+#modal-kb-item .modal-footer,
+#modal-kb-cat .modal-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--brd);
+}
+#modal-kb-item .modal-footer .btn-ghost,
+#modal-kb-cat  .modal-footer .btn-ghost {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 11px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--r-sm);
+  flex: unset;
+}
+#modal-kb-item .modal-footer .btn-primary,
+#modal-kb-cat  .modal-footer .btn-primary {
+  width: 100%;
+  padding: 11px 16px;
+  font-size: 13px;
+  margin-top: 0;
+  border-radius: var(--r-sm);
+  flex: unset;
+}
 .kb-type-pill {
-  padding:6px 12px; border:1px solid var(--brd); border-radius:8px;
+  padding:7px 13px; border:1px solid var(--brd); border-radius:8px;
   background:transparent; color:var(--txt3); font-family:var(--font-display);
   font-size:12px; font-weight:500; cursor:pointer; transition:all .16s;
 }
+.kb-type-pill:hover { border-color: var(--brd2); color: var(--txt2); }
 .kb-type-pill.active { background:rgba(184,146,58,.14); border-color:rgba(184,146,58,.3); color:var(--a2); }
 .kb-color-swatch {
   width:26px; height:26px; border-radius:8px; cursor:pointer;
