@@ -37970,7 +37970,6 @@ async function cpRenderMilestone(project) {
 var _kbMode        = 'materials';
 var _kbProjectId   = null;
 var _kbMaterialsProjectId = null;
-var KB_AGENCY_ID   = '__agency__';
 var _kbProjectName = '';
 var _kbCats        = [];
 var _kbItems       = [];
@@ -38386,16 +38385,22 @@ async function kbLoadServicesSpace() {
   if (content) content.style.display = 'none';
   if (loading) loading.style.display = '';
 
-  _kbProjectId = KB_AGENCY_ID;
+  /* project_id = null, фильтруем по user_id + mode */
+  _kbProjectId = null;
   _kbCats  = [];
   _kbItems = [];
 
+  var uid = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.id : null;
+  if (!uid) { if (loading) loading.style.display = 'none'; if (content) content.style.display = ''; kbRenderContent(); return; }
+
   try {
-    var r1 = await sb.from('kb_categories').select('*').eq('project_id', KB_AGENCY_ID).order('created_at');
+    var r1 = await sb.from('kb_categories').select('*')
+      .is('project_id', null).eq('mode','services').eq('user_id', uid).order('created_at');
     _kbCats = r1.data || [];
   } catch(e) {}
   try {
-    var r2 = await sb.from('kb_items').select('*').eq('project_id', KB_AGENCY_ID).order('created_at', {ascending:false});
+    var r2 = await sb.from('kb_items').select('*')
+      .is('project_id', null).eq('mode','services').eq('user_id', uid).order('created_at', {ascending:false});
     _kbItems = r2.data || [];
   } catch(e) {}
 
@@ -38540,8 +38545,10 @@ window.kbSaveCategory = async function() {
 /* ══ RELOAD HELPER ══ */
 async function kbReloadCurrent() {
   if (_kbMode === 'services') {
-    try { var r1 = await sb.from('kb_categories').select('*').eq('project_id', KB_AGENCY_ID).order('created_at'); _kbCats = r1.data || []; } catch(e) {}
-    try { var r2 = await sb.from('kb_items').select('*').eq('project_id', KB_AGENCY_ID).order('created_at', {ascending:false}); _kbItems = r2.data || []; } catch(e) {}
+    var uid = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.id : null;
+    if (!uid) return;
+    try { var r1 = await sb.from('kb_categories').select('*').is('project_id', null).eq('mode','services').eq('user_id', uid).order('created_at'); _kbCats = r1.data || []; } catch(e) {}
+    try { var r2 = await sb.from('kb_items').select('*').is('project_id', null).eq('mode','services').eq('user_id', uid).order('created_at', {ascending:false}); _kbItems = r2.data || []; } catch(e) {}
   } else {
     if (_kbProjectId) await kbLoadProjectData(_kbProjectId);
   }
