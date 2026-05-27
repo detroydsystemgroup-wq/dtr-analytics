@@ -37195,130 +37195,186 @@ async function cpRenderMilestone(project) {
 ═══════════════════════════════════════════════════════ -->
 
 <style id="dtr-coming-soon-toast">
-/* ── COMING SOON TOAST ── */
+/* ── COMING SOON MODAL ── */
 @keyframes cstIn {
-  0%   { opacity: 0; transform: translateY(14px) scale(.94); }
-  60%  { opacity: 1; transform: translateY(-3px) scale(1.01); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
+  0%   { opacity: 0; transform: translate(-50%,-50%) scale(.88); }
+  65%  { opacity: 1; transform: translate(-50%,-50%) scale(1.02); }
+  100% { opacity: 1; transform: translate(-50%,-50%) scale(1); }
 }
 @keyframes cstOut {
-  0%   { opacity: 1; transform: translateY(0) scale(1); }
-  100% { opacity: 0; transform: translateY(8px) scale(.96); }
+  0%   { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%,-50%) scale(.92); }
 }
+@keyframes cstBgIn  { from { opacity:0 } to { opacity:1 } }
+@keyframes cstBgOut { from { opacity:1 } to { opacity:0 } }
 @keyframes cstShimmer {
-  0%   { background-position: -200% center; }
-  100% { background-position: 200% center; }
+  0%   { background-position: -300% center; }
+  100% { background-position: 300% center; }
 }
-@keyframes cstOrbit {
-  from { transform: rotate(0deg) translateX(20px) rotate(0deg); }
-  to   { transform: rotate(360deg) translateX(20px) rotate(-360deg); }
+@keyframes cstFloat {
+  0%,100% { transform: translateY(0) rotate(-2deg); }
+  50%     { transform: translateY(-6px) rotate(2deg); }
 }
-@keyframes cstGlyphFloat {
-  0%,100% { transform: translateY(0); }
-  50%     { transform: translateY(-3px); }
+@keyframes cstBarGrow {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+@keyframes cstRingPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(184,146,58,.5); }
+  50%     { box-shadow: 0 0 0 12px rgba(184,146,58,0); }
 }
 
+/* Backdrop */
+#dtr-cs-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 99998;
+  display: none;
+}
+#dtr-cs-backdrop.cst-show { display: block; animation: cstBgIn .3s ease both; }
+#dtr-cs-backdrop.cst-hide { animation: cstBgOut .28s ease both; }
+
+/* Modal */
 #dtr-cs-toast {
   position: fixed;
-  bottom: 36px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   z-index: 99999;
-  pointer-events: none;
   display: none;
+  width: 440px;
+  max-width: calc(100vw - 40px);
 }
 #dtr-cs-toast.cst-show {
   display: block;
-  animation: cstIn .45s cubic-bezier(.16,1,.3,1) both;
+  animation: cstIn .5s cubic-bezier(.16,1,.3,1) both;
 }
 #dtr-cs-toast.cst-hide {
-  animation: cstOut .3s cubic-bezier(.4,0,1,1) both;
+  animation: cstOut .28s cubic-bezier(.4,0,1,1) both;
 }
 
 .cst-card {
   position: relative;
-  background: linear-gradient(145deg, #0f0e0a, #131109);
-  border: 1px solid rgba(184,146,58,.35);
-  border-radius: 18px;
-  padding: 20px 28px 18px;
-  min-width: 300px;
+  background: linear-gradient(160deg, #141209 0%, #0f0e0b 50%, #0a0908 100%);
+  border: 1px solid rgba(184,146,58,.4);
+  border-radius: 28px;
+  padding: 52px 44px 40px;
   text-align: center;
   box-shadow:
-    0 24px 64px rgba(0,0,0,.75),
+    0 40px 100px rgba(0,0,0,.85),
     0 0 0 1px rgba(255,255,255,.04),
-    0 0 60px rgba(184,146,58,.1);
+    0 0 80px rgba(184,146,58,.12),
+    inset 0 1px 0 rgba(255,255,255,.06);
   overflow: hidden;
 }
 
-/* Золотая полоса сверху */
+/* Топ-полоса shimmer */
 .cst-card::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0; height: 2px;
+  top: 0; left: 0; right: 0; height: 2.5px;
   background: linear-gradient(90deg,
-    transparent 0%, #b8923a 25%, #dec17a 50%, #b8923a 75%, transparent 100%
+    transparent 0%, #b8923a 20%, #f0d080 50%, #b8923a 80%, transparent 100%
   );
-  background-size: 200% 100%;
-  animation: cstShimmer 2.2s linear infinite;
+  background-size: 300% 100%;
+  animation: cstShimmer 2s linear infinite;
+  border-radius: 28px 28px 0 0;
 }
 
-/* Ambient glow */
+/* Ambient glow top-center */
 .cst-card::after {
   content: '';
   position: absolute;
-  top: -40px; left: 50%; transform: translateX(-50%);
-  width: 160px; height: 80px;
-  background: radial-gradient(ellipse, rgba(184,146,58,.12) 0%, transparent 70%);
+  top: -60px; left: 50%; transform: translateX(-50%);
+  width: 300px; height: 140px;
+  background: radial-gradient(ellipse, rgba(184,146,58,.15) 0%, transparent 70%);
   pointer-events: none;
 }
 
+/* Иконка */
 .cst-icon {
-  font-size: 28px;
-  margin-bottom: 10px;
+  font-size: 52px;
   display: block;
-  animation: cstGlyphFloat 2.8s ease-in-out infinite;
+  margin-bottom: 20px;
   line-height: 1;
+  animation: cstFloat 3s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
 }
 
+/* Лейбл */
 .cst-label {
   font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  color: rgba(184,146,58,.55);
-  letter-spacing: .22em;
+  font-size: 10px;
+  color: rgba(184,146,58,.5);
+  letter-spacing: .26em;
   text-transform: uppercase;
-  margin-bottom: 6px;
+  margin-bottom: 14px;
+  position: relative; z-index: 1;
 }
 
+/* Заголовок */
 .cst-headline {
   font-family: 'DM Sans', sans-serif;
-  font-size: 20px;
+  font-size: 40px;
   font-weight: 800;
-  letter-spacing: -.04em;
-  line-height: 1.1;
-  background: linear-gradient(135deg, #f0ece6 30%, #c9a84c 100%);
+  letter-spacing: -.05em;
+  line-height: 1;
+  background: linear-gradient(135deg, #ffffff 0%, #f0ece6 35%, #c9a84c 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  background-size: 200% 100%;
-  animation: cstShimmer 3s linear infinite;
-  margin-bottom: 6px;
+  margin-bottom: 12px;
+  position: relative; z-index: 1;
 }
 
+/* Подзаголовок */
 .cst-sub {
   font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: rgba(240,236,230,.28);
-  letter-spacing: .04em;
+  font-size: 12px;
+  color: rgba(240,236,230,.3);
+  letter-spacing: .06em;
+  line-height: 1.6;
+  margin-bottom: 32px;
+  position: relative; z-index: 1;
+}
+
+/* Progress bar — таймер 2 сек */
+.cst-progress-wrap {
+  width: 100%;
+  height: 3px;
+  background: rgba(184,146,58,.1);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative; z-index: 1;
+}
+.cst-progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #b8923a, #dec17a);
+  width: 0%;
+}
+.cst-progress-fill.cst-running {
+  animation: cstBarGrow 2s linear forwards;
 }
 </style>
 
-<!-- COMING SOON TOAST NODE -->
+<!-- BACKDROP -->
+<div id="dtr-cs-backdrop"></div>
+
+<!-- COMING SOON MODAL -->
 <div id="dtr-cs-toast">
   <div class="cst-card">
     <span class="cst-icon">⚡</span>
-    <div class="cst-label">DTR Analytics</div>
+    <div class="cst-label">DTR Analytics · PDF Export</div>
     <div class="cst-headline">Уже скоро</div>
-    <div class="cst-sub">PDF-экспорт в разработке</div>
+    <div class="cst-sub">Функция PDF-экспорта находится<br>в активной разработке</div>
+    <div class="cst-progress-wrap">
+      <div class="cst-progress-fill" id="cst-bar"></div>
+    </div>
   </div>
 </div>
 
@@ -37327,34 +37383,60 @@ async function cpRenderMilestone(project) {
   var _csTimer = null;
 
   window.showPdfComingSoon = function(btn) {
-    var toast = document.getElementById('dtr-cs-toast');
-    if (!toast) return;
+    var toast    = document.getElementById('dtr-cs-toast');
+    var backdrop = document.getElementById('dtr-cs-backdrop');
+    var bar      = document.getElementById('cst-bar');
+    if (!toast || !backdrop) return;
 
-    // Микро-вибрация кнопки
+    /* Кнопка — micro-bounce */
     if (btn) {
       btn.style.transition = 'transform .08s ease';
-      btn.style.transform = 'scale(.93)';
+      btn.style.transform  = 'scale(.93)';
       setTimeout(function() {
-        btn.style.transform = 'scale(1.04)';
+        btn.style.transform = 'scale(1.05)';
         setTimeout(function() { btn.style.transform = ''; }, 100);
       }, 80);
     }
 
-    // Если уже показан — перезапускаем таймер
+    /* Сброс предыдущего если открыт */
     clearTimeout(_csTimer);
     toast.classList.remove('cst-hide');
-    toast.classList.add('cst-show');
-    toast.style.display = 'block';
+    backdrop.classList.remove('cst-hide');
 
-    _csTimer = setTimeout(function() {
-      toast.classList.remove('cst-show');
-      toast.classList.add('cst-hide');
-      setTimeout(function() {
-        toast.style.display = 'none';
-        toast.classList.remove('cst-hide');
-      }, 320);
-    }, 2800);
+    /* Сброс прогресс-бара */
+    if (bar) { bar.classList.remove('cst-running'); void bar.offsetWidth; bar.classList.add('cst-running'); }
+
+    /* Показ */
+    toast.style.display    = 'block';
+    backdrop.style.display = 'block';
+    toast.classList.add('cst-show');
+    backdrop.classList.add('cst-show');
+
+    /* Закрытие через 2 сек */
+    _csTimer = setTimeout(closeCs, 2000);
   };
+
+  function closeCs() {
+    var toast    = document.getElementById('dtr-cs-toast');
+    var backdrop = document.getElementById('dtr-cs-backdrop');
+    if (!toast || !backdrop) return;
+    toast.classList.remove('cst-show');
+    backdrop.classList.remove('cst-show');
+    toast.classList.add('cst-hide');
+    backdrop.classList.add('cst-hide');
+    setTimeout(function() {
+      toast.style.display    = 'none';
+      backdrop.style.display = 'none';
+      toast.classList.remove('cst-hide');
+      backdrop.classList.remove('cst-hide');
+    }, 300);
+  }
+
+  /* Клик по бэкдропу — закрыть досрочно */
+  document.addEventListener('DOMContentLoaded', function() {
+    var bd = document.getElementById('dtr-cs-backdrop');
+    if (bd) bd.addEventListener('click', function() { clearTimeout(_csTimer); closeCs(); });
+  });
 })();
 </script>
 
