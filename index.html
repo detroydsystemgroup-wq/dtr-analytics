@@ -23310,8 +23310,8 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   color: #34d399;
 }
 .kb-done-chevron svg { transition: transform .28s cubic-bezier(.16,1,.3,1); }
-.kb-col-done.kb-done-collapsed .kb-done-chevron svg { transform: rotate(-90deg); }
-.kb-col-done.kb-done-collapsed .kb-done-chevron { background: rgba(52,211,153,.06); }
+#kb-col-done.kb-done-collapsed .kb-done-chevron svg { transform: rotate(-90deg); }
+#kb-col-done.kb-done-collapsed .kb-done-chevron { background: rgba(52,211,153,.06); }
 
 /* Cards area: smooth collapse */
 #kb-cards-done {
@@ -23320,14 +23320,14 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   opacity: 1;
   overflow: hidden;
 }
-.kb-col-done.kb-done-collapsed #kb-cards-done {
+#kb-col-done.kb-done-collapsed #kb-cards-done {
   max-height: 0 !important;
   opacity: 0;
   pointer-events: none;
 }
 
 /* Collapsed state: dim border, compact header */
-.kb-col-done.kb-done-collapsed {
+#kb-col-done.kb-done-collapsed {
   border-color: rgba(52,211,153,.12);
 }
 .kb-done-hint {
@@ -23337,7 +23337,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   letter-spacing: .04em;
   transition: opacity .2s;
 }
-.kb-col-done.kb-done-collapsed .kb-done-hint { opacity: 0; }
+#kb-col-done.kb-done-collapsed .kb-done-hint { opacity: 0; }
 
 /* ── Timer display: fixed-width digits prevent layout jitter ── */
 .kb-timer-live {
@@ -30128,20 +30128,13 @@ function renderKanbanCol(containerId, tasks, status) {
     let timerHtml = ''
     if (status === 'active' && t.timer_started_at) {
       const elSec = Math.floor((Date.now() - new Date(t.timer_started_at)) / 1000)
-      // Always render span so interval can find it by id; hide if < 60s
-      const visible = elSec >= 60
-      let fmt = ''
-      if (visible) {
-        const h = Math.floor(elSec / 3600)
-        const m = Math.floor((elSec % 3600) / 60)
-        const s = elSec % 60
-        fmt = h > 0
-          ? h + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0')
-          : String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0')
-      }
-      timerHtml = '<span class="kb-card-timer kb-timer-live" id="kbt-' + t.id + '"'
-        + (visible ? '' : ' style="display:none;"')
-        + '><span class="kb-timer-live-dot"></span>' + fmt + '</span>'
+      const h = Math.floor(elSec / 3600)
+      const m = Math.floor((elSec % 3600) / 60)
+      const s = elSec % 60
+      const fmt = h > 0
+        ? h + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0')
+        : String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0')
+      timerHtml = '<span class="kb-card-timer kb-timer-live" id="kbt-' + t.id + '"><span class="kb-timer-live-dot"></span>' + fmt + '</span>'
     } else if ((t.time_logged||0) > 0) {
       const h = Math.floor(t.time_logged/60), m = t.time_logged%60
       timerHtml = '<span class="kb-card-timer kb-timer-logged">✓ ' + (h>0?h+'ч ':' ') + m + 'м</span>'
@@ -30298,8 +30291,6 @@ function startKanbanLiveTimer() {
     activeTasks.forEach(t => {
       const el = g('kbt-' + t.id); if (!el) return
       const elSec = Math.floor((Date.now() - new Date(t.timer_started_at)) / 1000)
-      // Show only after 1 minute
-      if (elSec < 60) { el.style.display = 'none'; return }
       el.style.display = 'inline-flex'
       const h = Math.floor(elSec / 3600)
       const m = Math.floor((elSec % 3600) / 60)
