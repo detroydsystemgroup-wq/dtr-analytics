@@ -25,8 +25,8 @@
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
   script-src  'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
-  style-src   'self' 'unsafe-inline' https://fonts.googleapis.com;
-  font-src    https://fonts.gstatic.com;
+  style-src   'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;
+  font-src    https://fonts.gstatic.com https://cdn.jsdelivr.net;
   img-src     'self' data: blob:;
   connect-src https://ygxfvmpfhrfxqzoylddo.supabase.co
               wss://ygxfvmpfhrfxqzoylddo.supabase.co
@@ -46,7 +46,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@300;400;500&family=Bebas+Neue&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -37612,9 +37612,6 @@ async function cpRenderMilestone(project) {
 .kb-loading { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:80px 0; }
 .kb-spinner { width:26px; height:26px; border:2px solid rgba(184,146,58,.15); border-top-color:#c9a84c; border-radius:50%; animation:kbSpin .8s linear infinite; }
 
-/* ── TABLER ICONS в KB ── */
-@import url('https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css');
-
 /* ── CATEGORY BLOCK ── */
 .kb-cat-block {
   margin-bottom:12px;
@@ -37680,7 +37677,6 @@ async function cpRenderMilestone(project) {
 /* Cards container */
 .kb-cards-wrap {
   padding:12px 14px;
-  display:grid;
   grid-template-columns:repeat(2, minmax(0,1fr));
   gap:7px;
   display:none;
@@ -37734,7 +37730,7 @@ async function cpRenderMilestone(project) {
 }
 .kb-card-foot2 { display:none; }
 .kb-card-domain2 {
-  font-family:var(--font-mono); font-size:10px; color:#2a2825;
+  font-family:var(--font-mono); font-size:10px; color:#4a4743;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;
 }
 
@@ -37782,6 +37778,23 @@ async function cpRenderMilestone(project) {
   .kb-proj-sidebar { border-right:none; border-bottom:1px solid rgba(240,236,230,.06); }
   .kb-card, .kb-card-add { width:160px; }
 }
+
+/* ── KB empty category state ── */
+.kb-cat-empty {
+  grid-column: 1/-1;
+  display:flex; align-items:center; gap:10px;
+  padding:10px 12px; border-radius:8px;
+  border:0.5px dashed rgba(240,236,230,.06);
+  background:#0c0c0c;
+}
+.kb-cat-empty-txt { font-size:10px; color:#2e2b28; font-family:var(--font-mono); flex:1; }
+.kb-cat-empty-btn {
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:10px; color:#3d3a37; padding:3px 9px;
+  border-radius:5px; border:0.5px solid rgba(240,236,230,.07);
+  cursor:pointer; background:transparent; transition:all .13s; font-family:inherit;
+}
+.kb-cat-empty-btn:hover { color:#f0ece6; border-color:rgba(240,236,230,.14); background:#1a1a1a; }
 </style>
 
 <!-- ── KB MODALS ── -->
@@ -38079,86 +38092,105 @@ function kbRenderContent() {
     return;
   }
 
-/* ══ TABLER CAT ICONS ══ */
-var KB_CAT_ICONS = [
-  'ti-chart-line','ti-clock','ti-trending-up','ti-bookmark',
-  'ti-folder','ti-star','ti-target','ti-bulb','ti-users','ti-settings'
+var KB_CAT_SVGS = [
+  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
+  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
+  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>',
+  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/><line x1="9" x2="15" y1="10" y2="10"/><line x1="9" x2="15" y1="14" y2="14"/></svg>',
+  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>',
+  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>',
+  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
 ];
 
+var _svgPlus  = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+var _svgEdit  = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>';
+var _svgTrash = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>';
+var _svgChev  = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+
   area.innerHTML = modeCats.map(function(cat, idx) {
-    var items = _kbItems.filter(function(i){ return i.category_id === cat.id; });
-    var catIcon = KB_CAT_ICONS[idx % KB_CAT_ICONS.length];
+    var items    = _kbItems.filter(function(i){ return i.category_id === cat.id; });
     var catColor = cat.color || '#b8923a';
+    var catSvg   = KB_CAT_SVGS[idx % KB_CAT_SVGS.length].replace(/CATCOLOR/g, catColor);
+    var catId    = esc(cat.id);
+    var catName  = esc(cat.name);
 
-    var cardsHtml = items.map(kbBuildCard).join('') +
-      '<div class="kb-card-add" onclick="kbOpenAddItem(\''+cat.id+'\')">'+
-        '<i class="ti ti-plus kb-card-add-icon" aria-hidden="true"></i>'+
-        '<span class="kb-card-add-lbl">Добавить</span>'+
-      '</div>';
+    var emptyHtml = items.length === 0
+      ? '<div class="kb-cat-empty">'
+          + '<span class="kb-cat-empty-txt">Нет материалов</span>'
+          + '<button class="kb-cat-empty-btn" onclick="kbOpenAddItem(\'' + catId + '\')">'
+              + _svgPlus + ' Добавить'
+          + '</button>'
+        + '</div>'
+      : '';
 
-    return '<div class="kb-cat-block kb-cat-open" style="animation-delay:'+(idx*0.05)+'s">'+
-      '<div class="kb-cat-header" onclick="this.closest(\'.kb-cat-block\').classList.toggle(\'kb-cat-open\')">'+
-        '<div class="kb-cat-icon-box" style="background:'+catColor+'18;border:0.5px solid '+catColor+'30;">'+
-          '<i class="ti '+catIcon+'" style="font-size:13px;color:'+catColor+';" aria-hidden="true"></i>'+
-        '</div>'+
-        '<span class="kb-cat-header-title">'+esc(cat.name)+'</span>'+
-        '<span class="kb-cat-header-count">'+items.length+'</span>'+
-        '<div class="kb-cat-header-acts" onclick="event.stopPropagation()">'+
-          '<button class="kb-cat-hbtn" title="Добавить" onclick="kbOpenAddItem(\''+cat.id+'\')">'+
-            '<i class="ti ti-plus" aria-hidden="true"></i>'+
-          '</button>'+
-          '<button class="kb-cat-hbtn" title="Редактировать" onclick="kbOpenEditCategory(\''+cat.id+'\')">'+
-            '<i class="ti ti-pencil" aria-hidden="true"></i>'+
-          '</button>'+
-          '<button class="kb-cat-hbtn del" title="Удалить" onclick="kbDeleteCat(\''+cat.id+'\')">'+
-            '<i class="ti ti-trash" aria-hidden="true"></i>'+
-          '</button>'+
-        '</div>'+
-        '<div class="kb-cat-chevron"><i class="ti ti-chevron-down" aria-hidden="true"></i></div>'+
-      '</div>'+
-      '<div class="kb-cards-wrap">'+cardsHtml+'</div>'+
-    '</div>';
+    var cardsHtml = (items.length ? items.map(kbBuildCard).join('') : emptyHtml)
+      + (items.length
+          ? '<div class="kb-card-add" onclick="kbOpenAddItem(\'' + catId + '\')">'
+              + '<span class="kb-card-add-icon">' + _svgPlus + '</span>'
+              + '<span class="kb-card-add-lbl">Добавить</span>'
+            + '</div>'
+          : '');
+
+    if (items.length === 0) cardsHtml = emptyHtml;
+
+    return '<div class="kb-cat-block kb-cat-open" style="animation-delay:' + (idx * 0.05) + 's">'
+      + '<div class="kb-cat-header" onclick="this.closest(\'.kb-cat-block\').classList.toggle(\'kb-cat-open\')">'
+          + '<div class="kb-cat-icon-box" style="background:' + catColor + '18;border:0.5px solid ' + catColor + '30;">'
+              + catSvg
+          + '</div>'
+          + '<span class="kb-cat-header-title">' + catName + '</span>'
+          + '<span class="kb-cat-header-count">' + items.length + '</span>'
+          + '<div class="kb-cat-header-acts" onclick="event.stopPropagation()">'
+              + '<button class="kb-cat-hbtn" title="Добавить" onclick="kbOpenAddItem(\'' + catId + '\')">' + _svgPlus + '</button>'
+              + '<button class="kb-cat-hbtn" title="Редактировать" onclick="kbOpenEditCategory(\'' + catId + '\')">' + _svgEdit + '</button>'
+              + '<button class="kb-cat-hbtn del" title="Удалить" onclick="kbDeleteCat(\'' + catId + '\')">' + _svgTrash + '</button>'
+          + '</div>'
+          + '<div class="kb-cat-chevron">' + _svgChev + '</div>'
+      + '</div>'
+      + '<div class="kb-cards-wrap">' + cardsHtml + '</div>'
+    + '</div>';
   }).join('');
 }
 
-/* ══ TABLER ICON MAP per KB type ══ */
-var KB_TABLER_ICON = {
-  tg:     { icon:'ti-brand-telegram',  bg:'rgba(41,182,246,.1)',  border:'rgba(41,182,246,.2)',  color:'#29b6f6' },
-  gdoc:   { icon:'ti-file-description',bg:'rgba(66,133,244,.1)',  border:'rgba(66,133,244,.2)',  color:'#4285f4' },
-  gsheet: { icon:'ti-table',           bg:'rgba(52,168,83,.1)',   border:'rgba(52,168,83,.2)',   color:'#34a853' },
-  figma:  { icon:'ti-vector-triangle', bg:'rgba(162,89,255,.1)',  border:'rgba(162,89,255,.2)',  color:'#a259ff' },
-  notion: { icon:'ti-notebook',        bg:'rgba(240,236,230,.06)',border:'rgba(240,236,230,.1)', color:'rgba(240,236,230,.55)' },
-  miro:   { icon:'ti-artboard',        bg:'rgba(255,102,0,.1)',   border:'rgba(255,102,0,.2)',   color:'#ff6600' },
-  link:   { icon:'ti-link',            bg:'rgba(184,146,58,.1)',  border:'rgba(184,146,58,.2)',  color:'#c9a84c' },
-  other:  { icon:'ti-file',            bg:'rgba(255,255,255,.04)',border:'rgba(255,255,255,.08)',color:'rgba(240,236,230,.35)' },
+/* ══ INLINE SVG ICON MAP per KB type ══ */
+var KB_SVG_ICONS = {
+  tg:     { bg:'rgba(41,182,246,.1)',  border:'rgba(41,182,246,.2)',  svg:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#29b6f6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l-4 4 6 6 4-16-18 7 4 2 2 6 3-4"/></svg>' },
+  gdoc:   { bg:'rgba(66,133,244,.1)',  border:'rgba(66,133,244,.2)',  svg:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4285f4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>' },
+  gsheet: { bg:'rgba(52,168,83,.1)',   border:'rgba(52,168,83,.2)',   svg:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#34a853" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>' },
+  figma:  { bg:'rgba(162,89,255,.1)',  border:'rgba(162,89,255,.2)',  svg:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a259ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5.5A3.5 3.5 0 018.5 2H12v7H8.5A3.5 3.5 0 015 5.5z"/><path d="M12 2h3.5a3.5 3.5 0 010 7H12V2z"/><circle cx="15.5" cy="12.5" r="3.5"/><path d="M5 12.5A3.5 3.5 0 008.5 16H12v-7H8.5A3.5 3.5 0 005 12.5z"/><path d="M5 19.5A3.5 3.5 0 008.5 23H12v-7H8.5A3.5 3.5 0 005 19.5z"/></svg>' },
+  notion: { bg:'rgba(240,236,230,.06)',border:'rgba(240,236,230,.12)',svg:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(240,236,230,.5)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 10h8M8 14h4"/></svg>' },
+  miro:   { bg:'rgba(255,102,0,.1)',   border:'rgba(255,102,0,.2)',   svg:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ff6600" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8l3 8 2-5 2 5 3-8"/></svg>' },
+  link:   { bg:'rgba(184,146,58,.1)',  border:'rgba(184,146,58,.2)',  svg:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>' },
+  other:  { bg:'rgba(255,255,255,.04)',border:'rgba(255,255,255,.09)',svg:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(240,236,230,.35)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' },
 };
 
 function kbBuildCard(item) {
   var domain = '';
   try { domain = new URL(item.url).hostname.replace('www.',''); } catch(e){}
-  var t = KB_TABLER_ICON[item.type||'other'] || KB_TABLER_ICON.other;
-  var displayTitle = esc(item.title || domain || 'Без названия');
+  var t = KB_SVG_ICONS[item.type||'other'] || KB_SVG_ICONS.other;
+  var displayTitle  = esc(item.title || domain || 'Без названия');
   var displayDomain = esc(domain || 'ссылка');
-
-  return '<a href="'+esc(item.url)+'" target="_blank" rel="noopener" class="kb-card" onclick="event.stopPropagation()">'+
-    '<div class="kb-card-avatar" style="background:'+t.bg+';border:0.5px solid '+t.border+';">'+
-      '<i class="ti '+t.icon+'" style="font-size:14px;color:'+t.color+';line-height:1;" aria-hidden="true"></i>'+
-    '</div>'+
-    '<div class="kb-card-info">'+
-      '<div class="kb-card-title2">'+displayTitle+'</div>'+
-      '<div class="kb-card-domain2">'+displayDomain+'</div>'+
-    '</div>'+
-    '<div class="kb-card-acts" onclick="event.preventDefault()">'+
-      '<button class="kb-card-act" title="Редактировать" onclick="kbOpenEditItem(\''+item.id+'\')">'+
-        '<i class="ti ti-pencil" aria-hidden="true"></i>'+
-      '</button>'+
-      '<button class="kb-card-act del" title="Удалить" onclick="kbDeleteItem(\''+item.id+'\')">'+
-        '<i class="ti ti-trash" aria-hidden="true"></i>'+
-      '</button>'+
-    '</div>'+
-  '</a>';
+  var itemId = esc(item.id);
+  var itemUrl = esc(item.url);
+  var svgE = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>';
+  var svgT = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>';
+  return '<a href="' + itemUrl + '" target="_blank" rel="noopener" class="kb-card" onclick="event.stopPropagation()">'
+    + '<div class="kb-card-avatar" style="background:' + t.bg + ';border:0.5px solid ' + t.border + ';">'
+        + t.svg
+    + '</div>'
+    + '<div class="kb-card-info">'
+        + '<div class="kb-card-title2">' + displayTitle + '</div>'
+        + '<div class="kb-card-domain2">' + displayDomain + '</div>'
+    + '</div>'
+    + '<div class="kb-card-acts" onclick="event.preventDefault()">'
+        + '<button class="kb-card-act" title="Редактировать" onclick="kbOpenEditItem(\'' + itemId + '\')">' + svgE + '</button>'
+        + '<button class="kb-card-act del" title="Удалить" onclick="kbDeleteItem(\'' + itemId + '\')">' + svgT + '</button>'
+    + '</div>'
+  + '</a>';
 }
-
 /* ══ MODE SWITCH ══ */
 window.kbSwitchMode = function(mode, btn) {
   _kbMode = mode;
