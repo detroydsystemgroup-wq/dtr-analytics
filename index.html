@@ -34945,10 +34945,18 @@ function renderMenuPareto(b3, d3) {
 
         // Milestone маркеры
         var milestone = '';
-        if(i===cnt50-1) milestone = '<div style="position:absolute;top:0;bottom:0;right:0;display:flex;align-items:center;padding-right:8px;"><span style="font-size:8px;font-family:var(--font-mono);color:var(--cyan);background:rgba(56,178,172,.12);border:1px solid rgba(56,178,172,.25);border-radius:4px;padding:2px 5px;white-space:nowrap;">↑ 50%</span></div>';
-        if(i===cnt80-1) milestone = '<div style="position:absolute;top:0;bottom:0;right:0;display:flex;align-items:center;padding-right:8px;"><span style="font-size:8px;font-family:var(--font-mono);color:var(--green);background:rgba(62,207,142,.12);border:1px solid rgba(62,207,142,.25);border-radius:4px;padding:2px 5px;white-space:nowrap;">↑ 80%</span></div>';
+        if(i===cnt50-1) milestone = '<div style="margin:4px 0 0 38px;display:flex;align-items:center;gap:6px;">'
+          +'<div style="flex:1;height:1px;background:rgba(56,178,172,.3);"></div>'
+          +'<span style="font-size:9px;font-family:var(--font-mono);color:var(--cyan);background:rgba(56,178,172,.12);border:1px solid rgba(56,178,172,.3);border-radius:4px;padding:2px 8px;white-space:nowrap;flex-shrink:0;">── 50% выручки</span>'
+          +'<div style="flex:1;height:1px;background:rgba(56,178,172,.3);"></div>'
+          +'</div>';
+        if(i===cnt80-1) milestone = '<div style="margin:4px 0 0 38px;display:flex;align-items:center;gap:6px;">'
+          +'<div style="flex:1;height:1px;background:rgba(62,207,142,.3);"></div>'
+          +'<span style="font-size:9px;font-family:var(--font-mono);color:var(--green);background:rgba(62,207,142,.12);border:1px solid rgba(62,207,142,.3);border-radius:4px;padding:2px 8px;white-space:nowrap;flex-shrink:0;">── 80% выручки</span>'
+          +'<div style="flex:1;height:1px;background:rgba(62,207,142,.3);"></div>'
+          +'</div>';
 
-        return '<div style="display:flex;align-items:center;gap:10px;padding:9px 10px 9px 0;background:'+rowBg+';border-radius:10px;position:relative;'+(i===0?'border:1px solid rgba(184,146,58,.15);':'')+'">'
+        return '<div style="display:flex;align-items:center;gap:10px;padding:9px 10px 9px 0;background:'+rowBg+';border-radius:10px;'+(i===0?'border:1px solid rgba(184,146,58,.15);':'')+'">'
 
           // Номер
           +'<div style="width:28px;text-align:center;flex-shrink:0;">'
@@ -34973,8 +34981,8 @@ function renderMenuPareto(b3, d3) {
           +'<span style="font-size:'+(isTop?'13':'11')+'px;font-weight:'+(isTop?'500':'400')+';color:'+(isTop?'var(--txt2)':'var(--txt3)')+';font-family:var(--font-mono);white-space:nowrap;">'+fmtM(item.rev)+'</span>'
           +'</div>'
 
-          + milestone
-          +'</div>';
+          +'</div>'
+          + milestone;
       }).join('')
 
     +'</div>';
