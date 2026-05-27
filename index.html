@@ -25733,9 +25733,15 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 
           <!-- No project selected -->
           <div id="kb-no-project" class="kb-empty">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(184,146,58,.3)" stroke-width="1.4" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
-            <div class="kb-empty-title" style="margin-top:14px;">Выберите проект</div>
-            <div class="kb-empty-sub">Кликните на проект слева —<br>откроется его база материалов</div>
+            <div class="kb-empty-icon-wrap">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+            </div>
+            <div class="kb-empty-title">База знаний</div>
+            <div class="kb-empty-sub">Выберите проект из списка слева,<br>чтобы открыть его материалы</div>
+            <div class="kb-empty-hint">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+              Выберите проект
+            </div>
           </div>
 
           <!-- Loading -->
@@ -37855,7 +37861,275 @@ async function cpRenderMilestone(project) {
 .kb-color-swatch.selected { border-color:#fff; transform:scale(1.2); }
 </style>
 
-<style id="dtr-svodka-v6">
+<style id="dtr-kb-v2">
+/* ═══════════════════════════════════════════════════
+   DTR БАЗА ЗНАНИЙ · UI/UX PRO MAX · Agency Operations
+   Pattern: Feature-Rich Showcase
+   Rules: data-first, no broken empty states,
+          consistent text hierarchy, breathing space
+═══════════════════════════════════════════════════ */
+
+/* ── Topbar: чище и увереннее ── */
+.kb-topbar {
+  padding: 0 0 22px !important;
+  margin-bottom: 4px !important;
+  border-bottom: 1px solid rgba(240,236,230,.06) !important;
+}
+.kb-icon-wrap {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 11px !important;
+  background: rgba(184,146,58,.1) !important;
+  border: 1px solid rgba(184,146,58,.2) !important;
+}
+.kb-topbar-title {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.03em !important;
+}
+.kb-topbar-sub {
+  font-size: 10px !important;
+  color: rgba(240,236,230,.3) !important;
+  letter-spacing: .08em !important;
+}
+
+/* ── Mode toggle ── */
+.kb-mode-toggle {
+  background: rgba(255,255,255,.03) !important;
+  border: 1px solid rgba(255,255,255,.07) !important;
+  border-radius: 10px !important;
+  padding: 3px !important;
+}
+.kb-mode-btn {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  padding: 7px 14px !important;
+  border-radius: 7px !important;
+  color: rgba(240,236,230,.32) !important;
+  gap: 6px !important;
+}
+.kb-mode-btn.kb-mode-active {
+  background: rgba(184,146,58,.16) !important;
+  color: #dec17a !important;
+  box-shadow: 0 0 0 1px rgba(184,146,58,.25) !important;
+}
+
+/* ── Add button ── */
+.kb-add-btn {
+  padding: 8px 16px !important;
+  border-radius: 10px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 14px rgba(184,146,58,.25), inset 0 1px 0 rgba(255,255,255,.12) !important;
+  gap: 6px !important;
+}
+
+/* ── Sidebar ── */
+.kb-proj-sidebar {
+  border-right: 1px solid rgba(240,236,230,.055) !important;
+  padding: 14px 0 0 !important;
+}
+.kb-proj-statbox {
+  margin: 0 10px 14px !important;
+  padding: 14px 10px !important;
+  border-radius: 12px !important;
+  background: rgba(184,146,58,.07) !important;
+  border: 1px solid rgba(184,146,58,.13) !important;
+}
+.kb-proj-stat-val {
+  font-size: 24px !important;
+  font-weight: 800 !important;
+  letter-spacing: -.05em !important;
+  color: #c9a84c !important;
+}
+.kb-proj-stat-lbl {
+  font-size: 8px !important;
+  color: rgba(240,236,230,.28) !important;
+  letter-spacing: .14em !important;
+  margin-top: 2px !important;
+}
+.kb-proj-section-lbl {
+  font-size: 8px !important;
+  color: rgba(240,236,230,.22) !important;
+  letter-spacing: .2em !important;
+  padding: 0 12px 8px !important;
+}
+.kb-proj-avatar {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 9px !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  border: none !important;
+}
+.kb-proj-name {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: .03em !important;
+}
+.kb-proj-item {
+  padding: 8px 12px !important;
+  border-radius: 0 !important;
+}
+.kb-proj-item.kb-proj-active::before {
+  background: #b8923a !important;
+  width: 2px !important;
+}
+
+/* ── Empty state: полноценный, не сломанный вид ── */
+.kb-empty {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 64px 48px !important;
+  text-align: center !important;
+  border: none !important;
+  border-radius: 20px !important;
+  background: rgba(255,255,255,.018) !important;
+  min-height: 380px !important;
+  gap: 0 !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+/* Subtle gold glow в центре */
+.kb-empty::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -60%) !important;
+  width: 280px !important;
+  height: 280px !important;
+  background: radial-gradient(circle, rgba(184,146,58,.06) 0%, transparent 70%) !important;
+  pointer-events: none !important;
+}
+
+.kb-empty-icon-wrap {
+  width: 64px !important;
+  height: 64px !important;
+  border-radius: 18px !important;
+  background: rgba(184,146,58,.1) !important;
+  border: 1px solid rgba(184,146,58,.2) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #c9a84c !important;
+  margin-bottom: 20px !important;
+  position: relative !important;
+}
+
+.kb-empty-title {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.03em !important;
+  color: rgba(240,236,230,.75) !important;
+  margin-bottom: 10px !important;
+}
+
+.kb-empty-sub {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 11px !important;
+  color: rgba(240,236,230,.25) !important;
+  line-height: 1.8 !important;
+  letter-spacing: .04em !important;
+  margin-bottom: 28px !important;
+}
+
+/* CTA hint */
+.kb-empty-hint {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 8px 16px !important;
+  border-radius: 10px !important;
+  border: 1px solid rgba(184,146,58,.2) !important;
+  background: rgba(184,146,58,.08) !important;
+  font-family: 'DM Mono', monospace !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: #c9a84c !important;
+  letter-spacing: .06em !important;
+  cursor: default !important;
+}
+.kb-empty-hint svg { opacity: .7; }
+
+/* ── Category header: единый стиль ── */
+.kb-cat-header {
+  padding: 13px 18px !important;
+  background: rgba(255,255,255,.02) !important;
+}
+.kb-cat-header-title {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: -.01em !important;
+  color: rgba(240,236,230,.8) !important;
+  text-transform: none !important;
+}
+.kb-cat-header-count {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important;
+  padding: 3px 9px !important;
+  border-radius: 6px !important;
+}
+.kb-cat-stripe {
+  width: 3px !important;
+  border-radius: 0 2px 2px 0 !important;
+}
+.kb-cat-icon-box {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 7px !important;
+}
+
+/* ── Category empty (внутри категории) ── */
+.kb-cat-empty {
+  padding: 20px 18px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+.kb-cat-empty-txt {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 11px !important;
+  color: rgba(240,236,230,.22) !important;
+  letter-spacing: .04em !important;
+}
+.kb-cat-empty-btn {
+  font-size: 11px !important;
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(240,236,230,.1) !important;
+  color: rgba(240,236,230,.35) !important;
+  white-space: nowrap !important;
+}
+.kb-cat-empty-btn:hover {
+  border-color: rgba(184,146,58,.3) !important;
+  color: #c9a84c !important;
+  background: rgba(184,146,58,.06) !important;
+}
+
+/* ── Add category button ── */
+.kb-add-cat-btn {
+  border-color: rgba(255,255,255,.07) !important;
+  border-radius: 9px !important;
+  font-size: 11px !important;
+  color: rgba(240,236,230,.25) !important;
+  margin: 8px 10px 0 !important;
+}
+.kb-add-cat-btn:hover {
+  border-color: rgba(184,146,58,.25) !important;
+  color: #c9a84c !important;
+}
+
+/* ── Filter bar ── */
+.kb-filter-bar {
+  margin-bottom: 16px !important;
+}
+</style>
 /* ═══════════════════════════════════════════════════
    DTR СВОДКА · UI/UX PRO MAX · Executive Dashboard
    Applied: no-emoji, data hierarchy, breathing space
