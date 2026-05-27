@@ -37446,27 +37446,20 @@ async function cpRenderMilestone(project) {
      DTR · БАЗА ЗНАНИЙ — CSS
 ═══════════════════════════════════════════════════ -->
 <style id="dtr-kb-css">
-/* ══════════════════════════════════════════════
-   DTR · БАЗА ЗНАНИЙ — полный redesign
-   Concept: точь-в-точь как inspiration screenshot
-   Левая панель = проекты, правая = категории+карточки
-══════════════════════════════════════════════ */
-
-/* ── АНИМАЦИИ ── */
+/* ══ KB ANIMATIONS ══ */
 @keyframes kbFadeUp  { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
 @keyframes kbSlideIn { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
 @keyframes kbSpin    { to{transform:rotate(360deg)} }
-@keyframes kbPop     { 0%{opacity:0;transform:scale(.9)} 70%{transform:scale(1.03)} 100%{opacity:1;transform:scale(1)} }
+@keyframes kbPop     { 0%{opacity:0;transform:scale(.96)} 70%{transform:scale(1.02)} 100%{opacity:1;transform:scale(1)} }
 
-/* ── ПАНЕЛЬ ЦЕЛИКОМ ── */
+/* ══ PANEL ══ */
 #dtab-kb-panel { display:none; padding:0; }
 
-/* ── TOPBAR ── */
+/* ══ TOPBAR ══ */
 .kb-topbar {
   display:flex; align-items:center; justify-content:space-between;
   padding:0 0 20px; gap:12px; flex-wrap:wrap;
   border-bottom:1px solid rgba(240,236,230,.06);
-  margin-bottom:0;
   animation:kbFadeUp .38s cubic-bezier(.16,1,.3,1) both;
 }
 .kb-topbar-left  { display:flex; align-items:center; gap:14px; }
@@ -37474,24 +37467,19 @@ async function cpRenderMilestone(project) {
 .kb-icon-wrap {
   width:42px; height:42px; border-radius:13px; flex-shrink:0;
   background:rgba(184,146,58,.12); border:1px solid rgba(184,146,58,.22);
-  display:flex; align-items:center; justify-content:center;
-  color:#c9a84c; box-shadow:0 0 24px rgba(184,146,58,.1);
+  display:flex; align-items:center; justify-content:center; color:#c9a84c;
 }
 .kb-topbar-title { font-family:var(--font-display); font-size:20px; font-weight:700; letter-spacing:-.03em; color:var(--txt); line-height:1; }
 .kb-topbar-sub   { font-family:var(--font-mono); font-size:10px; color:var(--txt3); letter-spacing:.06em; margin-top:4px; }
-
-/* Mode toggle */
-.kb-mode-toggle { display:flex; gap:2px; background:var(--bg4); border:1px solid var(--brd); border-radius:11px; padding:3px; }
+.kb-mode-toggle  { display:flex; gap:2px; background:var(--bg4); border:1px solid var(--brd); border-radius:11px; padding:3px; }
 .kb-mode-btn {
   display:flex; align-items:center; gap:6px; padding:7px 14px;
   border:none; border-radius:8px; background:transparent;
   font-family:var(--font-display); font-size:12px; font-weight:500;
-  color:var(--txt3); cursor:pointer; transition:all .2s cubic-bezier(.16,1,.3,1); white-space:nowrap;
+  color:var(--txt3); cursor:pointer; transition:all .2s; white-space:nowrap;
 }
 .kb-mode-btn:hover { color:var(--txt2); background:rgba(255,255,255,.04); }
 .kb-mode-btn.kb-mode-active { background:rgba(184,146,58,.14); color:var(--a3); box-shadow:inset 0 0 0 1px rgba(184,146,58,.25); }
-
-/* Add button */
 .kb-add-btn {
   display:flex; align-items:center; gap:7px; padding:9px 18px;
   border:none; border-radius:11px; background:#b8923a; color:rgba(240,236,230,.95);
@@ -37499,23 +37487,17 @@ async function cpRenderMilestone(project) {
   cursor:pointer; transition:all .22s cubic-bezier(.16,1,.3,1);
   box-shadow:0 4px 16px rgba(184,146,58,.3), inset 0 1px 0 rgba(255,255,255,.15);
 }
-.kb-add-btn:hover { background:#c9a84c; transform:translateY(-1px); box-shadow:0 6px 24px rgba(184,146,58,.4), inset 0 1px 0 rgba(255,255,255,.15); }
+.kb-add-btn:hover { background:#c9a84c; transform:translateY(-1px); }
 .kb-add-btn:active { transform:translateY(0); }
 .kb-add-btn:disabled { opacity:.38; pointer-events:none; }
 
-/* ── BODY LAYOUT ── */
-.kb-body { display:grid; grid-template-columns:218px 1fr; gap:0; min-height:520px; margin-top:0; }
-
-/* ════════════════════
-   LEFT SIDEBAR — проекты
-════════════════════ */
+/* ══ BODY LAYOUT ══ */
+.kb-body { display:grid; grid-template-columns:218px 1fr; gap:0; min-height:520px; }
 .kb-proj-sidebar {
   border-right:1px solid rgba(240,236,230,.06);
-  padding:20px 0 0; display:flex; flex-direction:column; gap:0;
+  padding:20px 0 0; display:flex; flex-direction:column;
   animation:kbSlideIn .38s .04s cubic-bezier(.16,1,.3,1) both;
 }
-
-/* Statbox */
 .kb-proj-statbox {
   margin:0 14px 16px; padding:14px; border-radius:14px;
   background:rgba(184,146,58,.06); border:1px solid rgba(184,146,58,.12);
@@ -37529,95 +37511,69 @@ async function cpRenderMilestone(project) {
 }
 .kb-proj-stat-lbl { font-family:var(--font-mono); font-size:8px; color:var(--txt3); letter-spacing:.12em; text-transform:uppercase; }
 .kb-proj-stat-div { width:1px; background:rgba(184,146,58,.14); margin:4px 0; }
-
-/* Section label */
 .kb-proj-section-lbl {
   font-family:var(--font-mono); font-size:9px; color:var(--txt3);
-  letter-spacing:.18em; text-transform:uppercase;
-  padding:0 16px 8px; margin-bottom:2px;
+  letter-spacing:.18em; text-transform:uppercase; padding:0 16px 8px;
 }
 .kb-proj-list { flex:1; overflow-y:auto; padding:0 8px; }
 .kb-proj-list::-webkit-scrollbar { width:3px; }
 .kb-proj-list::-webkit-scrollbar-thumb { background:rgba(255,255,255,.08); border-radius:3px; }
-
 .kb-proj-item {
   display:flex; align-items:center; gap:10px; padding:10px 8px;
   border-radius:11px; cursor:pointer; margin-bottom:2px;
-  border:1px solid transparent; transition:all .18s cubic-bezier(.16,1,.3,1);
-  position:relative;
+  border:1px solid transparent; transition:all .18s;
 }
 .kb-proj-item:hover { background:rgba(255,255,255,.04); border-color:var(--brd); }
-.kb-proj-item.kb-proj-active {
-  background:rgba(184,146,58,.1); border-color:rgba(184,146,58,.2);
-}
+.kb-proj-item.kb-proj-active { background:rgba(184,146,58,.1); border-color:rgba(184,146,58,.2); }
 .kb-proj-item.kb-proj-active::before {
   content:''; position:absolute; left:0; top:20%; bottom:20%;
-  width:3px; background:linear-gradient(180deg, #c9a84c, #b8923a);
-  border-radius:0 3px 3px 0;
+  width:3px; background:linear-gradient(180deg,#c9a84c,#b8923a); border-radius:0 3px 3px 0;
 }
-
 .kb-proj-avatar {
   width:34px; height:34px; border-radius:9px; flex-shrink:0;
   display:flex; align-items:center; justify-content:center;
   font-family:var(--font-display); font-size:14px; font-weight:800;
-  border:1px solid rgba(255,255,255,.08); color:#fff; position:relative;
+  border:1px solid rgba(255,255,255,.08); color:#fff;
 }
 .kb-proj-info { flex:1; min-width:0; }
-.kb-proj-name {
-  font-family:var(--font-display); font-size:13px; font-weight:600;
-  color:rgba(240,236,230,.55); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  transition:color .18s; line-height:1.25;
-}
-.kb-proj-item:hover .kb-proj-name,
-.kb-proj-item.kb-proj-active .kb-proj-name { color:rgba(240,236,230,.92); }
-.kb-proj-meta { font-family:var(--font-mono); font-size:10px; color:var(--txt3); margin-top:2px; }
-.kb-proj-count {
-  flex-shrink:0; min-width:22px; height:18px; padding:0 6px;
-  border-radius:9px; background:rgba(255,255,255,.06);
-  font-family:var(--font-mono); font-size:10px; color:var(--txt3);
-  display:flex; align-items:center; justify-content:center;
-  transition:all .18s;
-}
-.kb-proj-item.kb-proj-active .kb-proj-count {
-  background:rgba(184,146,58,.2); color:var(--a3);
-}
-
-/* Add category at bottom of sidebar */
-.kb-sidebar-bottom { padding:12px 8px 16px; }
+.kb-proj-name { font-family:var(--font-display); font-size:13px; font-weight:600; color:var(--txt2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.kb-proj-item.kb-proj-active .kb-proj-name { color:var(--txt); }
+.kb-proj-sub  { font-family:var(--font-mono); font-size:10px; color:var(--txt3); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.kb-proj-cnt  { font-family:var(--font-mono); font-size:10px; color:var(--txt3); background:var(--bg4); border:1px solid var(--brd); border-radius:8px; padding:2px 7px; flex-shrink:0; }
+.kb-proj-item.kb-proj-active .kb-proj-cnt { color:var(--a2); background:rgba(184,146,58,.1); border-color:rgba(184,146,58,.2); }
 .kb-add-cat-btn {
-  display:flex; align-items:center; gap:8px; width:100%;
+  margin:12px 14px 0; display:flex; align-items:center; justify-content:center; gap:7px;
   padding:9px 10px; border:1.5px dashed rgba(255,255,255,.1); border-radius:10px;
   background:transparent; color:var(--txt3); font-family:var(--font-display);
   font-size:12px; font-weight:500; cursor:pointer; transition:all .2s;
 }
 .kb-add-cat-btn:hover { border-color:rgba(184,146,58,.3); color:var(--a2); background:rgba(184,146,58,.04); }
 
-/* ════════════════════
-   MAIN CONTENT
-════════════════════ */
+/* ══ MAIN CONTENT ══ */
 .kb-main {
   padding:20px 0 20px 24px; min-height:520px;
   animation:kbFadeUp .38s .08s cubic-bezier(.16,1,.3,1) both;
 }
 
-/* Empty / loading */
+/* ══ EMPTY / LOADING ══ */
 .kb-empty {
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   padding:80px 40px; text-align:center;
   border:1.5px dashed rgba(255,255,255,.07); border-radius:18px;
-  animation:kbFadeUp .4s cubic-bezier(.16,1,.3,1) both;
 }
 .kb-empty-title { font-family:var(--font-display); font-size:17px; font-weight:600; letter-spacing:-.02em; color:var(--txt2); margin-bottom:8px; }
-.kb-empty-sub { font-family:var(--font-mono); font-size:11px; color:var(--txt3); line-height:1.7; letter-spacing:.04em; }
+.kb-empty-sub   { font-family:var(--font-mono); font-size:11px; color:var(--txt3); line-height:1.7; letter-spacing:.04em; }
 .kb-loading { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:80px 0; }
 .kb-spinner { width:26px; height:26px; border:2px solid rgba(184,146,58,.15); border-top-color:#c9a84c; border-radius:50%; animation:kbSpin .8s linear infinite; }
 
-/* ── CATEGORY BLOCK ── */
+/* ══════════════════════════════════════════
+   CATEGORY BLOCK — сильная иерархия
+══════════════════════════════════════════ */
 .kb-cat-block {
-  margin-bottom:12px;
+  margin-bottom:8px;
   border-radius:14px; overflow:hidden;
-  border:0.5px solid rgba(240,236,230,.07);
-  background:var(--bg3);
+  border:1px solid rgba(240,236,230,.065);
+  background:var(--bg2);
   animation:kbFadeUp .35s cubic-bezier(.16,1,.3,1) both;
 }
 .kb-cat-block:nth-child(1){animation-delay:.03s}
@@ -37625,177 +37581,181 @@ async function cpRenderMilestone(project) {
 .kb-cat-block:nth-child(3){animation-delay:.11s}
 .kb-cat-block:nth-child(4){animation-delay:.15s}
 
-/* Category header */
+/* ── Category header ── */
 .kb-cat-header {
-  display:flex; align-items:center; gap:10px;
-  padding:12px 16px; cursor:pointer;
-  transition:background .14s; user-select:none;
-  border-bottom:0.5px solid transparent;
+  display:flex; align-items:center; gap:12px;
+  padding:14px 18px;
+  cursor:pointer; user-select:none;
+  border-bottom:1px solid transparent;
+  transition:background .14s;
+  /* Цветная левая полоса через box-shadow */
+  position:relative;
 }
 .kb-cat-block.kb-cat-open .kb-cat-header {
-  border-bottom-color:rgba(240,236,230,.06);
+  border-bottom-color:rgba(240,236,230,.07);
 }
-.kb-cat-header:hover { background:rgba(240,236,230,.02); }
+.kb-cat-header:hover { background:rgba(240,236,230,.018); }
+
+/* Цветная левая черта категории */
+.kb-cat-stripe {
+  position:absolute; left:0; top:0; bottom:0; width:3px;
+  border-radius:0 2px 2px 0; opacity:0.8;
+  /* цвет задаётся инлайн style */
+}
 
 .kb-cat-icon-box {
-  width:26px; height:26px; border-radius:7px; flex-shrink:0;
+  width:30px; height:30px; border-radius:8px; flex-shrink:0;
   display:flex; align-items:center; justify-content:center;
-  font-size:13px;
 }
+
 .kb-cat-header-title {
-  flex:1; font-family:var(--font-display); font-size:13px;
-  font-weight:600; letter-spacing:-.01em; color:var(--txt);
+  flex:1; font-family:var(--font-display); font-size:14px;
+  font-weight:700; letter-spacing:-.02em; color:var(--txt);
 }
+
+/* Счётчик — читаемый pill */
 .kb-cat-header-count {
-  font-family:var(--font-mono); font-size:9px;
-  background:#141414; border:0.5px solid rgba(240,236,230,.06);
-  border-radius:8px; padding:2px 7px; color:var(--txt3);
-  flex-shrink:0;
+  font-family:var(--font-mono); font-size:10px; font-weight:600;
+  border-radius:20px; padding:3px 9px; flex-shrink:0;
+  /* цвет задаётся инлайн */
 }
+
+/* Кнопки действий — только при hover */
 .kb-cat-header-acts {
   display:flex; align-items:center; gap:3px; flex-shrink:0;
   opacity:0; transition:opacity .14s;
 }
 .kb-cat-header:hover .kb-cat-header-acts { opacity:1; }
+.kb-cat-hbtn {
+  width:24px; height:24px; border-radius:6px;
+  border:1px solid rgba(240,236,230,.08);
+  background:transparent; color:var(--txt3); cursor:pointer;
+  display:flex; align-items:center; justify-content:center; transition:all .14s;
+}
+.kb-cat-hbtn:hover { border-color:rgba(240,236,230,.16); color:var(--txt2); background:rgba(255,255,255,.04); }
+.kb-cat-hbtn.del:hover { border-color:rgba(224,82,82,.25); color:var(--red); }
+
 .kb-cat-chevron {
-  font-size:14px; color:rgba(240,236,230,.2);
-  transition:transform .22s cubic-bezier(.16,1,.3,1);
   display:flex; align-items:center; flex-shrink:0;
+  color:rgba(240,236,230,.2);
+  transition:transform .22s cubic-bezier(.16,1,.3,1);
 }
 .kb-cat-block.kb-cat-open .kb-cat-chevron { transform:rotate(180deg); }
 
-.kb-cat-hbtn {
-  width:22px; height:22px; border-radius:5px;
-  border:0.5px solid rgba(240,236,230,.07);
-  background:transparent; color:var(--txt3); cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  transition:all .14s; font-size:11px;
-}
-.kb-cat-hbtn:hover { border-color:rgba(240,236,230,.14); color:var(--txt2); background:#1c1c1c; }
-.kb-cat-hbtn.del:hover { border-color:rgba(224,82,82,.2); color:var(--red); }
-
-/* Cards container */
+/* ── Cards area ── */
 .kb-cards-wrap {
-  padding:12px 14px;
+  padding:12px 16px;
   grid-template-columns:repeat(2, minmax(0,1fr));
-  gap:7px;
+  gap:6px;
   display:none;
+  background:var(--bg3);
 }
 .kb-cat-block.kb-cat-open .kb-cards-wrap { display:grid; }
 
-/* ── КАРТОЧКА — горизонтальная ── */
+/* ══════════════════════════════════════════
+   КАРТОЧКА — горизонтальная, читаемая
+══════════════════════════════════════════ */
 .kb-card {
   display:flex; align-items:center; gap:10px;
-  padding:9px 12px; border-radius:9px;
-  background:#131313; border:0.5px solid rgba(240,236,230,.055);
+  padding:9px 12px; border-radius:10px;
+  background:var(--bg4); border:1px solid rgba(240,236,230,.055);
   cursor:pointer; text-decoration:none;
-  transition:background .14s, border-color .14s;
-  animation:kbPop .3s cubic-bezier(.16,1,.3,1) both;
+  transition:background .14s, border-color .14s, transform .18s cubic-bezier(.16,1,.3,1);
+  animation:kbPop .28s cubic-bezier(.16,1,.3,1) both;
   position:relative;
 }
 .kb-card:hover {
-  background:#191919;
-  border-color:rgba(240,236,230,.12);
+  background:var(--bg5);
+  border-color:rgba(240,236,230,.13);
+  transform:translateY(-1px);
 }
 .kb-card:hover .kb-card-acts { opacity:1; }
 
-/* Icon box */
+/* Icon */
 .kb-card-avatar {
-  width:30px; height:30px; border-radius:7px; flex-shrink:0;
+  width:32px; height:32px; border-radius:8px; flex-shrink:0;
   display:flex; align-items:center; justify-content:center;
-  font-size:14px;
 }
-
-/* Tabler icon inside card */
-.kb-card-avatar i { line-height:1; }
-
-/* Favicon */
-.kb-card-avatar-img {
-  width:18px; height:18px; object-fit:contain; border-radius:4px;
-}
-.kb-card-avatar-svg { display:flex; align-items:center; justify-content:center; }
 
 /* Text */
-.kb-card-info {
-  flex:1; min-width:0; display:flex; flex-direction:column; gap:1px;
-}
+.kb-card-info { flex:1; min-width:0; }
 .kb-card-title2 {
-  font-family:var(--font-display); font-size:12px; font-weight:500;
-  color:var(--txt); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  line-height:1.25;
+  font-family:var(--font-display); font-size:13px; font-weight:600;
+  letter-spacing:-.01em; color:var(--txt);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.25;
+  margin-bottom:2px;
 }
 .kb-card-note2 {
-  font-size:10px; color:var(--txt3); line-height:1.4;
+  font-size:11px; color:var(--txt3); line-height:1.4;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 .kb-card-foot2 { display:none; }
 .kb-card-domain2 {
-  font-family:var(--font-mono); font-size:10px; color:#4a4743;
+  font-family:var(--font-mono); font-size:10px; color:var(--txt3);
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;
 }
 
-/* Hover actions */
+/* Type badge — мини-пилюля с типом ресурса */
+.kb-card-type-badge {
+  font-family:var(--font-mono); font-size:9px; letter-spacing:.05em;
+  padding:2px 6px; border-radius:5px; flex-shrink:0; white-space:nowrap;
+  /* цвет задаётся инлайн */
+}
+
+/* Actions on hover */
 .kb-card-acts {
   display:flex; gap:2px; opacity:0; transition:opacity .14s; flex-shrink:0;
 }
 .kb-card-act {
-  width:20px; height:20px; border-radius:5px;
-  border:0.5px solid rgba(240,236,230,.07);
-  background:transparent; color:#2a2825; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  transition:all .13s; font-size:11px;
+  width:22px; height:22px; border-radius:5px;
+  border:1px solid rgba(240,236,230,.07);
+  background:transparent; color:var(--txt3); cursor:pointer;
+  display:flex; align-items:center; justify-content:center; transition:all .13s;
 }
-.kb-card-act:hover { background:#222; border-color:rgba(240,236,230,.13); color:var(--txt2); }
-.kb-card-act.del:hover { border-color:rgba(224,82,82,.2); color:var(--red); }
+.kb-card-act:hover { background:var(--bg5); border-color:rgba(240,236,230,.14); color:var(--txt2); }
+.kb-card-act.del:hover { border-color:rgba(224,82,82,.22); color:var(--red); }
 
-/* Add card placeholder */
+/* Add slot */
 .kb-card-add {
   display:flex; align-items:center; justify-content:center; gap:6px;
-  padding:9px 12px; border-radius:9px; min-height:48px;
-  border:0.5px dashed rgba(240,236,230,.07); background:transparent;
-  color:#252320; cursor:pointer; transition:all .16s;
+  padding:9px 12px; border-radius:10px; min-height:50px;
+  border:1px dashed rgba(240,236,230,.08); background:transparent;
+  color:var(--txt3); cursor:pointer; transition:all .16s;
   font-family:var(--font-mono); font-size:10px; letter-spacing:.06em;
 }
-.kb-card-add:hover { border-color:rgba(184,146,58,.22); color:var(--txt3); background:rgba(184,146,58,.025); }
-.kb-card-add-icon { font-size:12px; transition:color .16s; }
-.kb-card-add:hover .kb-card-add-icon { color:var(--a2); }
-.kb-card-add-lbl { transition:color .16s; }
-.kb-card-add:hover .kb-card-add-lbl { color:var(--a2); }
+.kb-card-add:hover { border-color:rgba(184,146,58,.25); color:var(--a2); background:rgba(184,146,58,.03); }
+.kb-card-add-icon { display:flex; align-items:center; }
+.kb-card-add-lbl  { transition:color .16s; }
 
-/* Type icon SVGs per service */
-.kb-ico-miro    { color:#ff6600; }
-.kb-ico-gdoc    { color:#4285f4; }
-.kb-ico-gsheet  { color:#34a853; }
-.kb-ico-figma   { color:#a259ff; }
-.kb-ico-notion  { color:#e8e8e8; }
-.kb-ico-tg      { color:#29b6f6; }
-.kb-ico-link    { color:#c9a84c; }
-.kb-ico-other   { color:rgba(240,236,230,.3); }
+/* Empty category row */
+.kb-cat-empty {
+  grid-column:1/-1; display:flex; align-items:center; gap:10px;
+  padding:10px 12px; border-radius:8px;
+  border:1px dashed rgba(240,236,230,.06); background:var(--bg2);
+}
+.kb-cat-empty-txt { font-size:11px; color:var(--txt3); font-family:var(--font-mono); flex:1; }
+.kb-cat-empty-btn {
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:11px; color:var(--txt3); padding:4px 10px;
+  border-radius:6px; border:1px solid rgba(240,236,230,.08);
+  cursor:pointer; background:transparent; transition:all .13s; font-family:inherit;
+}
+.kb-cat-empty-btn:hover { color:var(--txt); border-color:rgba(240,236,230,.16); background:var(--bg4); }
 
-/* ── RESPONSIVE ── */
+/* ══ TYPE ICON COLORS ══ */
+.kb-ico-miro   { color:#ff6600; } .kb-ico-gdoc   { color:#4285f4; }
+.kb-ico-gsheet { color:#34a853; } .kb-ico-figma  { color:#a259ff; }
+.kb-ico-notion { color:#e8e8e8; } .kb-ico-tg     { color:#29b6f6; }
+.kb-ico-link   { color:#c9a84c; } .kb-ico-other  { color:rgba(240,236,230,.3); }
+
+/* ══ RESPONSIVE ══ */
 @media(max-width:900px) {
   .kb-body { grid-template-columns:1fr; }
   .kb-proj-sidebar { border-right:none; border-bottom:1px solid rgba(240,236,230,.06); }
-  .kb-card, .kb-card-add { width:160px; }
+  .kb-cards-wrap { grid-template-columns:1fr; }
 }
-
-/* ── KB empty category state ── */
-.kb-cat-empty {
-  grid-column: 1/-1;
-  display:flex; align-items:center; gap:10px;
-  padding:10px 12px; border-radius:8px;
-  border:0.5px dashed rgba(240,236,230,.06);
-  background:#0c0c0c;
-}
-.kb-cat-empty-txt { font-size:10px; color:#2e2b28; font-family:var(--font-mono); flex:1; }
-.kb-cat-empty-btn {
-  display:inline-flex; align-items:center; gap:4px;
-  font-size:10px; color:#3d3a37; padding:3px 9px;
-  border-radius:5px; border:0.5px solid rgba(240,236,230,.07);
-  cursor:pointer; background:transparent; transition:all .13s; font-family:inherit;
-}
-.kb-cat-empty-btn:hover { color:#f0ece6; border-color:rgba(240,236,230,.14); background:#1a1a1a; }
 </style>
+
 
 <!-- ── KB MODALS ── -->
 <div class="modal-overlay" id="modal-kb-item">
@@ -38093,22 +38053,22 @@ function kbRenderContent() {
   }
 
 var KB_CAT_SVGS = [
-  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
-  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
-  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
-  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>',
-  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
-  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/><line x1="9" x2="15" y1="10" y2="10"/><line x1="9" x2="15" y1="14" y2="14"/></svg>',
-  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
-  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>',
-  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>',
-  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
+  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
+  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>',
+  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><line x1="9" x2="15" y1="12" y2="12"/><line x1="9" x2="13" y1="16" y2="16"/></svg>',
+  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>',
+  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="CATCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>',
 ];
 
-var _svgPlus  = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+var _svgPlus  = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
 var _svgEdit  = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>';
 var _svgTrash = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>';
-var _svgChev  = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+var _svgChev  = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
 
   area.innerHTML = modeCats.map(function(cat, idx) {
     var items    = _kbItems.filter(function(i){ return i.category_id === cat.id; });
@@ -38116,33 +38076,43 @@ var _svgChev  = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" str
     var catSvg   = KB_CAT_SVGS[idx % KB_CAT_SVGS.length].replace(/CATCOLOR/g, catColor);
     var catId    = esc(cat.id);
     var catName  = esc(cat.name);
+    var count    = items.length;
 
-    var emptyHtml = items.length === 0
-      ? '<div class="kb-cat-empty">'
-          + '<span class="kb-cat-empty-txt">Нет материалов</span>'
-          + '<button class="kb-cat-empty-btn" onclick="kbOpenAddItem(\'' + catId + '\')">'
-              + _svgPlus + ' Добавить'
-          + '</button>'
-        + '</div>'
-      : '';
+    /* Счётчик — цветной если есть материалы, серый если пусто */
+    var countBg  = count > 0 ? catColor + '20' : 'rgba(240,236,230,.05)';
+    var countClr = count > 0 ? catColor        : 'rgba(240,236,230,.25)';
+    var countBrd = count > 0 ? catColor + '40' : 'rgba(240,236,230,.08)';
 
-    var cardsHtml = (items.length ? items.map(kbBuildCard).join('') : emptyHtml)
-      + (items.length
-          ? '<div class="kb-card-add" onclick="kbOpenAddItem(\'' + catId + '\')">'
+    var emptyHtml = '<div class="kb-cat-empty">'
+      + '<span class="kb-cat-empty-txt">Нет материалов</span>'
+      + '<button class="kb-cat-empty-btn" onclick="kbOpenAddItem(\'' + catId + '\')">'
+          + _svgPlus + ' Добавить первый'
+      + '</button>'
+    + '</div>';
+
+    var cardsHtml = count === 0
+      ? emptyHtml
+      : items.map(kbBuildCard).join('')
+          + '<div class="kb-card-add" onclick="kbOpenAddItem(\'' + catId + '\')">'
               + '<span class="kb-card-add-icon">' + _svgPlus + '</span>'
-              + '<span class="kb-card-add-lbl">Добавить</span>'
-            + '</div>'
-          : '');
-
-    if (items.length === 0) cardsHtml = emptyHtml;
+              + '<span class="kb-card-add-lbl">Добавить материал</span>'
+          + '</div>';
 
     return '<div class="kb-cat-block kb-cat-open" style="animation-delay:' + (idx * 0.05) + 's">'
       + '<div class="kb-cat-header" onclick="this.closest(\'.kb-cat-block\').classList.toggle(\'kb-cat-open\')">'
-          + '<div class="kb-cat-icon-box" style="background:' + catColor + '18;border:0.5px solid ' + catColor + '30;">'
+          /* Цветная левая полоса */
+          + '<div class="kb-cat-stripe" style="background:' + catColor + ';"></div>'
+          /* Иконка */
+          + '<div class="kb-cat-icon-box" style="background:' + catColor + '18;border:1px solid ' + catColor + '30;">'
               + catSvg
           + '</div>'
+          /* Название */
           + '<span class="kb-cat-header-title">' + catName + '</span>'
-          + '<span class="kb-cat-header-count">' + items.length + '</span>'
+          /* Счётчик */
+          + '<span class="kb-cat-header-count" style="background:' + countBg + ';color:' + countClr + ';border:1px solid ' + countBrd + ';">'
+              + count + (count === 1 ? ' материал' : count > 1 && count < 5 ? ' материала' : ' материалов')
+          + '</span>'
+          /* Действия */
           + '<div class="kb-cat-header-acts" onclick="event.stopPropagation()">'
               + '<button class="kb-cat-hbtn" title="Добавить" onclick="kbOpenAddItem(\'' + catId + '\')">' + _svgPlus + '</button>'
               + '<button class="kb-cat-hbtn" title="Редактировать" onclick="kbOpenEditCategory(\'' + catId + '\')">' + _svgEdit + '</button>'
@@ -38170,21 +38140,38 @@ var KB_SVG_ICONS = {
 function kbBuildCard(item) {
   var domain = '';
   try { domain = new URL(item.url).hostname.replace('www.',''); } catch(e){}
-  var t = KB_SVG_ICONS[item.type||'other'] || KB_SVG_ICONS.other;
-  var displayTitle  = esc(item.title || domain || 'Без названия');
-  var displayDomain = esc(domain || 'ссылка');
+  var t      = KB_SVG_ICONS[item.type||'other'] || KB_SVG_ICONS.other;
+  var title  = esc(item.title || domain || 'Без названия');
+  var dom    = esc(domain || 'ссылка');
   var itemId = esc(item.id);
-  var itemUrl = esc(item.url);
+  var url    = esc(item.url);
+
+  /* type label + badge color */
+  var TYPE_LABEL = { tg:'Telegram', gdoc:'Google Doc', gsheet:'Sheets', figma:'Figma', notion:'Notion', miro:'Miro', link:'Ссылка', other:'Файл' };
+  var TYPE_BG    = { tg:'rgba(41,182,246,.12)',  gdoc:'rgba(66,133,244,.12)',  gsheet:'rgba(52,168,83,.12)',
+                     figma:'rgba(162,89,255,.12)',notion:'rgba(240,236,230,.06)',miro:'rgba(255,102,0,.12)',
+                     link:'rgba(184,146,58,.12)', other:'rgba(240,236,230,.05)' };
+  var TYPE_CLR   = { tg:'#29b6f6', gdoc:'#4285f4', gsheet:'#34a853', figma:'#a259ff',
+                     notion:'rgba(240,236,230,.5)', miro:'#ff6600', link:'#c9a84c', other:'rgba(240,236,230,.3)' };
+  var tp    = item.type || 'other';
+  var tlbl  = TYPE_LABEL[tp] || 'Файл';
+  var tbg   = TYPE_BG[tp]   || TYPE_BG.other;
+  var tclr  = TYPE_CLR[tp]  || TYPE_CLR.other;
+
   var svgE = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>';
   var svgT = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>';
-  return '<a href="' + itemUrl + '" target="_blank" rel="noopener" class="kb-card" onclick="event.stopPropagation()">'
-    + '<div class="kb-card-avatar" style="background:' + t.bg + ';border:0.5px solid ' + t.border + ';">'
+
+  return '<a href="' + url + '" target="_blank" rel="noopener" class="kb-card" onclick="event.stopPropagation()">'
+    + '<div class="kb-card-avatar" style="background:' + t.bg + ';border:1px solid ' + t.border + ';">'
         + t.svg
     + '</div>'
     + '<div class="kb-card-info">'
-        + '<div class="kb-card-title2">' + displayTitle + '</div>'
-        + '<div class="kb-card-domain2">' + displayDomain + '</div>'
+        + '<div class="kb-card-title2">' + title + '</div>'
+        + '<div class="kb-card-domain2">' + dom + '</div>'
     + '</div>'
+    + '<span class="kb-card-type-badge" style="background:' + tbg + ';color:' + tclr + ';border:1px solid ' + tclr + '22;">'
+        + tlbl
+    + '</span>'
     + '<div class="kb-card-acts" onclick="event.preventDefault()">'
         + '<button class="kb-card-act" title="Редактировать" onclick="kbOpenEditItem(\'' + itemId + '\')">' + svgE + '</button>'
         + '<button class="kb-card-act del" title="Удалить" onclick="kbDeleteItem(\'' + itemId + '\')">' + svgT + '</button>'
