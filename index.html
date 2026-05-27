@@ -8105,74 +8105,89 @@ input, select, textarea {
 
   function applyOnboarding() {
 
-    // ── Единый CSS tooltip — стиль старого дизайна ──
-    if (!document.getElementById('dtr-onboarding-style')) {
-      var s = document.createElement('style');
-      s.id = 'dtr-onboarding-style';
-      s.textContent = ''
-        + '[data-ob]{position:relative;cursor:help;}'
-        + '[data-ob]::before{'
-        +   'content:"?";'
-        +   'position:absolute;top:-7px;right:-7px;'
-        +   'width:16px;height:16px;border-radius:50%;'
-        +   'background:#1a1a2e;border:1px solid rgba(184,146,58,.5);'
-        +   'color:#c9a84c;font-size:9px;font-weight:700;'
-        +   'font-family:var(--font-mono,monospace);'
-        +   'display:flex;align-items:center;justify-content:center;'
-        +   'line-height:1;text-align:center;'
-        +   'z-index:10001;pointer-events:none;'
-        +   'opacity:0;transition:opacity .15s ease;}'
-        + '[data-ob]:hover::before{opacity:1;}'
-        + '[data-ob]::after{'
-        +   'content:attr(data-ob);'
-        +   'position:absolute;'
-        +   'top:calc(100% + 8px);left:0;'
+    // ── Tooltip: один div в body, показывается при hover через JS ──
+    if (!document.getElementById('dtr-ob-tip')) {
+      // Стили
+      var _s = document.createElement('style');
+      _s.id = 'dtr-onboarding-style';
+      _s.textContent = ''
+        + '[data-ob],[data-ob-r]{cursor:help;}'
+        + '#dtr-ob-tip{'
+        +   'position:fixed;z-index:99999;pointer-events:none;'
         +   'background:#1a1a2e;'
-        +   'border:1px solid rgba(184,146,58,.35);'
+        +   'border:1px solid rgba(184,146,58,.4);'
         +   'color:#eeedf8;'
-        +   'font-family:var(--font-mono,"DM Mono",monospace);'
-        +   'font-size:10px;line-height:1.6;font-weight:400;'
+        +   'font-family:"DM Mono",monospace;'
+        +   'font-size:10px;line-height:1.65;font-weight:400;'
         +   'padding:10px 14px;border-radius:9px;'
-        +   'max-width:300px;min-width:180px;white-space:pre-wrap;'
-        +   'z-index:10000;pointer-events:none;'
-        +   'box-shadow:0 8px 28px rgba(0,0,0,.7);'
-        +   'opacity:0;transition:opacity .15s ease .25s;'
-        +   'letter-spacing:0;}'
-        + '[data-ob]:hover::after{opacity:1;}'
-        + '[data-ob-r]{position:relative;cursor:help;}'
-        + '[data-ob-r]::before{'
-        +   'content:"?";'
-        +   'position:absolute;top:-7px;right:-7px;'
-        +   'width:16px;height:16px;border-radius:50%;'
-        +   'background:#1a1a2e;border:1px solid rgba(184,146,58,.5);'
-        +   'color:#c9a84c;font-size:9px;font-weight:700;'
-        +   'font-family:var(--font-mono,monospace);'
-        +   'display:flex;align-items:center;justify-content:center;'
-        +   'line-height:1;text-align:center;'
-        +   'z-index:10001;pointer-events:none;'
-        +   'opacity:0;transition:opacity .15s ease;}'
-        + '[data-ob-r]:hover::before{opacity:1;}'
-        + '[data-ob-r]::after{'
-        +   'content:attr(data-ob-r);'
-        +   'position:absolute;'
-        +   'top:calc(100% + 8px);right:0;left:auto;'
-        +   'background:#1a1a2e;'
-        +   'border:1px solid rgba(184,146,58,.35);'
-        +   'color:#eeedf8;'
-        +   'font-family:var(--font-mono,"DM Mono",monospace);'
-        +   'font-size:10px;line-height:1.6;font-weight:400;'
-        +   'padding:10px 14px;border-radius:9px;'
-        +   'max-width:300px;min-width:180px;white-space:pre-wrap;'
-        +   'z-index:10000;pointer-events:none;'
-        +   'box-shadow:0 8px 28px rgba(0,0,0,.7);'
-        +   'opacity:0;transition:opacity .15s ease .25s;'
-        +   'letter-spacing:0;}'
-        + '[data-ob-r]:hover::after{opacity:1;}'
-        + '.kpi[data-ob]{position:relative;}'
-        + '.kpi[data-ob]::after{top:auto;bottom:calc(100% + 8px);}'
-        + '.rp-block-hdr[data-ob]::after{left:0;}'
-      ;
-      document.head.appendChild(s);
+        +   'max-width:300px;min-width:160px;white-space:pre-wrap;'
+        +   'box-shadow:0 8px 28px rgba(0,0,0,.7),0 0 0 1px rgba(184,146,58,.08);'
+        +   'opacity:0;transition:opacity .12s ease;'
+        +   'letter-spacing:0;}';
+      document.head.appendChild(_s);
+
+      // Один tooltip div
+      var _tip = document.createElement('div');
+      _tip.id = 'dtr-ob-tip';
+      document.body.appendChild(_tip);
+
+      var _tipTimer = null;
+      var _tipShown = false;
+
+      function _positionTip(e) {
+        var x = e.clientX, y = e.clientY;
+        var tw = _tip.offsetWidth  || 280;
+        var th = _tip.offsetHeight || 120;
+        var vw = window.innerWidth, vh = window.innerHeight;
+        var G = 14;
+        var left = x + G;
+        var top  = y + G;
+        if (left + tw > vw - 8) left = x - tw - G;
+        if (top  + th > vh - 8) top  = y - th - G;
+        if (left < 8) left = 8;
+        if (top  < 8) top  = 8;
+        _tip.style.left = left + 'px';
+        _tip.style.top  = top  + 'px';
+      }
+
+      document.addEventListener('mousemove', function(e) {
+        if (_tipShown) _positionTip(e);
+      });
+
+      document.addEventListener('mouseover', function(e) {
+        var el = e.target;
+        // Ищем data-ob на элементе или его родителях (до 5 уровней)
+        var found = null, txt = null, depth = 0;
+        while (el && depth < 5) {
+          txt = el.getAttribute && (el.getAttribute('data-ob') || el.getAttribute('data-ob-r'));
+          if (txt) { found = el; break; }
+          el = el.parentElement;
+          depth++;
+        }
+        if (!found || !txt) return;
+        clearTimeout(_tipTimer);
+        _tipTimer = setTimeout(function() {
+          _tip.textContent = txt;
+          _tip.style.opacity = '1';
+          _tipShown = true;
+        }, 280);
+      });
+
+      document.addEventListener('mouseout', function(e) {
+        var el = e.target;
+        var found = null, depth = 0;
+        while (el && depth < 5) {
+          if (el.getAttribute && (el.getAttribute('data-ob') || el.getAttribute('data-ob-r'))) {
+            found = el; break;
+          }
+          el = el.parentElement;
+          depth++;
+        }
+        if (!found) return;
+        clearTimeout(_tipTimer);
+        _tip.style.opacity = '0';
+        _tipShown = false;
+      });
     }
 
     function ob(sel, txt, right) {
@@ -8182,6 +8197,7 @@ input, select, textarea {
           : document.querySelector(sel);
         if (!el) return;
         el.setAttribute(right ? 'data-ob-r' : 'data-ob', txt);
+        el.style.cursor = 'help';
       } catch(e) {}
     }
 
@@ -8556,11 +8572,8 @@ input, select, textarea {
     Object.keys(KPI_OB).forEach(function(id) {
       var el = document.getElementById(id);
       if (!el) return;
-      var card = el.closest('.kpi');
-      if (card) {
-        card.setAttribute('data-ob', KPI_OB[id]);
-        card.style.cursor = 'help';
-      }
+      var card = el.closest('.kpi') || el;
+      card.setAttribute('data-ob', KPI_OB[id]);
     });
 
     // ── Hero периоды ──
