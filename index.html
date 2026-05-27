@@ -34677,7 +34677,6 @@ function renderChannelShare(b4, d4, b1, d1) {
   // === HEATMAP: интенсивность каналов по часам ===
   var hmEl = document.getElementById('channel-hour-heatmap');
   if(hmEl) {
-    // Агрегируем channel × hour → chk + rev
     var hourData = {};
     srcD.rows.forEach(function(r){
       var h = String(parseInt(r.label)||0).padStart(2,'0');
@@ -34690,153 +34689,140 @@ function renderChannelShare(b4, d4, b1, d1) {
     });
     var hours = Object.keys(hourData).sort(function(a,b){return parseInt(a)-parseInt(b)});
 
-    // Глобальный максимум по каждому каналу (для % интенсивности)
-    var typeMaxChk = {};
-    types.forEach(function(t){
-      typeMaxChk[t] = Math.max.apply(null, hours.map(function(h){
-        return hourData[h][t] ? hourData[h][t].chk : 0;
-      })) || 1;
-    });
-
-    // Сегменты суток для левой подписи
-    var segLabel = function(h){
-      var n = parseInt(h);
-      if(n>=0&&n<=5)  return {lb:'Ночь',col:'rgba(240,64,192,.5)'};
-      if(n>=6&&n<=11) return {lb:'Утро',col:'rgba(255,182,39,.5)'};
-      if(n>=12&&n<=16)return {lb:'День',col:'rgba(184,146,58,.5)'};
-      if(n>=17&&n<=21)return {lb:'Вечер',col:'rgba(0,229,163,.5)'};
-      return {lb:'Ночь',col:'rgba(240,64,192,.5)'};
-    };
-
     var fmt3 = function(v){return new Intl.NumberFormat('ru-RU').format(v);};
 
-    // Строим HTML: каждая строка = один час
-    var rowTotals = [];
-    var rows_html = hours.map(function(h){
-      var rowTotal = types.reduce(function(s,t){return s+(hourData[h][t]?hourData[h][t].chk:0)},0);
-      if(rowTotal < 5) { rowTotals.push(null); return ''; }
-      rowTotals.push(rowTotal);
-      var seg = segLabel(h);
+    // Глобальный максимум строки (для масштаба баров)
+    var rowMaxes = {};
+    hours.forEach(function(h){
+      rowMaxes[h] = types.reduce(function(s,t){return s+(hourData[h][t]?hourData[h][t].chk:0)},0);
+    });
+    var globalMax = Math.max.apply(null, Object.values(rowMaxes)) || 1;
 
-      var cells = types.map(function(t){
-        var d = hourData[h][t]||{chk:0,rev:0};
-        var intensity = d.chk / typeMaxChk[t]; // 0..1
-        var col = CHAN_COLS[t]||'#c9a84c';
-        var avg = d.chk > 0 ? Math.round(d.rev/d.chk) : 0;
+    // Сегмент суток
+    var segOf = function(h){
+      var n=parseInt(h);
+      if(n>=0&&n<=5)  return {lb:'Ночь', dot:'#f040c0'};
+      if(n>=6&&n<=11) return {lb:'Утро',  dot:'#ffb627'};
+      if(n>=12&&n<=16)return {lb:'День',  dot:'#c9a84c'};
+      return                  {lb:'Вечер', dot:'#00e5a3'};
+    };
 
-        // Hex → rgba helper
-        var hexToRgba = function(hex, a) {
-          var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
-          return 'rgba('+r+','+g+','+b+','+a.toFixed(2)+')';
-        };
+    // Пиковый час каждого канала
+    var peakHour = {};
+    types.forEach(function(t){
+      var mx=0, ph='00';
+      hours.forEach(function(h){
+        var v=hourData[h][t]?hourData[h][t].chk:0;
+        if(v>mx){mx=v;ph=h;}
+      });
+      peakHour[t]=ph;
+    });
 
-        // Контраст: 3 уровня интенсивности
-        // 0..0.2 → почти пусто: тёмный фон, приглушённый текст
-        // 0.2..0.6 → средний: фон канала 30%, белый текст
-        // 0.6..1.0 → пик: фон канала 75%, белый жирный текст + badge
-        var colHex = col.charAt(0)==='#' ? col : '#c9a84c';
-        var bgAlpha, mainTextCol, mainFontSize, mainWeight, subTextCol, barCol;
-        if (d.chk === 0) {
-          bgAlpha = 0; mainTextCol = 'rgba(255,255,255,.15)'; mainFontSize = '12px'; mainWeight = '400'; subTextCol = 'transparent'; barCol = 'transparent';
-        } else if (intensity < 0.2) {
-          bgAlpha = 0.08; mainTextCol = 'rgba(255,255,255,.45)'; mainFontSize = '12px'; mainWeight = '400'; subTextCol = 'rgba(255,255,255,.22)'; barCol = colHex;
-        } else if (intensity < 0.55) {
-          bgAlpha = 0.28; mainTextCol = '#ffffff'; mainFontSize = '13px'; mainWeight = '500'; subTextCol = 'rgba(255,255,255,.55)'; barCol = colHex;
-        } else {
-          bgAlpha = 0.72; mainTextCol = '#ffffff'; mainFontSize = '14px'; mainWeight = '700'; subTextCol = 'rgba(255,255,255,.7)'; barCol = '#ffffff';
-        }
-
-        var bgCol = d.chk > 0 ? hexToRgba(colHex, bgAlpha) : 'transparent';
-        var borderAlpha = intensity > 0.55 ? 0.6 : intensity > 0.2 ? 0.3 : 0.1;
-        var borderCol = hexToRgba(colHex, borderAlpha);
-        var avgStr = avg > 0 ? (avg >= 1000 ? (avg/1000).toFixed(0)+'K' : avg) + ' сум' : '';
-
-        return '<td style="padding:3px 4px;vertical-align:middle;">'
-          + (d.chk > 0
-            ? '<div style="border-radius:8px;padding:8px 10px;background:'+bgCol+';border:1px solid '+borderCol+';text-align:center;position:relative;min-height:52px;display:flex;flex-direction:column;justify-content:center;gap:2px;">'
-              + (intensity >= 0.6 ? '<div style="position:absolute;top:4px;right:4px;width:5px;height:5px;border-radius:50%;background:#ffffff;opacity:.5;"></div>' : '')
-              +'<div style="font-size:'+mainFontSize+';font-weight:'+mainWeight+';color:'+mainTextCol+';font-family:var(--font-mono);line-height:1;letter-spacing:.02em;">'+fmt3(d.chk)+'</div>'
-              +(avgStr ? '<div style="font-size:9px;color:'+subTextCol+';font-family:var(--font-mono);letter-spacing:.04em;">'+avgStr+'</div>' : '')
-              +'<div style="position:absolute;bottom:0;left:0;right:0;height:2px;border-radius:0 0 8px 8px;overflow:hidden;">'
-              +'<div style="height:100%;width:'+(Math.round(intensity*100))+'%;background:'+barCol+';opacity:.6;"></div></div>'
-              +'</div>'
-            : '<div style="text-align:center;color:rgba(255,255,255,.1);font-size:13px;min-height:52px;display:flex;align-items:center;justify-content:center;">·</div>')
-          +'</td>';
-      }).join('');
-
-      return '<tr style="border-bottom:1px solid rgba(255,255,255,.03);">'
-        +'<td style="padding:3px 12px 3px 0;white-space:nowrap;vertical-align:middle;width:64px;position:sticky;left:0;background:var(--rp-bg2,var(--bg3));z-index:1;">'
-        +'<div style="display:flex;align-items:center;gap:7px;">'
-        +'<div style="width:3px;height:36px;border-radius:2px;flex-shrink:0;background:'+seg.col+';"></div>'
-        +'<div style="display:flex;flex-direction:column;gap:1px;">'
-        +'<div style="font-size:13px;font-weight:600;color:rgba(255,255,255,.85);font-family:var(--font-mono);letter-spacing:.02em;">'+h+'<span style="font-size:10px;color:rgba(255,255,255,.35);">:00</span></div>'
-        +'<div style="font-size:9px;color:rgba(255,255,255,.25);font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase;">'+seg.lb+'</div>'
-        +'</div></div></td>'
-        + cells
-        +'</tr>';
-    }).join('');
-
-    // Шапка: иконка + полное название + legend bar
-    var thead = '<tr style="border-bottom:1px solid rgba(255,255,255,.08);">'
-      +'<th style="text-align:left;padding:10px 12px 10px 13px;color:rgba(255,255,255,.25);font-size:9px;font-weight:500;font-family:var(--font-mono);letter-spacing:.1em;text-transform:uppercase;position:sticky;left:0;background:var(--bg3);z-index:2;">ЧАС</th>'
+    // ── Шапка: сводка по каналам ──
+    var summaryHTML = '<div style="display:grid;grid-template-columns:repeat('+types.length+',1fr);gap:10px;margin-bottom:18px;">'
       + types.map(function(t){
           var col = CHAN_COLS[t]||'#c9a84c';
           var icon = CHAN_ICONS[t]||'📦';
-          var maxVal = typeMaxChk[t];
-          var colHex2 = col.charAt(0)==='#'?col:'#c9a84c';
-          var r2=parseInt(colHex2.slice(1,3),16),g2=parseInt(colHex2.slice(3,5),16),b2=parseInt(colHex2.slice(5,7),16);
-          return '<th style="padding:10px 6px;text-align:center;min-width:90px;">'
-            +'<div style="display:inline-flex;flex-direction:column;align-items:center;gap:5px;">'
-            +'<div style="width:32px;height:32px;border-radius:9px;background:rgba('+r2+','+g2+','+b2+',.15);border:1px solid rgba('+r2+','+g2+','+b2+',.3);display:flex;align-items:center;justify-content:center;font-size:16px;">'+icon+'</div>'
-            +'<div style="font-size:11px;font-weight:600;color:'+col+';white-space:nowrap;">'+t+'</div>'
-            +'<div style="display:flex;align-items:center;gap:3px;opacity:.6;">'
-            +'<span style="font-size:8px;color:rgba(255,255,255,.4);font-family:var(--font-mono);">min</span>'
-            +'<div style="width:40px;height:3px;border-radius:2px;background:linear-gradient(90deg,rgba('+r2+','+g2+','+b2+',.08),rgba('+r2+','+g2+','+b2+',.8));"></div>'
-            +'<span style="font-size:8px;color:'+col+';font-family:var(--font-mono);">'+fmt3(maxVal)+'</span>'
-            +'</div></div></th>';
+          var colHex = col.charAt(0)==='#'?col:'#c9a84c';
+          var r=parseInt(colHex.slice(1,3),16),g=parseInt(colHex.slice(3,5),16),b=parseInt(colHex.slice(5,7),16);
+          var totalChk = hours.reduce(function(s,h){return s+(hourData[h][t]?hourData[h][t].chk:0)},0);
+          var totalRev = hours.reduce(function(s,h){return s+(hourData[h][t]?hourData[h][t].rev:0)},0);
+          var avgChk = totalChk ? Math.round(totalRev/totalChk) : 0;
+          var ph = peakHour[t];
+          return '<div style="background:rgba('+r+','+g+','+b+',.07);border:1px solid rgba('+r+','+g+','+b+',.2);border-top:3px solid '+col+';border-radius:12px;padding:14px 16px;">'
+            +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
+            +'<span style="font-size:18px;">'+icon+'</span>'
+            +'<span style="font-size:12px;font-weight:600;color:'+col+';">'+t+'</span>'
+            +'</div>'
+            +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">'
+            +'<div><div style="font-size:9px;color:rgba(255,255,255,.35);font-family:var(--font-mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;">Пик часа</div>'
+            +'<div style="font-family:\"Bebas Neue\",sans-serif;font-size:24px;color:'+col+';">'+ph+'<span style="font-size:12px;color:rgba(255,255,255,.4);margin-left:1px;">:00</span></div></div>'
+            +'<div><div style="font-size:9px;color:rgba(255,255,255,.35);font-family:var(--font-mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;">Ср. чек</div>'
+            +'<div style="font-size:14px;font-weight:600;color:rgba(255,255,255,.8);">'+fmt3(Math.round(avgChk/1000))+'K</div></div>'
+            +'</div>'
+            +'<div style="margin-top:8px;font-size:10px;color:rgba(255,255,255,.35);font-family:var(--font-mono);">'+fmt3(totalChk)+' чеков всего</div>'
+            +'</div>';
         }).join('')
-      +'</tr>';
-
-    // Правая фиксированная колонка ИТОГО
-    var itogoColCells = rowTotals.filter(function(v){return v!==null;}).map(function(v){
-      return '<div style="height:58px;display:flex;align-items:center;justify-content:flex-end;padding:0 10px;border-bottom:1px solid rgba(255,255,255,.03);">'
-        +'<span style="font-family:var(--font-mono);font-size:11px;font-weight:500;color:rgba(255,255,255,.45);white-space:nowrap;">'+fmt3(v)+'</span>'
-        +'</div>';
-    }).join('');
-    var itogoHdr = '<div style="height:72px;display:flex;align-items:flex-end;justify-content:flex-end;padding:0 10px 12px;">'
-      +'<span style="font-size:9px;color:rgba(255,255,255,.25);font-family:var(--font-mono);letter-spacing:.08em;text-transform:uppercase;">итого</span>'
       +'</div>';
 
-    var hmHTML = '<div style="display:flex;align-items:stretch;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.015);overflow:hidden;">'
-      +'<div style="flex:1;overflow-x:auto;min-width:0;">'
-      +'<table style="border-collapse:collapse;white-space:nowrap;">'
-      +'<thead>'+thead+'</thead>'
-      +'<tbody>'+rows_html+'</tbody>'
-      +'</table></div>'
-      +'<div style="flex-shrink:0;border-left:1px solid rgba(255,255,255,.06);background:rgba(0,0,0,.15);">'
-      +itogoHdr
-      +itogoColCells
+    // ── Stacked bar chart по часам ──
+    var chartHTML = '<div style="display:flex;flex-direction:column;gap:2px;">'
+
+    // Шапка chart
+      +'<div style="display:flex;align-items:center;gap:0;margin-bottom:6px;padding:0 0 6px;border-bottom:1px solid rgba(255,255,255,.06);">'
+      +'<div style="width:72px;flex-shrink:0;"></div>'
+      +'<div style="flex:1;display:flex;justify-content:space-between;">'
+      +'<span style="font-size:9px;color:rgba(255,255,255,.2);font-family:var(--font-mono);">0</span>'
+      +'<span style="font-size:9px;color:rgba(255,255,255,.2);font-family:var(--font-mono);">'+fmt3(Math.round(globalMax/2))+'</span>'
+      +'<span style="font-size:9px;color:rgba(255,255,255,.2);font-family:var(--font-mono);">'+fmt3(globalMax)+'</span>'
       +'</div>'
-      +'</div>';
+      +'<div style="width:54px;flex-shrink:0;"></div>'
+      +'</div>'
 
-    // Легенда снизу
-    hmHTML += '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:10px;padding:0 2px;">'
+    + hours.map(function(h){
+        var rowTotal = rowMaxes[h];
+        if(rowTotal < 5) return '';
+        var seg = segOf(h);
+        var rowW = Math.round(rowTotal / globalMax * 100);
+        var isNight = parseInt(h) <= 5 || parseInt(h) >= 22;
+        var rowAlpha = rowTotal > globalMax*0.5 ? 1 : 0.65;
+
+        // Segmented stacked bar
+        var segs = types.map(function(t){
+          var d = hourData[h][t]||{chk:0};
+          var w = rowTotal > 0 ? Math.round(d.chk/rowTotal*100) : 0;
+          var col = CHAN_COLS[t]||'#c9a84c';
+          var colHex = col.charAt(0)==='#'?col:'#c9a84c';
+          var r=parseInt(colHex.slice(1,3),16),g=parseInt(colHex.slice(3,5),16),b=parseInt(colHex.slice(5,7),16);
+          if(w===0) return '';
+          var isPeak = peakHour[t]===h;
+          return '<div style="width:'+w+'%;height:100%;background:rgba('+r+','+g+','+b+','+(isPeak?'0.9':'0.6')+');position:relative;'
+            +(isPeak?'box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);':'')+'">'
+            +(isPeak&&w>8?'<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:9px;color:rgba(255,255,255,.9);font-family:var(--font-mono);font-weight:700;white-space:nowrap;">'+CHAN_ICONS[t]+'</div>':'')
+            +'</div>';
+        }).join('');
+
+        return '<div style="display:flex;align-items:center;gap:0;padding:1px 0;">'
+          // Час слева
+          +'<div style="width:72px;flex-shrink:0;display:flex;align-items:center;gap:6px;">'
+          +'<div style="width:3px;height:22px;border-radius:2px;background:'+seg.dot+';opacity:.6;flex-shrink:0;"></div>'
+          +'<div>'
+          +'<div style="font-size:12px;font-weight:500;color:rgba(255,255,255,.7);font-family:var(--font-mono);">'+h+':00</div>'
+          +'<div style="font-size:8px;color:rgba(255,255,255,.2);font-family:var(--font-mono);letter-spacing:.04em;">'+seg.lb+'</div>'
+          +'</div></div>'
+
+          // Stacked bar
+          +'<div style="flex:1;height:26px;background:rgba(255,255,255,.04);border-radius:5px;overflow:hidden;display:flex;">'
+          +'<div style="width:'+rowW+'%;height:100%;display:flex;border-radius:5px 0 0 5px;overflow:hidden;">'
+          + segs
+          +'</div></div>'
+
+          // Итого справа
+          +'<div style="width:54px;flex-shrink:0;text-align:right;padding-left:8px;">'
+          +'<span style="font-size:11px;font-weight:500;color:rgba(255,255,255,'+(rowTotal>globalMax*0.5?'0.6':'0.35')+');font-family:var(--font-mono);">'+fmt3(rowTotal)+'</span>'
+          +'</div>'
+          +'</div>';
+      }).join('')
+
+    +'</div>';
+
+    // ── Легенда каналов ──
+    var legendHTML = '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:12px;">'
+      +'<span style="font-size:10px;color:rgba(255,255,255,.2);font-family:var(--font-mono);">Каналы:</span>'
       + types.map(function(t){
           var col = CHAN_COLS[t]||'#c9a84c';
-          var colHex3 = col.charAt(0)==='#'?col:'#c9a84c';
-          var r3=parseInt(colHex3.slice(1,3),16),g3=parseInt(colHex3.slice(3,5),16),b3=parseInt(colHex3.slice(5,7),16);
+          var colHex = col.charAt(0)==='#'?col:'#c9a84c';
+          var r=parseInt(colHex.slice(1,3),16),g=parseInt(colHex.slice(3,5),16),b=parseInt(colHex.slice(5,7),16);
           return '<div style="display:flex;align-items:center;gap:6px;">'
-            +'<div style="width:12px;height:12px;border-radius:3px;background:rgba('+r3+','+g3+','+b3+',.7);"></div>'
-            +'<span style="font-size:11px;color:rgba(255,255,255,.5);font-family:var(--font-mono);">'+t+'</span></div>';
+            +'<div style="width:14px;height:14px;border-radius:4px;background:rgba('+r+','+g+','+b+',.75);"></div>'
+            +'<span style="font-size:11px;color:rgba(255,255,255,.45);">'+t+'</span>'
+            +'<span style="font-size:10px;color:'+col+';font-family:var(--font-mono);">пик '+peakHour[t]+':00</span>'
+            +'</div>';
         }).join('')
-      +'<div style="margin-left:auto;display:flex;align-items:center;gap:8px;">'
-      +'<div style="display:flex;align-items:center;gap:4px;"><div style="width:28px;height:14px;border-radius:3px;background:rgba(184,146,58,.08);border:1px solid rgba(184,146,58,.15);"></div><span style="font-size:9px;color:rgba(255,255,255,.25);font-family:var(--font-mono);">низкий</span></div>'
-      +'<div style="display:flex;align-items:center;gap:4px;"><div style="width:28px;height:14px;border-radius:3px;background:rgba(184,146,58,.28);"></div><span style="font-size:9px;color:rgba(255,255,255,.25);font-family:var(--font-mono);">средний</span></div>'
-      +'<div style="display:flex;align-items:center;gap:4px;"><div style="width:28px;height:14px;border-radius:3px;background:rgba(184,146,58,.72);"></div><span style="font-size:9px;color:rgba(255,255,255,.25);font-family:var(--font-mono);">пик</span></div>'
-      +'<span style="font-size:9px;color:rgba(255,255,255,.2);font-family:var(--font-mono);margin-left:4px;">· чисел в ячейке = чеков · серый текст под = ср.чек</span>'
-      +'</div></div>';
+      +'<span style="font-size:9px;color:rgba(255,255,255,.15);font-family:var(--font-mono);margin-left:auto;">иконка = пиковый час канала</span>'
+      +'</div>';
 
-    hmEl.innerHTML = hmHTML;
+    hmEl.innerHTML = summaryHTML + chartHTML + legendHTML;
   }
 
   el.style.display = 'block';
