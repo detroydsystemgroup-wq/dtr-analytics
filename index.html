@@ -34711,9 +34711,11 @@ function renderChannelShare(b4, d4, b1, d1) {
     var fmt3 = function(v){return new Intl.NumberFormat('ru-RU').format(v);};
 
     // Строим HTML: каждая строка = один час
+    var rowTotals = [];
     var rows_html = hours.map(function(h){
       var rowTotal = types.reduce(function(s,t){return s+(hourData[h][t]?hourData[h][t].chk:0)},0);
-      if(rowTotal < 5) return '';
+      if(rowTotal < 5) { rowTotals.push(null); return ''; }
+      rowTotals.push(rowTotal);
       var seg = segLabel(h);
 
       var cells = types.map(function(t){
@@ -34771,9 +34773,7 @@ function renderChannelShare(b4, d4, b1, d1) {
         +'<div style="font-size:9px;color:rgba(255,255,255,.25);font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase;">'+seg.lb+'</div>'
         +'</div></div></td>'
         + cells
-        +'<td style="padding:3px 0 3px 10px;white-space:nowrap;vertical-align:middle;position:sticky;right:0;background:var(--bg3);box-shadow:-6px 0 12px rgba(0,0,0,.4);">'
-        +'<div style="font-family:var(--font-mono);font-size:11px;font-weight:500;color:rgba(255,255,255,.5);text-align:right;min-width:44px;">'+fmt3(rowTotal)+'</div>'
-        +'</td></tr>';
+        +'</tr>';
     }).join('');
 
     // Шапка: иконка + полное название + legend bar
@@ -34795,14 +34795,29 @@ function renderChannelShare(b4, d4, b1, d1) {
             +'<span style="font-size:8px;color:'+col+';font-family:var(--font-mono);">'+fmt3(maxVal)+'</span>'
             +'</div></div></th>';
         }).join('')
-      +'<th style="padding:10px 8px;text-align:right;min-width:54px;position:sticky;right:0;background:var(--bg3);"><span style="font-size:9px;color:rgba(255,255,255,.25);font-family:var(--font-mono);letter-spacing:.08em;">ИТОГО</span></th>'
       +'</tr>';
 
-    var hmHTML = '<div style="overflow-x:auto;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.015);">'
-      +'<table style="width:100%;border-collapse:collapse;">'
+    // Правая фиксированная колонка ИТОГО
+    var itogoColCells = rowTotals.filter(function(v){return v!==null;}).map(function(v){
+      return '<div style="height:58px;display:flex;align-items:center;justify-content:flex-end;padding:0 10px;border-bottom:1px solid rgba(255,255,255,.03);">'
+        +'<span style="font-family:var(--font-mono);font-size:11px;font-weight:500;color:rgba(255,255,255,.45);white-space:nowrap;">'+fmt3(v)+'</span>'
+        +'</div>';
+    }).join('');
+    var itogoHdr = '<div style="height:72px;display:flex;align-items:flex-end;justify-content:flex-end;padding:0 10px 12px;">'
+      +'<span style="font-size:9px;color:rgba(255,255,255,.25);font-family:var(--font-mono);letter-spacing:.08em;text-transform:uppercase;">итого</span>'
+      +'</div>';
+
+    var hmHTML = '<div style="display:flex;align-items:stretch;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.015);overflow:hidden;">'
+      +'<div style="flex:1;overflow-x:auto;min-width:0;">'
+      +'<table style="border-collapse:collapse;white-space:nowrap;">'
       +'<thead>'+thead+'</thead>'
       +'<tbody>'+rows_html+'</tbody>'
-      +'</table></div>';
+      +'</table></div>'
+      +'<div style="flex-shrink:0;border-left:1px solid rgba(255,255,255,.06);background:rgba(0,0,0,.15);">'
+      +itogoHdr
+      +itogoColCells
+      +'</div>'
+      +'</div>';
 
     // Легенда снизу
     hmHTML += '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:10px;padding:0 2px;">'
