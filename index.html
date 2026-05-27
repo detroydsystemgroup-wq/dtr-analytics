@@ -7633,20 +7633,7 @@ input, select, textarea {
   font-size: 10px !important;
   color: var(--rp-txt2) !important;
 }
-/* KPI tooltip — appears on hover */
-.kpi[data-tip]:hover::after {
-  content: attr(data-tip) !important;
-  position: absolute !important;
-  bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%) !important;
-  background: #1a1a2e !important; border: 1px solid var(--rp-brd2) !important;
-  color: var(--rp-txt) !important;
-  font-family: var(--font-mono) !important;
-  font-size: 10px !important; line-height: 1.5 !important;
-  padding: 8px 12px !important; border-radius: 8px !important;
-  white-space: nowrap !important; z-index: 999 !important;
-  box-shadow: 0 8px 24px rgba(0,0,0,.6) !important;
-  pointer-events: none !important;
-}
+/* kpi-tip removed — unified ob system */
 
 /* ════════════════════════════════
    CHART BLOCKS — .cb
@@ -7685,21 +7672,7 @@ input, select, textarea {
   margin-bottom: 10px !important;
 }
 
-/* ── Chart block tooltip (cb-title hover) ── */
-.cb-title[data-tip] { cursor: default; position: relative; }
-.cb-title[data-tip]:hover::after {
-  content: attr(data-tip) !important;
-  position: absolute !important;
-  top: calc(100% + 6px); left: 0 !important;
-  background: #1a1a2e !important; border: 1px solid var(--rp-brd2) !important;
-  color: var(--rp-txt) !important;
-  font-family: var(--font-mono) !important;
-  font-size: 10px !important; line-height: 1.6 !important; font-weight: 400 !important;
-  padding: 10px 14px !important; border-radius: 9px !important;
-  max-width: 320px !important; white-space: pre-wrap !important;
-  z-index: 999 !important; box-shadow: 0 8px 24px rgba(0,0,0,.6) !important;
-  pointer-events: none !important; letter-spacing: 0 !important;
-}
+/* cb-tip removed — unified ob system */
 
 /* ════════════════════════════════
    ITEM ROWS — ir.*
@@ -7909,21 +7882,7 @@ input, select, textarea {
 /* ════════════════════════════════
    TOOLTIPS GLOBAL — [data-tooltip]
 ════════════════════════════════ */
-[data-tooltip] { position: relative; cursor: help; }
-[data-tooltip]::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
-  background: #1a1a2e; border: 1px solid rgba(184,146,58,.3);
-  color: #eeedf8; font-family: var(--font-mono);
-  font-size: 10px; line-height: 1.6; font-weight: 400;
-  padding: 8px 12px; border-radius: 8px;
-  max-width: 280px; white-space: pre-wrap;
-  z-index: 999; box-shadow: 0 8px 24px rgba(0,0,0,.6);
-  pointer-events: none; opacity: 0;
-  transition: opacity .15s;
-}
-[data-tooltip]:hover::after { opacity: 1; }
+/* global-tip removed — unified ob system */
 
 /* ════════════════════════════════
    REPORT HEADER BAR
@@ -8146,114 +8105,74 @@ input, select, textarea {
 
   function applyOnboarding() {
 
-    // ── Единый floating tooltip у курсора ──
-    if (!document.getElementById('dtr-ob-tooltip')) {
-      var tip = document.createElement('div');
-      tip.id = 'dtr-ob-tooltip';
-      tip.style.cssText = [
-        'position:fixed',
-        'z-index:99999',
-        'pointer-events:none',
-        'opacity:0',
-        'transition:opacity .12s ease',
-        'background:#0d0d1a',
-        'border:1px solid rgba(184,146,58,.45)',
-        'color:#e8e5e0',
-        'font-family:\'DM Mono\',monospace',
-        'font-size:11px',
-        'line-height:1.7',
-        'font-weight:400',
-        'padding:12px 15px',
-        'border-radius:10px',
-        'max-width:320px',
-        'min-width:200px',
-        'white-space:pre-wrap',
-        'box-shadow:0 8px 32px rgba(0,0,0,.75),0 0 0 1px rgba(184,146,58,.1)',
-      ].join(';');
-      document.body.appendChild(tip);
-
-      var _obTimer = null;
-      var _obActive = null;
-
-      document.addEventListener('mousemove', function(e) {
-        var bdg = document.getElementById('dtr-ob-badge');
-        var x = e.clientX, y = e.clientY;
-        var vw = window.innerWidth, vh = window.innerHeight;
-        var GAP = 14;
-        var BW = 18;
-
-        // Значок ? всегда чуть правее-ниже курсора
-        if (bdg) {
-          bdg.style.left = (x + 12) + 'px';
-          bdg.style.top  = (y + 12) + 'px';
-        }
-
-        if (!_obActive) return;
-        var tw = tip.offsetWidth  || 300;
-        var th = tip.offsetHeight || 140;
-
-        // Tooltip: дальше от курсора чтобы не перекрывать значок
-        var left = x + GAP + BW + 6;
-        var top  = y + GAP;
-
-        if (left + tw > vw - 8) left = x - tw - GAP;
-        if (top  + th > vh - 8) top  = y - th - GAP;
-        if (left < 8) left = 8;
-        if (top  < 8) top  = 8;
-
-        tip.style.left = left + 'px';
-        tip.style.top  = top  + 'px';
-      });
-
-      document.addEventListener('mouseover', function(e) {
-        var el = e.target.closest('[data-ob]');
-        var bdg = document.getElementById('dtr-ob-badge');
-        if (!el) { return; }
-        var txt = el.getAttribute('data-ob');
-        if (!txt) return;
-        if (bdg) bdg.classList.add('vis');
-        clearTimeout(_obTimer);
-        _obTimer = setTimeout(function() {
-          _obActive = el;
-          tip.textContent = txt;
-          tip.style.opacity = '1';
-        }, 320);
-      });
-
-      document.addEventListener('mouseout', function(e) {
-        var el = e.target.closest('[data-ob]');
-        if (!el) return;
-        var bdg = document.getElementById('dtr-ob-badge');
-        if (bdg) bdg.classList.remove('vis');
-        clearTimeout(_obTimer);
-        _obActive = null;
-        tip.style.opacity = '0';
-      });
-    }
-
-    // Минимальный CSS: только курсор и маркер ?  
+    // ── Единый CSS tooltip — стиль старого дизайна ──
     if (!document.getElementById('dtr-onboarding-style')) {
       var s = document.createElement('style');
       s.id = 'dtr-onboarding-style';
       s.textContent = ''
-        + '[data-ob]{cursor:help;}'
-        + '[data-ob]:hover{outline:1px dashed rgba(184,146,58,.35)!important;outline-offset:2px;}'
-        + '#dtr-ob-badge{'
-        +   'position:fixed;z-index:100000;pointer-events:none;'
-        +   'width:18px;height:18px;border-radius:50%;'
-        +   'background:rgba(13,13,26,.92);border:1.5px solid rgba(184,146,58,.7);'
-        +   'color:#c9a84c;font-size:9px;font-weight:700;font-family:monospace;'
+        + '[data-ob]{position:relative;cursor:help;}'
+        + '[data-ob]::before{'
+        +   'content:"?";'
+        +   'position:absolute;top:-7px;right:-7px;'
+        +   'width:16px;height:16px;border-radius:50%;'
+        +   'background:#1a1a2e;border:1px solid rgba(184,146,58,.5);'
+        +   'color:#c9a84c;font-size:9px;font-weight:700;'
+        +   'font-family:var(--font-mono,monospace);'
         +   'display:flex;align-items:center;justify-content:center;'
-        +   'opacity:0;transition:opacity .15s;line-height:1;'
-        +   'box-shadow:0 2px 8px rgba(0,0,0,.5);}'
-        + '#dtr-ob-badge.vis{opacity:1;}';
+        +   'line-height:1;text-align:center;'
+        +   'z-index:10001;pointer-events:none;'
+        +   'opacity:0;transition:opacity .15s ease;}'
+        + '[data-ob]:hover::before{opacity:1;}'
+        + '[data-ob]::after{'
+        +   'content:attr(data-ob);'
+        +   'position:absolute;'
+        +   'top:calc(100% + 8px);left:0;'
+        +   'background:#1a1a2e;'
+        +   'border:1px solid rgba(184,146,58,.35);'
+        +   'color:#eeedf8;'
+        +   'font-family:var(--font-mono,"DM Mono",monospace);'
+        +   'font-size:10px;line-height:1.6;font-weight:400;'
+        +   'padding:10px 14px;border-radius:9px;'
+        +   'max-width:300px;min-width:180px;white-space:pre-wrap;'
+        +   'z-index:10000;pointer-events:none;'
+        +   'box-shadow:0 8px 28px rgba(0,0,0,.7);'
+        +   'opacity:0;transition:opacity .15s ease .25s;'
+        +   'letter-spacing:0;}'
+        + '[data-ob]:hover::after{opacity:1;}'
+        + '[data-ob-r]{position:relative;cursor:help;}'
+        + '[data-ob-r]::before{'
+        +   'content:"?";'
+        +   'position:absolute;top:-7px;right:-7px;'
+        +   'width:16px;height:16px;border-radius:50%;'
+        +   'background:#1a1a2e;border:1px solid rgba(184,146,58,.5);'
+        +   'color:#c9a84c;font-size:9px;font-weight:700;'
+        +   'font-family:var(--font-mono,monospace);'
+        +   'display:flex;align-items:center;justify-content:center;'
+        +   'line-height:1;text-align:center;'
+        +   'z-index:10001;pointer-events:none;'
+        +   'opacity:0;transition:opacity .15s ease;}'
+        + '[data-ob-r]:hover::before{opacity:1;}'
+        + '[data-ob-r]::after{'
+        +   'content:attr(data-ob-r);'
+        +   'position:absolute;'
+        +   'top:calc(100% + 8px);right:0;left:auto;'
+        +   'background:#1a1a2e;'
+        +   'border:1px solid rgba(184,146,58,.35);'
+        +   'color:#eeedf8;'
+        +   'font-family:var(--font-mono,"DM Mono",monospace);'
+        +   'font-size:10px;line-height:1.6;font-weight:400;'
+        +   'padding:10px 14px;border-radius:9px;'
+        +   'max-width:300px;min-width:180px;white-space:pre-wrap;'
+        +   'z-index:10000;pointer-events:none;'
+        +   'box-shadow:0 8px 28px rgba(0,0,0,.7);'
+        +   'opacity:0;transition:opacity .15s ease .25s;'
+        +   'letter-spacing:0;}'
+        + '[data-ob-r]:hover::after{opacity:1;}'
+        + '.kpi[data-ob]{position:relative;}'
+        + '.kpi[data-ob]::after{top:auto;bottom:calc(100% + 8px);}'
+        + '.rp-block-hdr[data-ob]::after{left:0;}'
+      ;
       document.head.appendChild(s);
-
-      // Значок ? — отдельный fixed div, всегда у курсора правее
-      var badge = document.createElement('div');
-      badge.id = 'dtr-ob-badge';
-      badge.textContent = '?';
-      document.body.appendChild(badge);
     }
 
     function ob(sel, txt, right) {
