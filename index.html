@@ -48,6 +48,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@300;400;500&family=Bebas+Neue&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 /* ═══════════════════════════════════════════════════
@@ -8647,38 +8648,140 @@ input, select, textarea {
 })();
 
 // ════════════════════════════════════════
-// PDF ЭКСПОРТ
+// PDF ЭКСПОРТ через html2pdf.js
 // ════════════════════════════════════════
 function exportReportPDF() {
-  // Создаём обёртку для печати
-  var wrap = document.getElementById('print-root');
-  if (!wrap) {
-    wrap = document.createElement('div');
-    wrap.id = 'print-root';
-    wrap.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;z-index:999999;';
-    document.body.appendChild(wrap);
-  }
-  // Клонируем отчёт
-  var rp = document.getElementById('page-report');
   var aw = document.getElementById('analytics-wrap');
-  if (!rp || !aw) { alert('Сначала загрузите отчёт'); return; }
-  wrap.innerHTML = '';
-  var clone = aw.cloneNode(true);
-  // Убираем кнопки и интерактивные элементы
-  clone.querySelectorAll('#ob-toggle-bar,button,.go-btn').forEach(function(el){el.remove();});
-  wrap.appendChild(clone);
-  document.body.style.visibility = 'hidden';
-  wrap.style.display = 'block';
-  wrap.style.visibility = 'visible';
-  setTimeout(function() {
-    window.print();
-    setTimeout(function() {
-      wrap.style.display = 'none';
-      document.body.style.visibility = '';
-    }, 500);
-  }, 200);
-}
+  if (!aw) { alert('Сначала загрузите отчёт'); return; }
 
+  var btn = document.getElementById('btn-pdf');
+  var origHTML = btn ? btn.innerHTML : '';
+
+  // ── Ждём html2pdf если ещё не загружен ──
+  if (typeof html2pdf === 'undefined') {
+    if (btn) btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/></svg> Загрузка...';
+    var attempts = 0;
+    var wait = setInterval(function() {
+      attempts++;
+      if (typeof html2pdf !== 'undefined') {
+        clearInterval(wait);
+        if (btn) btn.innerHTML = origHTML;
+        exportReportPDF();
+      } else if (attempts > 20) {
+        clearInterval(wait);
+        if (btn) btn.innerHTML = origHTML;
+        alert('Не удалось загрузить библиотеку PDF. Проверьте интернет-соединение.');
+      }
+    }, 500);
+    return;
+  }
+
+  if (btn) { btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/></svg> Генерация PDF...'; btn.disabled = true; }
+
+  var titleEl = document.getElementById('report-title-display');
+  var titleText = titleEl ? titleEl.textContent.trim() : 'Отчёт';
+  var dateStr = new Date().toLocaleDateString('ru-RU', {day:'numeric',month:'long',year:'numeric'});
+
+  // ── Клонируем и чистим DOM ──
+  var clone = aw.cloneNode(true);
+  clone.querySelectorAll('button,input,select,textarea,#dtr-ob-tip,#dtr-ob-badge,[id^="ob-"]').forEach(function(el){ el.remove(); });
+
+  // ── Заменяем canvas на img (Chart.js графики) ──
+  // Оригинальные canvas в живом DOM → getDataURL → вставляем img в клон
+  var liveCanvases = aw.querySelectorAll('canvas');
+  var cloneCanvases = clone.querySelectorAll('canvas');
+  liveCanvases.forEach(function(cv, i) {
+    if (!cloneCanvases[i]) return;
+    try {
+      var img = document.createElement('img');
+      img.src = cv.toDataURL('image/png');
+      img.style.cssText = 'width:100%;height:auto;display:block;';
+      cloneCanvases[i].parentNode.replaceChild(img, cloneCanvases[i]);
+    } catch(e) { /* tainted canvas — skip */ }
+  });
+
+  // ── Обёртка с инлайновыми стилями ──
+  var wrapper = document.createElement('div');
+  wrapper.style.cssText = [
+    'background:#0a0a0f',
+    'color:#eeedf8',
+    'font-family:"Inter","DM Sans",sans-serif',
+    'padding:28px 32px',
+    'width:860px',
+    'box-sizing:border-box',
+  ].join(';');
+
+  // Шапка отчёта
+  var hdr = document.createElement('div');
+  hdr.style.cssText = 'margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid rgba(184,146,58,.35);display:flex;justify-content:space-between;align-items:flex-end;';
+  hdr.innerHTML = ''
+    + '<div>'
+    + '<div style="font-size:9px;color:rgba(255,255,255,.35);letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px;font-family:monospace;">DTR Analytics · Performance Report</div>'
+    + '<div style="font-size:26px;font-weight:800;color:#fff;letter-spacing:-.02em;line-height:1.1;">' + titleText + '</div>'
+    + '</div>'
+    + '<div style="text-align:right;font-size:11px;color:rgba(255,255,255,.35);font-family:monospace;line-height:1.6;">'
+    + dateStr + '<br>'
+    + '<span style="color:rgba(184,146,58,.7);">© DeTroyd System Group</span>'
+    + '</div>';
+
+  wrapper.appendChild(hdr);
+  wrapper.appendChild(clone);
+  document.body.appendChild(wrapper);
+
+  // ── Разворачиваем скрытые блоки для PDF ──
+  wrapper.querySelectorAll('[style*="display:none"]').forEach(function(el) {
+    // Оставляем только блоки с данными — скрываем пустые
+    if (el.querySelector('[class*="kpi"]') || el.querySelector('canvas') || el.querySelector('img')) {
+      el.style.display = 'block';
+    }
+  });
+
+  var filename = titleText.replace(/[^a-zA-Zа-яёА-ЯЁ0-9\s\-_]/g,'').trim().substring(0,50) || 'DTR_Report';
+
+  var opt = {
+    margin:      [6, 6, 6, 6],
+    filename:    filename + '_DTR.pdf',
+    image:       { type: 'jpeg', quality: 0.92 },
+    html2canvas: {
+      scale:           2,
+      useCORS:         true,
+      allowTaint:      true,
+      backgroundColor: '#0a0a0f',
+      logging:         false,
+      windowWidth:     900,
+      scrollX:         0,
+      scrollY:         0,
+      onclone:         function(doc) {
+        // Форсируем вычисленные стили для CSS-переменных
+        doc.querySelectorAll('*').forEach(function(el) {
+          var cs = window.getComputedStyle(el);
+          if (cs.color) el.style.color = cs.color;
+          if (cs.backgroundColor && cs.backgroundColor !== 'rgba(0, 0, 0, 0)') el.style.backgroundColor = cs.backgroundColor;
+          if (cs.borderColor) el.style.borderColor = cs.borderColor;
+        });
+      }
+    },
+    jsPDF: {
+      unit:        'mm',
+      format:      'a4',
+      orientation: 'portrait',
+      compress:    true
+    },
+    pagebreak: { mode: ['css', 'legacy'], avoid: ['.rp-block', '.cb', '.kpi-row'] }
+  };
+
+  html2pdf().set(opt).from(wrapper).save()
+    .then(function() {
+      document.body.removeChild(wrapper);
+      if (btn) { btn.innerHTML = origHTML; btn.disabled = false; }
+    })
+    .catch(function(err) {
+      console.error('PDF error:', err);
+      document.body.removeChild(wrapper);
+      if (btn) { btn.innerHTML = origHTML; btn.disabled = false; }
+      alert('Ошибка генерации PDF: ' + (err.message || err));
+    });
+}
 // ════════════════════════════════════════
 // CONTRIBUTOR ANALYSIS В ИНСАЙТАХ
 // (уже в waterfall, добавляем в текстовый summary)
@@ -8830,39 +8933,6 @@ function toggleObOnboarding() {
 </script>
 
 
-<style id="dtr-print-styles">
-@media print {
-  /* Скрываем всё кроме отчёта */
-  body > *:not(#print-root) { display: none !important; }
-  #print-root { display: block !important; }
-
-  /* Базовый сброс */
-  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-  body { background: #0a0a0f !important; color: #eeedf8 !important; margin: 0; padding: 0; }
-
-  /* Скрываем ненужное */
-  .app-header, .app-sidebar, .go-btn, #ob-toggle-bar,
-  #block-ai .ai-head button, .rp-block-badge-pills,
-  #dtr-ob-tip, #dtr-ob-badge { display: none !important; }
-
-  /* Страница */
-  @page { margin: 12mm 14mm; size: A4; }
-
-  /* Блоки */
-  .rp-block { page-break-inside: avoid; margin-bottom: 16px; }
-  .cb { page-break-inside: avoid; }
-  .two { grid-template-columns: 1fr 1fr !important; }
-
-  /* Убираем анимации */
-  * { animation: none !important; transition: none !important; }
-
-  /* Убираем скролл */
-  .analytics-wrap { display: block !important; overflow: visible !important; }
-  #page-report { display: block !important; position: static !important; overflow: visible !important; }
-  .page { display: block !important; position: static !important; }
-  .page:not(#page-report) { display: none !important; }
-}
-</style>
 <style id="dtr-report-animations">
 /* ════════════════════════════════════════════════════
    PREMIUM REPORT ANIMATIONS — Serious & Dynamic
