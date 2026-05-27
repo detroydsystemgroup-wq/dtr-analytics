@@ -23284,6 +23284,61 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 .kb-col-add svg { transition: transform .18s; }
 .kb-col-add:hover svg { transform: rotate(90deg); }
 
+/* ── Done column collapse ── */
+.kb-col-done-h {
+  cursor: pointer;
+  user-select: none;
+}
+.kb-col-done-h:hover { background: rgba(52,211,153,.03); }
+
+.kb-done-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.kb-done-chevron {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: rgba(52,211,153,.1);
+  border: 1px solid rgba(52,211,153,.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background .18s, transform .25s cubic-bezier(.16,1,.3,1);
+  color: #34d399;
+}
+.kb-done-chevron svg { transition: transform .28s cubic-bezier(.16,1,.3,1); }
+.kb-col-done.kb-done-collapsed .kb-done-chevron svg { transform: rotate(-90deg); }
+.kb-col-done.kb-done-collapsed .kb-done-chevron { background: rgba(52,211,153,.06); }
+
+/* Cards area: smooth collapse */
+#kb-cards-done {
+  transition: max-height .32s cubic-bezier(.16,1,.3,1), opacity .25s ease;
+  max-height: 2000px;
+  opacity: 1;
+  overflow: hidden;
+}
+.kb-col-done.kb-done-collapsed #kb-cards-done {
+  max-height: 0 !important;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Collapsed state: dim border, compact header */
+.kb-col-done.kb-done-collapsed {
+  border-color: rgba(52,211,153,.12);
+}
+.kb-done-hint {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(52,211,153,.4);
+  letter-spacing: .04em;
+  transition: opacity .2s;
+}
+.kb-col-done.kb-done-collapsed .kb-done-hint { opacity: 0; }
+
 /* ── Timer display: fixed-width digits prevent layout jitter ── */
 .kb-timer-live {
   font-variant-numeric: tabular-nums;
@@ -24652,12 +24707,18 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
         <!-- Завершённые -->
         <div class="kb-col" id="kb-col-done" data-status="done"
           ondragover="kbColDragOver(event,this)" ondragleave="kbColDragLeave(this)" ondrop="kbColDrop(event,this,'done')">
-          <div class="kb-col-header kb-col-done-h">
+          <div class="kb-col-header kb-col-done-h" onclick="kbToggleDone()" title="Показать / скрыть завершённые">
             <div class="kb-col-title">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="opacity:.6;"><polyline points="20 6 9 17 4 12"/></svg>
               Завершённые
+              <span class="kb-done-hint">нажми чтобы свернуть</span>
             </div>
-            <div class="kb-col-count" id="kb-count-done">0</div>
+            <div class="kb-done-toggle">
+              <div class="kb-col-count" id="kb-count-done">0</div>
+              <div class="kb-done-chevron">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+            </div>
           </div>
           <div class="kb-cards" id="kb-cards-done"></div>
         </div>
@@ -30033,6 +30094,7 @@ function renderKanban() {
   renderKanbanCol('kb-cards-waiting', cols.waiting, 'waiting')
   renderKanbanCol('kb-cards-active',  cols.active,  'active')
   renderKanbanCol('kb-cards-done',    cols.done,    'done')
+  kbRestoreDoneState()
 }
 
 function renderKanbanCol(containerId, tasks, status) {
@@ -30254,6 +30316,34 @@ function startKanbanLiveTimer() {
       }
     })
   }, 1000) // every second
+}
+
+// ── Toggle done column collapse ──
+function kbToggleDone() {
+  const col = g('kb-col-done')
+  if (!col) return
+  const isCollapsed = col.classList.toggle('kb-done-collapsed')
+  // Hide the hint after first interaction
+  const hint = col.querySelector('.kb-done-hint')
+  if (hint) hint.style.display = 'none'
+  try {
+    localStorage.setItem('dtr-kb-done-collapsed', isCollapsed ? '1' : '0')
+    localStorage.setItem('dtr-kb-done-hint-shown', '1')
+  } catch(e) {}
+}
+
+function kbRestoreDoneState() {
+  try {
+    const col = g('kb-col-done')
+    if (!col) return
+    const saved = localStorage.getItem('dtr-kb-done-collapsed')
+    if (saved === '1') col.classList.add('kb-done-collapsed')
+    // Hide hint if user has interacted before
+    if (localStorage.getItem('dtr-kb-done-hint-shown')) {
+      const hint = col.querySelector('.kb-done-hint')
+      if (hint) hint.style.display = 'none'
+    }
+  } catch(e) {}
 }
 
 // ── Open add task modal for kanban ──
