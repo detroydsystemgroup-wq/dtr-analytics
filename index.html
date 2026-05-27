@@ -23580,6 +23580,140 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 </style>
 <!-- ─── End migration ─── -->
 
+
+<style id="dtr-report-blocks">
+/* ═══════════════════════════════════════════════════════
+   REPORT BLOCK SYSTEM — логические секции отчёта
+   Pattern: card header (icon+title+badge) → content body
+═══════════════════════════════════════════════════════ */
+
+/* ── Outer block card ── */
+.rp-block {
+  background: var(--bg2);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  margin-bottom: 20px;
+  transition: border-color .2s;
+}
+.rp-block:hover {
+  border-color: var(--brd2);
+}
+
+/* ── Block header ── */
+.rp-block-hdr {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 24px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--brd);
+  position: relative;
+}
+
+/* ── Icon square ── */
+.rp-block-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Text ── */
+.rp-block-text { flex: 1; min-width: 0; }
+
+.rp-block-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  color: var(--txt);
+  line-height: 1.2;
+}
+
+.rp-block-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--txt3);
+  letter-spacing: .04em;
+  margin-top: 3px;
+}
+
+/* ── Right badge ── */
+.rp-block-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  padding: 5px 13px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Content body ── */
+.rp-block-body {
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Hide redundant .sh headers inside blocks ── */
+.rp-block-body .sh {
+  display: none !important;
+}
+
+/* ── Sub-section label (for AI block) ── */
+.rp-subsection-hdr {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--txt3);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding-top: 8px;
+  border-top: 1px solid var(--brd);
+}
+
+/* ── Fix: chart blocks inside body don't need extra margin ── */
+.rp-block-body .cb { margin-bottom: 0 !important; }
+.rp-block-body .two { margin-bottom: 0 !important; }
+.rp-block-body .kpi-row { margin-bottom: 0 !important; }
+
+/* ── Fix: internal sec divs should show (they control their own visibility) ── */
+.rp-block-body > [id^="sec-"] {
+  display: inherit; /* keep JS-controlled display */
+}
+
+/* ── Entrance animation ── */
+.rp-block {
+  animation: rpBlockIn .4s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes rpBlockIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.rp-block:nth-child(1) { animation-delay: .03s; }
+.rp-block:nth-child(2) { animation-delay: .07s; }
+.rp-block:nth-child(3) { animation-delay: .11s; }
+.rp-block:nth-child(4) { animation-delay: .15s; }
+.rp-block:nth-child(5) { animation-delay: .19s; }
+.rp-block:nth-child(6) { animation-delay: .23s; }
+.rp-block:nth-child(7) { animation-delay: .27s; }
+.rp-block:nth-child(8) { animation-delay: .31s; }
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .rp-block-hdr { padding: 14px 16px; gap: 12px; }
+  .rp-block-body { padding: 14px 16px; gap: 12px; }
+  .rp-block-icon { width: 36px; height: 36px; border-radius: 9px; }
+  .rp-block-title { font-size: 14px; }
+  .rp-block-badge { display: none; }
+}
+</style>
 </head>
 <body>
 
@@ -25887,6 +26021,18 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 
     <!-- ANALYTICS OUTPUT -->
     <div class="analytics-wrap" id="analytics-wrap">
+
+  <!-- ════ БЛОК 1: ОБЗОР ПЕРИОДА ════ -->
+  <div class="rp-block" id="block-overview">
+    <div class="rp-block-hdr">
+      <div class="rp-block-icon" style="background:#c9a84c22;border:1.5px solid #c9a84c44;color:#c9a84c;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><polyline points="2 20 22 20"/></svg></div>
+      <div class="rp-block-text">
+        <div class="rp-block-title">Обзор периода</div>
+        <div class="rp-block-sub">Ключевые показатели · Динамика выручки · Дни недели</div>
+      </div>
+      <div class="rp-block-badge" style="background:#c9a84c15;color:#c9a84c;border:1px solid #c9a84c30;">01 · Основной</div>
+    </div>
+    <div class="rp-block-body">
       <div class="sh"><div class="sh-num">01</div><div class="sh-title" id="sh-compare">Сравнение периодов</div><div class="sh-line"></div></div>
       <div class="hero-compare">
         <div class="hb before">
@@ -25937,6 +26083,34 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
       </div>
 
       <!-- HOURS -->
+      <div id="weekday-section">
+        <div class="sh"><div class="sh-num">📅</div><div class="sh-title">По дням недели</div><div class="sh-line"></div></div>
+        <div class="cb" id="weekday-block">
+          <div class="cb-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Выручка и чеки по дням недели — <span id="lbl-wd-b">Период 1</span> vs <span id="lbl-wd-d">Период 2</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px;">
+            <div style="position:relative;height:220px"><canvas id="cWDR"></canvas></div>
+            <div style="position:relative;height:220px"><canvas id="cWDC"></canvas></div>
+          </div>
+          <div id="weekday-best" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ БЛОК 2: ВРЕМЕННОЙ АНАЛИЗ ════ -->
+  <div class="rp-block" id="block-time" style="display:none;">
+    <div class="rp-block-hdr">
+      <div class="rp-block-icon" style="background:#38b2ac22;border:1.5px solid #38b2ac44;color:#38b2ac;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+      <div class="rp-block-text">
+        <div class="rp-block-title">Временной анализ</div>
+        <div class="rp-block-sub">Паттерны по часам · КПД часа · Пик трафика</div>
+      </div>
+      <div class="rp-block-badge" style="background:#38b2ac15;color:#38b2ac;border:1px solid #38b2ac30;">02 · Почасовой</div>
+    </div>
+    <div class="rp-block-body">
       <div id="sec-hours" style="display:none;">
         <div class="sh"><div class="sh-num">02</div><div class="sh-title">По часам суток</div><div class="sh-line"></div></div>
         <div class="cb">
@@ -25960,24 +26134,65 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
         </div>
 
       </div>
+      <div id="sec-hour-kpd" style="display:none;">
+  <div class="sh"><div class="sh-num">💸</div><div class="sh-title">КПД часа — средний чек по часу</div><div class="sh-line"></div></div>
+  <div class="cb">
+    <div class="cb-title">Средний чек по каждому часу</div>
+    <div class="cb-sub" style="font-family:var(--font-mono);font-size:10px;color:var(--txt2);margin-bottom:10px;">// самые "дорогие" часы — когда гости тратят больше за визит</div>
+    <div style="position:relative;height:220px"><canvas id="cHourAvg"></canvas></div>
+  </div>
+  <div id="hour-kpd-top" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px;"></div>
+</div>
+      <div id="sec-peak-shift" style="display:none;">
+  <div class="sh"><div class="sh-num">⏱️</div><div class="sh-title">Смещение пика трафика</div><div class="sh-line"></div></div>
+  <div id="peak-shift-inner" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;"></div>
+</div>
+    </div>
+  </div>
 
-      <!-- WEEKDAY TREND (from daily b1/d1 data) -->
-      <div id="weekday-section">
-        <div class="sh"><div class="sh-num">📅</div><div class="sh-title">По дням недели</div><div class="sh-line"></div></div>
-        <div class="cb" id="weekday-block">
-          <div class="cb-title">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            Выручка и чеки по дням недели — <span id="lbl-wd-b">Период 1</span> vs <span id="lbl-wd-d">Период 2</span>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px;">
-            <div style="position:relative;height:220px"><canvas id="cWDR"></canvas></div>
-            <div style="position:relative;height:220px"><canvas id="cWDC"></canvas></div>
-          </div>
-          <div id="weekday-best" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;"></div>
-        </div>
+  <!-- ════ БЛОК 3: ТРЕНДЫ И АНОМАЛИИ ════ -->
+  <div class="rp-block" id="block-trends" style="display:none;">
+    <div class="rp-block-hdr">
+      <div class="rp-block-icon" style="background:#3ecf8e22;border:1.5px solid #3ecf8e44;color:#3ecf8e;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
+      <div class="rp-block-text">
+        <div class="rp-block-title">Тренды и аномалии</div>
+        <div class="rp-block-sub">Скользящее среднее · Рекорды периода · Выбросы</div>
       </div>
+      <div class="rp-block-badge" style="background:#3ecf8e15;color:#3ecf8e;border:1px solid #3ecf8e30;">03 · Тренды</div>
+    </div>
+    <div class="rp-block-body">
+      <div id="sec-trend" style="display:none;">
+  <div class="sh"><div class="sh-num">📈</div><div class="sh-title">Тренд и аномалии</div><div class="sh-line"></div></div>
+  <div class="two">
+    <div class="cb">
+      <div class="cb-title">Скользящее среднее 7 дней</div>
+      <div class="cb-sub" style="font-family:var(--font-mono);font-size:10px;color:var(--txt2);margin-bottom:10px;">// сглаживает дни-выбросы, показывает реальный тренд</div>
+      <div style="position:relative;height:220px"><canvas id="cTrend"></canvas></div>
+    </div>
+    <div class="cb">
+      <div class="cb-title">Рекорды периода</div>
+      <div id="trend-records" style="display:flex;flex-direction:column;gap:10px;margin-top:6px;"></div>
+    </div>
+  </div>
+  <div class="cb" style="margin-top:14px;">
+    <div class="cb-title">% дней выше среднего базового периода</div>
+    <div id="trend-above-base" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:10px;"></div>
+  </div>
+</div>
+    </div>
+  </div>
 
-      <!-- ITEMS -->
+  <!-- ════ БЛОК 4: МЕНЮ ════ -->
+  <div class="rp-block" id="block-menu" style="display:none;">
+    <div class="rp-block-hdr">
+      <div class="rp-block-icon" style="background:#e8993a22;border:1.5px solid #e8993a44;color:#e8993a;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div>
+      <div class="rp-block-text">
+        <div class="rp-block-title">Аналитика меню</div>
+        <div class="rp-block-sub">Топ позиций · Ротация · Новые лидеры и выпавшие</div>
+      </div>
+      <div class="rp-block-badge" style="background:#e8993a15;color:#e8993a;border:1px solid #e8993a30;">04 · Меню</div>
+    </div>
+    <div class="rp-block-body">
       <div id="sec-items" style="display:none;">
         <div class="sh"><div class="sh-num" id="sn3">03</div><div class="sh-title">Топ позиций меню</div><div class="sh-line"></div></div>
         <div class="two">
@@ -25989,8 +26204,88 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
           <div class="cb"><div class="cb-title">По количеству · <span id="lbl-d5">Период 2</span></div><div id="lDQ"></div></div>
         </div>
       </div>
+      <div id="sec-menu-rotation" style="display:none;">
+  <div class="sh"><div class="sh-num">🔄</div><div class="sh-title">Ротация меню между периодами</div><div class="sh-line"></div></div>
+  <div class="two">
+    <div class="cb">
+      <div class="cb-title" style="color:var(--green);">⭐ Новые лидеры</div>
+      <div class="cb-sub" style="font-family:var(--font-mono);font-size:10px;color:var(--txt2);margin-bottom:10px;">// не были в топ-10 базового, вошли в топ-10 таргета</div>
+      <div id="menu-new-leaders"></div>
+    </div>
+    <div class="cb">
+      <div class="cb-title" style="color:var(--red);">📉 Выпавшие позиции</div>
+      <div class="cb-sub" style="font-family:var(--font-mono);font-size:10px;color:var(--txt2);margin-bottom:10px;">// были в топ-10 базового, выпали из топ-10 таргета</div>
+      <div id="menu-dropped"></div>
+    </div>
+  </div>
+  <div class="cb" style="margin-top:14px;">
+    <div class="cb-title">Изменение позиции в рейтинге (топ-15 по выручке)</div>
+    <div id="menu-rank-change" style="display:flex;flex-direction:column;gap:6px;margin-top:10px;"></div>
+  </div>
+</div>
+    </div>
+  </div>
 
-      <!-- BRANCHES -->
+  <!-- ════ БЛОК 5: КАНАЛЫ ПРОДАЖ ════ -->
+  <div class="rp-block" id="block-channels" style="display:none;">
+    <div class="rp-block-hdr">
+      <div class="rp-block-icon" style="background:#b06fc022;border:1.5px solid #b06fc044;color:#b06fc0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49"/><path d="M7.76 16.24a6 6 0 0 1 0-8.49"/><path d="M20.48 3.52a12 12 0 0 1 0 16.97"/><path d="M3.52 20.48a12 12 0 0 1 0-16.97"/></svg></div>
+      <div class="rp-block-text">
+        <div class="rp-block-title">Каналы продаж</div>
+        <div class="rp-block-sub">Типы заказов · Ср. чек по каналу · Доставка</div>
+      </div>
+      <div class="rp-block-badge" style="background:#b06fc015;color:#b06fc0;border:1px solid #b06fc030;">05 · Каналы</div>
+    </div>
+    <div class="rp-block-body">
+      <div id="sec-order-types" style="display:none;">
+        <div class="sh"><div class="sh-num">📦</div><div class="sh-title">Типы заказов</div><div class="sh-line"></div></div>
+        <div class="two">
+          <div class="cb"><div class="cb-title"><span id="lbl-ot-b">Период 1</span> — доли типов</div><div id="otB"></div></div>
+          <div class="cb"><div class="cb-title"><span id="lbl-ot-d">Период 2</span> — доли типов</div><div id="otD"></div></div>
+        </div>
+        <div class="cb">
+          <div class="cb-title">Динамика по часам — <span id="lbl-ot-d2">Период 2</span></div>
+          <div style="position:relative;height:250px"><canvas id="cStack"></canvas></div>
+        </div>
+      </div>
+      <div id="avg-channel-section" style="display:none;">
+        <div class="sh">
+          <div class="sh-num"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--a)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+          <div class="sh-title">Средний чек по каналу продаж</div>
+          <div class="sh-line"></div>
+        </div>
+        <div id="avg-channel-inner" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:28px;"></div>
+      </div>
+      <div id="sec-channel-revenue" style="display:none;">
+  <div class="sh"><div class="sh-num">📊</div><div class="sh-title">Доходность канала продаж</div><div class="sh-line"></div></div>
+  <div class="cb">
+    <div class="cb-title">Выручка по каналу — <span id="lbl-ch-d">Период 2</span></div>
+    <div style="position:relative;height:200px"><canvas id="cChannelRev"></canvas></div>
+  </div>
+  <div id="channel-revenue-cards" style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:14px;"></div>
+</div>
+      <div id="sec-delivery-time" style="display:none;">
+  <div class="sh"><div class="sh-num">🌙</div><div class="sh-title">Доставка по времени суток</div><div class="sh-line"></div></div>
+  <div class="cb">
+    <div class="cb-title">Когда работает каждый канал — <span id="lbl-del-d">Период 2</span></div>
+    <div class="cb-sub" style="font-family:var(--font-mono);font-size:10px;color:var(--txt2);margin-bottom:10px;">// часы пиковой нагрузки по каждому типу заказа</div>
+    <div id="delivery-time-segs" style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:10px;"></div>
+  </div>
+</div>
+    </div>
+  </div>
+
+  <!-- ════ БЛОК 6: ФИЛИАЛЫ ════ -->
+  <div class="rp-block" id="block-branches" style="display:none;">
+    <div class="rp-block-hdr">
+      <div class="rp-block-icon" style="background:#8b5cf622;border:1.5px solid #8b5cf644;color:#8b5cf6;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <div class="rp-block-text">
+        <div class="rp-block-title">Аналитика по филиалам</div>
+        <div class="rp-block-sub">Сравнение точек · Вклад в общий рост</div>
+      </div>
+      <div class="rp-block-badge" style="background:#8b5cf615;color:#8b5cf6;border:1px solid #8b5cf630;">06 · Филиалы</div>
+    </div>
+    <div class="rp-block-body">
       <div id="sec-branch" style="display:none;">
         <div class="sh"><div class="sh-num" id="sn4">04</div><div class="sh-title">Аналитика по филиалам</div><div class="sh-line"></div></div>
         <div style="background:var(--bg3);border:1px solid var(--brd);border-radius:14px;padding:20px;margin-bottom:16px;">
@@ -26010,8 +26305,24 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
         </div>
         <div class="cb"><div class="cb-title">Рейтинг филиалов</div><div id="branch-rating" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px;"></div></div>
       </div>
+      <div id="sec-branch-contrib" style="display:none;">
+  <div class="sh"><div class="sh-num">🎯</div><div class="sh-title">Вклад филиалов в общий результат</div><div class="sh-line"></div></div>
+  <div id="branch-contrib-inner" style="display:flex;flex-direction:column;gap:8px;"></div>
+</div>
+    </div>
+  </div>
 
-      <!-- ROI АГЕНТСТВА — Phase 5 -->
+  <!-- ════ БЛОК 7: ФИНАНСЫ И ПРОГНОЗ ════ -->
+  <div class="rp-block" id="block-finance" style="display:none;">
+    <div class="rp-block-hdr">
+      <div class="rp-block-icon" style="background:#c9a84c22;border:1.5px solid #c9a84c44;color:#c9a84c;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+      <div class="rp-block-text">
+        <div class="rp-block-title">Финансы и прогноз</div>
+        <div class="rp-block-sub">ROI · KPI план/факт · Прогноз на следующий период</div>
+      </div>
+      <div class="rp-block-badge" style="background:#c9a84c15;color:#c9a84c;border:1px solid #c9a84c30;">07 · Финансы</div>
+    </div>
+    <div class="rp-block-body">
       <div id="sec-roi" style="display:none;">
         <div class="sh">
           <div class="sh-num">
@@ -26023,8 +26334,6 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
         </div>
         <div id="roi-block-content" style="margin-bottom:24px;"></div>
       </div>
-
-      <!-- KPI ПЛАН VS ФАКТ — Экосистемная связка -->
       <div id="sec-kpi-pf" style="display:none;">
         <div class="sh">
           <div class="sh-num">
@@ -26036,35 +26345,6 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
         </div>
         <div id="kpi-pf-table" style="display:grid;gap:10px;margin-bottom:24px;"></div>
       </div>
-
-      <!-- AI -->
-      <div class="sh"><div class="sh-num">AI</div><div class="sh-title">Интеллектуальный анализ</div><div class="sh-line"></div>
-        <button class="btn-ghost" style="font-size:11px;" id="ai-btn" onclick="runAI()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          Запустить AI анализ
-        </button>
-      </div>
-      <div class="ai-block">
-        <div class="ai-top-line"></div>
-        <div class="ai-head">
-          <div class="ai-info">
-            <div class="ai-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--a2)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 014 4v1h1a3 3 0 013 3v6a3 3 0 01-3 3H7a3 3 0 01-3-3V10a3 3 0 013-3h1V6a4 4 0 014-4z"/><circle cx="9" cy="13" r="1" fill="var(--a2)"/><circle cx="15" cy="13" r="1" fill="var(--a2)"/><path d="M9 17c1 1 5 1 6 0"/></svg></div>
-            <div><div class="ai-title">DTR Intelligence</div><div class="ai-sub">Powered by Claude AI</div></div>
-          </div>
-          <div id="ai-status" style="font-size:11px;color:var(--txt2);font-family:var(--font-display);"></div>
-        </div>
-        <div class="ai-body" id="ai-output">
-          <div style="text-align:center;padding:32px;color:var(--txt2);">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--txt3)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 14px;display:block;opacity:.4;"><path d="M12 2a4 4 0 014 4v1h1a3 3 0 013 3v6a3 3 0 01-3 3H7a3 3 0 01-3-3V10a3 3 0 013-3h1V6a4 4 0 014-4z"/><circle cx="9" cy="13" r="1" fill="currentColor"/><circle cx="15" cy="13" r="1" fill="currentColor"/><path d="M9 17c1 1 5 1 6 0"/></svg>
-            <div style="font-size:13px;margin-bottom:5px;">Нажми "Запустить AI анализ"</div>
-            <div style="font-size:11px;color:var(--txt3);font-family:var(--font-display);">Система объяснит результаты и даст рекомендации</div>
-          </div>
-        </div>
-      </div>
-
-      </div>
-
-      <!-- ПРОГНОЗ СЛЕДУЮЩЕГО ПЕРИОДА — Phase 6 -->
       <div id="sec-forecast" style="display:none;">
         <div class="sh">
           <div class="sh-num">
@@ -26093,118 +26373,47 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
           Нужно минимум 2 опубликованных отчёта с данными для построения прогноза
         </div>
       </div>
+    </div>
+  </div>
 
-      <!-- СРЕДНИЙ ЧЕК ПО КАНАЛУ ПРОДАЖ -->
-      <div id="avg-channel-section" style="display:none;">
-        <div class="sh">
-          <div class="sh-num"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--a)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-          <div class="sh-title">Средний чек по каналу продаж</div>
-          <div class="sh-line"></div>
-        </div>
-        <div id="avg-channel-inner" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:28px;"></div>
+  <!-- ════ БЛОК 8: AI-АНАЛИЗ И ВЫВОДЫ ════ -->
+  <div class="rp-block" id="block-ai">
+    <div class="rp-block-hdr">
+      <div class="rp-block-icon" style="background:#6366f122;border:1.5px solid #6366f144;color:#6366f1;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+      <div class="rp-block-text">
+        <div class="rp-block-title">AI-анализ и выводы</div>
+        <div class="rp-block-sub">Интеллектуальный разбор · Рекомендации · Риски</div>
       </div>
-
-      <!-- ТИПЫ ЗАКАЗОВ -->
-      <div id="sec-order-types" style="display:none;">
-        <div class="sh"><div class="sh-num">📦</div><div class="sh-title">Типы заказов</div><div class="sh-line"></div></div>
-        <div class="two">
-          <div class="cb"><div class="cb-title"><span id="lbl-ot-b">Период 1</span> — доли типов</div><div id="otB"></div></div>
-          <div class="cb"><div class="cb-title"><span id="lbl-ot-d">Период 2</span> — доли типов</div><div id="otD"></div></div>
+      <div class="rp-block-badge" style="background:#6366f115;color:#6366f1;border:1px solid #6366f130;">08 · AI</div>
+    </div>
+    <div class="rp-block-body">
+      <div class="sh"><div class="sh-num">AI</div><div class="sh-title">Интеллектуальный анализ</div><div class="sh-line"></div>
+        <button class="btn-ghost" style="font-size:11px;" id="ai-btn" onclick="runAI()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Запустить AI анализ
+        </button>
+      </div>
+      <div class="ai-block">
+        <div class="ai-top-line"></div>
+        <div class="ai-head">
+          <div class="ai-info">
+            <div class="ai-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--a2)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 014 4v1h1a3 3 0 013 3v6a3 3 0 01-3 3H7a3 3 0 01-3-3V10a3 3 0 013-3h1V6a4 4 0 014-4z"/><circle cx="9" cy="13" r="1" fill="var(--a2)"/><circle cx="15" cy="13" r="1" fill="var(--a2)"/><path d="M9 17c1 1 5 1 6 0"/></svg></div>
+            <div><div class="ai-title">DTR Intelligence</div><div class="ai-sub">Powered by Claude AI</div></div>
+          </div>
+          <div id="ai-status" style="font-size:11px;color:var(--txt2);font-family:var(--font-display);"></div>
         </div>
-        <div class="cb">
-          <div class="cb-title">Динамика по часам — <span id="lbl-ot-d2">Период 2</span></div>
-          <div style="position:relative;height:250px"><canvas id="cStack"></canvas></div>
+        <div class="ai-body" id="ai-output">
+          <div style="text-align:center;padding:32px;color:var(--txt2);">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--txt3)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 14px;display:block;opacity:.4;"><path d="M12 2a4 4 0 014 4v1h1a3 3 0 013 3v6a3 3 0 01-3 3H7a3 3 0 01-3-3V10a3 3 0 013-3h1V6a4 4 0 014-4z"/><circle cx="9" cy="13" r="1" fill="currentColor"/><circle cx="15" cy="13" r="1" fill="currentColor"/><path d="M9 17c1 1 5 1 6 0"/></svg>
+            <div style="font-size:13px;margin-bottom:5px;">Нажми "Запустить AI анализ"</div>
+            <div style="font-size:11px;color:var(--txt3);font-family:var(--font-display);">Система объяснит результаты и даст рекомендации</div>
+          </div>
         </div>
       </div>
-
-<!-- ① ТРЕНД-ЛИНИЯ 7 ДНЕЙ + ЛУЧШИЙ/ХУДШИЙ ДЕНЬ (из b1/d1) -->
-<div id="sec-trend" style="display:none;">
-  <div class="sh"><div class="sh-num">📈</div><div class="sh-title">Тренд и аномалии</div><div class="sh-line"></div></div>
-  <div class="two">
-    <div class="cb">
-      <div class="cb-title">Скользящее среднее 7 дней</div>
-      <div class="cb-sub" style="font-family:var(--font-mono);font-size:10px;color:var(--txt2);margin-bottom:10px;">// сглаживает дни-выбросы, показывает реальный тренд</div>
-      <div style="position:relative;height:220px"><canvas id="cTrend"></canvas></div>
-    </div>
-    <div class="cb">
-      <div class="cb-title">Рекорды периода</div>
-      <div id="trend-records" style="display:flex;flex-direction:column;gap:10px;margin-top:6px;"></div>
-    </div>
-  </div>
-  <div class="cb" style="margin-top:14px;">
-    <div class="cb-title">% дней выше среднего базового периода</div>
-    <div id="trend-above-base" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:10px;"></div>
-  </div>
-</div>
-
-<!-- ② КПД ЧАСА — выручка/чек (самый "дорогой" час) из b2/d2 -->
-<div id="sec-hour-kpd" style="display:none;">
-  <div class="sh"><div class="sh-num">💸</div><div class="sh-title">КПД часа — средний чек по часу</div><div class="sh-line"></div></div>
-  <div class="cb">
-    <div class="cb-title">Средний чек по каждому часу</div>
-    <div class="cb-sub" style="font-family:var(--font-mono);font-size:10px;color:var(--txt2);margin-bottom:10px;">// самые "дорогие" часы — когда гости тратят больше за визит</div>
-    <div style="position:relative;height:220px"><canvas id="cHourAvg"></canvas></div>
-  </div>
-  <div id="hour-kpd-top" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px;"></div>
-</div>
-
-<!-- ③ СМЕЩЕНИЕ ПИКА ТРАФИКА (из b2/d2) -->
-<div id="sec-peak-shift" style="display:none;">
-  <div class="sh"><div class="sh-num">⏱️</div><div class="sh-title">Смещение пика трафика</div><div class="sh-line"></div></div>
-  <div id="peak-shift-inner" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;"></div>
-</div>
-
-<!-- ④ РОТАЦИЯ ПОЗИЦИЙ МЕНЮ (из b3/d3) -->
-<div id="sec-menu-rotation" style="display:none;">
-  <div class="sh"><div class="sh-num">🔄</div><div class="sh-title">Ротация меню между периодами</div><div class="sh-line"></div></div>
-  <div class="two">
-    <div class="cb">
-      <div class="cb-title" style="color:var(--green);">⭐ Новые лидеры</div>
-      <div class="cb-sub" style="font-family:var(--font-mono);font-size:10px;color:var(--txt2);margin-bottom:10px;">// не были в топ-10 базового, вошли в топ-10 таргета</div>
-      <div id="menu-new-leaders"></div>
-    </div>
-    <div class="cb">
-      <div class="cb-title" style="color:var(--red);">📉 Выпавшие позиции</div>
-      <div class="cb-sub" style="font-family:var(--font-mono);font-size:10px;color:var(--txt2);margin-bottom:10px;">// были в топ-10 базового, выпали из топ-10 таргета</div>
-      <div id="menu-dropped"></div>
-    </div>
-  </div>
-  <div class="cb" style="margin-top:14px;">
-    <div class="cb-title">Изменение позиции в рейтинге (топ-15 по выручке)</div>
-    <div id="menu-rank-change" style="display:flex;flex-direction:column;gap:6px;margin-top:10px;"></div>
-  </div>
-</div>
-
-<!-- ⑤ ДОХОДНОСТЬ КАНАЛА (из b4/d4) -->
-<div id="sec-channel-revenue" style="display:none;">
-  <div class="sh"><div class="sh-num">📊</div><div class="sh-title">Доходность канала продаж</div><div class="sh-line"></div></div>
-  <div class="cb">
-    <div class="cb-title">Выручка по каналу — <span id="lbl-ch-d">Период 2</span></div>
-    <div style="position:relative;height:200px"><canvas id="cChannelRev"></canvas></div>
-  </div>
-  <div id="channel-revenue-cards" style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:14px;"></div>
-</div>
-
-<!-- ⑥ ДОСТАВКА ПО ВРЕМЕНИ СУТОК (из b4/d4) -->
-<div id="sec-delivery-time" style="display:none;">
-  <div class="sh"><div class="sh-num">🌙</div><div class="sh-title">Доставка по времени суток</div><div class="sh-line"></div></div>
-  <div class="cb">
-    <div class="cb-title">Когда работает каждый канал — <span id="lbl-del-d">Период 2</span></div>
-    <div class="cb-sub" style="font-family:var(--font-mono);font-size:10px;color:var(--txt2);margin-bottom:10px;">// часы пиковой нагрузки по каждому типу заказа</div>
-    <div id="delivery-time-segs" style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:10px;"></div>
-  </div>
-</div>
-
-<!-- ⑦ ВКЛАД ФИЛИАЛА В ОБЩИЙ РОСТ (из b5/d5) -->
-<div id="sec-branch-contrib" style="display:none;">
-  <div class="sh"><div class="sh-num">🎯</div><div class="sh-title">Вклад филиалов в общий результат</div><div class="sh-line"></div></div>
-  <div id="branch-contrib-inner" style="display:flex;flex-direction:column;gap:8px;"></div>
-</div>
-
-
-      <!-- INSIGHTS -->
-      <div class="sh"><div class="sh-num">★</div><div class="sh-title">Ключевые выводы</div><div class="sh-line"></div></div>
+      <div class="rp-subsection-hdr">Ключевые выводы</div>
       <div id="ins-block"></div>
+    </div>
+  </div>
 
       <div style="height:60px;"></div>
     </div>
@@ -28550,6 +28759,16 @@ function mkChart(id, type, data, opts) {
   CH[id] = new Chart(canvas, { type, data, options: { responsive:true, maintainAspectRatio:false, ...opts } })
 }
 
+
+// ── Block visibility helpers ──
+function showBlock(blockId) {
+  const b = document.getElementById(blockId);
+  if (b) b.style.display = 'block';
+}
+function hideBlock(blockId) {
+  const b = document.getElementById(blockId);
+  if (b) b.style.display = 'none';
+}
 function runAnalysis() {
   const b = S['b1'], d = S['d1']
   if (!b || !d) return
@@ -28622,7 +28841,7 @@ function runAnalysis() {
 
   // Hours
   if (S['b2'] || S['d2']) {
-    g('sec-hours').style.display = 'block'
+    g('sec-hours').style.display = 'block'; showBlock('block-time')
     const h2b = S['b2'], h2d = S['d2']
     const aggH = src => {
       const m = {}; src.rows.forEach(r => { if(!m[r.label])m[r.label]={rev:0,chk:0}; m[r.label].rev+=r.rev; m[r.label].chk+=r.chk }); return m
@@ -28647,7 +28866,7 @@ function runAnalysis() {
 
   // Items
   if (S['b3'] || S['d3']) {
-    g('sec-items').style.display = 'block'
+    g('sec-items').style.display = 'block'; showBlock('block-menu')
     const medals = ['🥇','🥈','🥉']
     const mkList = (src, vFn, color, elId) => {
       if (!src) { g(elId).innerHTML = `<div style="color:var(--txt2);font-size:12px;padding:16px;font-family:var(--font-display);">Файл не загружен</div>`; return }
@@ -28663,7 +28882,7 @@ function runAnalysis() {
 
   // Branch
   if (S['b5'] || S['d5']) {
-    g('sec-branch').style.display = 'block'
+    g('sec-branch').style.display = 'block'; showBlock('block-branches')
     const allBranches = [...new Set([...Object.keys(S['b5']?.branches||{}),...Object.keys(S['d5']?.branches||{})])]
     activeBranches = new Set(allBranches)
     const tog = g('branch-toggles')
@@ -28736,7 +28955,7 @@ function runAnalysis() {
 
   // ── ТИПЫ ЗАКАЗОВ + СРЕДНИЙ ЧЕК ПО КАНАЛУ ──
   if (S['b4'] || S['d4']) {
-    g('sec-order-types').style.display = 'block'
+    g('sec-order-types').style.display = 'block'; showBlock('block-channels')
     const lbOT = g('lbl-ot-b'), ldOT = g('lbl-ot-d'), ldOT2 = g('lbl-ot-d2')
     if(lbOT) lbOT.textContent = LABEL_B
     if(ldOT) ldOT.textContent = LABEL_D
@@ -28799,7 +29018,7 @@ function runAnalysis() {
     if (allTypes.length) {
       const maxAvg = Math.max(...allTypes.map(k=>{const b2=tb[k],d2=td2[k];return Math.max(b2&&b2.chk?Math.round(b2.rev/b2.chk):0,d2&&d2.chk?Math.round(d2.rev/d2.chk):0);}))
       const fmt2 = v => new Intl.NumberFormat('ru-RU').format(v)
-      g('avg-channel-section').style.display = 'block'
+      g('avg-channel-section').style.display = 'block'; showBlock('block-channels')
       g('avg-channel-inner').innerHTML = allTypes.map(k => {
         const b2=tb[k]||{chk:0,rev:0}, d2=td2[k]||{chk:0,rev:0}
         const bAvg=b2.chk?Math.round(b2.rev/b2.chk):0, dAvg=d2.chk?Math.round(d2.rev/d2.chk):0
@@ -29309,6 +29528,7 @@ async function buildForecast(currentMetrics) {
 
   g('fc-insufficient').style.display = 'none'
   sec.style.display = 'block'
+  showBlock('block-finance')
 
   // Run regressions
   const regRD  = _linReg(dataPoints.map(p => ({ x: p.x, y: p.rRD })))
@@ -31147,7 +31367,7 @@ async function syncKPIFacts(metrics) {
   }).join('')
 
   if (anyLinked) {
-    sec.style.display = 'block'
+    sec.style.display = 'block'; showBlock('block-finance')
     // Write facts back to passport in Supabase
     try {
       if (currentProject) {
@@ -33884,7 +34104,7 @@ function runNewBlocks() {
   // ─────────────────────────────────────────────────────────
   if (b1 && d1) {
     var el = document.getElementById('sec-trend');
-    if (el) el.style.display = 'block';
+    if (el) el.style.display = 'block';; showBlock('block-trends');
 
     // Скользящее среднее 7 дней
     var ma7 = function(arr, w) {
@@ -33962,7 +34182,7 @@ function runNewBlocks() {
   // ─────────────────────────────────────────────────────────
   if (b2 || d2) {
     var kpdEl = document.getElementById('sec-hour-kpd');
-    if (kpdEl) kpdEl.style.display = 'block';
+    if (kpdEl) kpdEl.style.display = 'block';; showBlock('block-time');
     var aggH = function(src) {
       var m = {};
       src.rows.forEach(function(r){ if(!m[r.label])m[r.label]={rev:0,chk:0}; m[r.label].rev+=r.rev; m[r.label].chk+=r.chk; });
@@ -34003,7 +34223,7 @@ function runNewBlocks() {
   // ─────────────────────────────────────────────────────────
   if (b2 && d2) {
     var psEl = document.getElementById('sec-peak-shift');
-    if (psEl) psEl.style.display = 'block';
+    if (psEl) psEl.style.display = 'block';; showBlock('block-time');
     var aggPS = function(src) {
       var m = {}; src.rows.forEach(function(r){ if(!m[r.label])m[r.label]={rev:0,chk:0}; m[r.label].rev+=r.rev; m[r.label].chk+=r.chk; }); return m;
     };
@@ -34060,7 +34280,7 @@ function runNewBlocks() {
   // ─────────────────────────────────────────────────────────
   if (b3 && d3) {
     var mrEl = document.getElementById('sec-menu-rotation');
-    if (mrEl) mrEl.style.display = 'block';
+    if (mrEl) mrEl.style.display = 'block';; showBlock('block-menu');
     var sortByRev = function(src) { return [...src.rows].filter(function(r){ return r.rev>0; }).sort(function(a,b){ return b.rev-a.rev; }); };
     var bSorted = sortByRev(b3), dSorted = sortByRev(d3);
     var top10B = bSorted.slice(0,10).map(function(r){ return r.label; });
@@ -34109,7 +34329,7 @@ function runNewBlocks() {
   // ─────────────────────────────────────────────────────────
   if (b4 || d4) {
     var crEl = document.getElementById('sec-channel-revenue');
-    if (crEl) crEl.style.display = 'block';
+    if (crEl) crEl.style.display = 'block';; showBlock('block-channels');
     var lblChD = document.getElementById('lbl-ch-d');
     if (lblChD) lblChD.textContent = LABEL_D;
 
@@ -34180,7 +34400,7 @@ function runNewBlocks() {
   // ─────────────────────────────────────────────────────────
   if (b4 || d4) {
     var dtEl = document.getElementById('sec-delivery-time');
-    if (dtEl) dtEl.style.display = 'block';
+    if (dtEl) dtEl.style.display = 'block';; showBlock('block-channels');
     var lblDelD = document.getElementById('lbl-del-d');
     if (lblDelD) lblDelD.textContent = LABEL_D;
 
@@ -34232,7 +34452,7 @@ function runNewBlocks() {
   // ─────────────────────────────────────────────────────────
   if (b5 && d5) {
     var bcEl = document.getElementById('sec-branch-contrib');
-    if (bcEl) bcEl.style.display = 'block';
+    if (bcEl) bcEl.style.display = 'block';; showBlock('block-branches');
     var bBr = b5.branches || {}, dBr = d5.branches || {};
     var dDaysBr = d1 ? (d1.meta.days||d1.rows.length) : 1;
     var bDaysBr = b1 ? (b1.meta.days||b1.rows.length) : 1;
