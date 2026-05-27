@@ -8644,6 +8644,168 @@ input, select, textarea {
   });
 })();
 
+// ════════════════════════════════════════
+// PDF ЭКСПОРТ
+// ════════════════════════════════════════
+function exportReportPDF() {
+  // Создаём обёртку для печати
+  var wrap = document.getElementById('print-root');
+  if (!wrap) {
+    wrap = document.createElement('div');
+    wrap.id = 'print-root';
+    wrap.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;z-index:999999;';
+    document.body.appendChild(wrap);
+  }
+  // Клонируем отчёт
+  var rp = document.getElementById('page-report');
+  var aw = document.getElementById('analytics-wrap');
+  if (!rp || !aw) { alert('Сначала загрузите отчёт'); return; }
+  wrap.innerHTML = '';
+  var clone = aw.cloneNode(true);
+  // Убираем кнопки и интерактивные элементы
+  clone.querySelectorAll('#ob-toggle-bar,button,.go-btn').forEach(function(el){el.remove();});
+  wrap.appendChild(clone);
+  document.body.style.visibility = 'hidden';
+  wrap.style.display = 'block';
+  wrap.style.visibility = 'visible';
+  setTimeout(function() {
+    window.print();
+    setTimeout(function() {
+      wrap.style.display = 'none';
+      document.body.style.visibility = '';
+    }, 500);
+  }, 200);
+}
+
+// ════════════════════════════════════════
+// CONTRIBUTOR ANALYSIS В ИНСАЙТАХ
+// (уже в waterfall, добавляем в текстовый summary)
+// ════════════════════════════════════════
+function getContributorInsight(bRD, dRD, bCD, dCD, bA, dA) {
+  var tc = (dCD - bCD) * bA;
+  var cc = (dA  - bA)  * bCD;
+  var total = Math.abs(tc) + Math.abs(cc) || 1;
+  var tShare = Math.round(Math.abs(tc) / total * 100);
+  var cShare = 100 - tShare;
+  var gr = dRD - bRD;
+  if (Math.abs(gr) < 1000) return null;
+  var dominant = Math.abs(tc) > Math.abs(cc) ? 'traffic' : 'check';
+  if (dominant === 'traffic') {
+    return {
+      ic: '👥',
+      t: 'Рост пришёл на <b>' + tShare + '%</b> от трафика (больше гостей) '
+       + 'и на <b>' + cShare + '%</b> от среднего чека.'
+       + (tShare > 70 ? ' <span style="color:var(--cyan)">→ фокус на удержании новых гостей</span>' : '')
+    };
+  } else {
+    return {
+      ic: '💎',
+      t: 'Рост пришёл на <b>' + cShare + '%</b> от среднего чека (гости тратят больше) '
+       + 'и на <b>' + tShare + '%</b> от трафика.'
+       + (cShare > 70 ? ' <span style="color:var(--green)">→ хорошая монетизация аудитории</span>' : '')
+    };
+  }
+}
+
+// ════════════════════════════════════════
+// FOOD COST / МАРЖА — опциональный блок
+// ════════════════════════════════════════
+var _foodCostPct = null; // null = не задан
+
+function renderFoodCostBlock(dRD, dA, d3) {
+  var el = document.getElementById('food-cost-inner');
+  if (!el) return;
+  var fc = _foodCostPct;
+  if (!fc) {
+    // Показываем приглашение ввести food cost
+    el.innerHTML = '<div style="background:rgba(184,146,58,.06);border:1px solid rgba(184,146,58,.2);border-radius:14px;padding:18px 20px;display:flex;align-items:center;gap:16px;">'
+      + '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(184,146,58,.6)" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v2m0 8v2M9.5 9.5a2.5 2.5 0 015 0c0 1.5-1.5 2-2.5 2.5S9.5 13 9.5 14.5a2.5 2.5 0 005 0"/></svg>'
+      + '<div style="flex:1;">'
+      + '<div style="font-size:13px;font-weight:600;margin-bottom:4px;">Укажите food cost для расчёта маржи</div>'
+      + '<div style="font-size:11px;color:var(--txt2);font-family:var(--font-mono);margin-bottom:10px;">Food cost — доля себестоимости продуктов в выручке. Обычно 25–40% для фастфуда.</div>'
+      + '<div style="display:flex;align-items:center;gap:8px;">'
+      + '<input id="food-cost-inp" type="number" min="1" max="99" placeholder="30" style="width:70px;background:var(--bg3);border:1px solid var(--brd2);border-radius:8px;padding:6px 10px;color:var(--txt);font-family:var(--font-mono);font-size:13px;outline:none;">'
+      + '<span style="font-size:13px;color:var(--txt2);">%</span>'
+      + '<button onclick="applyFoodCost()" style="padding:6px 14px;border-radius:8px;background:var(--a2);border:none;color:#000;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font-mono);">Применить</button>'
+      + '</div></div></div>';
+    el.style.display = 'block';
+    return;
+  }
+
+  // Считаем маржинальность
+  var grossMarginPct = 100 - fc;
+  var grossMargin    = dRD * grossMarginPct / 100;
+  var fmtM2 = function(v){ return new Intl.NumberFormat('ru-RU').format(Math.round(v)); };
+
+  var html = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;">'
+    // Food cost
+    + '<div style="background:var(--bg3);border:1px solid rgba(248,113,113,.2);border-top:3px solid #f87171;border-radius:12px;padding:16px;">'
+    + '<div style="font-size:9px;color:var(--txt3);font-family:var(--font-mono);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">Food Cost</div>'
+    + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:42px;line-height:1;color:#f87171;">' + fc + '<span style="font-size:18px;">%</span></div>'
+    + '<div style="font-size:11px;color:var(--txt2);margin-top:6px;">' + fmtM2(dRD * fc / 100) + ' сум/день — себестоимость</div>'
+    + '</div>'
+    // Валовая маржа
+    + '<div style="background:var(--bg3);border:1px solid rgba(0,229,163,.2);border-top:3px solid var(--green);border-radius:12px;padding:16px;">'
+    + '<div style="font-size:9px;color:var(--txt3);font-family:var(--font-mono);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">Валовая маржа</div>'
+    + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:42px;line-height:1;color:var(--green);">' + grossMarginPct + '<span style="font-size:18px;">%</span></div>'
+    + '<div style="font-size:11px;color:var(--txt2);margin-top:6px;">' + fmtM2(grossMargin) + ' сум/день — маржа</div>'
+    + '</div>'
+    // Маржа / чек
+    + '<div style="background:var(--bg3);border:1px solid rgba(184,146,58,.2);border-top:3px solid var(--a2);border-radius:12px;padding:16px;">'
+    + '<div style="font-size:9px;color:var(--txt3);font-family:var(--font-mono);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">Маржа / чек</div>'
+    + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:32px;line-height:1;color:var(--a2);">' + fmtM2(dA * grossMarginPct / 100) + '</div>'
+    + '<div style="font-size:11px;color:var(--txt2);margin-top:6px;">сум чистой маржи с каждого чека</div>'
+    + '</div>'
+    + '</div>';
+
+  // Маржинальность по категориям меню (если есть d3)
+  if (d3 && d3.rows && d3.rows.length) {
+    var DRINK_KW = ['Cola','Coca','Fanta','Sprite','Choy','Tea','Suv','Sok','kofe','Cofee','limon','Malina','Fuse','Ays','PEPSI'];
+    var cats = {main:{lb:'Основное',fc:fc*0.8},drink:{lb:'Напитки',fc:fc*0.3},other:{lb:'Прочее',fc:fc}};
+    var catData = {main:{rev:0,qty:0},drink:{rev:0,qty:0},other:{rev:0,qty:0}};
+    d3.rows.filter(function(r){return r.rev>0;}).forEach(function(r){
+      var cat = DRINK_KW.some(function(k){return r.label.indexOf(k)>=0;}) ? 'drink' : 'main';
+      catData[cat].rev += r.rev;
+      catData[cat].qty += r.qty;
+    });
+    html += '<div style="margin-top:4px;"><div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;">Расчётная маржа по категориям</div>';
+    Object.entries(cats).forEach(function(e){
+      var k=e[0],c=e[1],d=catData[k];
+      if(!d.rev) return;
+      var m = 100-c.fc;
+      var mRev = d.rev * m / 100;
+      html += '<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg3);border:1px solid var(--brd);border-radius:10px;margin-bottom:8px;">'
+        + '<div style="flex:1;font-size:12px;font-weight:500;">' + c.lb + '</div>'
+        + '<div style="font-size:11px;color:var(--txt2);font-family:var(--font-mono);">fc ~' + Math.round(c.fc) + '%</div>'
+        + '<div style="font-size:13px;font-weight:600;color:var(--green);">маржа ' + Math.round(m) + '%</div>'
+        + '<div style="font-size:11px;color:var(--txt2);font-family:var(--font-mono);">' + new Intl.NumberFormat('ru-RU').format(Math.round(mRev/1e6)) + ' млн сум</div>'
+        + '</div>';
+    });
+    html += '</div>';
+  }
+
+  html += '<div style="margin-top:10px;display:flex;align-items:center;gap:8px;">'
+    + '<span style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);">Food cost: ' + fc + '% · </span>'
+    + '<button onclick="_foodCostPct=null;renderFoodCostBlock(' + dRD + ',' + dA + ',null)" style="font-size:10px;color:var(--txt3);background:none;border:none;cursor:pointer;font-family:var(--font-mono);text-decoration:underline;padding:0;">Изменить</button>'
+    + '</div>';
+
+  el.innerHTML = html;
+  el.style.display = 'block';
+}
+
+function applyFoodCost() {
+  var inp = document.getElementById('food-cost-inp');
+  if (!inp) return;
+  var val = parseFloat(inp.value);
+  if (!val || val < 1 || val > 99) { inp.style.borderColor = 'var(--red)'; return; }
+  _foodCostPct = val;
+  // Получаем текущие данные из глобальных переменных отчёта
+  var dRD = window._lastDRD || 0;
+  var dA  = window._lastDA  || 0;
+  var d3  = window._lastD3  || null;
+  renderFoodCostBlock(dRD, dA, d3);
+}
+
 // ── Тумблер подсказок ──
 var _obEnabled = true;
 function toggleObOnboarding() {
@@ -8668,6 +8830,40 @@ function toggleObOnboarding() {
 }
 </script>
 
+
+<style id="dtr-print-styles">
+@media print {
+  /* Скрываем всё кроме отчёта */
+  body > *:not(#print-root) { display: none !important; }
+  #print-root { display: block !important; }
+
+  /* Базовый сброс */
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body { background: #0a0a0f !important; color: #eeedf8 !important; margin: 0; padding: 0; }
+
+  /* Скрываем ненужное */
+  .app-header, .app-sidebar, .go-btn, #ob-toggle-bar,
+  #block-ai .ai-head button, .rp-block-badge-pills,
+  #dtr-ob-tip, #dtr-ob-badge { display: none !important; }
+
+  /* Страница */
+  @page { margin: 12mm 14mm; size: A4; }
+
+  /* Блоки */
+  .rp-block { page-break-inside: avoid; margin-bottom: 16px; }
+  .cb { page-break-inside: avoid; }
+  .two { grid-template-columns: 1fr 1fr !important; }
+
+  /* Убираем анимации */
+  * { animation: none !important; transition: none !important; }
+
+  /* Убираем скролл */
+  .analytics-wrap { display: block !important; overflow: visible !important; }
+  #page-report { display: block !important; position: static !important; overflow: visible !important; }
+  .page { display: block !important; position: static !important; }
+  .page:not(#page-report) { display: none !important; }
+}
+</style>
 <style id="dtr-report-animations">
 /* ════════════════════════════════════════════════════
    PREMIUM REPORT ANIMATIONS — Serious & Dynamic
@@ -25268,6 +25464,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
         Сохранить P&L
       </button>
+      </div><!-- /right -->
     </div>
   </div>
 </div>
@@ -26672,7 +26869,23 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 
     <!-- ANALYTICS OUTPUT -->
     <!-- ONBOARDING TOGGLE -->
-    <div id="ob-toggle-bar" style="display:none;justify-content:flex-end;align-items:center;gap:0;margin-bottom:16px;padding:0 2px;">
+    <div id="ob-toggle-bar" style="display:none;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px;padding:0 2px;">
+      <!-- PDF кнопка слева -->
+      <button onclick="exportReportPDF()" style="
+        display:inline-flex;align-items:center;gap:8px;
+        padding:7px 14px 7px 12px;border-radius:10px;
+        border:1.5px solid rgba(255,255,255,.12);
+        background:rgba(255,255,255,.04);
+        cursor:pointer;outline:none;
+        font-family:var(--font-mono);font-size:11px;font-weight:600;
+        color:rgba(255,255,255,.5);letter-spacing:.06em;
+        transition:background .2s,border-color .2s,color .2s;
+      " onmouseover="this.style.background='rgba(255,255,255,.08)';this.style.borderColor='rgba(255,255,255,.25)';this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.background='rgba(255,255,255,.04)';this.style.borderColor='rgba(255,255,255,.12)';this.style.color='rgba(255,255,255,.5)'">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Скачать PDF
+      </button>
+      <!-- Правая часть -->
+      <div style="display:flex;align-items:center;gap:10px;">
       <button id="ob-toggle" onclick="toggleObOnboarding()" style="
         display:inline-flex;align-items:center;gap:9px;
         padding:7px 14px 7px 12px;
@@ -26816,6 +27029,34 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
     </div>
   </div>
 
+  <!-- FOOD COST БЛОК -->
+  <div id="sec-food-cost" style="display:none;margin-bottom:20px;">
+    <div class="rp-block" id="block-foodcost">
+      <div class="rp-block-hdr" data-ob="МАРЖИНАЛЬНОСТЬ
+Показывает сколько реально зарабатываете
+после вычета себестоимости продуктов.
+→ Food cost % = доля продуктов в выручке
+→ Маржа = то что остаётся
+Заполните один раз — будет считаться всегда.">
+        <div class="rp-block-icon" style="background:rgba(0,229,163,.12);border:1.5px solid rgba(0,229,163,.3);color:var(--green);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v2m0 8v2M9.5 9.5a2.5 2.5 0 015 0c0 1.5-1.5 2-2.5 2.5S9.5 13 9.5 14.5a2.5 2.5 0 005 0"/></svg>
+        </div>
+        <div class="rp-block-text">
+          <div class="rp-block-title">Маржинальность</div>
+          <div class="rp-block-sub">Food cost · Валовая маржа · Маржа на чек</div>
+        </div>
+        <div class="rp-block-badge" style="background:rgba(0,229,163,.1);color:var(--green);border:1px solid rgba(0,229,163,.25);">Опциональный</div>
+      </div>
+      <div class="rp-block-body">
+        <div class="sh"><div class="sh-num">💰</div><div class="sh-title">Расчёт маржи по food cost</div><div class="sh-line"></div></div>
+        <div class="cb">
+          <div class="cb-title">Валовая маржинальность периода</div>
+          <div class="cb-sub" style="font-family:var(--font-mono);font-size:10px;color:var(--txt2);margin-bottom:14px;">// укажите % себестоимости продуктов → система рассчитает маржу автоматически</div>
+          <div id="food-cost-inner"></div>
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- ════ БЛОК 2: ВРЕМЕННОЙ АНАЛИЗ ════ -->
   <div class="rp-block" id="block-time" style="display:none;">
     <div class="rp-block-hdr">
@@ -30009,6 +30250,28 @@ function runAnalysis() {
   renderWaterfallBlock(bRD,dRD,bCD,dCD,bA,dA,gr,grP,ex,bD,dD)
   renderHealthScore(bRD,dRD,bCD,dCD,bA,dA,grP,bD,dD,S['b1'],S['d1'])
   checkPeriodCompatibility(bD,dD)
+
+  // Сохраняем данные для food cost
+  window._lastDRD = dRD
+  window._lastDA  = dA
+  window._lastD3  = S['d3'] || null
+  // Food cost блок
+  var fcEl = document.getElementById('food-cost-inner')
+  if (fcEl) renderFoodCostBlock(dRD, dA, S['d3'] || null)
+  var fcSec = document.getElementById('sec-food-cost')
+  if (fcSec) fcSec.style.display = 'block'
+
+  // Contributor analysis — добавляем в инсайты
+  var _contribIns = getContributorInsight(bRD,dRD,bCD,dCD,bA,dA)
+  if (_contribIns) {
+    var insBlock = g('ins-block')
+    if (insBlock) {
+      var existingHTML = insBlock.innerHTML
+      var newRow = '<div class="ins-row" style="border-left-color:var(--cyan);"><div class="ins-ic">'+_contribIns.ic+'</div><div>'+_contribIns.t+'</div></div>'
+      insBlock.innerHTML = existingHTML + newRow
+    }
+  }
+
   g('analytics-wrap').classList.add('visible')
   // Auto-collapse files section after analysis runs
   collapseFilesSection(true)
