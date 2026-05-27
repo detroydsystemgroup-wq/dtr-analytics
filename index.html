@@ -37969,6 +37969,8 @@ async function cpRenderMilestone(project) {
 /* ══ STATE ══ */
 var _kbMode        = 'materials';
 var _kbProjectId   = null;
+var _kbMaterialsProjectId = null;
+var KB_AGENCY_ID   = '__agency__';
 var _kbProjectName = '';
 var _kbCats        = [];
 var _kbItems       = [];
@@ -38301,7 +38303,7 @@ function kbBuildCard(item) {
 
   var noteHtml = note ? '<div class="kb-card-note">' + note + '</div>' : '';
 
-  return '<div class="kb-card" style="border-color:' + brd + ';">'
+  return '<div class="kb-card" style="border-color:' + brd + ';cursor:pointer;" onclick="window.open(\'' + url + '\',\'_blank\',\'noopener\')">'
     + '<div class="kb-card-top" style="background:linear-gradient(150deg,' + bg.replace(/\.\d+\)/, '.18)') + ' 0%,' + bg.replace(/\.\d+\)/, '.05)') + ' 100%);">'
         + '<div class="kb-card-top-icon">' + t.svg + '</div>'
         + '<span class="kb-card-type-badge" style="background:' + bg + ';color:' + clr + ';border:1px solid ' + brd + ';">' + tlbl + '</span>'
@@ -38321,8 +38323,8 @@ function kbBuildCard(item) {
                     + svgOpen + ' Открыть'
                 + '</a>'
                 + '<div class="kb-card-acts" onclick="event.stopPropagation()">'
-                    + '<button class="kb-card-act" title="Редактировать" onclick="kbOpenEditItem(\'' + itemId + '\')">' + svgE + '</button>'
-                    + '<button class="kb-card-act del" title="Удалить" onclick="kbDeleteItem(\'' + itemId + '\')">' + svgT + '</button>'
+                    + '<button class="kb-card-act" title="Редактировать" onclick="event.stopPropagation();kbOpenEditItem(\'' + itemId + '\')">' + svgE + '</button>'
+                    + '<button class="kb-card-act del" title="Удалить" onclick="event.stopPropagation();kbDeleteItem(\'' + itemId + '\')">' + svgT + '</button>'
                 + '</div>'
             + '</div>'
         + '</div>'
@@ -38334,8 +38336,73 @@ window.kbSwitchMode = function(mode, btn) {
   _kbMode = mode;
   document.querySelectorAll('.kb-mode-btn').forEach(function(b){ b.classList.remove('kb-mode-active'); });
   if (btn) btn.classList.add('kb-mode-active');
-  if (_kbProjectId) kbRenderContent();
+
+  var sidebar = document.querySelector('.kb-proj-sidebar');
+  var kbBody  = document.querySelector('.kb-body');
+
+  if (mode === 'services') {
+    /* Сохраняем текущий проект материалов и входим в агентское пространство */
+    _kbMaterialsProjectId = _kbProjectId;
+    if (sidebar) sidebar.style.display = 'none';
+    if (kbBody)  kbBody.style.gridTemplateColumns = '1fr';
+    var sub = document.getElementById('kb-project-subtitle');
+    if (sub) sub.textContent = 'Агентское пространство';
+    kbLoadServicesSpace();
+  } else {
+    /* Возвращаемся в материалы — восстанавливаем проект */
+    _kbProjectId = _kbMaterialsProjectId;
+    if (sidebar) sidebar.style.display = '';
+    if (kbBody)  kbBody.style.gridTemplateColumns = '';
+    var sub2 = document.getElementById('kb-project-subtitle');
+    if (_kbProjectId) {
+      if (sub2) sub2.textContent = _kbProjectName || '';
+      kbRenderContent();
+    } else {
+      if (sub2) sub2.textContent = 'Выберите проект';
+      var noProj  = document.getElementById('kb-no-project');
+      var content = document.getElementById('kb-content');
+      if (noProj)  noProj.style.display = '';
+      if (content) content.style.display = 'none';
+      var addBtn = document.getElementById('kb-add-btn-main');
+      var catBtn = document.getElementById('kb-add-cat-topbar');
+      if (addBtn) { addBtn.disabled = true; addBtn.style.opacity = '.35'; addBtn.style.pointerEvents = 'none'; }
+      if (catBtn) { catBtn.style.opacity = '.35'; catBtn.style.pointerEvents = 'none'; }
+    }
+  }
 };
+
+/* ══ SERVICES SPACE — агентское пространство ══ */
+async function kbLoadServicesSpace() {
+  /* Разблокируем кнопки */
+  var addBtn = document.getElementById('kb-add-btn-main');
+  var catBtn = document.getElementById('kb-add-cat-topbar');
+  if (addBtn) { addBtn.disabled = false; addBtn.style.opacity = ''; addBtn.style.pointerEvents = ''; }
+  if (catBtn) { catBtn.style.opacity = ''; catBtn.style.pointerEvents = ''; }
+
+  var loading = document.getElementById('kb-loading');
+  var content = document.getElementById('kb-content');
+  var noProj  = document.getElementById('kb-no-project');
+  if (noProj)  noProj.style.display  = 'none';
+  if (content) content.style.display = 'none';
+  if (loading) loading.style.display = '';
+
+  _kbProjectId = KB_AGENCY_ID;
+  _kbCats  = [];
+  _kbItems = [];
+
+  try {
+    var r1 = await sb.from('kb_categories').select('*').eq('project_id', KB_AGENCY_ID).order('created_at');
+    _kbCats = r1.data || [];
+  } catch(e) {}
+  try {
+    var r2 = await sb.from('kb_items').select('*').eq('project_id', KB_AGENCY_ID).order('created_at', {ascending:false});
+    _kbItems = r2.data || [];
+  } catch(e) {}
+
+  if (loading) loading.style.display = 'none';
+  if (content) content.style.display = '';
+  kbRenderContent();
+}
 
 /* ══ ADD ITEM ══ */
 window.kbOpenAddItem = function(catId) {
@@ -38408,7 +38475,7 @@ window.kbSaveItem = async function() {
     if (_kbEditItemId) await sb.from('kb_items').update(payload).eq('id',_kbEditItemId);
     else               await sb.from('kb_items').insert([payload]);
     closeModal('modal-kb-item');
-    await kbLoadProjectData(_kbProjectId);
+    await kbReloadCurrent();
     kbRenderContent();
     var cnt=document.getElementById('kb-proj-cnt-'+_kbProjectId); if(cnt) cnt.textContent=_kbItems.length;
     showToast && showToast('✓',_kbEditItemId?'Обновлено':'Добавлено','ok');
@@ -38464,18 +38531,28 @@ window.kbSaveCategory = async function() {
     if (_kbEditCatId) await sb.from('kb_categories').update(payload).eq('id',_kbEditCatId);
     else              await sb.from('kb_categories').insert([payload]);
     closeModal('modal-kb-cat');
-    await kbLoadProjectData(_kbProjectId);
+    await kbReloadCurrent();
     kbRenderContent();
     showToast&&showToast('✓',_kbEditCatId?'Категория обновлена':'Категория создана','ok');
   } catch(e){showToast&&showToast('⚠️','Ошибка: '+(e.message||''),'error');}
 };
+
+/* ══ RELOAD HELPER ══ */
+async function kbReloadCurrent() {
+  if (_kbMode === 'services') {
+    try { var r1 = await sb.from('kb_categories').select('*').eq('project_id', KB_AGENCY_ID).order('created_at'); _kbCats = r1.data || []; } catch(e) {}
+    try { var r2 = await sb.from('kb_items').select('*').eq('project_id', KB_AGENCY_ID).order('created_at', {ascending:false}); _kbItems = r2.data || []; } catch(e) {}
+  } else {
+    if (_kbProjectId) await kbLoadProjectData(_kbProjectId);
+  }
+}
 
 window.kbDeleteCat = async function(id) {
   if (!confirm('Удалить категорию и все её материалы?')) return;
   try {
     await sb.from('kb_items').delete().eq('category_id',id);
     await sb.from('kb_categories').delete().eq('id',id);
-    await kbLoadProjectData(_kbProjectId);
+    await kbReloadCurrent();
     kbRenderContent();
     showToast&&showToast('✓','Категория удалена','ok');
   } catch(e){showToast&&showToast('⚠️','Ошибка','error');}
