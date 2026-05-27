@@ -46,6 +46,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@300;400;500&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -37611,9 +37612,15 @@ async function cpRenderMilestone(project) {
 .kb-loading { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:80px 0; }
 .kb-spinner { width:26px; height:26px; border:2px solid rgba(184,146,58,.15); border-top-color:#c9a84c; border-radius:50%; animation:kbSpin .8s linear infinite; }
 
-/* ── CATEGORY BLOCK (как на скриншоте) ── */
+/* ── TABLER ICONS в KB ── */
+@import url('https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css');
+
+/* ── CATEGORY BLOCK ── */
 .kb-cat-block {
-  margin-bottom:32px;
+  margin-bottom:12px;
+  border-radius:14px; overflow:hidden;
+  border:0.5px solid rgba(240,236,230,.07);
+  background:var(--bg3);
   animation:kbFadeUp .35s cubic-bezier(.16,1,.3,1) both;
 }
 .kb-cat-block:nth-child(1){animation-delay:.03s}
@@ -37621,130 +37628,142 @@ async function cpRenderMilestone(project) {
 .kb-cat-block:nth-child(3){animation-delay:.11s}
 .kb-cat-block:nth-child(4){animation-delay:.15s}
 
-/* Category header — точно как screenshot: цветная иконка-квадрат + название + счётчик */
+/* Category header */
 .kb-cat-header {
-  display:flex; align-items:center; gap:12px; margin-bottom:14px;
-  padding:14px 18px; background:var(--bg3); border-radius:14px 14px 0 0;
-  border:1px solid rgba(240,236,230,.06); border-bottom:none;
+  display:flex; align-items:center; gap:10px;
+  padding:12px 16px; cursor:pointer;
+  transition:background .14s; user-select:none;
+  border-bottom:0.5px solid transparent;
 }
+.kb-cat-block.kb-cat-open .kb-cat-header {
+  border-bottom-color:rgba(240,236,230,.06);
+}
+.kb-cat-header:hover { background:rgba(240,236,230,.02); }
+
 .kb-cat-icon-box {
-  width:34px; height:34px; border-radius:10px; flex-shrink:0;
+  width:26px; height:26px; border-radius:7px; flex-shrink:0;
   display:flex; align-items:center; justify-content:center;
+  font-size:13px;
 }
-.kb-cat-header-title { flex:1; font-family:var(--font-display); font-size:15px; font-weight:700; letter-spacing:-.015em; color:var(--txt); }
+.kb-cat-header-title {
+  flex:1; font-family:var(--font-display); font-size:13px;
+  font-weight:600; letter-spacing:-.01em; color:var(--txt);
+}
 .kb-cat-header-count {
-  font-family:var(--font-mono); font-size:11px;
-  background:rgba(255,255,255,.08); border-radius:20px;
-  padding:3px 10px; color:var(--txt3); flex-shrink:0; min-width:28px; text-align:center;
+  font-family:var(--font-mono); font-size:9px;
+  background:#141414; border:0.5px solid rgba(240,236,230,.06);
+  border-radius:8px; padding:2px 7px; color:var(--txt3);
+  flex-shrink:0;
 }
-.kb-cat-header-acts { display:flex; align-items:center; gap:6px; flex-shrink:0; }
+.kb-cat-header-acts {
+  display:flex; align-items:center; gap:3px; flex-shrink:0;
+  opacity:0; transition:opacity .14s;
+}
+.kb-cat-header:hover .kb-cat-header-acts { opacity:1; }
+.kb-cat-chevron {
+  font-size:14px; color:rgba(240,236,230,.2);
+  transition:transform .22s cubic-bezier(.16,1,.3,1);
+  display:flex; align-items:center; flex-shrink:0;
+}
+.kb-cat-block.kb-cat-open .kb-cat-chevron { transform:rotate(180deg); }
+
 .kb-cat-hbtn {
-  width:30px; height:30px; border-radius:8px; border:1px solid var(--brd);
+  width:22px; height:22px; border-radius:5px;
+  border:0.5px solid rgba(240,236,230,.07);
   background:transparent; color:var(--txt3); cursor:pointer;
-  display:flex; align-items:center; justify-content:center; transition:all .16s;
+  display:flex; align-items:center; justify-content:center;
+  transition:all .14s; font-size:11px;
 }
-.kb-cat-hbtn:hover { border-color:var(--brd2); color:var(--txt); background:rgba(255,255,255,.04); }
-.kb-cat-hbtn.del:hover { border-color:rgba(248,113,113,.3); color:var(--red); }
+.kb-cat-hbtn:hover { border-color:rgba(240,236,230,.14); color:var(--txt2); background:#1c1c1c; }
+.kb-cat-hbtn.del:hover { border-color:rgba(224,82,82,.2); color:var(--red); }
 
-/* Cards container — точно как на скриншоте, горизонтальный scroll */
+/* Cards container */
 .kb-cards-wrap {
-  background:rgba(240,236,230,.02); border:1px solid rgba(240,236,230,.06);
-  border-radius:0 0 14px 14px; padding:16px;
-  display:flex; gap:12px; flex-wrap:wrap;
+  padding:12px 14px;
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:7px;
+  display:none;
 }
+.kb-cat-block.kb-cat-open .kb-cards-wrap { display:grid; }
 
-/* ── КАРТОЧКА — вертикальная, аватар сверху ── */
+/* ── КАРТОЧКА — горизонтальная ── */
 .kb-card {
-  width:175px; flex-shrink:0;
-  border-radius:16px; overflow:hidden;
-  background:var(--bg3); border:1px solid rgba(255,255,255,.07);
+  display:flex; align-items:center; gap:10px;
+  padding:9px 12px; border-radius:9px;
+  background:#131313; border:0.5px solid rgba(240,236,230,.055);
   cursor:pointer; text-decoration:none;
-  display:flex; flex-direction:column;
-  transition:all .24s cubic-bezier(.16,1,.3,1);
+  transition:background .14s, border-color .14s;
   animation:kbPop .3s cubic-bezier(.16,1,.3,1) both;
   position:relative;
 }
 .kb-card:hover {
-  border-color:rgba(255,255,255,.15);
-  transform:translateY(-6px);
-  box-shadow:0 20px 50px rgba(0,0,0,.55);
+  background:#191919;
+  border-color:rgba(240,236,230,.12);
 }
+.kb-card:hover .kb-card-acts { opacity:1; }
 
-/* Avatar — большой квадрат аватар сверху */
+/* Icon box */
 .kb-card-avatar {
-  width:100%; aspect-ratio:4/3; position:relative; overflow:hidden;
+  width:30px; height:30px; border-radius:7px; flex-shrink:0;
   display:flex; align-items:center; justify-content:center;
-  border-bottom:1px solid rgba(255,255,255,.06);
-  transition:all .24s;
+  font-size:14px;
 }
-.kb-card:hover .kb-card-avatar { filter:brightness(1.12); }
 
-/* Favicon как большое изображение */
+/* Tabler icon inside card */
+.kb-card-avatar i { line-height:1; }
+
+/* Favicon */
 .kb-card-avatar-img {
-  width:72px; height:72px;
-  object-fit:contain;
-  position:relative; z-index:1;
-  border-radius:16px;
-  filter:drop-shadow(0 6px 20px rgba(0,0,0,.6));
-  transition:transform .22s cubic-bezier(.16,1,.3,1);
+  width:18px; height:18px; object-fit:contain; border-radius:4px;
 }
-.kb-card:hover .kb-card-avatar-img { transform:scale(1.1) translateY(-3px); }
+.kb-card-avatar-svg { display:flex; align-items:center; justify-content:center; }
 
-/* SVG иконка */
-.kb-card-avatar-svg {
-  display:flex; align-items:center; justify-content:center;
-  position:relative; z-index:1;
-  transition:transform .22s cubic-bezier(.16,1,.3,1);
-  filter:drop-shadow(0 4px 16px rgba(184,146,58,.25));
+/* Text */
+.kb-card-info {
+  flex:1; min-width:0; display:flex; flex-direction:column; gap:1px;
 }
-.kb-card:hover .kb-card-avatar-svg { transform:scale(1.1) translateY(-3px); }
+.kb-card-title2 {
+  font-family:var(--font-display); font-size:12px; font-weight:500;
+  color:var(--txt); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  line-height:1.25;
+}
+.kb-card-note2 {
+  font-size:10px; color:var(--txt3); line-height:1.4;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.kb-card-foot2 { display:none; }
+.kb-card-domain2 {
+  font-family:var(--font-mono); font-size:10px; color:#2a2825;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;
+}
 
 /* Hover actions */
 .kb-card-acts {
-  position:absolute; top:8px; right:8px; z-index:10;
-  display:flex; gap:4px; opacity:0; transition:opacity .16s;
+  display:flex; gap:2px; opacity:0; transition:opacity .14s; flex-shrink:0;
 }
-.kb-card:hover .kb-card-acts { opacity:1; }
 .kb-card-act {
-  width:28px; height:28px; border-radius:8px;
-  border:1px solid rgba(255,255,255,.15);
-  background:rgba(8,8,10,.82); backdrop-filter:blur(8px);
-  color:rgba(240,236,230,.7); cursor:pointer;
-  display:flex; align-items:center; justify-content:center; transition:all .14s;
+  width:20px; height:20px; border-radius:5px;
+  border:0.5px solid rgba(240,236,230,.07);
+  background:transparent; color:#2a2825; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:all .13s; font-size:11px;
 }
-.kb-card-act:hover { background:rgba(255,255,255,.15); color:#fff; }
-.kb-card-act.del:hover { background:rgba(239,68,68,.2); border-color:rgba(239,68,68,.4); color:#f87171; }
-
-/* Info block */
-.kb-card-info {
-  padding:11px 12px 12px; display:flex; flex-direction:column; gap:4px; flex:1;
-}
-.kb-card-title2 {
-  font-family:var(--font-display); font-size:13px; font-weight:700;
-  letter-spacing:-.02em; color:var(--txt); line-height:1.3;
-  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
-}
-.kb-card-note2 {
-  font-size:11px; color:var(--txt3); line-height:1.5;
-  display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden;
-}
-.kb-card-foot2 { margin-top:auto; padding-top:5px; }
-.kb-card-domain2 {
-  font-family:var(--font-mono); font-size:10px; color:var(--txt3);
-  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block;
-}
+.kb-card-act:hover { background:#222; border-color:rgba(240,236,230,.13); color:var(--txt2); }
+.kb-card-act.del:hover { border-color:rgba(224,82,82,.2); color:var(--red); }
 
 /* Add card placeholder */
 .kb-card-add {
-  width:175px; flex-shrink:0; border-radius:16px; min-height:220px;
-  border:1.5px dashed rgba(255,255,255,.09); background:transparent;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:9px; cursor:pointer; transition:all .22s; text-decoration:none;
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  padding:9px 12px; border-radius:9px; min-height:48px;
+  border:0.5px dashed rgba(240,236,230,.07); background:transparent;
+  color:#252320; cursor:pointer; transition:all .16s;
+  font-family:var(--font-mono); font-size:10px; letter-spacing:.06em;
 }
-.kb-card-add:hover { border-color:rgba(184,146,58,.4); background:rgba(184,146,58,.04); }
-.kb-card-add-icon { color:rgba(255,255,255,.15); transition:color .2s; }
+.kb-card-add:hover { border-color:rgba(184,146,58,.22); color:var(--txt3); background:rgba(184,146,58,.025); }
+.kb-card-add-icon { font-size:12px; transition:color .16s; }
 .kb-card-add:hover .kb-card-add-icon { color:var(--a2); }
-.kb-card-add-lbl { font-family:var(--font-mono); font-size:10px; color:rgba(255,255,255,.2); letter-spacing:.1em; transition:color .2s; }
+.kb-card-add-lbl { transition:color .16s; }
 .kb-card-add:hover .kb-card-add-lbl { color:var(--a2); }
 
 /* Type icon SVGs per service */
@@ -38060,69 +38079,83 @@ function kbRenderContent() {
     return;
   }
 
+/* ══ TABLER CAT ICONS ══ */
+var KB_CAT_ICONS = [
+  'ti-chart-line','ti-clock','ti-trending-up','ti-bookmark',
+  'ti-folder','ti-star','ti-target','ti-bulb','ti-users','ti-settings'
+];
+
   area.innerHTML = modeCats.map(function(cat, idx) {
     var items = _kbItems.filter(function(i){ return i.category_id === cat.id; });
+    var catIcon = KB_CAT_ICONS[idx % KB_CAT_ICONS.length];
+    var catColor = cat.color || '#b8923a';
 
     var cardsHtml = items.map(kbBuildCard).join('') +
       '<div class="kb-card-add" onclick="kbOpenAddItem(\''+cat.id+'\')">'+
-        '<div class="kb-card-add-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>'+
-        '<div class="kb-card-add-lbl">Добавить</div>'+
+        '<i class="ti ti-plus kb-card-add-icon" aria-hidden="true"></i>'+
+        '<span class="kb-card-add-lbl">Добавить</span>'+
       '</div>';
 
-    return '<div class="kb-cat-block" style="animation-delay:'+(idx*0.05)+'s">'+
-      '<div class="kb-cat-header">'+
-        '<div class="kb-cat-icon-box" style="background:'+esc(cat.color)+'22;">'+
-          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="'+esc(cat.color)+'" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'+
+    return '<div class="kb-cat-block kb-cat-open" style="animation-delay:'+(idx*0.05)+'s">'+
+      '<div class="kb-cat-header" onclick="this.closest(\'.kb-cat-block\').classList.toggle(\'kb-cat-open\')">'+
+        '<div class="kb-cat-icon-box" style="background:'+catColor+'18;border:0.5px solid '+catColor+'30;">'+
+          '<i class="ti '+catIcon+'" style="font-size:13px;color:'+catColor+';" aria-hidden="true"></i>'+
         '</div>'+
         '<span class="kb-cat-header-title">'+esc(cat.name)+'</span>'+
         '<span class="kb-cat-header-count">'+items.length+'</span>'+
-        '<div class="kb-cat-header-acts">'+
-          '<button class="kb-cat-hbtn" onclick="kbOpenEditCategory(\''+cat.id+'\')">'+
-            '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>'+
+        '<div class="kb-cat-header-acts" onclick="event.stopPropagation()">'+
+          '<button class="kb-cat-hbtn" title="Добавить" onclick="kbOpenAddItem(\''+cat.id+'\')">'+
+            '<i class="ti ti-plus" aria-hidden="true"></i>'+
           '</button>'+
-          '<button class="kb-cat-hbtn del" onclick="kbDeleteCat(\''+cat.id+'\')">'+
-            '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>'+
+          '<button class="kb-cat-hbtn" title="Редактировать" onclick="kbOpenEditCategory(\''+cat.id+'\')">'+
+            '<i class="ti ti-pencil" aria-hidden="true"></i>'+
+          '</button>'+
+          '<button class="kb-cat-hbtn del" title="Удалить" onclick="kbDeleteCat(\''+cat.id+'\')">'+
+            '<i class="ti ti-trash" aria-hidden="true"></i>'+
           '</button>'+
         '</div>'+
+        '<div class="kb-cat-chevron"><i class="ti ti-chevron-down" aria-hidden="true"></i></div>'+
       '</div>'+
       '<div class="kb-cards-wrap">'+cardsHtml+'</div>'+
     '</div>';
   }).join('');
 }
 
+/* ══ TABLER ICON MAP per KB type ══ */
+var KB_TABLER_ICON = {
+  tg:     { icon:'ti-brand-telegram',  bg:'rgba(41,182,246,.1)',  border:'rgba(41,182,246,.2)',  color:'#29b6f6' },
+  gdoc:   { icon:'ti-file-description',bg:'rgba(66,133,244,.1)',  border:'rgba(66,133,244,.2)',  color:'#4285f4' },
+  gsheet: { icon:'ti-table',           bg:'rgba(52,168,83,.1)',   border:'rgba(52,168,83,.2)',   color:'#34a853' },
+  figma:  { icon:'ti-vector-triangle', bg:'rgba(162,89,255,.1)',  border:'rgba(162,89,255,.2)',  color:'#a259ff' },
+  notion: { icon:'ti-notebook',        bg:'rgba(240,236,230,.06)',border:'rgba(240,236,230,.1)', color:'rgba(240,236,230,.55)' },
+  miro:   { icon:'ti-artboard',        bg:'rgba(255,102,0,.1)',   border:'rgba(255,102,0,.2)',   color:'#ff6600' },
+  link:   { icon:'ti-link',            bg:'rgba(184,146,58,.1)',  border:'rgba(184,146,58,.2)',  color:'#c9a84c' },
+  other:  { icon:'ti-file',            bg:'rgba(255,255,255,.04)',border:'rgba(255,255,255,.08)',color:'rgba(240,236,230,.35)' },
+};
+
 function kbBuildCard(item) {
   var domain = '';
   try { domain = new URL(item.url).hostname.replace('www.',''); } catch(e){}
-  var meta   = KB_TYPE_META[item.type||'other'] || KB_TYPE_META.other;
-  var favicon = domain ? 'https://www.google.com/s2/favicons?domain='+domain+'&sz=128' : '';
+  var t = KB_TABLER_ICON[item.type||'other'] || KB_TABLER_ICON.other;
+  var displayTitle = esc(item.title || domain || 'Без названия');
+  var displayDomain = esc(domain || 'ссылка');
 
   return '<a href="'+esc(item.url)+'" target="_blank" rel="noopener" class="kb-card" onclick="event.stopPropagation()">'+
-
+    '<div class="kb-card-avatar" style="background:'+t.bg+';border:0.5px solid '+t.border+';">'+
+      '<i class="ti '+t.icon+'" style="font-size:14px;color:'+t.color+';line-height:1;" aria-hidden="true"></i>'+
+    '</div>'+
+    '<div class="kb-card-info">'+
+      '<div class="kb-card-title2">'+displayTitle+'</div>'+
+      '<div class="kb-card-domain2">'+displayDomain+'</div>'+
+    '</div>'+
     '<div class="kb-card-acts" onclick="event.preventDefault()">'+
       '<button class="kb-card-act" title="Редактировать" onclick="kbOpenEditItem(\''+item.id+'\')">'+
-        '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>'+
+        '<i class="ti ti-pencil" aria-hidden="true"></i>'+
       '</button>'+
       '<button class="kb-card-act del" title="Удалить" onclick="kbDeleteItem(\''+item.id+'\')">'+
-        '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>'+
+        '<i class="ti ti-trash" aria-hidden="true"></i>'+
       '</button>'+
     '</div>'+
-
-    /* Аватар — полная верхняя часть карточки */
-    '<div class="kb-card-avatar" style="background:'+meta.bg+';border-color:'+meta.border+';">'+
-      '<div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 55%,'+meta.glow+' 0%,transparent 68%);pointer-events:none;"></div>'+
-      (favicon
-        ? '<img src="'+favicon+'" class="kb-card-avatar-img" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
-          +'<div class="kb-card-avatar-svg" style="display:none;">'+meta.icon+'</div>'
-        : '<div class="kb-card-avatar-svg">'+meta.icon+'</div>'
-      )+
-    '</div>'+
-
-    '<div class="kb-card-info">'+
-      '<div class="kb-card-title2">'+esc(item.title||domain||'Без названия')+'</div>'+
-      (item.note ? '<div class="kb-card-note2">'+esc(item.note)+'</div>' : '')+
-      '<div class="kb-card-foot2"><span class="kb-card-domain2">'+esc(domain||'ссылка')+'</span></div>'+
-    '</div>'+
-
   '</a>';
 }
 
