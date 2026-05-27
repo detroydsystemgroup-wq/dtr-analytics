@@ -30066,13 +30066,20 @@ function renderKanbanCol(containerId, tasks, status) {
     let timerHtml = ''
     if (status === 'active' && t.timer_started_at) {
       const elSec = Math.floor((Date.now() - new Date(t.timer_started_at)) / 1000)
-      const h = Math.floor(elSec / 3600)
-      const m = Math.floor((elSec % 3600) / 60)
-      const s = elSec % 60
-      const fmt = h > 0
-        ? h + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0')
-        : String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0')
-      timerHtml = '<span class="kb-card-timer kb-timer-live" id="kbt-' + t.id + '"><span class="kb-timer-live-dot"></span>' + fmt + '</span>'
+      // Always render span so interval can find it by id; hide if < 60s
+      const visible = elSec >= 60
+      let fmt = ''
+      if (visible) {
+        const h = Math.floor(elSec / 3600)
+        const m = Math.floor((elSec % 3600) / 60)
+        const s = elSec % 60
+        fmt = h > 0
+          ? h + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0')
+          : String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0')
+      }
+      timerHtml = '<span class="kb-card-timer kb-timer-live" id="kbt-' + t.id + '"'
+        + (visible ? '' : ' style="display:none;"')
+        + '><span class="kb-timer-live-dot"></span>' + fmt + '</span>'
     } else if ((t.time_logged||0) > 0) {
       const h = Math.floor(t.time_logged/60), m = t.time_logged%60
       timerHtml = '<span class="kb-card-timer kb-timer-logged">✓ ' + (h>0?h+'ч ':' ') + m + 'м</span>'
@@ -30229,16 +30236,17 @@ function startKanbanLiveTimer() {
     activeTasks.forEach(t => {
       const el = g('kbt-' + t.id); if (!el) return
       const elSec = Math.floor((Date.now() - new Date(t.timer_started_at)) / 1000)
+      // Show only after 1 minute
+      if (elSec < 60) { el.style.display = 'none'; return }
+      el.style.display = 'inline-flex'
       const h = Math.floor(elSec / 3600)
       const m = Math.floor((elSec % 3600) / 60)
       const s = elSec % 60
       const fmt = h > 0
         ? h + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0')
         : String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0')
-      // Update only the text node (dot is first child span, text is second child)
       const dot = el.querySelector('.kb-timer-live-dot')
       if (dot) {
-        // Remove all text nodes, keep the dot span
         Array.from(el.childNodes).forEach(n => { if (n.nodeType === 3) el.removeChild(n) })
         el.appendChild(document.createTextNode(fmt))
       } else {
