@@ -8653,139 +8653,131 @@ input, select, textarea {
 function exportReportPDF() {
   var aw = document.getElementById('analytics-wrap');
   if (!aw) { alert('Сначала загрузите отчёт'); return; }
-
-  var btn = document.getElementById('btn-pdf');
-  var origHTML = btn ? btn.innerHTML : '';
-
   if (typeof html2pdf === 'undefined') {
-    if (btn) btn.innerHTML = '⏳ Загрузка...';
-    var attempts = 0;
-    var wait = setInterval(function() {
-      attempts++;
-      if (typeof html2pdf !== 'undefined') {
-        clearInterval(wait);
-        if (btn) btn.innerHTML = origHTML;
-        exportReportPDF();
-      } else if (attempts > 20) {
-        clearInterval(wait);
-        if (btn) btn.innerHTML = origHTML;
-        alert('Не удалось загрузить библиотеку PDF.');
-      }
-    }, 500);
+    alert('Библиотека PDF ещё загружается, подождите секунду');
     return;
   }
 
-  if (btn) { btn.innerHTML = '⏳ Генерация PDF...'; btn.disabled = true; }
+  var btn = document.getElementById('btn-pdf');
+  var origHTML = btn ? btn.innerHTML : '';
+  if (btn) { btn.innerHTML = '⏳ Генерация...'; btn.disabled = true; }
 
   var titleEl = document.getElementById('report-title-display');
-  var titleText = titleEl ? titleEl.textContent.trim() : 'Отчёт';
+  var titleText = (titleEl ? titleEl.textContent.trim() : '') || 'Отчёт';
   var dateStr = new Date().toLocaleDateString('ru-RU', {day:'numeric',month:'long',year:'numeric'});
 
-  // ── Клонируем и чистим DOM ──
-  var clone = aw.cloneNode(true);
-  clone.querySelectorAll('button,input,select,textarea,#dtr-ob-tip,#dtr-ob-badge,[id^="ob-"]').forEach(function(el){ el.remove(); });
-
-  // ── Canvas → img (Chart.js) ──
-  var liveCanvases = aw.querySelectorAll('canvas');
-  var cloneCanvases = clone.querySelectorAll('canvas');
-  liveCanvases.forEach(function(cv, i) {
-    if (!cloneCanvases[i]) return;
-    try {
-      var img = document.createElement('img');
-      img.src = cv.toDataURL('image/png');
-      img.style.cssText = 'width:100%;height:auto;display:block;border-radius:8px;';
-      cloneCanvases[i].parentNode.replaceChild(img, cloneCanvases[i]);
-    } catch(e) {}
+  // ── Снимаем canvas → img из живого DOM ──
+  var canvasSnapshots = [];
+  aw.querySelectorAll('canvas').forEach(function(cv) {
+    try { canvasSnapshots.push({ id: cv.id, src: cv.toDataURL('image/png') }); }
+    catch(e) { canvasSnapshots.push({ id: cv.id, src: '' }); }
   });
 
-  // ── Обёртка ──
-  var wrapper = document.createElement('div');
-  // A4 landscape внутренняя ширина ~277mm = ~1047px @ 96dpi
-  wrapper.style.cssText = [
-    'background:#0a0a0f',
-    'color:#eeedf8',
-    'font-family:"Inter","DM Sans",sans-serif',
-    'padding:20px 24px',
-    'width:1050px',
-    'box-sizing:border-box',
-    'margin:0',
-  ].join(';');
+  // ── Клонируем ──
+  var clone = aw.cloneNode(true);
+
+  // Убираем лишнее
+  clone.querySelectorAll('button,input,select,textarea').forEach(function(el){ el.remove(); });
+
+  // Заменяем canvas на img
+  clone.querySelectorAll('canvas').forEach(function(cv, i) {
+    var snap = canvasSnapshots[i];
+    if (!snap || !snap.src) return;
+    var img = document.createElement('img');
+    img.src = snap.src;
+    img.style.cssText = 'width:100%;height:auto;display:block;border-radius:8px;';
+    cv.parentNode.replaceChild(img, cv);
+  });
+
+  // ── Собираем полный HTML для нового окна ──
+  // Копируем все <style> теги из текущей страницы
+  var styles = '';
+  document.querySelectorAll('style').forEach(function(s) {
+    styles += '<style>' + s.innerHTML + '</style>';
+  });
+  // Добавляем кастомный PDF стиль
+  styles += '<style>'
+    + 'body{margin:0;padding:20px 24px;background:#0a0a0f;color:#eeedf8;font-family:"Inter","DM Sans",sans-serif;}'
+    + '.analytics-wrap{display:block!important;overflow:visible!important;}'
+    + '.rp-block{page-break-inside:avoid;margin-bottom:16px;}'
+    + '.cb{page-break-inside:avoid;}'
+    + 'button,input,[id^="ob-"]{display:none!important;}'
+    + '@media print{'
+    + 'body{background:#0a0a0f!important;color:#eeedf8!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}'
+    + '@page{margin:6mm;size:A4 landscape;}'
+    + '}'
+    + '</style>';
 
   // Шапка
-  var hdr = document.createElement('div');
-  hdr.style.cssText = 'margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid rgba(184,146,58,.4);display:flex;justify-content:space-between;align-items:flex-end;';
-  hdr.innerHTML = ''
+  var headerHTML = '<div style="margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid rgba(184,146,58,.4);display:flex;justify-content:space-between;align-items:flex-end;">'
     + '<div>'
     + '<div style="font-size:9px;color:rgba(184,146,58,.7);letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px;font-family:monospace;">DTR Analytics · Performance Report</div>'
     + '<div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:-.02em;">' + titleText + '</div>'
     + '</div>'
     + '<div style="text-align:right;font-size:10px;color:rgba(255,255,255,.35);font-family:monospace;line-height:1.7;">'
     + dateStr + '<br><span style="color:rgba(184,146,58,.6);">© DeTroyd System Group</span>'
-    + '</div>';
+    + '</div></div>';
 
-  wrapper.appendChild(hdr);
-  wrapper.appendChild(clone);
-  document.body.appendChild(wrapper);
+  var fullHTML = '<!DOCTYPE html><html><head><meta charset="utf-8">'
+    + styles
+    + '</head><body>'
+    + headerHTML
+    + clone.outerHTML
+    + '</body></html>';
 
-  var filename = titleText.replace(/[^\w\s\-_]/g,'').trim().substring(0,50) || 'DTR_Report';
+  // ── Открываем новое окно и печатаем ──
+  var printWin = window.open('', '_blank', 'width=1200,height=800');
+  if (!printWin) {
+    if (btn) { btn.innerHTML = origHTML; btn.disabled = false; }
+    alert('Браузер заблокировал новое окно. Разрешите всплывающие окна для этого сайта.');
+    return;
+  }
 
-  var opt = {
-    margin:      [5, 5, 5, 5],
-    filename:    filename + '_DTR.pdf',
-    image:       { type: 'jpeg', quality: 0.93 },
-    html2canvas: {
-      scale:           1.5,
-      useCORS:         true,
-      allowTaint:      true,
-      backgroundColor: '#0a0a0f',
-      logging:         false,
-      // Рендерим на полную ширину wrapper
-      windowWidth:     1100,
-      scrollX:         0,
-      scrollY:         0,
-      onclone: function(doc) {
-        // Разворачиваем видимые блоки
-        doc.querySelectorAll('.analytics-wrap').forEach(function(el){
-          el.style.display = 'block';
-          el.style.overflow = 'visible';
-        });
-        // Резолвим CSS переменные на вычисленные значения
-        var allEls = doc.querySelectorAll('*');
-        var computed;
-        for (var i = 0; i < Math.min(allEls.length, 3000); i++) {
-          try {
-            computed = window.getComputedStyle(allEls[i]);
-            var c = computed.color;
-            var bg = computed.backgroundColor;
-            if (c && c !== 'rgba(0, 0, 0, 0)' && c.indexOf('var(') < 0) allEls[i].style.color = c;
-            if (bg && bg !== 'rgba(0, 0, 0, 0)' && bg.indexOf('var(') < 0) allEls[i].style.backgroundColor = bg;
-          } catch(e) {}
-        }
-      }
-    },
-    jsPDF: {
-      unit:        'mm',
-      format:      'a4',
-      orientation: 'landscape',
-      compress:    true
-    },
-    pagebreak: {
-      mode:  ['css', 'legacy'],
-      avoid: ['.rp-block', '.cb', '.kpi-row', '.hero-compare', '.two']
-    }
+  printWin.document.open();
+  printWin.document.write(fullHTML);
+  printWin.document.close();
+
+  // Ждём загрузки и запускаем html2pdf в новом окне
+  printWin.onload = function() {
+    var targetEl = printWin.document.querySelector('.analytics-wrap');
+    if (!targetEl) { printWin.close(); if (btn) { btn.innerHTML = origHTML; btn.disabled = false; } return; }
+
+    var h2p = printWin.html2pdf || html2pdf;
+
+    var opt = {
+      margin:      [5, 5, 5, 5],
+      filename:    titleText.replace(/[^a-zA-Z0-9Ѐ-ӿ\s\-_]/g,'').trim().substring(0,50) + '_DTR.pdf',
+      image:       { type: 'jpeg', quality: 0.93 },
+      html2canvas: {
+        scale:           2,
+        useCORS:         true,
+        allowTaint:      true,
+        backgroundColor: '#0a0a0f',
+        logging:         false,
+        windowWidth:     printWin.document.body.scrollWidth,
+        scrollX:         0,
+        scrollY:         0
+      },
+      jsPDF: {
+        unit:        'mm',
+        format:      'a4',
+        orientation: 'landscape',
+        compress:    true
+      },
+      pagebreak: { mode: ['css','legacy'], avoid: ['.rp-block','.cb','.kpi-row','.hero-compare'] }
+    };
+
+    h2p().set(opt).from(printWin.document.body).save()
+      .then(function() {
+        printWin.close();
+        if (btn) { btn.innerHTML = origHTML; btn.disabled = false; }
+      })
+      .catch(function(err) {
+        console.error('PDF error:', err);
+        printWin.close();
+        if (btn) { btn.innerHTML = origHTML; btn.disabled = false; }
+      });
   };
-
-  html2pdf().set(opt).from(wrapper).save()
-    .then(function() {
-      document.body.removeChild(wrapper);
-      if (btn) { btn.innerHTML = origHTML; btn.disabled = false; }
-    })
-    .catch(function(err) {
-      console.error('PDF error:', err);
-      if (document.body.contains(wrapper)) document.body.removeChild(wrapper);
-      if (btn) { btn.innerHTML = origHTML; btn.disabled = false; }
-      alert('Ошибка: ' + (err.message || err));
-    });
 }
 // ════════════════════════════════════════
 // CONTRIBUTOR ANALYSIS В ИНСАЙТАХ
