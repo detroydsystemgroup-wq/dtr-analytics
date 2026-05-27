@@ -24723,20 +24723,42 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   0%,100% { opacity: 1; transform: scale(1); }
   50%     { opacity: .35; transform: scale(.75); }
 }
+@keyframes arcRotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes arcCorePulse {
+  0%,100% { r: 4; opacity: 1; filter: drop-shadow(0 0 4px rgba(201,168,76,.9)); }
+  50%     { r: 3; opacity: .55; filter: drop-shadow(0 0 2px rgba(201,168,76,.4)); }
+}
 
-/* ── ACTIVE DOT — живое кольцо с пульсом ── */
+/* ── SVG ARC DOT ── */
+.dtr-active-arc {
+  width: 44px !important;
+  height: 44px !important;
+  display: block !important;
+  overflow: visible !important;
+}
+.dtr-arc-spin {
+  transform-origin: 22px 22px;
+  animation: arcRotate 2s linear infinite !important;
+}
+.dtr-arc-core {
+  animation: arcCorePulse 1.8s ease-in-out infinite !important;
+}
+
+/* ── ACTIVE DOT CONTAINER — без border, SVG рисует своё кольцо ── */
 .tracker-dot.t-active {
   width: 44px !important;
   height: 44px !important;
-  background: radial-gradient(circle at 35% 35%, rgba(222,193,122,.25), rgba(184,146,58,.12)) !important;
-  border: 2px solid #c9a84c !important;
-  color: #dec17a !important;
-  font-size: 18px !important;
-  box-shadow:
-    0 0 0 4px rgba(184,146,58,.12),
-    0 0 0 8px rgba(184,146,58,.05),
-    0 0 24px rgba(184,146,58,.3) !important;
-  animation: activeDotRing 2.4s ease-in-out infinite !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  animation: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  filter: drop-shadow(0 0 10px rgba(184,146,58,.5)) !important;
   z-index: 2 !important;
 }
 
@@ -32510,7 +32532,17 @@ function renderTracker() {
     const dotInner = st === 'completed'
       ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
       : st === 'active'
-      ? `<div style="width:9px;height:9px;border-radius:50%;background:var(--a2);animation:pulse 2s ease infinite;"></div>`
+      ? `<svg class="dtr-active-arc" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="22" cy="22" r="17" stroke="rgba(184,146,58,.12)" stroke-width="2"/>
+          <circle class="dtr-arc-spin" cx="22" cy="22" r="17" stroke="url(#arcGrad${i})" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="60 47" stroke-dashoffset="0"/>
+          <defs>
+            <linearGradient id="arcGrad${i}" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#dec17a"/>
+              <stop offset="100%" stop-color="#b8923a" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <circle cx="22" cy="22" r="4" fill="#c9a84c" class="dtr-arc-core"/>
+        </svg>`
       : `<div style="width:6px;height:6px;border-radius:50%;background:var(--brd2);"></div>`
 
     const badgeLabel = st === 'completed' ? 'Завершён' : st === 'active' ? 'В работе' : 'Ожидает'
