@@ -8648,21 +8648,22 @@ input, select, textarea {
 var _obEnabled = true;
 function toggleObOnboarding() {
   _obEnabled = !_obEnabled;
-  var knob   = document.getElementById('ob-toggle-knob');
-  var track  = document.getElementById('ob-toggle');
+  var knob   = document.getElementById('ob-switch-knob');
+  var track  = document.getElementById('ob-switch-track');
+  var btn    = document.getElementById('ob-toggle');
   var label  = document.getElementById('ob-toggle-label');
   var tip    = document.getElementById('dtr-ob-tip');
   if (_obEnabled) {
-    knob.style.transform  = 'translateX(0)';
-    track.style.background = 'var(--a2)';
-    label.textContent      = 'Подсказки вкл.';
-    label.style.color      = 'var(--txt2)';
+    if (knob)  knob.style.transform   = 'translateX(0)';
+    if (track) track.style.background = '#c9a84c';
+    if (btn)   { btn.style.borderColor='rgba(184,146,58,.55)'; btn.style.background='rgba(184,146,58,.12)'; }
+    if (label) { label.textContent='Подсказки'; label.style.color='#c9a84c'; }
   } else {
-    knob.style.transform  = 'translateX(20px)';
-    track.style.background = 'rgba(255,255,255,.12)';
-    label.textContent      = 'Подсказки выкл.';
-    label.style.color      = 'var(--txt3)';
-    if (tip) tip.style.opacity = '0';
+    if (knob)  knob.style.transform   = 'translateX(16px)';
+    if (track) track.style.background = 'rgba(255,255,255,.15)';
+    if (btn)   { btn.style.borderColor='rgba(255,255,255,.12)'; btn.style.background='rgba(255,255,255,.04)'; }
+    if (label) { label.textContent='Подсказки'; label.style.color='rgba(255,255,255,.3)'; }
+    if (tip)   tip.style.opacity = '0';
   }
 }
 </script>
@@ -26671,10 +26672,40 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 
     <!-- ANALYTICS OUTPUT -->
     <!-- ONBOARDING TOGGLE -->
-    <div id="ob-toggle-bar" style="display:none;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:16px;padding:0 2px;">
-      <span id="ob-toggle-label" style="font-family:var(--font-mono);font-size:11px;color:var(--txt2);letter-spacing:.06em;user-select:none;">Подсказки вкл.</span>
-      <div id="ob-toggle" onclick="toggleObOnboarding()" style="width:44px;height:24px;border-radius:12px;background:var(--a2);border:none;cursor:pointer;position:relative;transition:background .25s ease;flex-shrink:0;">        <div id="ob-toggle-knob" style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .25s cubic-bezier(.34,1.56,.64,1);box-shadow:0 1px 4px rgba(0,0,0,.35);"></div>
-      </div>
+    <div id="ob-toggle-bar" style="display:none;justify-content:flex-end;align-items:center;gap:0;margin-bottom:16px;padding:0 2px;">
+      <button id="ob-toggle" onclick="toggleObOnboarding()" style="
+        display:inline-flex;align-items:center;gap:9px;
+        padding:7px 14px 7px 12px;
+        border-radius:10px;
+        border:1.5px solid rgba(184,146,58,.55);
+        background:rgba(184,146,58,.12);
+        cursor:pointer;
+        transition:background .2s,border-color .2s;
+        outline:none;
+      ">
+        <!-- Pill-switch -->
+        <div id="ob-switch-track" style="
+          width:36px;height:20px;border-radius:10px;
+          background:#c9a84c;
+          position:relative;flex-shrink:0;
+          transition:background .22s ease;
+          box-shadow:0 0 0 1px rgba(184,146,58,.4);
+        ">
+          <div id="ob-switch-knob" style="
+            position:absolute;top:3px;left:3px;
+            width:14px;height:14px;border-radius:7px;
+            background:#fff;
+            transition:transform .22s cubic-bezier(.34,1.4,.64,1);
+            box-shadow:0 1px 3px rgba(0,0,0,.4);
+          "></div>
+        </div>
+        <span id="ob-toggle-label" style="
+          font-family:var(--font-mono,monospace);font-size:11px;
+          font-weight:600;letter-spacing:.06em;
+          color:#c9a84c;
+          user-select:none;white-space:nowrap;
+        ">Подсказки</span>
+      </button>
     </div>
     <div class="analytics-wrap" id="analytics-wrap">
 
