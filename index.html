@@ -25424,104 +25424,146 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
     <!-- ── TAB: OVERVIEW — McKinsey Command Center ── -->
     <div id="dtab-overview-panel" style="display:none;">
 
-      <!-- ══ HEADER ══ -->
-      <div class="ov2-topbar">
-        <div class="ov2-topbar-left">
-          <div class="ov2-title">Генеральная <span>сводка</span></div>
-          <div class="ov2-subtitle" id="ov2-updated">Данные обновляются в реальном времени</div>
+      <!-- ① HERO STRIP — apl style like Finance -->
+      <div class="apl-hero-strip sv-hero">
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">ИНДЕКС ЗДОРОВЬЯ</div>
+          <div class="apl-hero-num" id="sv-health-num" style="color:var(--green);">—</div>
+          <div class="apl-hero-sub" id="sv-health-sub">агентство</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="sv-health-foot">—</div>
         </div>
-        <div class="ov2-topbar-right">
-          <div class="ov2-section-pills">
-            <button class="ov2-spill ov2-spill-active" onclick="ov2ScrollTo('ov2-sec-kpi')">📊 KPI</button>
-            <button class="ov2-spill" onclick="ov2ScrollTo('ov2-sec-projects')">📁 Проекты</button>
-            <button class="ov2-spill" onclick="ov2ScrollTo('ov2-sec-smm')">📱 SMM</button>
-            <button class="ov2-spill" onclick="ov2ScrollTo('ov2-sec-deadlines')">📅 Дедлайны</button>
-            <button class="ov2-spill" onclick="ov2ScrollTo('ov2-sec-health')">❤️ Здоровье</button>
-          </div>
+        <div class="apl-hero-divider"></div>
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">ON-TIME DELIVERY</div>
+          <div class="apl-hero-num" id="sv-ontime-num" style="color:var(--cyan);">—</div>
+          <div class="apl-hero-sub">задач сданы в срок</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="sv-ontime-foot">—</div>
         </div>
-      </div>
-
-      <!-- ════ КЛЮЧЕВЫЕ ПОКАЗАТЕЛИ ════ -->
-      <div class="rp-block ov-block" id="ov-block-kpi">
-        <div class="rp-block-hdr" id="ov2-sec-kpi">
-          <div class="rp-block-icon" style="background:#c9a84c22;border:1.5px solid #c9a84c44;color:#c9a84c;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><polyline points="2 20 22 20"/></svg></div>
-          <div class="rp-block-text">
-            <div class="rp-block-title">Ключевые показатели</div>
-            <div class="rp-block-sub">Метрики агентства · Прогресс · Активность</div>
-          </div>
-          <div class="rp-block-badge" style="background:rgba(201,168,76,.12);color:#c9a84c;border:1px solid rgba(201,168,76,.25);">Реальное время</div>
+        <div class="apl-hero-divider"></div>
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">ПРОСРОЧЕНО СЕЙЧАС</div>
+          <div class="apl-hero-num" id="sv-overdue-num" style="color:var(--red);">—</div>
+          <div class="apl-hero-sub" id="sv-overdue-sub">дедлайнов истекло</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="sv-overdue-foot">—</div>
         </div>
-        <div class="rp-block-body ov-block-body">
-          <div class="ov2-kpi-strip" id="ov2-kpi-strip"></div>
-        </div>
-      </div>
-
-      <!-- ════ СТАТУС ПРОЕКТОВ ════ -->
-      <div class="rp-block ov-block" id="ov-block-projects">
-        <div class="rp-block-hdr" id="ov2-sec-projects">
-          <div class="rp-block-icon" style="background:#c9a84c22;border:1.5px solid #c9a84c44;color:#c9a84c;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
-          <div class="rp-block-text">
-            <div class="rp-block-title">Статус проектов</div>
-            <div class="rp-block-sub">Прогресс и дедлайны по всем проектам</div>
-          </div>
-          <div class="rp-block-badge" id="ov2-proj-meta" style="background:rgba(201,168,76,.12);color:#c9a84c;border:1px solid rgba(201,168,76,.25);"></div>
-        </div>
-        <div class="rp-block-body ov-block-body">
-          <div class="ov2-proj-grid" id="ov2-proj-grid"></div>
+        <div class="apl-hero-divider"></div>
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">VELOCITY (30 ДНЕЙ)</div>
+          <div class="apl-hero-num" id="sv-velocity-num" style="color:var(--a2);">—</div>
+          <div class="apl-hero-sub">задач закрыто</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="sv-velocity-foot">—</div>
         </div>
       </div>
 
-      <!-- ════ SMM РЕЙТИНГ ════ -->
-      <div class="rp-block ov-block" id="ov-block-smm">
-        <div class="rp-block-hdr" id="ov2-sec-smm">
-          <div class="rp-block-icon" style="background:#8b5cf622;border:1.5px solid #8b5cf644;color:#8b5cf6;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M22 4s-2.5 3.5-7 4c-1.5.2-3-.2-4-1-2-1.7-2.5-4.5-.5-6 2.5-1.9 6.5-.5 8 2 .3.5.5 1 .5 1z"/><path d="M15.5 9c-.5 4-3 8-7.5 11"/><path d="M2 21c1.5-1 4.5-3 8-3s6 2 8 1"/></svg></div>
-          <div class="rp-block-text">
-            <div class="rp-block-title">SMM Рейтинг</div>
-            <div class="rp-block-sub">Сравнительный анализ по каналам и метрикам</div>
+      <!-- ② RISK ROW — 4 metric cards -->
+      <div class="sv-risk-row">
+        <div class="sv-risk-card" id="sv-rc-concentration">
+          <div class="sv-rc-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg></div>
+          <div class="sv-rc-body">
+            <div class="sv-rc-label">Концентрация выручки</div>
+            <div class="sv-rc-val" id="sv-conc-val">—</div>
+            <div class="sv-rc-sub" id="sv-conc-sub">Топ-1 клиент</div>
           </div>
-          <div class="rp-block-badge-pills">
-            <button class="slp slp-active" data-metric="er" onclick="setLBMetric('er',this)">ER</button>
-            <button class="slp" data-metric="lr" onclick="setLBMetric('lr',this)">LR</button>
-            <button class="slp" data-metric="tr" onclick="setLBMetric('tr',this)">C/R</button>
-            <button class="slp" data-metric="shr" onclick="setLBMetric('shr',this)">SH/R</button>
-            <button class="slp" data-metric="sr" onclick="setLBMetric('sr',this)">SR</button>
-          </div>
+          <div class="sv-rc-badge" id="sv-conc-badge">—</div>
         </div>
-        <div class="rp-block-body ov-block-body">
-          <div id="smm-leaderboard"></div>
+        <div class="sv-risk-card" id="sv-rc-revhour">
+          <div class="sv-rc-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="sv-rc-body">
+            <div class="sv-rc-label">Выручка на час</div>
+            <div class="sv-rc-val" id="sv-revh-val">—</div>
+            <div class="sv-rc-sub" id="sv-revh-sub">сум/час</div>
+          </div>
+          <div class="sv-rc-badge" id="sv-revh-badge">—</div>
+        </div>
+        <div class="sv-risk-card" id="sv-rc-churn">
+          <div class="sv-rc-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8.56 2.9A7 7 0 1 1 2.9 8.56"/><path d="M2 2l20 20"/></svg></div>
+          <div class="sv-rc-body">
+            <div class="sv-rc-label">Churn Risk</div>
+            <div class="sv-rc-val" id="sv-churn-val">—</div>
+            <div class="sv-rc-sub" id="sv-churn-sub">клиентов в красной зоне</div>
+          </div>
+          <div class="sv-rc-badge" id="sv-churn-badge">—</div>
+        </div>
+        <div class="sv-risk-card" id="sv-rc-rework">
+          <div class="sv-rc-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3"/></svg></div>
+          <div class="sv-rc-body">
+            <div class="sv-rc-label">Rework Rate</div>
+            <div class="sv-rc-val" id="sv-rework-val">—</div>
+            <div class="sv-rc-sub">этапов откатилось назад</div>
+          </div>
+          <div class="sv-rc-badge" id="sv-rework-badge">—</div>
         </div>
       </div>
 
-      <!-- ════ РАДАР ДЕДЛАЙНОВ ════ -->
-      <div class="rp-block ov-block" id="ov-block-deadlines">
-        <div class="rp-block-hdr" id="ov2-sec-deadlines">
-          <div class="rp-block-icon" style="background:#f8717122;border:1.5px solid #f8717144;color:#f87171;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="8" cy="15" r="1" fill="currentColor"/><circle cx="12" cy="15" r="1" fill="currentColor"/></svg></div>
-          <div class="rp-block-text">
-            <div class="rp-block-title">Радар дедлайнов</div>
-            <div class="rp-block-sub">Просрочено · Сегодня · На этой неделе · Будущие</div>
+      <!-- ③ PROJECTS TABLE — finance style -->
+      <div class="sv-section-block">
+        <div class="sv-section-hdr">
+          <div class="sv-section-hdr-left">
+            <div class="sv-section-icon" style="background:rgba(201,168,76,.12);color:#c9a84c;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></div>
+            <div>
+              <div class="sv-section-title">Портфель проектов</div>
+              <div class="sv-section-sub" id="sv-proj-meta">—</div>
+            </div>
           </div>
-          <div class="rp-block-badge" style="background:rgba(248,113,113,.1);color:#f87171;border:1px solid rgba(248,113,113,.22);">Все дедлайны</div>
+          <div class="sv-section-hdr-right">
+            <div class="sv-seg-pills" id="sv-proj-pills">
+              <button class="sv-pill sv-pill-active" onclick="svSetProjFilter('all',this)">Все</button>
+              <button class="sv-pill" onclick="svSetProjFilter('active',this)">Активные</button>
+              <button class="sv-pill" onclick="svSetProjFilter('overdue',this)">Просрочены</button>
+              <button class="sv-pill" onclick="svSetProjFilter('done',this)">Завершены</button>
+            </div>
+          </div>
         </div>
-        <div class="rp-block-body ov-block-body">
-          <div class="ov2-dl-grid" id="ov2-dl-grid"></div>
+        <div class="sv-proj-table">
+          <div class="sv-proj-thead">
+            <div class="sv-th">Проект</div>
+            <div class="sv-th">Пайплайн</div>
+            <div class="sv-th sv-th-r">Прогресс</div>
+            <div class="sv-th sv-th-r">Статус</div>
+            <div class="sv-th sv-th-r">Дедлайн</div>
+            <div class="sv-th sv-th-r">Churn Risk</div>
+            <div class="sv-th" style="width:80px;"></div>
+          </div>
+          <div id="sv-proj-tbody"></div>
         </div>
       </div>
 
-      <!-- ════ ЗДОРОВЬЕ АГЕНТСТВА ════ -->
-      <div class="rp-block ov-block" id="ov-block-health">
-        <div class="rp-block-hdr" id="ov2-sec-health">
-          <div class="rp-block-icon" style="background:#3ecf8e22;border:1.5px solid #3ecf8e44;color:#3ecf8e;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
-          <div class="rp-block-text">
-            <div class="rp-block-title">Здоровье агентства</div>
-            <div class="rp-block-sub">Загрузка команды · Завершённость · Риски</div>
-          </div>
-          <div class="rp-block-badge" style="background:rgba(62,207,142,.1);color:#3ecf8e;border:1px solid rgba(62,207,142,.22);">Агентство</div>
-        </div>
-        <div class="rp-block-body ov-block-body">
-          <div class="ov2-health-grid" id="ov2-health-grid"></div>
-        </div>
-      </div>
+      <!-- ④ TWO-COLUMN: Deadlines + Health -->
+      <div class="sv-two-col">
 
+        <!-- Deadline Radar -->
+        <div class="sv-section-block">
+          <div class="sv-section-hdr">
+            <div class="sv-section-hdr-left">
+              <div class="sv-section-icon" style="background:rgba(248,113,113,.1);color:#f87171;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+              <div>
+                <div class="sv-section-title">Радар дедлайнов</div>
+                <div class="sv-section-sub">Активные дедлайны по этапам</div>
+              </div>
+            </div>
+          </div>
+          <div class="sv-dl-body" id="sv-dl-body"></div>
+        </div>
+
+        <!-- Agency Health -->
+        <div class="sv-section-block">
+          <div class="sv-section-hdr">
+            <div class="sv-section-hdr-left">
+              <div class="sv-section-icon" style="background:rgba(62,207,142,.1);color:#3ecf8e;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+              <div>
+                <div class="sv-section-title">Загрузка по этапам</div>
+                <div class="sv-section-sub">Выполнение каждого этапа пайплайна</div>
+              </div>
+            </div>
+          </div>
+          <div class="sv-health-body" id="sv-health-body"></div>
+        </div>
+
+      </div>
 
       <div style="height:60px;"></div>
     </div>
@@ -35387,328 +35429,315 @@ function ov2ScrollTo(id) {
 }
 
 // Override loadOverview completely
+var _svProjFilter = 'all';
+window.svSetProjFilter = function(f, btn) {
+  _svProjFilter = f;
+  document.querySelectorAll('.sv-pill').forEach(function(b){ b.classList.remove('sv-pill-active'); });
+  if (btn) btn.classList.add('sv-pill-active');
+  svRenderProjTable(window._svProjData || [], window._svOverdueMap || {});
+};
+
 async function loadOverview() {
-  if (!_allProjects || !_allProjects.length) {
-    ['ov2-kpi-strip','ov2-proj-grid','ov2-dl-grid','ov2-health-grid'].forEach(function(id){
-      var el = document.getElementById(id);
-      if (el) el.innerHTML = '<div style="padding:40px;text-align:center;font-family:\'DM Mono\',monospace;font-size:11px;color:rgba(184,146,58,.3);">Нет данных</div>';
-    });
-    return;
-  }
+  if (!_allProjects || !_allProjects.length) return;
 
   var today = new Date(); today.setHours(0,0,0,0);
   var weekEnd = new Date(today); weekEnd.setDate(today.getDate() + 7);
   var MONTHS = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
 
-  // ── Compute all metrics ──
+  // ── Load additional data ──
+  var allTasks = [];
+  var stageHistory = [];
+  try {
+    var tr = await sb.from('stage_tasks').select('*').in('project_id', _allProjects.map(function(p){return p.id;}));
+    allTasks = tr.data || [];
+  } catch(e) {}
+  try {
+    var hr = await sb.from('stage_history').select('*').in('project_id', _allProjects.map(function(p){return p.id;})).order('changed_at', {ascending:false}).limit(500);
+    stageHistory = hr.data || [];
+  } catch(e) {}
+
+  // ── Core computations ──
   var totalStages = _allProjects.length * 9;
   var completedStages = _allStages.filter(function(s){ return s.status === 'completed'; }).length;
   var activeStages = _allStages.filter(function(s){ return s.status === 'active'; }).length;
   var globalPct = totalStages ? Math.round(completedStages / totalStages * 100) : 0;
   var overdueProjs = _allProjects.filter(function(p){ return isProjectOverdue(p.id); });
   var doneProjs = _allProjects.filter(function(p){ return getProjectProgress(p.id).pct === 100; });
-  var activeProjs = _allProjects.filter(function(p){ return p.status !== 'archived' && getProjectProgress(p.id).pct < 100; });
-  var allDeadlines = _allStages.filter(function(s){ return s.deadline && s.status !== 'completed'; });
-  var overdueDeadlines = allDeadlines.filter(function(s){ return new Date(s.deadline) < today; });
-  var todayDeadlines = allDeadlines.filter(function(s){ var d=new Date(s.deadline); d.setHours(0,0,0,0); return d.getTime()===today.getTime(); });
-  var weekDeadlines = allDeadlines.filter(function(s){ var d=new Date(s.deadline); return d>=today && d<=weekEnd; });
-  var futureDeadlines = allDeadlines.filter(function(s){ return new Date(s.deadline) > weekEnd; });
 
-  // Load report counts
-  var reportCount = 0;
+  // On-time delivery rate
+  var tasksWithDeadline = allTasks.filter(function(t){ return t.deadline; });
+  var tasksOnTime = tasksWithDeadline.filter(function(t){
+    if (!t.done) return false;
+    var dl = new Date(t.deadline); dl.setHours(23,59,59,0);
+    var done = t.done_at ? new Date(t.done_at) : today;
+    return done <= dl;
+  });
+  var onTimeRate = tasksWithDeadline.length ? Math.round(tasksOnTime.length / tasksWithDeadline.length * 100) : null;
+
+  // Velocity: tasks closed last 30 days
+  var thirtyAgo = new Date(today); thirtyAgo.setDate(today.getDate() - 30);
+  var sevenAgo  = new Date(today); sevenAgo.setDate(today.getDate() - 7);
+  var velocity30 = allTasks.filter(function(t){ return t.done && t.done_at && new Date(t.done_at) >= thirtyAgo; }).length;
+  var velocity7  = allTasks.filter(function(t){ return t.done && t.done_at && new Date(t.done_at) >= sevenAgo; }).length;
+
+  // Overdue deadlines
+  var allStageDL = _allStages.filter(function(s){ return s.deadline && s.status !== 'completed'; });
+  var overdueDL = allStageDL.filter(function(s){ return new Date(s.deadline) < today; });
+  var weekDL    = allStageDL.filter(function(s){ var d=new Date(s.deadline); return d>=today && d<=weekEnd; });
+  var futureDL  = allStageDL.filter(function(s){ return new Date(s.deadline) > weekEnd; });
+
+  // Health score
+  var healthScore = Math.max(0, Math.min(100, Math.round(
+    globalPct * 0.35 +
+    (overdueProjs.length === 0 ? 25 : Math.max(0, 25 - overdueProjs.length * 8)) +
+    (onTimeRate !== null ? onTimeRate * 0.25 : 15) +
+    (overdueDL.length === 0 ? 15 : Math.max(0, 15 - overdueDL.length * 3))
+  )));
+  var healthColor = healthScore >= 75 ? 'var(--green)' : healthScore >= 45 ? 'var(--amber)' : 'var(--red)';
+  var healthLabel = healthScore >= 75 ? 'Отличное' : healthScore >= 45 ? 'Требует внимания' : 'Критическое';
+
+  // Revenue concentration
+  var budgets = _allProjects.map(function(p){ return p.monthly_budget || 0; }).filter(function(b){ return b > 0; });
+  var totalMRR = budgets.reduce(function(s,b){ return s+b; }, 0);
+  var maxBudget = budgets.length ? Math.max.apply(null, budgets) : 0;
+  var concPct = totalMRR > 0 ? Math.round(maxBudget / totalMRR * 100) : null;
+  var topClient = concPct !== null ? _allProjects.find(function(p){ return p.monthly_budget === maxBudget; }) : null;
+
+  // Revenue per hour
+  var totalHours = 0;
   try {
-    var rc = await sb.from('reports').select('*',{count:'exact',head:true}).in('project_id', _allProjects.map(function(p){return p.id;}));
-    reportCount = rc.count || 0;
+    var th = (await sb.from('stage_tasks').select('time_logged').in('project_id', _allProjects.map(function(p){return p.id;}))).data || [];
+    totalHours = Math.round(th.reduce(function(s,t){ return s + (t.time_logged||0); }, 0) / 60);
   } catch(e) {}
+  var revPerHour = (totalMRR > 0 && totalHours > 0) ? Math.round(totalMRR / totalHours) : null;
 
-  // ────────────────────────────
-  // SECTION 1: KPI STRIP
-  // ────────────────────────────
-  var kpiEl = document.getElementById('ov2-kpi-strip');
-  if (kpiEl) {
-    var avgProg = _allProjects.length ? Math.round(_allProjects.reduce(function(s,p){ return s + getProjectProgress(p.id).pct; },0) / _allProjects.length) : 0;
-    var healthScore = Math.max(0, Math.min(100, Math.round(
-      globalPct * 0.4 +
-      (overdueProjs.length === 0 ? 30 : Math.max(0, 30 - overdueProjs.length * 10)) +
-      (activeStages > 0 ? 20 : 0) +
-      (overdueDeadlines.length === 0 ? 10 : 0)
-    )));
-    var scoreColor = healthScore >= 80 ? '#34d399' : healthScore >= 50 ? '#fbbf24' : '#f87171';
+  // Churn risk: projects with no stage_history activity in 21+ days
+  var activeProjects = _allProjects.filter(function(p){ return p.status !== 'archived' && getProjectProgress(p.id).pct < 100; });
+  var twentyOneAgo = new Date(today); twentyOneAgo.setDate(today.getDate() - 21);
+  var churnRisk = activeProjects.filter(function(p) {
+    var lastActivity = stageHistory.find(function(h){ return h.project_id === p.id; });
+    if (!lastActivity) return true;
+    return new Date(lastActivity.changed_at) < twentyOneAgo;
+  });
+  var churnCount = churnRisk.length;
 
-    kpiEl.innerHTML =
-      ov2KpiCard('🏢', 'ПРОЕКТОВ', _allProjects.length, 'Всего в работе', 'var(--a2)', 'var(--a)',
-        activeProjs.length + ' активных · ' + doneProjs.length + ' завершено') +
-      ov2KpiCard('⚡', 'ВЫПОЛНЕНО', globalPct + '%', 'Этапов завершено', '#22d3ee', '#0e7490',
-        completedStages + ' из ' + totalStages + ' этапов') +
-      ov2KpiCard('🎯', 'АКТИВНЫХ', activeStages, 'Этапов в работе', '#fbbf24', '#92400e',
-        _allProjects.filter(function(p){
-          return _allStages.some(function(s){ return s.project_id===p.id && s.status==='active'; });
-        }).length + ' проектов имеют активные этапы') +
-      ov2KpiCard('⚠️', 'ПРОСРОЧЕНО', overdueProjs.length, 'Проектов', overdueProjs.length > 0 ? '#f87171' : '#34d399', overdueProjs.length > 0 ? '#7f1d1d' : '#064e3b',
-        overdueDeadlines.length + ' дедлайнов истекло') +
-      ov2KpiCard('❤️', 'ЗДОРОВЬЕ', healthScore + '%', 'Индекс агентства', scoreColor, scoreColor === '#34d399' ? '#064e3b' : scoreColor === '#fbbf24' ? '#92400e' : '#7f1d1d',
-        scoreColor === '#34d399' ? '✓ Отличное состояние' : scoreColor === '#fbbf24' ? '⚡ Требует внимания' : '⚠ Критическое');
+  // Rework rate: stages that moved backward (e.g. completed → active/pending)
+  var reworkCount = stageHistory.filter(function(h){
+    return h.old_status === 'completed' && (h.new_status === 'active' || h.new_status === 'pending');
+  }).length;
+
+  // ─────────────────────────────
+  // RENDER: Hero strip
+  // ─────────────────────────────
+  var s = function(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; };
+  var sc = function(id, v) { var el = document.getElementById(id); if (el) el.style.color = v; };
+
+  s('sv-health-num', healthScore + '%');
+  sc('sv-health-num', healthColor);
+  s('sv-health-sub', healthLabel + ' состояние');
+  s('sv-health-foot', _allProjects.length + ' проектов · ' + doneProjs.length + ' завершено');
+
+  s('sv-ontime-num', onTimeRate !== null ? onTimeRate + '%' : '—');
+  sc('sv-ontime-num', onTimeRate !== null ? (onTimeRate >= 70 ? 'var(--green)' : onTimeRate >= 50 ? 'var(--amber)' : 'var(--red)') : 'var(--txt3)');
+  s('sv-ontime-foot', tasksWithDeadline.length + ' задач с дедлайном · ' + tasksOnTime.length + ' в срок');
+
+  s('sv-overdue-num', overdueDL.length);
+  sc('sv-overdue-num', overdueDL.length === 0 ? 'var(--green)' : 'var(--red)');
+  s('sv-overdue-sub', overdueDL.length === 0 ? 'Всё в норме' : 'дедлайнов истекло');
+  s('sv-overdue-foot', overdueProjs.length + ' проектов просрочено');
+
+  s('sv-velocity-num', velocity30);
+  s('sv-velocity-foot', 'за 7 дней: ' + velocity7 + ' · всего задач: ' + allTasks.length);
+
+  // ─────────────────────────────
+  // RENDER: Risk row
+  // ─────────────────────────────
+  function svBadge(id, txt, bg, clr) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = txt;
+    el.style.background = bg;
+    el.style.color = clr;
+    el.style.border = '1px solid ' + clr + '44';
   }
 
-  // ────────────────────────────
-  // SECTION 2: PROJECTS TABLE
-  // ────────────────────────────
-  var projEl = document.getElementById('ov2-proj-grid');
-  if (projEl) {
-    var progList = _allProjects.map(function(p){
-      var prog = getProjectProgress(p.id);
-      var overdue = isProjectOverdue(p.id);
-      var next = getNextDeadline(p.id);
-      return { p:p, prog:prog, overdue:overdue, next:next };
-    }).sort(function(a,b){ return b.prog.pct - a.prog.pct; });
+  s('sv-conc-val', concPct !== null ? concPct + '%' : '—');
+  s('sv-conc-sub', topClient ? topClient.name : 'нет данных о бюджетах');
+  if (concPct !== null) {
+    var concColor = concPct >= 40 ? 'var(--red)' : concPct >= 25 ? 'var(--amber)' : 'var(--green)';
+    sc('sv-conc-val', concColor);
+    svBadge('sv-conc-badge', concPct >= 40 ? 'Высокий риск' : concPct >= 25 ? 'Умеренный' : 'Норма',
+      concPct >= 40 ? 'rgba(224,82,82,.1)' : concPct >= 25 ? 'rgba(232,153,58,.1)' : 'rgba(62,207,142,.1)',
+      concPct >= 40 ? 'var(--red)' : concPct >= 25 ? 'var(--amber)' : 'var(--green)');
+  } else {
+    svBadge('sv-conc-badge', 'Нет данных', 'rgba(240,236,230,.06)', 'var(--txt3)');
+  }
 
-    var metaEl = document.getElementById('ov2-proj-meta');
-    if (metaEl) metaEl.textContent = _allProjects.length + ' проектов · ' + completedStages + '/' + totalStages + ' этапов';
+  s('sv-revh-val', revPerHour !== null ? fmtM(revPerHour) : '—');
+  s('sv-revh-sub', totalHours > 0 ? totalHours + ' часов · MRR ' + fmtM(totalMRR) : 'Задайте бюджеты и часы');
+  if (revPerHour !== null) {
+    svBadge('sv-revh-badge', revPerHour >= 100000 ? 'Высокая' : revPerHour >= 50000 ? 'Средняя' : 'Низкая',
+      revPerHour >= 100000 ? 'rgba(62,207,142,.1)' : revPerHour >= 50000 ? 'rgba(232,153,58,.1)' : 'rgba(224,82,82,.1)',
+      revPerHour >= 100000 ? 'var(--green)' : revPerHour >= 50000 ? 'var(--amber)' : 'var(--red)');
+  } else {
+    svBadge('sv-revh-badge', 'Нет данных', 'rgba(240,236,230,.06)', 'var(--txt3)');
+  }
 
-    projEl.innerHTML =
-      '<div class="ov2-proj-header">' +
-        '<div class="ov2-ph-cell">#</div>' +
-        '<div class="ov2-ph-cell">Проект</div>' +
-        '<div class="ov2-ph-cell">Пайплайн (9 этапов)</div>' +
-        '<div class="ov2-ph-cell" style="text-align:center;">Прогресс</div>' +
-        '<div class="ov2-ph-cell" style="text-align:center;">Статус</div>' +
-        '<div class="ov2-ph-cell" style="text-align:center;">Дедлайн</div>' +
-        '<div class="ov2-ph-cell"></div>' +
-      '</div>' +
-      progList.map(function(item, idx) {
-        var p = item.p; var prog = item.prog;
-        var col = p.brand_color || 'var(--a)';
-        var progColor = prog.pct >= 80 ? '#34d399' : prog.pct >= 40 ? col : '#fbbf24';
-        var statusTxt = item.overdue ? 'Просрочен' : prog.pct === 100 ? 'Завершён' : 'Активен';
-        var statusBg = item.overdue ? 'rgba(248,113,113,.1)' : prog.pct === 100 ? 'rgba(52,211,153,.1)' : 'rgba(184,146,58,.1)';
-        var statusCol = item.overdue ? '#f87171' : prog.pct === 100 ? '#34d399' : 'var(--a2)';
+  s('sv-churn-val', churnCount);
+  sc('sv-churn-val', churnCount === 0 ? 'var(--green)' : churnCount >= 2 ? 'var(--red)' : 'var(--amber)');
+  s('sv-churn-sub', churnCount === 0 ? 'Активность в норме' : 'нет активности 21+ день');
+  svBadge('sv-churn-badge', churnCount === 0 ? 'Норма' : churnCount >= 2 ? 'Критично' : 'Внимание',
+    churnCount === 0 ? 'rgba(62,207,142,.1)' : churnCount >= 2 ? 'rgba(224,82,82,.1)' : 'rgba(232,153,58,.1)',
+    churnCount === 0 ? 'var(--green)' : churnCount >= 2 ? 'var(--red)' : 'var(--amber)');
 
-        // Pipeline segments
-        var projStages = _allStages.filter(function(s){ return s.project_id === p.id; });
-        var segs = '';
-        for (var i = 0; i < 9; i++) {
-          var st = projStages.find(function(s){ return s.stage_index === i; });
-          var stStatus = st ? st.status : 'pending';
-          // Done: яркое золото | Active: ещё ярче + glow | Pending: почти невидимый
-          var segBg = stStatus === 'completed' ? '#b8923a' : (stStatus === 'active' || stStatus === 'in_progress') ? '#dec17a' : 'rgba(255,255,255,.08)';
-          var segH = (stStatus === 'active' || stStatus === 'in_progress') ? '10px' : '6px';
-          var segGlow = stStatus === 'completed' ? 'box-shadow:0 0 4px rgba(184,146,58,.3);' : (stStatus === 'active' || stStatus === 'in_progress') ? 'box-shadow:0 0 12px rgba(222,193,122,.7);' : '';
-          segs += '<div class="ov2-pipe-seg" style="background:' + segBg + ';height:' + segH + ';' + segGlow + '"></div>';
-        }
+  s('sv-rework-val', reworkCount);
+  sc('sv-rework-val', reworkCount === 0 ? 'var(--green)' : reworkCount >= 3 ? 'var(--red)' : 'var(--amber)');
+  svBadge('sv-rework-badge', reworkCount === 0 ? 'Норма' : reworkCount >= 3 ? 'Высокий' : 'Умеренный',
+    reworkCount === 0 ? 'rgba(62,207,142,.1)' : reworkCount >= 3 ? 'rgba(224,82,82,.1)' : 'rgba(232,153,58,.1)',
+    reworkCount === 0 ? 'var(--green)' : reworkCount >= 3 ? 'var(--red)' : 'var(--amber)');
 
-        // Deadline
-        var dlTxt = '—'; var dlColor = 'rgba(184,146,58,.3)';
-        if (item.next) {
-          var dl = new Date(item.next.deadline);
-          var diff = Math.ceil((dl - today) / 86400000);
-          if (diff < 0) { dlTxt = Math.abs(diff)+'д назад'; dlColor = '#f87171'; }
-          else if (diff === 0) { dlTxt = 'Сегодня'; dlColor = '#fbbf24'; }
-          else if (diff <= 3) { dlTxt = 'Через '+diff+'д'; dlColor = '#fbbf24'; }
-          else { dlTxt = dl.getDate()+' '+MONTHS[dl.getMonth()]; dlColor = 'var(--a2)'; }
-        }
+  // ─────────────────────────────
+  // RENDER: Projects table
+  // ─────────────────────────────
+  var projData = _allProjects.map(function(p) {
+    var prog = getProjectProgress(p.id);
+    var overdue = isProjectOverdue(p.id);
+    var next = getNextDeadline(p.id);
+    var isChurn = churnRisk.some(function(c){ return c.id === p.id; });
+    var lastAct = stageHistory.find(function(h){ return h.project_id === p.id; });
+    var daysSince = lastAct ? Math.round((today - new Date(lastAct.changed_at)) / 86400000) : 999;
+    return { p:p, prog:prog, overdue:overdue, next:next, isChurn:isChurn, daysSince:daysSince };
+  });
 
-        var medals = ['🥇','🥈','🥉'];
-        var rankTxt = idx < 3 ? medals[idx] : (idx + 1);
+  window._svProjData = projData;
+  window._svOverdueMap = {};
+  overdueProjs.forEach(function(p){ window._svOverdueMap[p.id] = true; });
 
-        return '<div class="ov2-proj-row" onclick="openProject(\''+p.id+'\')" style="border-left-color:'+col+';">' +
-          '<div class="ov2-pr-rank">'+rankTxt+'</div>' +
-          '<div class="ov2-pr-name-wrap">' +
-            '<div class="ov2-pr-avatar" style="background:'+col+'18;border:1.5px solid '+col+'44;color:'+col+';">'+p.name[0]+'</div>' +
-            '<div style="min-width:0;">' +
-              '<div class="ov2-pr-name">'+p.name+'</div>' +
-              '<div class="ov2-pr-desc">'+(p.description||'').substring(0,28)+'</div>' +
-            '</div>' +
-          '</div>' +
-          '<div class="ov2-pipe">'+segs+'</div>' +
-          '<div class="ov2-pr-pct" style="color:'+progColor+';">'+prog.pct+'%</div>' +
-          '<div><div class="ov2-pr-status" style="background:'+statusBg+';color:'+statusCol+';">'+statusTxt+'</div></div>' +
-          '<div style="text-align:center;font-family:\'DM Sans\',sans-serif;font-size:12px;font-weight:600;color:'+dlColor+';">'+dlTxt+'</div>' +
-          '<div class="ov2-pr-action"><button class="ov2-pr-btn" onclick="event.stopPropagation();openProject(\''+p.id+'\')">Открыть →</button></div>' +
+  var metaEl = document.getElementById('sv-proj-meta');
+  if (metaEl) metaEl.textContent = _allProjects.length + ' проектов · ' + completedStages + '/' + totalStages + ' этапов';
+
+  svRenderProjTable(projData, window._svOverdueMap, today, MONTHS);
+
+  // ─────────────────────────────
+  // RENDER: Deadline radar
+  // ─────────────────────────────
+  var dlEl = document.getElementById('sv-dl-body');
+  if (dlEl) {
+    var dlHtml = '';
+    function dlZone(label, color, items) {
+      if (!items.length) return '';
+      var out = '<div class="sv-dl-zone-label" style="color:' + color + ';">' + label + ' (' + items.length + ')</div>';
+      out += items.slice(0, 5).map(function(s) {
+        var proj = _allProjects.find(function(p){ return p.id === s.project_id; });
+        var dl = new Date(s.deadline);
+        var diff = Math.ceil((dl - today) / 86400000);
+        var diffTxt = diff < 0 ? Math.abs(diff) + 'д назад' : diff === 0 ? 'Сегодня' : 'через ' + diff + 'д';
+        var STAGE_NAMES = ['Анализ','Конкуренты','Контент-стр.','Таргет','Контент-план','Сценарии','Съёмки #1','Съёмки #2','Отчётность'];
+        var stageName = STAGE_NAMES[s.stage_index] || ('Этап ' + (s.stage_index+1));
+        return '<div class="sv-dl-item">' +
+          '<span class="sv-dl-dot" style="background:' + color + ';"></span>' +
+          '<span>' + stageName + '</span>' +
+          '<span class="sv-dl-proj">' + (proj ? proj.name : '—') + '</span>' +
+          '<span class="sv-dl-date" style="color:' + color + ';">' + diffTxt + '</span>' +
         '</div>';
       }).join('');
+      if (items.length > 5) out += '<div style="padding:6px 10px;font-family:var(--font-mono);font-size:10px;color:var(--txt3);">+ещё ' + (items.length-5) + '</div>';
+      return out;
+    }
+    dlHtml += dlZone('Просрочено', 'var(--red)', overdueDL);
+    dlHtml += dlZone('Эта неделя', 'var(--amber)', weekDL);
+    dlHtml += dlZone('Будущие', 'var(--a2)', futureDL);
+    if (!dlHtml) dlHtml = '<div style="padding:24px;text-align:center;font-family:var(--font-mono);font-size:11px;color:var(--txt3);">Нет активных дедлайнов</div>';
+    dlEl.innerHTML = dlHtml;
   }
 
-  // ────────────────────────────
-  // SECTION 4: DEADLINE RADAR
-  // ────────────────────────────
-  var dlEl = document.getElementById('ov2-dl-grid');
-  if (dlEl) {
-    dlEl.innerHTML =
-      ov2DlZone('Просрочено', '#f87171', overdueDeadlines, today, MONTHS, true) +
-      ov2DlZone('Сегодня + эта неделя', '#fbbf24', weekDeadlines, today, MONTHS, false) +
-      ov2DlZone('Будущие', 'var(--a2)', futureDeadlines, today, MONTHS, false);
-  }
-
-  // ────────────────────────────
-  // SECTION 5: AGENCY HEALTH
-  // ────────────────────────────
-  var healthEl = document.getElementById('ov2-health-grid');
-  if (healthEl) {
-    // Card 1: Completion rate by project
-    var maxPct = Math.max.apply(null, _allProjects.map(function(p){ return getProjectProgress(p.id).pct; })) || 1;
-    var compRows = _allProjects.slice(0,6).map(function(p) {
-      var prog = getProjectProgress(p.id);
-      var col = p.brand_color || 'var(--a)';
-      var pc = prog.pct >= 80 ? '#34d399' : prog.pct >= 40 ? col : '#fbbf24';
-      return '<div class="ov2-health-row" onclick="openProject(\''+p.id+'\')">' +
-        '<div class="ov2-health-row-name">'+p.name+'</div>' +
-        '<div class="ov2-health-row-bar-wrap"><div class="ov2-health-row-bar" style="width:'+prog.pct+'%;background:'+pc+';"></div></div>' +
-        '<div class="ov2-health-row-val" style="color:'+pc+';">'+prog.pct+'%</div>' +
-      '</div>';
-    }).join('');
-
-    // Card 2: Stage completion heatmap
-    var STAGE_NAMES = ['Анализ клиентов','Конкуренты','Контент стратегия','Таргет','Контент план','Сценарии','Съёмки #1','Съёмки #2','Отчётность'];
-    var stageRows = STAGE_NAMES.map(function(name, i) {
+  // ─────────────────────────────
+  // RENDER: Stage health bars
+  // ─────────────────────────────
+  var hEl = document.getElementById('sv-health-body');
+  if (hEl) {
+    var STAGE_NAMES2 = ['Анализ клиентов','Конкуренты','Контент-стратегия','Таргет','Контент-план','Сценарии','Съёмки #1','Съёмки #2','Отчётность'];
+    hEl.innerHTML = STAGE_NAMES2.map(function(name, i) {
       var done = _allStages.filter(function(s){ return s.stage_index===i && s.status==='completed'; }).length;
       var total = _allProjects.length;
       var pct = total ? Math.round(done/total*100) : 0;
-      var col = pct >= 80 ? '#34d399' : pct >= 40 ? 'var(--a2)' : '#fbbf24';
-      return '<div class="ov2-health-row">' +
-        '<div class="ov2-health-row-name">'+name+'</div>' +
-        '<div class="ov2-health-row-bar-wrap"><div class="ov2-health-row-bar" style="width:'+pct+'%;background:'+col+';"></div></div>' +
-        '<div class="ov2-health-row-val" style="color:'+col+';">'+done+'/'+total+'</div>' +
+      var col = pct >= 80 ? 'var(--green)' : pct >= 40 ? 'var(--a2)' : 'var(--amber)';
+      return '<div class="sv-health-row">' +
+        '<div class="sv-health-name">' + name + '</div>' +
+        '<div class="sv-health-bar-wrap"><div class="sv-health-bar" style="width:' + pct + '%;background:' + col + ';"></div></div>' +
+        '<div class="sv-health-val" style="color:' + col + ';">' + done + '/' + total + '</div>' +
       '</div>';
     }).join('');
-
-    // Card 3: Risk score
-    var riskItems = [
-      { label:'Просроченных проектов', val: overdueProjs.length, max: _allProjects.length, col:'#f87171', bad: true },
-      { label:'Истёкших дедлайнов', val: overdueDeadlines.length, max: Math.max(allDeadlines.length,1), col:'#f87171', bad: true },
-      { label:'Этапов завершено', val: completedStages, max: totalStages, col:'#34d399', bad: false },
-      { label:'Активных этапов', val: activeStages, max: _allProjects.length*9, col:'var(--a2)', bad: false },
-    ];
-    var riskScore = Math.max(0, Math.min(100,
-      100 -
-      (overdueProjs.length/_allProjects.length*40 || 0) -
-      (overdueDeadlines.length/Math.max(allDeadlines.length,1)*30 || 0) +
-      (globalPct*0.3)
-    ));
-    var riskColor = riskScore >= 70 ? '#34d399' : riskScore >= 40 ? '#fbbf24' : '#f87171';
-    var riskRows = riskItems.map(function(item){
-      var pct = Math.round(item.val/item.max*100);
-      return '<div class="ov2-health-row">' +
-        '<div class="ov2-health-row-name">'+item.label+'</div>' +
-        '<div class="ov2-health-row-bar-wrap"><div class="ov2-health-row-bar" style="width:'+pct+'%;background:'+item.col+';"></div></div>' +
-        '<div class="ov2-health-row-val" style="color:'+item.col+';">'+item.val+'</div>' +
-      '</div>';
-    }).join('');
-
-    var circ = 2 * Math.PI * 28; // r=28
-
-    healthEl.innerHTML =
-      '<div class="ov2-health-card">' +
-        '<div class="ov2-health-title"><span class="ov2-health-title-dot" style="background:var(--a2);"></span>Прогресс по проектам</div>' +
-        '<div class="ov2-gauge-row">' +
-          '<div class="ov2-score-ring">' +
-            '<svg class="ov2-score-svg" viewBox="0 0 70 70"><circle class="ov2-score-bg" cx="35" cy="35" r="28"/><circle class="ov2-score-fg" cx="35" cy="35" r="28" stroke="var(--a2)" stroke-dasharray="'+circ+'" stroke-dashoffset="'+(circ*(1-avgProg/100))+'"/></svg>' +
-            '<div class="ov2-score-txt"><div class="ov2-score-num" style="color:var(--a2);">'+avgProg+'%</div><div class="ov2-score-lbl">avg</div></div>' +
-          '</div>' +
-          '<div>' +
-            '<div style="font-family:\'DM Sans\',sans-serif;font-size:13px;color:rgba(240,236,230,.5);">Средний прогресс</div>' +
-            '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:rgba(184,146,58,.35);margin-top:4px;">' + doneProjs.length + ' завершено · ' + overdueProjs.length + ' просрочено</div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="ov2-health-rows">'+compRows+'</div>' +
-      '</div>' +
-
-      '<div class="ov2-health-card">' +
-        '<div class="ov2-health-title"><span class="ov2-health-title-dot" style="background:#22d3ee;"></span>Выполнение по этапам</div>' +
-        '<div class="ov2-gauge-row">' +
-          '<div class="ov2-score-ring">' +
-            '<svg class="ov2-score-svg" viewBox="0 0 70 70"><circle class="ov2-score-bg" cx="35" cy="35" r="28"/><circle class="ov2-score-fg" cx="35" cy="35" r="28" stroke="#22d3ee" stroke-dasharray="'+circ+'" stroke-dashoffset="'+(circ*(1-globalPct/100))+'"/></svg>' +
-            '<div class="ov2-score-txt"><div class="ov2-score-num" style="color:#22d3ee;">'+globalPct+'%</div><div class="ov2-score-lbl">total</div></div>' +
-          '</div>' +
-          '<div>' +
-            '<div style="font-family:\'DM Sans\',sans-serif;font-size:13px;color:rgba(240,236,230,.5);">Всего этапов</div>' +
-            '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:rgba(184,146,58,.35);margin-top:4px;">' + completedStages + ' из ' + totalStages + ' · ' + activeStages + ' в работе</div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="ov2-health-rows">'+stageRows+'</div>' +
-      '</div>' +
-
-      '<div class="ov2-health-card">' +
-        '<div class="ov2-health-title"><span class="ov2-health-title-dot" style="background:'+riskColor+';"></span>Риск-профиль агентства</div>' +
-        '<div class="ov2-gauge-row">' +
-          '<div class="ov2-score-ring">' +
-            '<svg class="ov2-score-svg" viewBox="0 0 70 70"><circle class="ov2-score-bg" cx="35" cy="35" r="28"/><circle class="ov2-score-fg" cx="35" cy="35" r="28" stroke="'+riskColor+'" stroke-dasharray="'+circ+'" stroke-dashoffset="'+(circ*(1-riskScore/100))+'"/></svg>' +
-            '<div class="ov2-score-txt"><div class="ov2-score-num" style="color:'+riskColor+';">'+Math.round(riskScore)+'</div><div class="ov2-score-lbl">score</div></div>' +
-          '</div>' +
-          '<div>' +
-            '<div style="font-family:\'DM Sans\',sans-serif;font-size:13px;color:rgba(240,236,230,.5);">'+( riskScore>=70?'Низкий риск':riskScore>=40?'Средний риск':'Высокий риск')+'</div>' +
-            '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:rgba(184,146,58,.35);margin-top:4px;">' + overdueProjs.length + ' критических · ' + overdueDeadlines.length + ' истекло</div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="ov2-health-rows">'+riskRows+'</div>' +
-      '</div>';
   }
 
-  // Load SMM leaderboard
   if (typeof loadSMMLb === 'function') loadSMMLb();
 }
 
-// ── KPI card glow on hover ──
-document.addEventListener('mouseover', function(e) {
-  var card = e.target.closest('.ov2-kpi-card');
-  if (card) { var g = card.querySelector('.ov2-kpi-glow'); if (g) g.style.opacity = '.3'; }
-});
-document.addEventListener('mouseout', function(e) {
-  var card = e.target.closest('.ov2-kpi-card');
-  if (card) { var g = card.querySelector('.ov2-kpi-glow'); if (g) g.style.opacity = '0'; }
-});
+function svRenderProjTable(projData, overdueMap, today, MONTHS) {
+  today = today || new Date(); today.setHours && today.setHours(0,0,0,0);
+  MONTHS = MONTHS || ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+  var f = _svProjFilter || 'all';
+  var rows = projData.filter(function(item) {
+    if (f === 'active')  return !item.overdue && item.prog.pct < 100;
+    if (f === 'overdue') return item.overdue;
+    if (f === 'done')    return item.prog.pct === 100;
+    return true;
+  });
+  var tbody = document.getElementById('sv-proj-tbody');
+  if (!tbody) return;
+  if (!rows.length) {
+    tbody.innerHTML = '<div style="padding:32px;text-align:center;font-family:var(--font-mono);font-size:11px;color:var(--txt3);">Нет проектов в этом фильтре</div>';
+    return;
+  }
+  tbody.innerHTML = rows.map(function(item) {
+    var p = item.p; var prog = item.prog;
+    var col = p.brand_color || 'var(--a)';
+    var progColor = prog.pct >= 80 ? 'var(--green)' : prog.pct >= 40 ? col : 'var(--amber)';
+    var statusTxt = item.overdue ? 'Просрочен' : prog.pct === 100 ? 'Завершён' : 'Активен';
+    var statusBg  = item.overdue ? 'rgba(224,82,82,.1)' : prog.pct === 100 ? 'rgba(62,207,142,.1)' : 'rgba(184,146,58,.1)';
+    var statusCol = item.overdue ? 'var(--red)' : prog.pct === 100 ? 'var(--green)' : 'var(--a2)';
 
-// ── Helpers ──
-function ov2KpiCard(icon, label, val, sub, color, bgColor, detail) {
-  // SVG icon map — professional BI icons
-  var svgMap = {
-    '🏢': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>',
-    '⚡': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
-    '🎯': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
-    '⚠️': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
-    '❤️': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>'
-  };
-  var svgIcon = svgMap[icon] || svgMap[icon.trim()] || icon;
-  return '<div class="ov2-kpi-card" style="--accent:'+color+';">' +
-    '<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,'+color+',transparent);box-shadow:0 0 12px '+color+'66;border-radius:20px 20px 0 0;"></div>' +
-    '<div style="position:absolute;top:-30px;left:-10%;right:-10%;height:60px;background:'+color+';filter:blur(40px);opacity:0;transition:opacity .4s;pointer-events:none;" class="ov2-kpi-glow"></div>' +
-    '<div class="ov2-kpi-icon" style="background:'+color+'18;color:'+color+';">'+svgIcon+'</div>' +
-    '<div class="ov2-kpi-label">'+label+'</div>' +
-    '<div class="ov2-kpi-val" style="color:'+color+';">'+val+'</div>' +
-    '<div class="ov2-kpi-sub">'+detail+'</div>' +
-  '</div>';
-}
+    var projStages = _allStages.filter(function(s){ return s.project_id === p.id; });
+    var segs = '';
+    for (var i = 0; i < 9; i++) {
+      var st = projStages.find(function(s){ return s.stage_index === i; });
+      var stStatus = st ? st.status : 'pending';
+      var segBg = stStatus === 'completed' ? '#b8923a' : (stStatus === 'active' || stStatus === 'in_progress') ? '#dec17a' : 'rgba(255,255,255,.07)';
+      var segH = (stStatus === 'active' || stStatus === 'in_progress') ? '10px' : '5px';
+      segs += '<div class="sv-pipe-seg" style="background:' + segBg + ';height:' + segH + ';"></div>';
+    }
 
-function ov2DlZone(title, color, items, today, MONTHS, isOverdue) {
-  var dotStyle = 'background:'+color+';' + (color==='#fbbf24' ? 'animation:ov2Pulse 2s infinite;' : '') + (isOverdue ? 'box-shadow:0 0 8px '+color+'66;' : '');
-  var limit = isOverdue ? 5 : 4;
-  var shown = items.slice(0, limit);
-  var rows = shown.map(function(s) {
-    var proj = _allProjects.find(function(p){ return p.id === s.project_id; });
-    var stageObj = (typeof STAGES !== 'undefined' && STAGES[s.stage_index]) || { name:'Этап', icon:'•' };
-    if (!proj) return '';
-    var col = proj.brand_color || 'var(--a)';
-    var dl = new Date(s.deadline); dl.setHours(0,0,0,0);
-    var diff = Math.ceil((dl - today) / 86400000);
-    var dateTxt = isOverdue ? (Math.abs(diff)+'д назад') : (dl.getDate()+' '+MONTHS[dl.getMonth()]);
-    return '<div class="ov2-dl-item" onclick="openProject(\''+proj.id+'\')">' +
-      '<div class="ov2-dl-item-date" style="color:'+color+';">'+dateTxt+'</div>' +
-      '<div class="ov2-dl-item-icon">'+stageObj.icon+'</div>' +
-      '<div class="ov2-dl-item-name">'+stageObj.name+'</div>' +
-      '<div class="ov2-dl-item-proj" style="background:'+col+'14;color:'+col+';">'+proj.name+'</div>' +
+    var dlTxt = '—'; var dlColor = 'var(--txt3)';
+    if (item.next) {
+      var dl = new Date(item.next.deadline);
+      var diff = Math.ceil((dl - today) / 86400000);
+      if (diff < 0)     { dlTxt = Math.abs(diff)+'д назад'; dlColor = 'var(--red)'; }
+      else if (diff===0){ dlTxt = 'Сегодня'; dlColor = 'var(--amber)'; }
+      else if (diff<=3) { dlTxt = 'Через '+diff+'д'; dlColor = 'var(--amber)'; }
+      else              { dlTxt = dl.getDate()+' '+MONTHS[dl.getMonth()]; dlColor = 'var(--a2)'; }
+    }
+
+    var churnColor = item.isChurn ? 'var(--red)' : item.daysSince > 10 ? 'var(--amber)' : 'var(--green)';
+    var churnTxt   = item.isChurn ? '⚠ ' + item.daysSince + 'д' : item.daysSince < 999 ? item.daysSince + 'д' : 'новый';
+
+    return '<div class="sv-proj-row" style="border-left-color:' + col + ';" onclick="openProject(\'' + p.id + '\')">' +
+      '<div class="sv-pr-name-cell">' +
+        '<div class="sv-pr-avatar" style="background:' + col + '18;color:' + col + ';border:1.5px solid ' + col + '44;">' + p.name[0] + '</div>' +
+        '<div>' +
+          '<div class="sv-pr-name">' + p.name + '</div>' +
+          '<div class="sv-pr-meta">' + (p.description||'').substring(0,22) + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="sv-pipe">' + segs + '</div>' +
+      '<div style="text-align:right;font-family:var(--font-display);font-size:13px;font-weight:700;color:' + progColor + ';">' + prog.pct + '%</div>' +
+      '<div style="text-align:right;"><span class="sv-status" style="background:' + statusBg + ';color:' + statusCol + ';">' + statusTxt + '</span></div>' +
+      '<div style="text-align:right;font-family:var(--font-mono);font-size:11px;font-weight:600;color:' + dlColor + ';">' + dlTxt + '</div>' +
+      '<div style="text-align:right;font-family:var(--font-mono);font-size:11px;font-weight:600;color:' + churnColor + ';">' +
+        '<span class="sv-risk-dot" style="background:' + churnColor + ';"></span>' + churnTxt +
+      '</div>' +
+      '<div style="text-align:right;"><button class="sv-proj-btn" onclick="event.stopPropagation();openProject(\'' + p.id + '\')">Открыть</button></div>' +
     '</div>';
   }).join('');
-
-  if (!shown.length) rows = '<div class="ov2-dl-empty">'+(isOverdue?'✅ Просрочений нет':'📅 Дедлайнов нет')+'</div>';
-  else if (items.length > limit) rows += '<div class="ov2-dl-empty" style="font-size:9px;padding:8px 16px;">+' + (items.length - limit) + ' ещё</div>';
-
-  return '<div class="ov2-dl-zone">' +
-    '<div class="ov2-dl-zone-header">' +
-      '<div class="ov2-dl-zone-dot" style="'+dotStyle+'"></div>' +
-      '<div class="ov2-dl-zone-title" style="color:'+color+';">'+title+'</div>' +
-      '<div class="ov2-dl-zone-count" style="color:'+color+';">'+items.length+'</div>' +
-    '</div>' +
-    rows +
-  '</div>';
 }
 </script>
 
@@ -37458,6 +37487,142 @@ async function cpRenderMilestone(project) {
 .cc-main:has(#dtab-kb-panel[style*="block"]) {
   padding: 0 !important;
 }
+/* ══════════════════════════════════════════
+   СВОДКА v2 — Finance-grade design system
+══════════════════════════════════════════ */
+.sv-hero { animation: fadeUp .4s cubic-bezier(.16,1,.3,1) both; }
+
+/* Risk row */
+.sv-risk-row {
+  display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px;
+  margin: 16px 24px 0;
+}
+.sv-risk-card {
+  background: var(--bg2); border: 1px solid var(--brd);
+  border-radius: var(--r-md); padding: 16px 18px;
+  display: flex; align-items: center; gap: 14px;
+  transition: border-color .2s;
+}
+.sv-risk-card:hover { border-color: var(--brd2); }
+.sv-rc-icon {
+  width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+  background: rgba(184,146,58,.1); color: var(--a2);
+  display: flex; align-items: center; justify-content: center;
+}
+.sv-rc-body { flex: 1; min-width: 0; }
+.sv-rc-label { font-family: var(--font-mono); font-size: 9px; color: var(--txt3); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 4px; }
+.sv-rc-val { font-family: var(--font-display); font-size: 22px; font-weight: 700; letter-spacing: -.03em; color: var(--txt); line-height: 1; }
+.sv-rc-sub { font-family: var(--font-mono); font-size: 10px; color: var(--txt3); margin-top: 3px; }
+.sv-rc-badge {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  padding: 4px 10px; border-radius: 20px; letter-spacing: .04em;
+  white-space: nowrap; flex-shrink: 0; align-self: flex-start;
+}
+
+/* Section blocks */
+.sv-section-block {
+  margin: 16px 24px 0;
+  background: var(--bg2); border: 1px solid var(--brd); border-radius: var(--r-lg);
+  overflow: hidden;
+}
+.sv-section-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; background: var(--bg3);
+  border-bottom: 1px solid var(--brd);
+}
+.sv-section-hdr-left { display: flex; align-items: center; gap: 12px; }
+.sv-section-hdr-right { display: flex; align-items: center; gap: 8px; }
+.sv-section-icon {
+  width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.sv-section-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: -.02em; color: var(--txt); }
+.sv-section-sub { font-family: var(--font-mono); font-size: 10px; color: var(--txt3); letter-spacing: .04em; margin-top: 2px; }
+
+/* Segment pills */
+.sv-seg-pills { display: flex; gap: 2px; background: var(--bg4); border: 1px solid var(--brd); border-radius: 10px; padding: 3px; }
+.sv-pill {
+  padding: 5px 12px; border: none; border-radius: 7px; background: transparent;
+  font-family: var(--font-display); font-size: 11px; font-weight: 500; color: var(--txt3);
+  cursor: pointer; transition: all .15s; white-space: nowrap;
+}
+.sv-pill:hover { color: var(--txt2); background: rgba(255,255,255,.04); }
+.sv-pill-active { background: rgba(184,146,58,.14); color: var(--a3); }
+
+/* Projects table */
+.sv-proj-table { padding: 0; }
+.sv-proj-thead {
+  display: grid;
+  grid-template-columns: 1fr 160px 80px 90px 90px 90px 80px;
+  padding: 8px 20px; border-bottom: 1px solid var(--brd);
+}
+.sv-th { font-family: var(--font-mono); font-size: 9px; color: var(--txt3); letter-spacing: .1em; text-transform: uppercase; }
+.sv-th-r { text-align: right; }
+.sv-proj-row {
+  display: grid;
+  grid-template-columns: 1fr 160px 80px 90px 90px 90px 80px;
+  align-items: center;
+  padding: 12px 20px;
+  border-bottom: 1px solid rgba(240,236,230,.04);
+  border-left: 3px solid transparent;
+  cursor: pointer; transition: background .14s;
+}
+.sv-proj-row:hover { background: rgba(240,236,230,.02); }
+.sv-proj-row:last-child { border-bottom: none; }
+.sv-pr-name-cell { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.sv-pr-avatar {
+  width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 13px; font-weight: 700;
+}
+.sv-pr-name { font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--txt); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sv-pr-meta { font-family: var(--font-mono); font-size: 10px; color: var(--txt3); margin-top: 1px; }
+
+/* Pipeline segments */
+.sv-pipe { display: flex; gap: 2px; align-items: center; }
+.sv-pipe-seg { flex: 1; border-radius: 3px; transition: all .2s; }
+
+/* Status badge */
+.sv-status { font-family: var(--font-mono); font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 20px; letter-spacing: .04em; white-space: nowrap; display: inline-block; }
+
+/* Risk indicator */
+.sv-risk-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+
+/* Action button */
+.sv-proj-btn {
+  font-family: var(--font-mono); font-size: 10px; color: var(--txt3);
+  background: transparent; border: 1px solid var(--brd); border-radius: 6px;
+  padding: 4px 10px; cursor: pointer; transition: all .14s; white-space: nowrap;
+}
+.sv-proj-btn:hover { border-color: var(--brd2); color: var(--txt2); }
+
+/* Two-column layout */
+.sv-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; margin: 16px 24px 0; }
+.sv-two-col .sv-section-block { margin: 0; }
+
+/* Deadline body */
+.sv-dl-body { padding: 12px 20px; display: flex; flex-direction: column; gap: 6px; min-height: 60px; }
+.sv-dl-zone-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; margin: 6px 0 4px; }
+.sv-dl-item {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+  background: var(--bg3); border-radius: 8px; border: 1px solid var(--brd);
+  font-family: var(--font-display); font-size: 12px; color: var(--txt2);
+}
+.sv-dl-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.sv-dl-proj { font-size: 10px; color: var(--txt3); font-family: var(--font-mono); margin-left: auto; }
+.sv-dl-date { font-family: var(--font-mono); font-size: 10px; font-weight: 600; flex-shrink: 0; }
+
+/* Health body */
+.sv-health-body { padding: 12px 20px; display: flex; flex-direction: column; gap: 8px; }
+.sv-health-row { display: flex; align-items: center; gap: 10px; }
+.sv-health-name { font-family: var(--font-mono); font-size: 10px; color: var(--txt2); width: 130px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sv-health-bar-wrap { flex: 1; height: 4px; background: rgba(240,236,230,.06); border-radius: 4px; overflow: hidden; }
+.sv-health-bar { height: 100%; border-radius: 4px; transition: width .6s cubic-bezier(.16,1,.3,1); }
+.sv-health-val { font-family: var(--font-mono); font-size: 10px; font-weight: 600; width: 40px; text-align: right; flex-shrink: 0; }
+
+/* Finance hero override for overview */
+#dtab-overview-panel .apl-hero-strip { animation: fadeUp .38s cubic-bezier(.16,1,.3,1) both; }
+
 #dtab-kb-panel[style*="block"] .kb-topbar {
   padding: 20px 48px 20px 24px;
   border-bottom: 1px solid rgba(240,236,230,.06);
