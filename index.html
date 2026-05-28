@@ -38426,9 +38426,12 @@ function kbRenderProjectSidebar() {
   list.innerHTML = projects.map(function(p, i) {
     var letter = (p.name||'?')[0].toUpperCase();
     var col    = p.color || '#b8923a';
+    var avatarInner = p.photo_url
+      ? '<img src="'+p.photo_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:8px;display:block;">'
+      : '<span style="color:'+col+';">'+letter+'</span>';
     var item = '<div class="kb-proj-item" id="kb-proj-row-'+p.id+'" onclick="kbSelectProject(\''+p.id+'\',\''+esc(p.name)+'\')">'+
-      '<div class="kb-proj-avatar" style="background:'+col+'22;border-color:'+col+'44;">'+
-        '<span style="color:'+col+';">'+letter+'</span>'+
+      '<div class="kb-proj-avatar" style="background:'+col+'22;border-color:'+col+'44;overflow:hidden;padding:0;">'+
+        avatarInner+
       '</div>'+
       '<div class="kb-proj-info">'+
         '<div class="kb-proj-name">'+esc(p.name)+'</div>'+
