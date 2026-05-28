@@ -10578,39 +10578,17 @@ canvas {
   gap: 0 !important;
 }
 
-/* The wordmark inside header — gradient line treatment */
+/* Single wordmark — clean, centred vertically in header */
 .header-logo > div {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 0 !important;
-}
-
-/* Sub-label above wordmark */
-.header-logo [style*="font-size:9px"],
-.header-logo [style*="font-size: 9px"] {
-  font-family: var(--font-mono) !important;
-  font-size: 9px !important;
-  color: rgba(184,146,58,.4) !important;
-  letter-spacing: .18em !important;
-  text-transform: uppercase !important;
-  line-height: 1 !important;
-  margin-bottom: 2px !important;
-}
-
-/* Main wordmark in header */
-.header-logo [style*="font-size:17px"],
-.header-logo [style*="font-size: 17px"] {
   font-family: var(--font-display) !important;
   font-size: 15px !important;
   font-weight: 700 !important;
-  letter-spacing: -.01em !important;
+  letter-spacing: .08em !important;
   text-transform: uppercase !important;
+  color: rgba(240,236,230,.92) !important;
   line-height: 1 !important;
-  /* Warm white — no gradient text in header, too noisy */
   background: none !important;
   -webkit-text-fill-color: unset !important;
-  background-clip: unset !important;
-  color: rgba(240,236,230,.88) !important;
 }
 
 /* Global search button */
@@ -25206,11 +25184,8 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 ═══════════════════════════════════════════ -->
 <div class="page" id="page-dashboard">
   <header class="app-header">
-    <div class="header-logo" style="display:flex;align-items:center;gap:0;">
-      <div style="display:flex;flex-direction:column;gap:2px;">
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(201,168,76,.5);letter-spacing:.2em;text-transform:uppercase;line-height:1;">DETROYD SYSTEM GROUP</div>
-        <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;letter-spacing:-.01em;text-transform:uppercase;color:rgba(240,236,230,.88);line-height:1;">DETROYD SMART SYSTEM</div>
-      </div>
+    <div class="header-logo">
+      <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(240,236,230,.9);line-height:1;">DETROYD SMART SYSTEM</div>
     </div>
     <div class="header-right">
       <button class="global-search-btn" onclick="openGlobalSearch()" title="Поиск (Ctrl+K)">
