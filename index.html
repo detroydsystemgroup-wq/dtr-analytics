@@ -27388,14 +27388,49 @@ button, a, [role="button"],
 .cp-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .cp-card-title{font-family:var(--font-mono);font-size:9px;letter-spacing:.16em;color:rgba(255,255,255,.25);text-transform:uppercase}
 .cp-card-count{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:.04em}
-.cp-report-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:10px;margin-bottom:6px;cursor:pointer;transition:all .18s cubic-bezier(.16,1,.3,1)}
+.cp-report-row{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:12px;
+  margin-bottom:6px;
+  cursor:pointer;
+  transition:background .18s, border-color .18s, transform .18s;
+}
 .cp-report-row:last-child{margin-bottom:0}
-.cp-report-row:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1);transform:translateY(-1px)}
-.cp-report-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cp-report-row:hover{background:rgba(255,255,255,.055);border-color:rgba(255,255,255,.1);transform:translateY(-1px)}
+.cp-report-icon{
+  width:36px;height:36px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
 .cp-report-info{flex:1;min-width:0}
-.cp-report-name{font-family:var(--font-display);font-size:12px;font-weight:600;color:var(--txt);letter-spacing:-.01em}
-.cp-report-meta{font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.2);margin-top:2px;letter-spacing:.04em}
-.cp-report-arrow{color:rgba(255,255,255,.15)}
+.cp-report-name{
+  font-family:var(--font-display);font-size:13px;font-weight:600;
+  color:rgba(255,255,255,.88);letter-spacing:-.01em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.cp-report-meta{
+  font-family:var(--font-mono);font-size:10px;
+  color:rgba(255,255,255,.28);margin-top:3px;letter-spacing:.02em;
+}
+.cp-report-badge{
+  font-family:var(--font-mono);font-size:9px;font-weight:500;
+  padding:3px 9px;border-radius:20px;
+  flex-shrink:0;letter-spacing:.04em;
+  white-space:nowrap;
+}
+.cp-report-badge.perf{
+  background:rgba(56,178,172,.1);
+  border:1px solid rgba(56,178,172,.22);
+  color:#38b2ac;
+}
+.cp-report-badge.smm{
+  background:rgba(184,146,58,.1);
+  border:1px solid rgba(184,146,58,.22);
+  color:#c9a84c;
+}
+.cp-report-arrow{color:rgba(255,255,255,.18);flex-shrink:0;margin-left:4px}
 .cp-report-row:hover .cp-report-arrow{color:rgba(255,255,255,.4)}
 .cp-act-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.03)}
 .cp-act-row:last-child{border-bottom:none}
@@ -34425,20 +34460,47 @@ async function cp2LoadReports(project) {
   function renderReportList(items, containerId) {
     var el = g(containerId);
     if (!el) return;
-    if (!items.length) { el.innerHTML = '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.15);text-align:center;padding:16px 0;">Отчётов пока нет</div>'; return; }
+    if (!items.length) {
+      el.innerHTML = '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.15);text-align:center;padding:16px 0;">Отчётов пока нет</div>';
+      return;
+    }
     el.innerHTML = items.map(function(r) {
       var isSmm = r.type === 'smm';
-      var iconBg  = isSmm ? 'rgba(184,146,58,.08)' : 'rgba(56,178,172,.08)';
-      var iconCol = isSmm ? '#c9a84c' : '#38b2ac'; /* hardcoded hex — CSS vars не работают в SVG-атрибутах */
+
+      /* Иконка */
+      var iconBg  = isSmm ? 'rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.18)' : 'rgba(56,178,172,.1);border:1px solid rgba(56,178,172,.18)';
+      var iconCol = isSmm ? '#c9a84c' : '#38b2ac';
       var iconSvg = isSmm
-        ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="' + iconCol + '" stroke-width="1.8" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>'
-        : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="' + iconCol + '" stroke-width="1.8" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>';
+        ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="' + iconCol + '" stroke-width="1.8" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>'
+        : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="' + iconCol + '" stroke-width="1.8" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>';
+
+      /* Дата */
+      var dateStr = '—';
+      if (r.date) {
+        try {
+          dateStr = new Date(r.date).toLocaleDateString('ru-RU', { day:'numeric', month:'long', year:'numeric' });
+        } catch(e) {}
+      }
+
+      /* Subtitle: дата · тип-уточнение */
+      var subtitle = dateStr;
+
+      /* Бейдж */
+      var badgeCls = isSmm ? 'smm' : 'perf';
+      var badgeTxt = isSmm ? 'SMM' : 'Performance';
+
+      /* Onclick */
       var onclick = isSmm ? "loadAndOpenSMM('" + r.id + "')" : "openReport('" + r.id + "')";
+
       return '<div class="cp-report-row" onclick="' + onclick + '">' +
         '<div class="cp-report-icon" style="background:' + iconBg + ';">' + iconSvg + '</div>' +
-        '<div class="cp-report-info"><div class="cp-report-name">' + esc(r.title) + '</div>' +
-        '<div class="cp-report-meta">' + (isSmm ? 'SMM' : 'Performance') + '</div></div>' +
-        '<svg class="cp-report-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div>';
+        '<div class="cp-report-info">' +
+          '<div class="cp-report-name">' + esc(r.title) + '</div>' +
+          '<div class="cp-report-meta">' + subtitle + '</div>' +
+        '</div>' +
+        '<span class="cp-report-badge ' + badgeCls + '">' + badgeTxt + '</span>' +
+        '<svg class="cp-report-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>' +
+      '</div>';
     }).join('');
   }
 
