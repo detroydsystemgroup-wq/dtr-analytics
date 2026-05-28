@@ -18357,11 +18357,11 @@ button:active:not(:disabled),
 .pcard:active { transform: translateY(-4px) scale(0.99) !important; }
 .stat-card:active { transform: translateY(-2px) !important; }
 
-/* Smooth all color transitions */
+/* Smooth color transitions — БЕЗ !important чтобы JS inline style мог override */
 * {
-  transition-property: color, background-color, border-color, box-shadow, transform !important;
-  transition-duration: 0.15s !important;
-  transition-timing-function: ease !important;
+  transition-property: color, background-color, border-color, box-shadow, transform;
+  transition-duration: 0.15s;
+  transition-timing-function: ease;
 }
 
 /* But preserve transforms for interactive elements */
@@ -25680,12 +25680,8 @@ html.light .theme-toggle:hover {
   border-bottom: 2px solid var(--a2) !important;
 }
 
-/* ── Глобальный transition: включаем transform (БАГ 2) ── */
-* {
-  transition-property: color, background-color, border-color, box-shadow, transform !important;
-  transition-duration: 0.15s !important;
-  transition-timing-function: ease !important;
-}
+/* ── Глобальный transition: только цвета — НЕ width/transform чтобы не ломать анимации ── */
+/* НАМЕРЕННО НЕ используем * { transition } — это ломает прогрессбар и SVG иконки */
 
 /* ── Интерактивные элементы: spring-physics transition (БАГ 2) ── */
 button, a, [role="button"],
@@ -25702,42 +25698,49 @@ button, a, [role="button"],
 }
 .pcard-pct-hero { display: none !important; }
 
-/* ══ КЛИЕНТСКОЕ ОКНО — исправления (БАГ прогрессбара + иконки) ══ */
+/* ══ КЛИЕНТСКОЕ ОКНО — финальные исправления прогрессбара и этапов ══ */
 
-/* cp-bar-wrap: высота 6px чтобы lead-dot (6px) влезал, overflow:visible для dot */
+/* cp-bar-wrap: 6px высота для dot, overflow:visible */
 .cp-bar-wrap {
   height: 6px !important;
   overflow: visible !important;
 }
-
-/* cp-bar-track: занимает центральные 2px внутри 6px wrap */
 .cp-bar-track {
   position: absolute !important;
-  top: 2px !important;
-  left: 0 !important;
-  right: 0 !important;
-  height: 2px !important;
-  bottom: auto !important;
+  top: 2px !important; left: 0 !important; right: 0 !important;
+  height: 2px !important; bottom: auto !important;
 }
-
-/* cp-bar-fill: тоже центрирован в 6px wrap */
+/* cp-bar-fill: позиция !important, transition БЕЗ !important → JS управляет */
 .cp-bar-fill {
   position: absolute !important;
-  top: 2px !important;
-  left: 0 !important;
+  top: 2px !important; left: 0 !important;
   height: 2px !important;
   overflow: hidden !important;
-  /* transition вместо animation — надёжнее при динамическом обновлении */
-  animation: none !important;
-  transition: width 0.9s cubic-bezier(.4,0,.2,1) !important;
+  /* transition управляется JS inline — не ставим !important */
 }
-
-/* cp-bar-lead: lead-dot центрирован по высоте 6px wrap (top:50% = 3px) */
 .cp-bar-lead {
   top: 50% !important;
   transform: translateY(-50%) !important;
-  transition: right 0.9s cubic-bezier(.4,0,.2,1) !important;
 }
+
+/* Dot иконки: размер и цвета */
+.cp-stage-dot-inner { width:30px !important; height:30px !important; display:flex !important; align-items:center !important; justify-content:center !important; }
+.cp-stage-dot-inner svg { width:15px !important; height:15px !important; display:block !important; flex-shrink:0 !important; }
+
+.cp-stage-block.cp-st-done .cp-stage-dot-inner  { background:rgba(184,146,58,.18) !important; border:1.5px solid rgba(184,146,58,.55) !important; }
+.cp-stage-block.cp-st-done .cp-stage-dot-inner svg { stroke:#c9a84c !important; stroke-width:2.5 !important; }
+
+.cp-stage-block.cp-st-active .cp-stage-dot-inner { background:rgba(184,146,58,.12) !important; border:2px solid #c9a84c !important; box-shadow:0 0 14px rgba(184,146,58,.35) !important; }
+.cp-stage-block.cp-st-active .cp-stage-dot-inner svg { stroke:#dec17a !important; stroke-width:2.2 !important; }
+
+.cp-stage-block.cp-st-pending .cp-stage-dot-inner { background:#141414 !important; border:1px solid rgba(240,236,230,.14) !important; }
+.cp-stage-block.cp-st-pending .cp-stage-dot-inner svg { stroke:rgba(240,236,230,.35) !important; stroke-width:1.5 !important; }
+
+/* Подписи */
+.cp-stage-block.cp-st-done .cp-stage-label-text   { color:#9a9590 !important; }
+.cp-stage-block.cp-st-active .cp-stage-label-text  { color:#c9a84c !important; font-weight:600 !important; }
+.cp-stage-block.cp-st-pending .cp-stage-label-text { color:rgba(240,236,230,.38) !important; }
+.cp-stage-block.cp-st-active .cp-stage-num-label   { color:rgba(201,168,76,.7) !important; }
 
 </style>
 </head>
@@ -27256,43 +27259,45 @@ button, a, [role="button"],
   /* Critical: solid background to mask the connector line */
   background:#0b0b0b;
 }
-.cp-stage-dot-inner svg{width:13px;height:13px;flex-shrink:0;display:block}
+.cp-stage-dot-inner svg{width:15px;height:15px;flex-shrink:0;display:block}
 
-/* Done */
+/* Done — яркий золотой */
 .cp-stage-block.cp-st-done .cp-stage-dot-inner{
-  background:rgba(184,146,58,.1);
-  border:1px solid rgba(184,146,58,.3);
+  background:rgba(184,146,58,.18);
+  border:1.5px solid rgba(184,146,58,.55);
   color:var(--a2);
+  box-shadow: 0 0 10px rgba(184,146,58,.15);
 }
-.cp-stage-block.cp-st-done .cp-stage-dot-inner svg{stroke:var(--a2);stroke-width:2.5}
+.cp-stage-block.cp-st-done .cp-stage-dot-inner svg{stroke:#c9a84c;stroke-width:2.5}
 
-/* Active — animated breathe */
+/* Active — animated breathe, более яркий */
 .cp-stage-block.cp-st-active .cp-stage-dot-inner{
-  background:rgba(184,146,58,.08);
-  border:1.5px solid var(--a2);
-  color:var(--a3);
+  background:rgba(184,146,58,.12);
+  border:2px solid #c9a84c;
+  color:#dec17a;
   animation:cp-breathe 2.6s ease-in-out infinite;
+  box-shadow: 0 0 14px rgba(184,146,58,.3);
 }
-.cp-stage-block.cp-st-active .cp-stage-dot-inner svg{stroke:var(--a3);stroke-width:2}
+.cp-stage-block.cp-st-active .cp-stage-dot-inner svg{stroke:#dec17a;stroke-width:2.2}
 
-/* Pending */
+/* Pending — чётко тёмный чтобы отличаться */
 .cp-stage-block.cp-st-pending .cp-stage-dot-inner{
-  background:#181818;
-  border:1px solid rgba(240,236,230,.09);
-  color:rgba(240,236,230,.22);
+  background:#141414;
+  border:1px solid rgba(240,236,230,.12);
+  color:rgba(240,236,230,.3);
 }
-.cp-stage-block.cp-st-pending .cp-stage-dot-inner svg{stroke:rgba(240,236,230,.22);stroke-width:1.5}
+.cp-stage-block.cp-st-pending .cp-stage-dot-inner svg{stroke:rgba(240,236,230,.3);stroke-width:1.5}
 
-/* Labels */
+/* Labels — усиленная читаемость */
 .cp-stage-label-text{
   font-family:var(--font-mono);font-size:9px;letter-spacing:.02em;
   text-align:center;line-height:1.4;max-width:64px;
   user-select:none;transition:color .25s;
   white-space:normal;overflow:visible;text-overflow:unset;
 }
-.cp-stage-block.cp-st-done .cp-stage-label-text{color:#a09890}
-.cp-stage-block.cp-st-active .cp-stage-label-text{color:var(--a2);font-weight:500}
-.cp-stage-block.cp-st-pending .cp-stage-label-text{color:var(--txt3)}
+.cp-stage-block.cp-st-done .cp-stage-label-text{color:#9a9590}
+.cp-stage-block.cp-st-active .cp-stage-label-text{color:#c9a84c;font-weight:600}
+.cp-stage-block.cp-st-pending .cp-stage-label-text{color:rgba(240,236,230,.35)}
 
 /* Stage number above dot */
 .cp-stage-num-label{
@@ -34239,15 +34244,18 @@ async function cp2LoadTracker(project) {
   if (g('cp2-progress-pct')) g('cp2-progress-pct').textContent = pct + '%';
   if (g('cp2-stages-pct2')) g('cp2-stages-pct2').textContent = pct + '%';
 
-  // New bar fill — transition через width (не animation, чтобы не сбрасываться)
+  // Bar fill — сброс в 0 мгновенно, потом плавно до pct через rAF
   var barFill = g('cp2-bar-fill');
   if (barFill) {
-    // Сначала без transition (мгновенно 0), потом плавно до pct
     barFill.style.transition = 'none';
     barFill.style.width = '0%';
-    barFill.offsetHeight; // reflow
-    barFill.style.transition = 'width 0.9s cubic-bezier(.4,0,.2,1)';
-    barFill.style.width = pct + '%';
+    // Двойной requestAnimationFrame гарантирует что браузер успел нарисовать 0%
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        barFill.style.transition = 'width 0.9s cubic-bezier(.4,0,.2,1)';
+        barFill.style.width = pct + '%';
+      });
+    });
   }
   // Lead dot position mirrors fill right edge
   var barLead = g('cp2-bar-lead');
