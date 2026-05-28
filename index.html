@@ -29641,36 +29641,33 @@ function renderProjectGrid() {
         </div>
       </div>
 
-      <!-- 4-7. Данные в пилюлях -->
-      <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;" onclick="event.stopPropagation()">
+      <!-- 4-7. Данные в пилюлях — все одинаковые -->
+      <div style="display:flex;align-items:stretch;gap:6px;justify-content:flex-end;" onclick="event.stopPropagation()">
 
-        <!-- Дедлайн -->
-        <div class="prow-pill" style="min-width:90px;">
+        <div class="prow-pill">
           <div class="prow-pill-label">Дедлайн</div>
           <div class="prow-pill-val" style="color:${dlColor};">${dlTxt}</div>
         </div>
 
-        <!-- Статус -->
-        <div class="prow-pill" style="min-width:90px;${overdue?'border-color:rgba(224,82,82,.3);background:rgba(224,82,82,.06);':pct===100?'border-color:rgba(62,207,142,.3);background:rgba(62,207,142,.06);':'border-color:rgba(184,146,58,.3);background:rgba(184,146,58,.06);'}">
+        <div class="prow-pill" style="${overdue?'border-color:rgba(224,82,82,.3);background:rgba(224,82,82,.06);':pct===100?'border-color:rgba(62,207,142,.3);background:rgba(62,207,142,.06);':'border-color:rgba(184,146,58,.3);background:rgba(184,146,58,.06);'}">
           <div class="prow-pill-label">Статус</div>
           <div class="prow-pill-val" style="color:${statusCol};">${statusTxt}</div>
         </div>
 
-        <!-- Обновлён -->
-        <div class="prow-pill" style="min-width:90px;">
+        <div class="prow-pill">
           <div class="prow-pill-label">Обновлён</div>
           <div class="prow-pill-val">${updTxt}</div>
         </div>
 
-        <!-- Кнопки -->
-        <div style="display:flex;gap:5px;flex-shrink:0;">
-          <button class="prow-pill prow-pill-btn" title="Заметка" onclick="openQuickNote('${p.id}','${p.name.replace(/'/g,"\\'")}','${(p.quick_note||'').replace(/'/g,"\\'")}')">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-          </button>
-          <button class="prow-pill prow-pill-btn" title="Настройки" onclick="openProjectSettings('${p.id}')">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-          </button>
-        </div>
+        <button class="prow-pill prow-pill-btn" title="Заметка" onclick="openQuickNote('${p.id}','${p.name.replace(/'/g,"\\'")}','${(p.quick_note||'').replace(/'/g,"\\'")}')">
+          <div class="prow-pill-label">Заметка</div>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        </button>
+
+        <button class="prow-pill prow-pill-btn" title="Настройки" onclick="openProjectSettings('${p.id}')">
+          <div class="prow-pill-label">Настройки</div>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
 
       </div>
     </div>`
@@ -37613,10 +37610,10 @@ async function cpRenderMilestone(project) {
 /* Buttons */
 .prow-pill {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 6px 12px; border-radius: 8px;
+  padding: 7px 14px; border-radius: 8px; width: 88px;
   border: 1px solid var(--brd); background: var(--bg3);
-  gap: 2px; flex-shrink: 0;
-  transition: border-color .15s;
+  gap: 3px; flex-shrink: 0;
+  transition: border-color .15s; box-sizing: border-box;
 }
 .prow-pill:hover { border-color: var(--brd2); }
 .prow-pill-label {
@@ -37628,10 +37625,7 @@ async function cpRenderMilestone(project) {
   color: var(--txt); white-space: nowrap; letter-spacing: -.01em;
 }
 .prow-pill-btn {
-  width: 38px; min-width: 38px; padding: 0;
-  align-items: center; justify-content: center;
-  flex-direction: row; cursor: pointer;
-  color: var(--txt3); background: var(--bg4);
+  cursor: pointer; color: var(--txt3); background: var(--bg4);
 }
 .prow-pill-btn:hover { color: var(--txt2); background: var(--bg5); border-color: var(--brd2); }
 .prow-btn { display: none; }
