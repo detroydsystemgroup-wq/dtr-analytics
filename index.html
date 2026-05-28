@@ -15327,12 +15327,14 @@ select:focus {
 }
 
 /* ── Main content panels ── */
-.cc-main #dtab-projects-panel,
-.cc-main #dtab-calendar-panel,
-.cc-main #dtab-activity-panel,
-.cc-main #dtab-overview-panel {
+/* ── Projects panel: вырывается из cc-main padding ── */
+.cc-main #dtab-projects-panel {
+  margin: -36px -48px;
   animation: fadeUp .35s cubic-bezier(.16,1,.3,1) both;
 }
+.cc-main #dtab-projects-panel .proj-cmd { padding: 12px 48px; }
+.cc-main #dtab-projects-panel .proj-thead { padding: 10px 48px; }
+.cc-main #dtab-projects-panel .proj-row  { padding: 16px 48px; }
 
 /* ── Filters row upgrade in sidebar context ── */
 .cc-main .dash-filters {
