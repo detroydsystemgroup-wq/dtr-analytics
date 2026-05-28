@@ -24629,6 +24629,77 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 }
 </style>
 <style id="dtr-timeline-panel-interactions">
+/* ══ DEADLINE HERO ══ */
+.dl-hero { animation: fadeUp .38s cubic-bezier(.16,1,.3,1) both; }
+
+/* ══ COMMAND BAR v2 ══ */
+.dl-cmd2 {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+  padding: 14px 24px 14px;
+  border-bottom: 1px solid var(--brd);
+  background: var(--bg2);
+}
+.dl-cmd2-left  { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.dl-cmd2-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-left: auto; }
+
+.dl-search2-wrap {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg4); border: 1px solid var(--brd); border-radius: 9px;
+  padding: 7px 12px; color: var(--txt3); transition: border-color .18s;
+}
+.dl-search2-wrap:focus-within { border-color: var(--brd2); }
+.dl-search2 {
+  background: transparent; border: none; outline: none;
+  font-family: var(--font-body); font-size: 12px; color: var(--txt);
+  width: 180px;
+}
+.dl-search2::placeholder { color: var(--txt3); }
+
+.dl-select2-wrap {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--bg4); border: 1px solid var(--brd); border-radius: 9px;
+  padding: 7px 12px; color: var(--txt3);
+}
+.dl-select2 {
+  background: transparent; border: none; outline: none;
+  font-family: var(--font-body); font-size: 12px; color: var(--txt);
+  cursor: pointer;
+}
+
+.dl-date2-wrap {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--bg4); border: 1px solid var(--brd); border-radius: 9px;
+  padding: 7px 12px;
+}
+.dl-date2 {
+  background: transparent; border: none; outline: none;
+  font-family: var(--font-mono); font-size: 11px; color: var(--txt2);
+  cursor: pointer; width: 110px;
+}
+
+.dl-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; display: inline-block; margin-right: 4px; }
+
+.dl-view2-wrap { display: flex; gap: 2px; background: var(--bg4); border: 1px solid var(--brd); border-radius: 9px; padding: 3px; }
+.dl-view2-btn {
+  width: 30px; height: 30px; border-radius: 7px; border: none; background: transparent;
+  color: var(--txt3); cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.dl-view2-btn:hover { color: var(--txt2); background: rgba(255,255,255,.04); }
+.dl-view2-btn.dl-view-active { background: rgba(184,146,58,.14); color: var(--a3); }
+
+.dl-reset2 {
+  width: 34px; height: 34px; border-radius: 9px;
+  border: 1px solid var(--brd); background: var(--bg4);
+  color: var(--txt3); cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all .18s;
+}
+.dl-reset2:hover { border-color: var(--brd2); color: var(--txt2); transform: rotate(45deg); }
+
+/* ══ DEADLINE CARDS — keep existing .dl-card-v17 styles, just add padding ══ */
+.deadline-panel { padding: 0 24px 24px; margin-top: 0; }
+#tl-deadlines-wrap .deadline-panel { padding-top: 16px; }
 /* ══════════════════════════════════════════════
    FILTER BAR — smooth interactions
    (перенесено из <body> для валидного HTML5)
@@ -25264,69 +25335,97 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
     <!-- ── TAB: CALENDAR / DEADLINES ── UPGRADED ── -->
     <div id="dtab-timeline-panel" style="display:none;">
 
-      <!-- Стили взаимодействий перенесены в <head> → #dtr-timeline-panel-interactions -->
-
       <!-- Дедлайны секция -->
       <div id="tl-deadlines-wrap">
-      <div class="dl-command-bar">
-        <div class="dl-search-wrap">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-          <input class="dl-search-inp" id="dl-search" placeholder="Поиск по этапу или проекту..." oninput="filterDeadlines()">
+
+      <!-- ① HERO STRIP -->
+      <div class="apl-hero-strip dl-hero">
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">ВСЕГО ДЕДЛАЙНОВ</div>
+          <div class="apl-hero-num" id="dl-stat-all" style="color:var(--txt);">—</div>
+          <div class="apl-hero-sub">активных этапов</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="dl-hero-projects">— проектов</div>
         </div>
-        <div class="dl-proj-filter-wrap">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
-          <select class="dl-proj-select" id="dl-proj-filter" onchange="filterDeadlines()">
-            <option value="">Все проекты</option>
-          </select>
+        <div class="apl-hero-divider"></div>
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">ПРОСРОЧЕНО</div>
+          <div class="apl-hero-num" id="dl-stat-overdue" style="color:var(--red);">—</div>
+          <div class="apl-hero-sub">истёкших дедлайнов</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="dl-hero-overdue-days">—</div>
         </div>
-        <div class="dl-date-wrap">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          <input type="date" class="dl-date-inp" id="dl-date-from" onchange="filterDeadlines()">
-          <span class="dl-date-sep">—</span>
-          <input type="date" class="dl-date-inp" id="dl-date-to" onchange="filterDeadlines()">
+        <div class="apl-hero-divider"></div>
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">СЕГОДНЯ</div>
+          <div class="apl-hero-num" id="dl-stat-today" style="color:var(--amber);">—</div>
+          <div class="apl-hero-sub">дедлайнов сегодня</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="dl-hero-week">— на этой неделе</div>
         </div>
-        <div class="dl-status-pills" id="dl-status-pills">
-          <button class="dl-pill dl-pill-active" data-status="all" onclick="setDLStatus('all',this)">Все</button>
-          <button class="dl-pill" data-status="overdue" onclick="setDLStatus('overdue',this)"><span class="dl-pill-dot" style="background:#f87171;"></span>Просрочены</button>
-          <button class="dl-pill" data-status="today" onclick="setDLStatus('today',this)"><span class="dl-pill-dot" style="background:#fbbf24;"></span>Сегодня</button>
-          <button class="dl-pill" data-status="week" onclick="setDLStatus('week',this)"><span class="dl-pill-dot" style="background:#34d399;"></span>Эта неделя</button>
-          <button class="dl-pill" data-status="future" onclick="setDLStatus('future',this)">Будущие</button>
-        </div>
-        <div class="dl-view-toggle">
-          <button class="dl-view-btn dl-view-active" id="dl-view-list" onclick="setDLView('list',this)" title="Список">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-          </button>
-          <button class="dl-view-btn" id="dl-view-proj" onclick="setDLView('proj',this)" title="По проектам">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-          </button>
-        </div>
-        <button class="dl-reset-btn" id="dl-reset-btn" onclick="resetDLFilters()" title="Сбросить фильтры" style="display:none;">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-        </button>
-        <!-- Тумблер режима -->
-        <div class="tl-tumbler" id="tl-tumbler-dl">
-          <div class="tl-tumbler-track"></div>
-          <button class="tl-tumbler-btn tl-active" id="tl-btn-deadlines" onclick="switchTimelineMode('deadlines')">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            Дедлайны
-          </button>
-          <button class="tl-tumbler-btn" id="tl-btn-activity" onclick="switchTimelineMode('activity')">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            Активность
-          </button>
+        <div class="apl-hero-divider"></div>
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">БУДУЩИЕ</div>
+          <div class="apl-hero-num" id="dl-stat-future" style="color:var(--a2);">—</div>
+          <div class="apl-hero-sub">запланировано</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="dl-stat-week" style="display:none;">—</div>
+          <div class="apl-hero-foot" id="dl-hero-on-time">—</div>
         </div>
       </div>
-      <div class="dl-stats-strip">
-        <div class="dl-stat-item"><div class="dl-stat-val" id="dl-stat-all">—</div><div class="dl-stat-lbl">Всего</div></div>
-        <div class="dl-stat-div"></div>
-        <div class="dl-stat-item"><div class="dl-stat-val" id="dl-stat-overdue" style="color:#f87171;">—</div><div class="dl-stat-lbl">Просрочено</div></div>
-        <div class="dl-stat-div"></div>
-        <div class="dl-stat-item"><div class="dl-stat-val" id="dl-stat-today" style="color:#fbbf24;">—</div><div class="dl-stat-lbl">Сегодня</div></div>
-        <div class="dl-stat-div"></div>
-        <div class="dl-stat-item"><div class="dl-stat-val" id="dl-stat-week" style="color:#34d399;">—</div><div class="dl-stat-lbl">Эта неделя</div></div>
-        <div class="dl-stat-div"></div>
-        <div class="dl-stat-item"><div class="dl-stat-val" id="dl-stat-future" style="color:var(--a2);">—</div><div class="dl-stat-lbl">Будущие</div></div>
+
+      <!-- ② COMMAND BAR -->
+      <div class="dl-cmd2">
+        <div class="dl-cmd2-left">
+          <div class="dl-search2-wrap">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input class="dl-search2" id="dl-search" placeholder="Поиск по этапу или проекту..." oninput="filterDeadlines()">
+          </div>
+          <div class="dl-select2-wrap">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+            <select class="dl-select2" id="dl-proj-filter" onchange="filterDeadlines()">
+              <option value="">Все проекты</option>
+            </select>
+          </div>
+          <div class="dl-date2-wrap">
+            <input type="date" class="dl-date2" id="dl-date-from" onchange="filterDeadlines()">
+            <span style="color:var(--txt3);font-size:11px;">—</span>
+            <input type="date" class="dl-date2" id="dl-date-to" onchange="filterDeadlines()">
+          </div>
+        </div>
+        <div class="dl-cmd2-right">
+          <div class="sv-seg-pills" id="dl-status-pills">
+            <button class="sv-pill sv-pill-active" data-status="all" onclick="setDLStatus('all',this)">Все</button>
+            <button class="sv-pill" data-status="overdue" onclick="setDLStatus('overdue',this)"><span class="dl-dot" style="background:var(--red);"></span>Просрочены</button>
+            <button class="sv-pill" data-status="today" onclick="setDLStatus('today',this)"><span class="dl-dot" style="background:var(--amber);"></span>Сегодня</button>
+            <button class="sv-pill" data-status="week" onclick="setDLStatus('week',this)"><span class="dl-dot" style="background:var(--green);"></span>Неделя</button>
+            <button class="sv-pill" data-status="future" onclick="setDLStatus('future',this)">Будущие</button>
+          </div>
+          <div class="dl-view2-wrap">
+            <button class="dl-view2-btn dl-view-active" id="dl-view-list" onclick="setDLView('list',this)" title="Список">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            </button>
+            <button class="dl-view2-btn" id="dl-view-proj" onclick="setDLView('proj',this)" title="По проектам">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            </button>
+          </div>
+          <button class="dl-reset2" id="dl-reset-btn" onclick="resetDLFilters()" title="Сбросить" style="display:none;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          </button>
+          <div class="tl-tumbler" id="tl-tumbler-dl">
+            <div class="tl-tumbler-track"></div>
+            <button class="tl-tumbler-btn tl-active" id="tl-btn-deadlines" onclick="switchTimelineMode('deadlines')">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Дедлайны
+            </button>
+            <button class="tl-tumbler-btn" id="tl-btn-activity" onclick="switchTimelineMode('activity')">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              Активность
+            </button>
+          </div>
+        </div>
       </div>
+
       <div class="deadline-panel" id="deadline-panel"></div>
       </div><!-- /tl-deadlines-wrap -->
 
@@ -34874,20 +34973,15 @@ var _dlViewMode = 'list';
 var _dlProjDropdownFilled = false;
 
 function setDLStatus(status, btn) {
-  // Brief click feedback
-  if (btn) {
-    btn.style.transform = 'scale(.93)'
-    setTimeout(() => { btn.style.transform = '' }, 120)
-  }
   _dlStatusFilter = status;
-  document.querySelectorAll('.dl-pill').forEach(function(b){ b.classList.remove('dl-pill-active'); });
-  if (btn) btn.classList.add('dl-pill-active');
+  document.querySelectorAll('#dl-status-pills .sv-pill').forEach(function(b){ b.classList.remove('sv-pill-active'); });
+  if (btn) btn.classList.add('sv-pill-active');
   filterDeadlines();
 }
 
 function setDLView(view, btn) {
   _dlViewMode = view;
-  document.querySelectorAll('.dl-view-btn').forEach(function(b){ b.classList.remove('dl-view-active'); });
+  document.querySelectorAll('.dl-view2-btn').forEach(function(b){ b.classList.remove('dl-view-active'); });
   if (btn) btn.classList.add('dl-view-active');
   filterDeadlines();
 }
@@ -34956,11 +35050,33 @@ function renderDeadlinePanel() {
 
   // Update stats
   function setS(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
-  setS('dl-stat-all', allItems.length);
-  setS('dl-stat-overdue', allItems.filter(function(i){ return i.status === 'overdue'; }).length);
-  setS('dl-stat-today', allItems.filter(function(i){ return i.status === 'today'; }).length);
-  setS('dl-stat-week', allItems.filter(function(i){ return i.status === 'soon'; }).length);
-  setS('dl-stat-future', allItems.filter(function(i){ return i.status === 'future'; }).length);
+  var cntAll     = allItems.length;
+  var cntOverdue = allItems.filter(function(i){ return i.status === 'overdue'; }).length;
+  var cntToday   = allItems.filter(function(i){ return i.status === 'today'; }).length;
+  var cntWeek    = allItems.filter(function(i){ return i.status === 'soon'; }).length;
+  var cntFuture  = allItems.filter(function(i){ return i.status === 'future'; }).length;
+  var cntDone    = allItems.filter(function(i){ return i.status === 'done'; }).length;
+  var projIds    = [...new Set(allItems.filter(function(i){ return i.status !== 'done'; }).map(function(i){ return i.proj.id; }))];
+
+  setS('dl-stat-all',     cntAll);
+  setS('dl-stat-overdue', cntOverdue);
+  setS('dl-stat-today',   cntToday);
+  setS('dl-stat-week',    cntWeek);
+  setS('dl-stat-future',  cntFuture);
+
+  // Update hero strip
+  setS('dl-hero-projects',  projIds.length + ' проектов');
+  // Worst overdue: how many days
+  var overdueItems = allItems.filter(function(i){ return i.status === 'overdue'; });
+  if (overdueItems.length) {
+    var worst = Math.max.apply(null, overdueItems.map(function(i){ return Math.abs(i.diff); }));
+    setS('dl-hero-overdue-days', 'Макс. ' + worst + ' дн. просрочки');
+  } else {
+    setS('dl-hero-overdue-days', 'Всё в срок');
+  }
+  setS('dl-hero-week', cntWeek + ' на этой неделе');
+  var onTimePct = (cntDone + cntAll) > 0 ? Math.round(cntDone / (cntDone + cntOverdue + 1) * 100) : 0;
+  setS('dl-hero-on-time', cntDone + ' выполнено из ' + (cntDone + cntOverdue + cntToday + cntWeek + cntFuture));
 
   // Populate project dropdown once
   var pf = document.getElementById('dl-proj-filter');
