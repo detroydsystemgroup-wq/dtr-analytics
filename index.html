@@ -25698,29 +25698,39 @@ button, a, [role="button"],
 }
 .pcard-pct-hero { display: none !important; }
 
-/* ══ КЛИЕНТСКОЕ ОКНО — финальные override этапов ══ */
+/* ══ КЛИЕНТСКОЕ ОКНО — override этапов (v5) ══ */
+/* Линия теперь внутри .cp-stages-wrap — cp-bar-wrap скрыт */
+.cp-bar-wrap { display:none !important; }
+
+/* cp-stages-wrap: сбрасываем старый padding/background из предыдущих слоёв */
+.cp-progress-card .cp-stages-wrap {
+  background: transparent !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  border-bottom: none !important;
+}
 
 /* Квадраты этапов */
 .cp-stage-dot-inner { width:32px !important; height:32px !important; }
 .cp-stage-dot-inner svg { width:14px !important; height:14px !important; display:block !important; }
 
-.cp-stage-block.cp-st-done .cp-stage-dot-inner   { background:rgba(184,146,58,.14) !important; border:1.5px solid rgba(184,146,58,.5) !important; }
+.cp-stage-block.cp-st-done .cp-stage-dot-inner    { background:rgba(184,146,58,.14) !important; border:1.5px solid rgba(184,146,58,.5) !important; }
 .cp-stage-block.cp-st-done .cp-stage-dot-inner svg { stroke:#c9a84c !important; stroke-width:2.5 !important; }
 
-.cp-stage-block.cp-st-active .cp-stage-dot-inner   { background:rgba(184,146,58,.08) !important; border:2px solid #c9a84c !important; }
+.cp-stage-block.cp-st-active .cp-stage-dot-inner    { background:rgba(184,146,58,.08) !important; border:2px solid #c9a84c !important; }
 .cp-stage-block.cp-st-active .cp-stage-dot-inner svg { stroke:#dec17a !important; stroke-width:2.2 !important; }
 
-.cp-stage-block.cp-st-pending .cp-stage-dot-inner   { background:#111 !important; border:1px solid rgba(240,236,230,.1) !important; }
+.cp-stage-block.cp-st-pending .cp-stage-dot-inner    { background:#111 !important; border:1px solid rgba(240,236,230,.1) !important; }
 .cp-stage-block.cp-st-pending .cp-stage-dot-inner svg { stroke:rgba(240,236,230,.28) !important; stroke-width:1.5 !important; }
 
 /* Подписи */
-.cp-stage-block.cp-st-done .cp-stage-label-text   { color:rgba(255,255,255,.45) !important; }
-.cp-stage-block.cp-st-active .cp-stage-label-text  { color:#c9a84c !important; font-weight:600 !important; }
-.cp-stage-block.cp-st-pending .cp-stage-label-text { color:rgba(255,255,255,.22) !important; }
+.cp-stage-block.cp-st-done .cp-stage-label-text    { color:rgba(255,255,255,.45) !important; }
+.cp-stage-block.cp-st-active .cp-stage-label-text   { color:#c9a84c !important; font-weight:600 !important; }
+.cp-stage-block.cp-st-pending .cp-stage-label-text  { color:rgba(255,255,255,.22) !important; }
 
-/* Прогрессбар — не трогаем, управляется JS */
-.cp-bar-fill { overflow:hidden !important; }
-.cp-bar-lead { z-index:2 !important; }
+/* Новые элементы линии внутри cp-stages-wrap */
+.cp-bar-fill-v5 { overflow:hidden !important; }
+.cp-bar-lead-v5 { z-index:3 !important; }
 
 </style>
 </head>
@@ -27133,12 +27143,11 @@ button, a, [role="button"],
 ═══════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════
-   DTR CLIENT — PROGRESS TRACKER v4 (rebuilt)
-   Design: скрин 2 — тонкая золотая линия + шарик
-   + квадратные иконки этапов + footer
+   DTR CLIENT — PROGRESS TRACKER v5
+   Линия проходит через ЦЕНТР квадратов (referens скрин 2)
 ═══════════════════════════════════════════════ */
 
-/* ── Карточка обёртка ── */
+/* ── Карточка ── */
 .cp-progress-card{
   background:#0b0b0b;
   border:1px solid rgba(240,236,230,.12);
@@ -27153,7 +27162,7 @@ button, a, [role="button"],
   background:linear-gradient(90deg,transparent,rgba(184,146,58,.45) 30%,rgba(184,146,58,.1) 80%,transparent);
 }
 
-/* ── Шапка: заголовок слева + 89% справа ── */
+/* ── Шапка ── */
 .cp-progress-header{
   display:flex;align-items:flex-start;justify-content:space-between;
   margin-bottom:20px;
@@ -27177,60 +27186,85 @@ button, a, [role="button"],
   text-align:right;margin-top:3px;
 }
 
-/* ── Прогрессбар: тонкая линия + шарик ── */
+/* ── Старый cp-bar-wrap скрываем — теперь линия внутри stages-wrap ── */
+.cp-bar-wrap{ display:none !important; }
+
+/* ═══════════════════════════════════════════
+   ЭТАПЫ + ЛИНИЯ — единый контейнер
+   Структура: номер (сверху) → квадрат → подпись
+   Линия идёт через центр квадратов.
+   Квадрат 32px, номер ~14px + gap 6px → 
+   центр квадрата от верха stages-wrap = 14 + 6 + 16 = 36px
+═══════════════════════════════════════════ */
 @keyframes cpShimmer{0%{transform:translateX(-200%)}100%{transform:translateX(400%)}}
 @keyframes cpBreatheBorder{
-  0%,100%{box-shadow:0 0 0 3px rgba(184,146,58,.15),0 0 8px rgba(184,146,58,.2)}
-  50%    {box-shadow:0 0 0 5px rgba(184,146,58,.08),0 0 16px rgba(184,146,58,.35)}
+  0%,100%{border-color:rgba(201,168,76,.6);box-shadow:0 0 0 3px rgba(184,146,58,.12)}
+  50%    {border-color:#dec17a;box-shadow:0 0 0 5px rgba(184,146,58,.06),0 0 12px rgba(184,146,58,.3)}
+}
+@keyframes cpDotPulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* Обёртка всего ряда этапов — позиционирующий контекст для линии */
+.cp-stages-wrap{
+  position:relative;
+  margin-bottom:0;
 }
 
-.cp-bar-wrap{
-  position:relative;
-  height:12px;          /* достаточно для 8px шарика с полями */
-  margin-bottom:28px;
-}
-.cp-bar-track{
+/* Линия-трек (серая) — absolute, top = центр квадратов */
+/* Номер 8px + margin-bottom ~6px + половина квадрата 16px = ~30px от верха .cp-stages-bar */
+/* Но cp-stages-bar вложен в cp-stages-wrap → top считаем от верха wrap */
+.cp-stages-wrap::before{
+  content:'';
   position:absolute;
-  top:50%;transform:translateY(-50%);
-  left:0;right:0;height:1.5px;
+  /* cp-stages-bar имеет padding-top 0, номер 8px линия + gap 6px до квадрата 32px */
+  /* top = высота номера (8px шрифт ~12px) + gap(6px) + половина квадрата(16px) = 34px */
+  top:30px;
+  left:0; right:0;
+  height:1.5px;
   background:rgba(240,236,230,.08);
   border-radius:2px;
+  z-index:0;
 }
-/* Заполненная часть — управляется JS через style.width */
-.cp-bar-fill{
+
+/* Заполненная часть — управляется JS через style.width и style.display */
+.cp-bar-fill-v5{
   position:absolute;
-  top:50%;transform:translateY(-50%);
-  left:0;height:1.5px;width:0;
+  top:30px;
+  left:0;
+  height:1.5px;
+  width:0;
   background:linear-gradient(90deg,rgba(184,146,58,.6) 0%,#c9a84c 70%,#dec17a 100%);
   border-radius:2px;
   overflow:hidden;
+  z-index:1;
+  transform:translateY(-50%);
 }
-/* Shimmer поверх заполненной части */
-.cp-bar-fill::after{
-  content:'';
-  position:absolute;inset:0;
+.cp-bar-fill-v5::after{
+  content:'';position:absolute;inset:0;
   background:linear-gradient(90deg,transparent,rgba(255,255,255,.4) 50%,transparent);
   animation:cpShimmer 2.8s 1s ease-in-out infinite;
 }
-/* Шарик на конце заполненной части */
-.cp-bar-lead{
+
+/* Шарик — на конце заполненной части */
+.cp-bar-lead-v5{
   position:absolute;
-  top:50%;transform:translate(-50%,-50%);
-  left:0;  /* устанавливается JS через style.left = pct + '%' */
+  top:30px;
+  left:0;
+  transform:translate(-50%,-50%);
   width:8px;height:8px;border-radius:50%;
   background:radial-gradient(circle,#dec17a 30%,#c9a84c 100%);
   box-shadow:0 0 10px rgba(222,193,122,.9),0 0 4px rgba(222,193,122,.5);
-  z-index:2;
+  z-index:3;
 }
 
-/* ── Ряд этапов ── */
+/* Ряд этапов */
 .cp-stages-bar{
   display:flex;
   align-items:flex-start;
-  gap:0;
+  position:relative;
+  z-index:1;
 }
 
-/* Каждый этап — колонка, flex:1 */
+/* Каждый этап-колонка */
 .cp-stage-block{
   flex:1;
   display:flex;flex-direction:column;align-items:center;
@@ -27239,14 +27273,15 @@ button, a, [role="button"],
   z-index:1;
 }
 
-/* Линия-соединитель между квадратами (через ::before) */
+/* Линии-коннекторы между квадратами через ::before */
 .cp-stage-block::before{
   content:'';
   position:absolute;
-  top:16px;                      /* центр 32px квадрата */
+  top:30px;                      /* = номер + gap + центр квадрата */
   left:calc(-50% + 16px);        /* от центра левого соседа */
   right:calc(50% + 16px);        /* до центра текущего */
-  height:1px;
+  height:1.5px;
+  transform:translateY(-50%);
   background:rgba(240,236,230,.08);
   z-index:0;
 }
@@ -27256,77 +27291,64 @@ button, a, [role="button"],
   background:rgba(184,146,58,.35);
 }
 
-/* Квадрат-иконка — 32×32 */
+/* Номер над квадратом */
+.cp-stage-num-label{
+  font-family:var(--font-mono);font-size:8px;letter-spacing:.06em;
+  color:rgba(255,255,255,.2);order:-1;text-align:center;
+  line-height:1;
+}
+.cp-stage-block.cp-st-done .cp-stage-num-label   {color:rgba(184,146,58,.4)}
+.cp-stage-block.cp-st-active .cp-stage-num-label  {color:rgba(201,168,76,.7)}
+
+/* Квадрат-обёртка */
 .cp-dot-wrap{
   position:relative;z-index:2;
-  width:32px;height:32px;
-  flex-shrink:0;
+  width:32px;height:32px;flex-shrink:0;
 }
 .cp-dot-spinner{display:none!important}
 
+/* Квадрат */
 .cp-stage-dot-inner{
   width:32px;height:32px;
   border-radius:9px;
   display:flex;align-items:center;justify-content:center;
   position:relative;z-index:2;
-  /* фон карточки — маскирует линию-коннектор */
-  background:#0b0b0b;
-  transition:box-shadow .25s;
+  background:#0b0b0b; /* маскирует линию */
 }
-.cp-stage-dot-inner svg{
-  width:14px;height:14px;
-  flex-shrink:0;display:block;
-}
+.cp-stage-dot-inner svg{width:14px;height:14px;flex-shrink:0;display:block;}
 
-/* ── Done: золотой квадрат с галочкой/иконкой ── */
+/* Done */
 .cp-stage-block.cp-st-done .cp-stage-dot-inner{
   background:rgba(184,146,58,.14);
   border:1.5px solid rgba(184,146,58,.5);
 }
-.cp-stage-block.cp-st-done .cp-stage-dot-inner svg{
-  stroke:#c9a84c;stroke-width:2.5;
-}
+.cp-stage-block.cp-st-done .cp-stage-dot-inner svg{stroke:#c9a84c;stroke-width:2.5}
 
-/* ── Active: золотая рамка + пульс ── */
+/* Active */
 .cp-stage-block.cp-st-active .cp-stage-dot-inner{
   background:rgba(184,146,58,.08);
   border:2px solid #c9a84c;
   animation:cpBreatheBorder 2.6s ease-in-out infinite;
 }
-.cp-stage-block.cp-st-active .cp-stage-dot-inner svg{
-  stroke:#dec17a;stroke-width:2.2;
-}
+.cp-stage-block.cp-st-active .cp-stage-dot-inner svg{stroke:#dec17a;stroke-width:2.2}
 
-/* ── Pending: тёмный, почти невидимый ── */
+/* Pending */
 .cp-stage-block.cp-st-pending .cp-stage-dot-inner{
   background:#111;
   border:1px solid rgba(240,236,230,.1);
 }
-.cp-stage-block.cp-st-pending .cp-stage-dot-inner svg{
-  stroke:rgba(240,236,230,.28);stroke-width:1.5;
-}
+.cp-stage-block.cp-st-pending .cp-stage-dot-inner svg{stroke:rgba(240,236,230,.28);stroke-width:1.5}
 
-/* ── Номер над квадратом ── */
-.cp-stage-num-label{
-  font-family:var(--font-mono);font-size:8px;letter-spacing:.06em;
-  color:rgba(255,255,255,.2);order:-1;text-align:center;
-}
-.cp-stage-block.cp-st-done .cp-stage-num-label   {color:rgba(184,146,58,.4)}
-.cp-stage-block.cp-st-active .cp-stage-num-label  {color:rgba(201,168,76,.65)}
-
-/* ── Подпись под квадратом ── */
+/* Подписи */
 .cp-stage-label-text{
   font-family:var(--font-mono);font-size:9px;letter-spacing:.01em;
-  text-align:center;line-height:1.4;
-  max-width:68px;
-  white-space:normal;
-  color:rgba(255,255,255,.22);
+  text-align:center;line-height:1.4;max-width:68px;
+  white-space:normal;color:rgba(255,255,255,.22);
 }
 .cp-stage-block.cp-st-done .cp-stage-label-text   {color:rgba(255,255,255,.45)}
 .cp-stage-block.cp-st-active .cp-stage-label-text  {color:#c9a84c;font-weight:600}
 
 /* ── Footer ── */
-@keyframes cpDotPulse{0%,100%{opacity:1}50%{opacity:.3}}
 .cp-progress-footer{
   display:flex;align-items:center;gap:10px;
   margin-top:18px;padding-top:14px;
@@ -27337,26 +27359,20 @@ button, a, [role="button"],
   background:#c9a84c;
   animation:cpDotPulse 2s ease infinite;flex-shrink:0;
 }
-.cp-pf-text{
-  font-family:var(--font-mono);font-size:9px;
-  letter-spacing:.06em;color:rgba(255,255,255,.3);
-}
+.cp-pf-text{font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;color:rgba(255,255,255,.3);}
 .cp-pf-text strong{color:#c9a84c;font-weight:600}
 .cp-pf-pill{
   font-family:var(--font-mono);font-size:9px;
   padding:2px 10px;border-radius:20px;
-  background:rgba(184,146,58,.1);
-  border:1px solid rgba(184,146,58,.22);
-  color:rgba(201,168,76,.85);
-  letter-spacing:.04em;
+  background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.22);
+  color:rgba(201,168,76,.85);letter-spacing:.04em;
 }
 .cp-pf-right{
-  margin-left:auto;
-  font-family:var(--font-mono);font-size:9px;
+  margin-left:auto;font-family:var(--font-mono);font-size:9px;
   color:rgba(255,255,255,.2);letter-spacing:.06em;
 }
 
-/* ── Скрываем старые элементы ── */
+/* ── Скрываем старое ── */
 #cp2-dual-bars{display:none!important}
 .cp-dual-bars{display:none!important}
 .cp-bar-done,.cp-bar-active,.cp-bar-pending{display:none!important}
@@ -27488,12 +27504,11 @@ button, a, [role="button"],
     <div class="cp-progress-pct-sub">завершено</div>
   </div>
 </div>
-<div class="cp-bar-wrap">
-  <div class="cp-bar-track"></div>
-  <div class="cp-bar-fill" id="cp2-bar-fill"></div>
-  <div class="cp-bar-lead" id="cp2-bar-lead"></div>
+<div class="cp-stages-wrap">
+  <div class="cp-bar-fill-v5" id="cp2-bar-fill"></div>
+  <div class="cp-bar-lead-v5" id="cp2-bar-lead"></div>
+  <div class="cp-stages-bar" id="cp2-stages-bar"></div>
 </div>
-<div class="cp-stages-bar" id="cp2-stages-bar"></div>
 <div class="cp-dual-bars" id="cp2-dual-bars"></div>
 <div class="cp-progress-footer" id="cp2-progress-footer">
   <div class="cp-pf-dot"></div>
