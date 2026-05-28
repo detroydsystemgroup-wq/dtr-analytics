@@ -29528,135 +29528,8 @@ function setProjectFilter(f, btn) {
 
 function filterProjects() { renderProjectGrid() }
 
-function renderProjectGrid() {
-  const grid = g('projects-grid')
-  if (!grid) return
-  const search = (g('dash-search')?.value || '').toLowerCase().trim()
-  const sort = g('dash-sort')?.value || 'updated'
-  const today = new Date(); today.setHours(0,0,0,0)
-  const MONTHS = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек']
-
-  let list = _allProjects.filter(p => {
-    if (search && !p.name.toLowerCase().includes(search) && !(p.description||'').toLowerCase().includes(search)) return false
-    if (_activeCatTag && !(p.category||'').includes(_activeCatTag)) return false
-    if (_projectFilter === 'active') return p.status !== 'archived' && getProjectProgress(p.id).pct < 100
-    if (_projectFilter === 'done') return getProjectProgress(p.id).pct === 100
-    if (_projectFilter === 'overdue') return isProjectOverdue(p.id)
-    return true
-  })
-
-  list = list.sort((a,b) => {
-    if (sort === 'name') return a.name.localeCompare(b.name)
-    if (sort === 'progress') return getProjectProgress(b.id).pct - getProjectProgress(a.id).pct
-    if (sort === 'deadline') {
-      const da = getNextDeadline(a.id)?.deadline || '9999'
-      const db = getNextDeadline(b.id)?.deadline || '9999'
-      return da < db ? -1 : 1
-    }
-    return new Date(b.updated_at||b.created_at) - new Date(a.updated_at||a.created_at)
-  })
-
-  // ── Update hero strip ──
-  const allPcts = _allProjects.map(p => getProjectProgress(p.id).pct)
-  const avgPct = allPcts.length ? Math.round(allPcts.reduce((s,v)=>s+v,0)/allPcts.length) : 0
-  const overdueCount = _allProjects.filter(p => isProjectOverdue(p.id)).length
-  const doneCount = _allProjects.filter(p => getProjectProgress(p.id).pct === 100).length
-  const activeCount = _allProjects.filter(p => p.status !== 'archived' && getProjectProgress(p.id).pct < 100).length
-  const totalStages = _allStages.filter(s => s.status === 'completed').length
-  const totalMRR = _allProjects.reduce((s,p) => s + (p.monthly_budget||0), 0)
-  const setH = (id, v) => { const e = g(id); if(e) e.textContent = v }
-  setH('proj-hero-total', _allProjects.length)
-  setH('proj-hero-active', activeCount + ' активных · ' + doneCount + ' завершено')
-  setH('proj-hero-avg', avgPct + '%')
-  setH('proj-hero-stages', totalStages + ' этапов завершено')
-  setH('proj-hero-overdue', overdueCount)
-  const e1 = g('proj-hero-overdue'); if(e1) e1.style.color = overdueCount > 0 ? 'var(--red)' : 'var(--green)'
-  setH('proj-hero-overdue-dl', overdueCount === 0 ? 'Всё в срок ✓' : overdueCount + ' требуют внимания')
-  setH('proj-hero-done', doneCount)
-  setH('proj-hero-mrr', totalMRR > 0 ? 'MRR: ' + fmtM(totalMRR) : 'Задайте бюджеты')
-
-  if (!list.length) {
-    grid.innerHTML = `<div style="padding:48px;text-align:center;font-family:var(--font-mono);font-size:11px;color:var(--txt3);">Ничего не найдено</div>`
-    return
-  }
-
-  grid.innerHTML = list.map(p => {
-    const { pct, completed } = getProjectProgress(p.id)
-    const overdue = isProjectOverdue(p.id)
-    const next = getNextDeadline(p.id)
-    const col = p.brand_color || '#b8923a'
-    const progColor = pct >= 80 ? 'var(--green)' : pct >= 40 ? col : 'var(--amber)'
-
-    // Pipeline segs
-    const projStages = _allStages.filter(s => s.project_id === p.id)
-    const stageStatuses = Array.from({length:9}, (_,i) => {
-      const st = projStages.find(s => s.stage_index === i)
-      return st ? st.status : 'pending'
-    })
-    const activeIdx = stageStatuses.findIndex(s => s === 'active' || s === 'in_progress')
-    const firstPending = stageStatuses.findIndex(s => s !== 'completed')
-    const segs = stageStatuses.map((st,i) => {
-      const done = st === 'completed'
-      const active = (i === activeIdx) || (activeIdx === -1 && i === firstPending && pct < 100)
-      const bg = done ? '#b8923a' : active ? '#dec17a' : 'rgba(255,255,255,.07)'
-      const h = active ? '10px' : '5px'
-      return `<div class="prow-seg" style="background:${bg};height:${h};"></div>`
-    }).join('')
-
-    // Deadline
-    let dlTxt = '—', dlColor = 'var(--txt3)'
-    if (next) {
-      const diff = Math.ceil((new Date(next.deadline) - today) / 86400000)
-      if (diff < 0)       { dlTxt = Math.abs(diff)+'д назад'; dlColor = 'var(--red)' }
-      else if (diff === 0){ dlTxt = 'Сегодня';                dlColor = 'var(--amber)' }
-      else if (diff <= 3) { dlTxt = 'Через '+diff+'д';        dlColor = 'var(--amber)' }
-      else                { const d=new Date(next.deadline); dlTxt=d.getDate()+' '+MONTHS[d.getMonth()]; dlColor='var(--a2)' }
-    }
-
-    // Status
-    const statusTxt = overdue ? 'Просрочен' : pct === 100 ? 'Завершён' : 'Активен'
-    const statusBg  = overdue ? 'rgba(224,82,82,.1)' : pct === 100 ? 'rgba(62,207,142,.1)' : 'rgba(184,146,58,.1)'
-    const statusCol = overdue ? 'var(--red)' : pct === 100 ? 'var(--green)' : 'var(--a2)'
-
-    // Updated
-    const daysAgo = Math.floor((Date.now() - new Date(p.updated_at||p.created_at)) / 86400000)
-    const updTxt = daysAgo === 0 ? 'Сегодня' : daysAgo === 1 ? 'Вчера' : daysAgo + 'д назад'
-
-    // Category chips
-    const catChips = p.category ? p.category.split(',').slice(0,2).map(t =>
-      `<span class="prow-cat">${t.trim()}</span>`
-    ).join('') : ''
-
-    return `<div class="proj-row${overdue?' proj-row-overdue':''}" style="border-left-color:${col};" onclick="openProject('${p.id}')">
-      <div class="prow-name-cell">
-        ${p.photo_url
-          ? `<div class="prow-avatar" style="border:1.5px solid ${col}44;overflow:hidden;padding:0;"><img src="${p.photo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;"></div>`
-          : `<div class="prow-avatar" style="background:${col}18;color:${col};border:1.5px solid ${col}44;">${p.name[0]}</div>`
-        }
-        <div style="min-width:0;">
-          <div class="prow-name">${esc(p.name)}</div>
-          <div class="prow-meta">${catChips || esc((p.description||'').substring(0,30))}</div>
-        </div>
-      </div>
-      <div class="prow-pipe">${segs}</div>
-      <div style="text-align:right;font-family:var(--font-display);font-size:14px;font-weight:700;color:${progColor};">${pct}%</div>
-      <div style="text-align:right;font-family:var(--font-mono);font-size:12px;font-weight:600;color:${dlColor};">${dlTxt}</div>
-      <div style="text-align:right;"><span class="prow-status" style="background:${statusBg};color:${statusCol};">${statusTxt}</span></div>
-      <div style="text-align:right;font-family:var(--font-mono);font-size:11px;color:var(--txt3);">${updTxt}</div>
-      <div style="text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:4px;" onclick="event.stopPropagation()">
-        <button class="prow-btn" title="Заметка" onclick="openQuickNote('${p.id}','${p.name.replace(/'/g,"\\'")}','${(p.quick_note||'').replace(/'/g,"\\'")}')">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-        </button>
-        <button class="prow-btn" title="Настройки" onclick="openProjectSettings('${p.id}')">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-        </button>
-        <button class="prow-btn prow-btn-open" onclick="openProject('${p.id}')">
-          Открыть
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </button>
-      </div>
-    </div>`
-  }).join('')
+function renderProjectGrid() { if (window.renderProjectGrid !== renderProjectGrid) { window.renderProjectGrid(); return; }
+  /* replaced by override */
 }
 function switchDashTab(tab, btn) {
   document.querySelectorAll('.dash-tab').forEach(b => b.classList.remove('dt-active'))
@@ -37597,11 +37470,11 @@ async function cpRenderMilestone(project) {
 /* ══════════════════════════════════════════
    ПРОЕКТЫ v2 — McKinsey table design
 ══════════════════════════════════════════ */
-.proj-hero { animation: fadeUp .38s cubic-bezier(.16,1,.3,1) both; }
+.proj-hero { animation: fadeUp .38s cubic-bezier(.16,1,.3,1) both; margin: 0 24px 0; border-radius: var(--r-lg) !important; }
 .proj-cmd {
   display: flex; align-items: center; justify-content: space-between;
   gap: 12px; flex-wrap: wrap; padding: 14px 24px;
-  border-bottom: 1px solid var(--brd); background: var(--bg2);
+  border-bottom: none; background: transparent;
 }
 .proj-cmd-left  { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .proj-cmd-right { display: flex; align-items: center; gap: 8px; }
