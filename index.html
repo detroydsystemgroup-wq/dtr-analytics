@@ -24675,7 +24675,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 </style>
 <style id="dtr-timeline-panel-interactions">
 /* ══ DEADLINE HERO ══ */
-.dl-hero { animation: fadeUp .38s cubic-bezier(.16,1,.3,1) both; margin: 0 12px 0 !important; border-radius: 16px !important; overflow: hidden; }
+.dl-hero { animation: fadeUp .38s cubic-bezier(.16,1,.3,1) both; margin: 0 0 12px !important; border-radius: 16px !important; overflow: hidden; }
 
 /* ══ COMMAND BAR v2 ══ */
 .dl-cmd2 {
@@ -24709,6 +24709,26 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   background: transparent; border: none; outline: none;
   font-family: var(--font-body); font-size: 12px; color: var(--txt);
   cursor: pointer;
+}
+.dl-select2 option,
+.dash-sort option,
+select option {
+  background: #151518;
+  color: #f0ece6;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  padding: 8px 12px;
+}
+.dl-select2 option:hover,
+.dash-sort option:hover,
+select option:hover {
+  background: #1e1e24;
+}
+.dl-select2 option:checked,
+.dash-sort option:checked,
+select option:checked {
+  background: rgba(184,146,58,.25);
+  color: #c9a84c;
 }
 
 .dl-date2-wrap {
@@ -25140,6 +25160,20 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   font-size: 12px !important;
   padding: 1px 6px !important;
   vertical-align: middle !important;
+}
+</style>
+<style id="dtr-select-dark">
+/* ── Dark dropdown for all selects ── */
+select {
+  color-scheme: dark !important;
+}
+select option {
+  background-color: #131316 !important;
+  color: #f0ece6 !important;
+}
+select option:checked {
+  background-color: rgba(184,146,58,.2) !important;
+  color: #c9a84c !important;
 }
 </style>
 </head>
@@ -37546,7 +37580,7 @@ async function cpRenderMilestone(project) {
   padding: 0 !important;
 }
 /* ══ ACTIVITY v2 — McKinsey table rows ══ */
-.act-hero { animation: fadeUp .38s cubic-bezier(.16,1,.3,1) both; margin: 0 12px 0 !important; border-radius: 16px !important; overflow: hidden; }
+.act-hero { animation: fadeUp .38s cubic-bezier(.16,1,.3,1) both; margin: 0 0 12px !important; border-radius: 16px !important; overflow: hidden; }
 .act-group2 {
   background: var(--bg2); border: 1px solid var(--brd);
   border-radius: var(--r-lg); overflow: hidden; margin-bottom: 12px;
@@ -37604,7 +37638,7 @@ async function cpRenderMilestone(project) {
 .proj-hero {
   animation: fadeUp .38s cubic-bezier(.16,1,.3,1) both;
   border-radius: 16px !important;
-  margin: 0 12px 12px !important;
+  margin: 0 0 12px !important;
   overflow: hidden;
 }
 .proj-cmd {
@@ -37723,7 +37757,7 @@ async function cpRenderMilestone(project) {
 /* ══════════════════════════════════════════
    СВОДКА v2 — Finance-grade design system
 ══════════════════════════════════════════ */
-.sv-hero { animation: fadeUp .4s cubic-bezier(.16,1,.3,1) both; margin: 0 12px 0 !important; border-radius: 16px !important; overflow: hidden; }
+.sv-hero { animation: fadeUp .4s cubic-bezier(.16,1,.3,1) both; margin: 0 0 12px !important; border-radius: 16px !important; overflow: hidden; }
 
 /* Risk row */
 .sv-risk-row {
@@ -37854,7 +37888,7 @@ async function cpRenderMilestone(project) {
 .sv-health-val { font-family: var(--font-mono); font-size: 10px; font-weight: 600; width: 40px; text-align: right; flex-shrink: 0; }
 
 /* Finance hero override for overview */
-#dtab-overview-panel .apl-hero-strip { animation: fadeUp .38s cubic-bezier(.16,1,.3,1) both; margin: 0 12px 0 !important; border-radius: 16px !important; overflow: hidden; }
+#dtab-overview-panel .apl-hero-strip { animation: fadeUp .38s cubic-bezier(.16,1,.3,1) both; margin: 0 0 12px !important; border-radius: 16px !important; overflow: hidden; }
 
 #dtab-kb-panel[style*="block"] .kb-topbar {
   padding: 20px 48px 20px 24px;
