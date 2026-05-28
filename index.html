@@ -27409,14 +27409,13 @@ button, a, [role="button"],
   animation:cp-next-pulse-ring 1.8s ease-out infinite;
 }
 .cp-next-body{flex:1;min-width:0}
-.cp-next-label{
-  font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;
-  text-transform:uppercase;color:#3ecf8e;margin-bottom:1px;
-}
+.cp-next-label{display:none}
 .cp-next-info-title{
+  flex:1;
   font-family:var(--font-display);font-size:14px;font-weight:600;
   color:rgba(255,255,255,.88);letter-spacing:-.01em;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  line-height:1;
 }
 .cp-next-right{
   text-align:right;flex-shrink:0;
@@ -27627,10 +27626,7 @@ button, a, [role="button"],
 </div>
 <div class="cp-next-inline" id="cp2-next-step" style="display:none;">
   <div class="cp-next-dot-wrap"><div class="cp-next-dot"></div></div>
-  <div class="cp-next-body">
-    <div class="cp-next-label" id="cp2-next-label">В работе</div>
-    <div class="cp-next-info-title" id="cp2-next-title">—</div>
-  </div>
+  <div class="cp-next-info-title" id="cp2-next-title">—</div>
   <div class="cp-next-right">
     <div class="cp-next-count" id="cp2-next-count">— / 9</div>
     <div class="cp-next-count-sub">этапов завершено</div>
