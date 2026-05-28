@@ -25701,6 +25701,44 @@ button, a, [role="button"],
   display: none !important;
 }
 .pcard-pct-hero { display: none !important; }
+
+/* ══ КЛИЕНТСКОЕ ОКНО — исправления (БАГ прогрессбара + иконки) ══ */
+
+/* cp-bar-wrap: высота 6px чтобы lead-dot (6px) влезал, overflow:visible для dot */
+.cp-bar-wrap {
+  height: 6px !important;
+  overflow: visible !important;
+}
+
+/* cp-bar-track: занимает центральные 2px внутри 6px wrap */
+.cp-bar-track {
+  position: absolute !important;
+  top: 2px !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 2px !important;
+  bottom: auto !important;
+}
+
+/* cp-bar-fill: тоже центрирован в 6px wrap */
+.cp-bar-fill {
+  position: absolute !important;
+  top: 2px !important;
+  left: 0 !important;
+  height: 2px !important;
+  overflow: hidden !important;
+  /* transition вместо animation — надёжнее при динамическом обновлении */
+  animation: none !important;
+  transition: width 0.9s cubic-bezier(.4,0,.2,1) !important;
+}
+
+/* cp-bar-lead: lead-dot центрирован по высоте 6px wrap (top:50% = 3px) */
+.cp-bar-lead {
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  transition: right 0.9s cubic-bezier(.4,0,.2,1) !important;
+}
+
 </style>
 </head>
 <body>
@@ -27138,13 +27176,14 @@ button, a, [role="button"],
 @keyframes cp-fill-bar{from{width:0}to{width:var(--prog-fill,0%)}}
 @keyframes cp-shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(400%)}}
 
-.cp-bar-wrap{position:relative;height:2px;margin-bottom:26px}
-.cp-bar-track{position:absolute;inset:0;background:rgba(240,236,230,.06);border-radius:2px}
+.cp-bar-wrap{position:relative;height:6px;margin-bottom:26px;overflow:visible}
+.cp-bar-track{position:absolute;top:2px;left:0;right:0;height:2px;background:rgba(240,236,230,.06);border-radius:2px}
 .cp-bar-fill{
-  position:absolute;top:0;left:0;height:100%;width:0;
+  position:absolute;top:2px;left:0;height:2px;width:0;
   background:linear-gradient(90deg,rgba(184,146,58,.5) 0%,var(--a2) 60%,var(--a3) 100%);
   border-radius:2px;
-  animation:cp-fill-bar .9s .1s cubic-bezier(.4,0,.2,1) both;
+  transition:width 0.9s cubic-bezier(.4,0,.2,1);
+  overflow:hidden;
 }
 .cp-bar-fill::after{
   content:'';position:absolute;inset:0;
@@ -27153,10 +27192,10 @@ button, a, [role="button"],
 }
 .cp-bar-lead{
   position:absolute;top:50%;transform:translateY(-50%);
-  right:calc(var(--pending-width, 11.1%) - 3px);
   width:6px;height:6px;border-radius:50%;
   background:var(--a3);
   box-shadow:0 0 10px rgba(222,193,122,.8),0 0 4px rgba(222,193,122,.5);
+  transition:right 0.9s cubic-bezier(.4,0,.2,1);
 }
 
 /* ── Stages row ── */
@@ -34200,13 +34239,14 @@ async function cp2LoadTracker(project) {
   if (g('cp2-progress-pct')) g('cp2-progress-pct').textContent = pct + '%';
   if (g('cp2-stages-pct2')) g('cp2-stages-pct2').textContent = pct + '%';
 
-  // New bar fill — set CSS custom property so animation target matches
+  // New bar fill — transition через width (не animation, чтобы не сбрасываться)
   var barFill = g('cp2-bar-fill');
   if (barFill) {
-    barFill.style.setProperty('--prog-fill', pct + '%');
-    barFill.style.animation = 'none';
+    // Сначала без transition (мгновенно 0), потом плавно до pct
+    barFill.style.transition = 'none';
+    barFill.style.width = '0%';
     barFill.offsetHeight; // reflow
-    barFill.style.animation = '';
+    barFill.style.transition = 'width 0.9s cubic-bezier(.4,0,.2,1)';
     barFill.style.width = pct + '%';
   }
   // Lead dot position mirrors fill right edge
@@ -34332,8 +34372,8 @@ async function cp2LoadReports(project) {
     if (!items.length) { el.innerHTML = '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.15);text-align:center;padding:16px 0;">Отчётов пока нет</div>'; return; }
     el.innerHTML = items.map(function(r) {
       var isSmm = r.type === 'smm';
-      var iconBg = isSmm ? 'rgba(184,146,58,.08)' : 'rgba(56,178,172,.08)';
-      var iconCol = isSmm ? 'var(--a2)' : 'var(--cyan)';
+      var iconBg  = isSmm ? 'rgba(184,146,58,.08)' : 'rgba(56,178,172,.08)';
+      var iconCol = isSmm ? '#c9a84c' : '#38b2ac'; /* hardcoded hex — CSS vars не работают в SVG-атрибутах */
       var iconSvg = isSmm
         ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="' + iconCol + '" stroke-width="1.8" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>'
         : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="' + iconCol + '" stroke-width="1.8" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>';
