@@ -26989,218 +26989,215 @@ html.light .theme-toggle:hover {
 <!-- ═══════════════════════════════════════════
      PAGE: CLIENT PORTAL
 ═══════════════════════════════════════════ -->
+<style id="dtr-client-v2-css">
+#page-client.active{display:flex!important;flex-direction:row!important;min-height:100vh!important;background:#060608!important}
+.cp-sidebar{width:220px;background:#0a0a0c;border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;z-index:10}
+.cp-sb-brand{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.05)}
+.cp-sb-brand-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.cp-sb-logo{width:32px;height:32px;display:grid;grid-template-columns:1fr 1fr;gap:2px;flex-shrink:0}
+.cp-sb-logo div:nth-child(1){background:#b8923a;border-radius:3px}
+.cp-sb-logo div:nth-child(2){background:rgba(184,146,58,.55);border-radius:3px}
+.cp-sb-logo div:nth-child(3){background:rgba(184,146,58,.55);border-radius:3px}
+.cp-sb-logo div:nth-child(4){background:rgba(56,178,172,.5);border-radius:3px}
+.cp-sb-brand-name{font-family:var(--font-display);font-size:13px;font-weight:800;letter-spacing:.06em;color:#c9a84c;text-transform:uppercase;line-height:1}
+.cp-sb-brand-sub{font-family:var(--font-display);font-size:10px;font-weight:500;letter-spacing:.04em;color:rgba(240,236,230,.4);text-transform:uppercase;line-height:1;margin-top:3px}
+.cp-sb-client{display:flex;align-items:center;gap:10px}
+.cp-sb-avatar{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:15px;font-weight:800;flex-shrink:0}
+.cp-sb-client-name{font-family:var(--font-display);font-size:13px;font-weight:600;color:var(--txt)}
+.cp-sb-online-dot{width:5px;height:5px;border-radius:50%;background:#3ecf8e;box-shadow:0 0 6px rgba(62,207,142,.5)}
+.cp-sb-online-txt{font-family:var(--font-mono);font-size:8px;letter-spacing:.12em;color:#3ecf8e}
+.cp-sb-nav{padding:14px 10px;flex:1}
+.cp-sb-nav-label{font-family:var(--font-mono);font-size:8px;letter-spacing:.18em;color:rgba(255,255,255,.2);text-transform:uppercase;padding:0 8px;margin-bottom:8px}
+.cp-sb-nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;margin-bottom:2px;cursor:pointer;transition:all .18s;border:1px solid transparent;background:transparent;width:100%;text-align:left;font-family:var(--font-display);font-size:12px;font-weight:500;color:rgba(255,255,255,.4)}
+.cp-sb-nav-item:hover{color:rgba(255,255,255,.7);background:rgba(255,255,255,.03)}
+.cp-sb-nav-item.cp-nav-active{background:rgba(184,146,58,.08);border-color:rgba(184,146,58,.15);color:#c9a84c;font-weight:600}
+.cp-sb-nav-item svg{flex-shrink:0;opacity:.5}.cp-sb-nav-item.cp-nav-active svg{opacity:.9}
+.cp-sb-nav-badge{margin-left:auto;font-family:var(--font-mono);font-size:9px;font-weight:600;padding:1px 7px;border-radius:8px}
+.cp-sb-kpi{padding:14px 18px;border-top:1px solid rgba(255,255,255,.05)}
+.cp-sb-kpi-label{font-family:var(--font-mono);font-size:8px;letter-spacing:.14em;color:rgba(255,255,255,.2);text-transform:uppercase;margin-bottom:10px}
+.cp-sb-kpi-val{font-family:var(--font-display);font-size:32px;font-weight:800;letter-spacing:-.05em;line-height:1;margin-bottom:3px}
+.cp-sb-kpi-sub{font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.25);letter-spacing:.06em;margin-bottom:10px}
+.cp-sb-progress-track{height:4px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden}
+.cp-sb-progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#b8923a,#38b2ac);transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.cp-sb-logout{display:flex;align-items:center;gap:7px;padding:10px 18px;border-top:1px solid rgba(255,255,255,.04);font-family:var(--font-display);font-size:11px;color:rgba(255,255,255,.25);cursor:pointer;transition:color .15s;background:none;border-left:none;border-right:none;border-bottom:none;width:100%;text-align:left}
+.cp-sb-logout:hover{color:var(--red)}
+.cp-main{flex:1;display:flex;flex-direction:column;min-width:0;overflow-y:auto;max-height:100vh}
+.cp-topbar{padding:0 36px;height:48px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between;background:rgba(6,6,8,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);position:sticky;top:0;z-index:5;flex-shrink:0}
+.cp-topbar-greeting{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;color:rgba(255,255,255,.25);text-transform:uppercase}
+.cp-topbar-greeting span{color:rgba(255,255,255,.5)}
+.cp-topbar-date{font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.2);letter-spacing:.06em}
+.cp-content{padding:24px 36px 40px;flex:1}
+.cp-hero-strip{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;align-items:stretch;background:var(--bg3);border:1px solid rgba(255,255,255,.07);border-radius:16px;margin-bottom:18px;overflow:hidden}
+.cp-hero-card{padding:22px 22px 18px;position:relative}
+.cp-hero-card:first-child{background:linear-gradient(135deg,rgba(184,146,58,.08) 0%,transparent 60%)}
+.cp-hero-divider{width:1px;background:rgba(255,255,255,.06);margin:16px 0}
+.cp-hero-eyebrow{font-family:var(--font-mono);font-size:9px;letter-spacing:.16em;color:rgba(255,255,255,.25);text-transform:uppercase;margin-bottom:8px}
+.cp-hero-num{font-family:var(--font-display);font-size:24px;font-weight:800;letter-spacing:-.04em;line-height:1;color:var(--txt);margin-bottom:4px;font-variant-numeric:tabular-nums}
+.cp-hero-sub{font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.25);letter-spacing:.04em}
+.cp-progress-card{background:var(--bg3);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:20px 24px;margin-bottom:14px;position:relative}
+.cp-progress-card::before{content:'';position:absolute;left:0;top:12px;bottom:12px;width:3px;background:var(--a);border-radius:0 3px 3px 0}
+.cp-progress-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cp-progress-title{font-family:var(--font-display);font-size:14px;font-weight:700;letter-spacing:-.02em;color:var(--txt)}
+.cp-progress-pct{font-family:var(--font-display);font-size:20px;font-weight:800;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.cp-stages-bar{display:flex;gap:3px;margin-bottom:8px}
+.cp-stage-block{flex:1;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:9px;font-weight:600;transition:all .2s;position:relative}
+.cp-stage-block.cp-st-done{background:var(--a);color:#000}
+.cp-stage-block.cp-st-active{background:rgba(232,153,58,.15);border:1.5px solid rgba(232,153,58,.5);color:var(--amber);animation:pulse 2.5s ease infinite}
+.cp-stage-block.cp-st-pending{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.15)}
+.cp-dual-bars{display:flex;gap:3px;height:4px;margin-bottom:14px}
+.cp-bar-done{border-radius:3px;background:var(--green);transition:flex 1s cubic-bezier(.4,0,.2,1)}
+.cp-bar-active{border-radius:3px;background:var(--amber);transition:flex 1s cubic-bezier(.4,0,.2,1)}
+.cp-bar-pending{border-radius:3px;background:rgba(255,255,255,.04);transition:flex 1s cubic-bezier(.4,0,.2,1)}
+.cp-next-inline{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:10px 14px}
+.cp-next-emoji{font-size:18px;flex-shrink:0}
+.cp-next-info{flex:1;min-width:0}
+.cp-next-info-title{font-family:var(--font-display);font-size:12px;font-weight:600;color:var(--txt);letter-spacing:-.01em}
+.cp-next-info-sub{font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.04em;margin-top:2px}
+.cp-next-tag{font-family:var(--font-mono);font-size:9px;font-weight:600;padding:3px 10px;border-radius:8px;flex-shrink:0}
+.cp-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.cp-card{background:var(--bg3);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:18px 20px}
+.cp-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cp-card-title{font-family:var(--font-mono);font-size:9px;letter-spacing:.16em;color:rgba(255,255,255,.25);text-transform:uppercase}
+.cp-card-count{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:.04em}
+.cp-report-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:10px;margin-bottom:6px;cursor:pointer;transition:all .18s cubic-bezier(.16,1,.3,1)}
+.cp-report-row:last-child{margin-bottom:0}
+.cp-report-row:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1);transform:translateY(-1px)}
+.cp-report-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cp-report-info{flex:1;min-width:0}
+.cp-report-name{font-family:var(--font-display);font-size:12px;font-weight:600;color:var(--txt);letter-spacing:-.01em}
+.cp-report-meta{font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.2);margin-top:2px;letter-spacing:.04em}
+.cp-report-arrow{color:rgba(255,255,255,.15)}
+.cp-report-row:hover .cp-report-arrow{color:rgba(255,255,255,.4)}
+.cp-act-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.cp-act-row:last-child{border-bottom:none}
+.cp-act-dot{width:6px;height:6px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.cp-act-text{font-family:var(--font-display);font-size:11px;color:rgba(255,255,255,.55);line-height:1.45;flex:1}
+.cp-act-text b{color:var(--txt);font-weight:600}
+.cp-act-time{font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.15);flex-shrink:0;padding-top:2px}
+.cp-focus-strip{background:var(--bg3);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:18px 22px;position:relative;overflow:hidden;margin-bottom:14px}
+.cp-focus-strip::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--a),var(--cyan))}
+.cp-focus-eyebrow{font-family:var(--font-mono);font-size:8px;letter-spacing:.2em;color:rgba(184,146,58,.4);text-transform:uppercase;margin-bottom:8px}
+.cp-focus-text{font-family:var(--font-display);font-size:13px;font-weight:600;color:rgba(255,255,255,.85);line-height:1.55;margin-bottom:6px}
+.cp-focus-tip{font-family:var(--font-display);font-size:11px;color:rgba(255,255,255,.3);line-height:1.5}
+.cp-smm-strip{background:var(--bg3);border:1px solid rgba(255,255,255,.07);border-radius:16px;overflow:hidden;margin-bottom:14px}
+.cp-smm-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.04)}
+.cp-smm-title{font-family:var(--font-mono);font-size:9px;letter-spacing:.16em;color:rgba(255,255,255,.25);text-transform:uppercase}
+.cp-smm-period{font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.2)}
+.cp-smm-grid{display:grid;grid-template-columns:repeat(5,1fr)}
+.cp-smm-cell{display:flex;flex-direction:column;align-items:center;padding:14px 8px;gap:4px;text-align:center;border-right:1px solid rgba(255,255,255,.04)}
+.cp-smm-cell:last-child{border-right:none}
+.cp-smm-lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.25)}
+.cp-smm-val{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+.cp-smm-bench-row{display:flex;align-items:center;gap:8px;padding:10px 20px;border-top:1px solid rgba(255,255,255,.04);font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.2)}
+.cp-milestone-strip{background:linear-gradient(135deg,rgba(184,146,58,.06),rgba(56,178,172,.03));border:1px solid rgba(184,146,58,.15);border-radius:16px;padding:20px 24px;text-align:center;position:relative;overflow:hidden;margin-bottom:14px}
+.cp-milestone-strip::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--a),var(--cyan))}
+.cp-milestone-emoji{font-size:32px;margin-bottom:8px}
+.cp-milestone-title{font-family:var(--font-display);font-size:18px;font-weight:800;letter-spacing:-.03em;color:var(--txt);margin-bottom:4px}
+.cp-milestone-sub{font-family:var(--font-mono);font-size:10px;color:rgba(184,146,58,.45);letter-spacing:.06em}
+.cp-footer{padding:12px 36px;border-top:1px solid rgba(255,255,255,.04);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.cp-footer-name{font-family:var(--font-mono);font-size:8px;letter-spacing:.1em;color:rgba(255,255,255,.15);text-transform:uppercase}
+.cp-footer-copy{font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.1)}
+.cp-tab-content{display:none}.cp-tab-content.cp-tab-visible{display:block;animation:fadeUp .35s cubic-bezier(.16,1,.3,1) both}
+.cp-stages-list{display:flex;flex-direction:column;gap:6px}
+.cp-stage-row{display:flex;align-items:center;gap:14px;padding:14px 18px;background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:12px;transition:all .15s}
+.cp-stage-row:hover{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.1)}
+.cp-stage-num{font-family:var(--font-mono);font-size:10px;font-weight:600;width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cp-stage-num.cp-sn-done{background:rgba(62,207,142,.12);color:var(--green)}
+.cp-stage-num.cp-sn-active{background:rgba(232,153,58,.12);color:var(--amber);animation:pulse 2.5s ease infinite}
+.cp-stage-num.cp-sn-pending{background:rgba(255,255,255,.04);color:rgba(255,255,255,.15)}
+.cp-stage-name{flex:1;font-family:var(--font-display);font-size:13px;font-weight:500;color:rgba(255,255,255,.7)}
+.cp-stage-status-tag{font-family:var(--font-mono);font-size:9px;font-weight:600;padding:3px 10px;border-radius:8px;letter-spacing:.04em}
+@media(max-width:900px){.cp-sidebar{width:180px}.cp-content{padding:20px 24px 32px}.cp-hero-strip{grid-template-columns:1fr auto 1fr}.cp-cols{grid-template-columns:1fr}}
+@media(max-width:640px){#page-client.active{flex-direction:column!important}.cp-sidebar{width:100%!important;height:auto!important;position:relative!important;border-right:none!important;border-bottom:1px solid rgba(255,255,255,.06)!important}.cp-sb-nav{display:flex;gap:4px;overflow-x:auto;padding:8px}.cp-sb-kpi{display:none}.cp-hero-strip{grid-template-columns:1fr}.cp-hero-divider{display:none}}
+</style>
+
 <div class="page" id="page-client">
-
-  <!-- ══ PREMIUM HERO ══ -->
-  <div class="cph-wrap" id="cph-wrap">
-
-    <!-- Top bar -->
-    <div class="cph-topbar">
-      <div class="cph-topbar-left">
-        <!-- Company wordmark -->
-        <div class="cph-wordmark">
-          <div class="cph-wordmark-logo">
-            <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
-              <rect x="2" y="2" width="12" height="12" rx="3" fill="#b8923a"/>
-              <rect x="18" y="2" width="12" height="12" rx="3" fill="#c9a84c" opacity=".6"/>
-              <rect x="2" y="18" width="12" height="12" rx="3" fill="#c9a84c" opacity=".6"/>
-              <rect x="18" y="18" width="12" height="12" rx="3" fill="#22d3ee" opacity=".5"/>
-            </svg>
-          </div>
-          <div class="cph-wordmark-text">
-            <div class="cph-wordmark-name">DETROYD SMART SYSTEM</div>
-            <div class="cph-wordmark-sub">DeTroyd System Group</div>
-          </div>
-        </div>
-        <div class="cph-topbar-divider"></div>
-        <div class="cph-live-badge">
-          <span class="cph-live-dot"></span>
-          <span class="cph-live-txt">LIVE</span>
-        </div>
-        <div class="cph-client-tag" id="cp-brand-name">—</div>
-      </div>
-      <button class="cph-logout" onclick="doLogout()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        Выйти
-      </button>
-    </div>
-
-    <!-- Hero body -->
-    <div class="cph-body">
-      <div class="cph-left">
-        <div class="cph-greeting" id="cp-greeting">Доброе утро</div>
-        <h1 class="cph-title" id="cp-project-title">—</h1>
-        <div class="cph-desc" id="cp-project-desc">—</div>
-        <div class="cph-stat-row">
-          <div class="cph-stat-cell">
-            <div class="cph-stat-num" id="cp-stat-done">—</div>
-            <div class="cph-stat-lbl">Этапов завершено</div>
-          </div>
-          <div class="cph-stat-cell">
-            <div class="cph-stat-num green" id="cp-stat-active">—</div>
-            <div class="cph-stat-lbl">Сейчас в работе</div>
-          </div>
-          <div class="cph-stat-cell">
-            <div class="cph-stat-num dim" id="cp-stat-left">—</div>
-            <div class="cph-stat-lbl">Осталось</div>
-          </div>
-          <div class="cph-stat-cell">
-            <div class="cph-stat-num dim" id="cp-stat-reports">—</div>
-            <div class="cph-stat-lbl">Отчётов</div>
-          </div>
-        </div>
-      </div>
-      <div class="cph-right">
-        <!-- Big ring -->
-        <div class="cph-ring-wrap">
-          <svg class="cph-ring-svg" viewBox="0 0 200 200">
-            <defs>
-              <linearGradient id="cpGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%"   stop-color="#b8923a"/>
-                <stop offset="50%"  stop-color="#c9a84c"/>
-                <stop offset="100%" stop-color="#22d3ee"/>
-              </linearGradient>
-              <filter id="cpGlow">
-                <feGaussianBlur stdDeviation="3" result="blur"/>
-                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-            </defs>
-            <!-- Track -->
-            <circle cx="100" cy="100" r="82" fill="none" stroke="rgba(184,146,58,.1)" stroke-width="8"/>
-            <!-- Tick marks -->
-            <circle cx="100" cy="100" r="82" fill="none" stroke="rgba(184,146,58,.06)" stroke-width="8"
-              stroke-dasharray="2 20.5" stroke-dashoffset="0"/>
-            <!-- Fill -->
-            <circle class="cph-ring-fill" id="cp-ring-fill"
-              cx="100" cy="100" r="82" fill="none"
-              stroke="url(#cpGradient)" stroke-width="8"
-              stroke-linecap="round"
-              stroke-dasharray="515" stroke-dashoffset="515"
-              filter="url(#cpGlow)"
-              transform="rotate(-90 100 100)"/>
-          </svg>
-          <div class="cph-ring-center">
-            <div class="cph-ring-pct" id="cp-ring-pct">0%</div>
-            <div class="cph-ring-sub">выполнено</div>
-            <div class="cph-ring-steps" id="cph-ring-steps">0 / 9</div>
-          </div>
-        </div>
-        <!-- Status below ring -->
-        <div class="cph-ring-status" id="cph-ring-status-wrap">
-          <span class="cph-ring-status-dot" id="cp-status-dot-el"></span>
-          <span class="cph-ring-status-txt" id="cp-status-text">Загрузка...</span>
-        </div>
-      </div>
-    </div>
-
-
-  </div>
-
-<!-- NEXT STEP CARD -->
-<div class="cp-next-step" id="cp-next-step" style="display:none;">
-  <div class="cp-next-label">СЛЕДУЮЩИЙ ШАГ</div>
-  <div class="cp-next-inner">
-    <div class="cp-next-icon" id="cp-next-icon">🎯</div>
-    <div class="cp-next-body">
-      <div class="cp-next-title" id="cp-next-title">—</div>
-      <div class="cp-next-sub" id="cp-next-sub">—</div>
-    </div>
-    <div class="cp-next-deadline" id="cp-next-deadline"></div>
-  </div>
+<aside class="cp-sidebar">
+<div class="cp-sb-brand">
+<div class="cp-sb-brand-row">
+<div class="cp-sb-logo"><div></div><div></div><div></div><div></div></div>
+<div><div class="cp-sb-brand-name">DETROYD</div><div class="cp-sb-brand-sub">SYSTEM GROUP</div></div>
 </div>
-
-<!-- ACTIVITY FEED (last 5 actions) -->
-<div class="cp-activity-feed" id="cp-activity-feed" style="display:none;">
-  <div class="cp-act-header">
-    <div class="cp-act-title">Активность команды</div>
-    <div class="cp-act-live"><span class="cp-live-dot"></span>Live</div>
-  </div>
-  <div class="cp-act-items" id="cp-act-items"></div>
+<div class="cp-sb-client">
+<div class="cp-sb-avatar" id="cp2-avatar" style="background:rgba(184,146,58,.15);color:#c9a84c;">—</div>
+<div><div class="cp-sb-client-name" id="cp2-client-name">—</div>
+<div style="display:flex;align-items:center;gap:5px;margin-top:2px;"><div class="cp-sb-online-dot"></div><span class="cp-sb-online-txt">ONLINE</span></div></div>
 </div>
-
-<!-- ROI STRIP (shown if performance report exists) -->
-<div class="cp-roi-strip" id="cp-roi-strip" style="display:none;"></div>
-
-<!-- SMM METRICS SPARKLINE -->
-<div class="cp-smm-metrics" id="cp-smm-metrics" style="display:none;">
-  <div class="cp-smm-metrics-header">
-    <div class="cp-smm-metrics-title">SMM показатели</div>
-    <div class="cp-smm-metrics-period" id="cp-smm-period">—</div>
-  </div>
-  <div class="cp-smm-metrics-grid" id="cp-smm-metrics-grid"></div>
-  <div class="cp-benchmark-row" id="cp-benchmark-row"></div>
 </div>
-
-<!-- FOCUS OF MONTH -->
-<div class="cp-focus-card" id="cp-focus-card" style="display:none;">
-  <div class="cp-focus-accent"></div>
-  <div class="cp-focus-inner">
-    <div class="cp-focus-eyebrow">ФОКУС ЭТОГО МЕСЯЦА</div>
-    <div class="cp-focus-text" id="cp-focus-text">—</div>
-    <div class="cp-focus-tip" id="cp-focus-tip"></div>
-  </div>
+<div class="cp-sb-nav">
+<div class="cp-sb-nav-label">Навигация</div>
+<button class="cp-sb-nav-item cp-nav-active" id="cp2-nav-overview" onclick="cpSwitchTab('overview')">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+Обзор</button>
+<button class="cp-sb-nav-item" id="cp2-nav-stages" onclick="cpSwitchTab('stages')">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+Этапы <span class="cp-sb-nav-badge" id="cp2-stages-badge" style="background:rgba(62,207,142,.1);color:#3ecf8e;">—</span></button>
+<button class="cp-sb-nav-item" id="cp2-nav-reports" onclick="cpSwitchTab('reports')">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+Отчёты <span class="cp-sb-nav-badge" id="cp2-reports-badge" style="background:rgba(184,146,58,.1);color:#c9a84c;">—</span></button>
+<button class="cp-sb-nav-item" id="cp2-nav-updates" onclick="cpSwitchTab('updates')">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+Обновления <span id="cp2-updates-dot" style="margin-left:auto;width:6px;height:6px;border-radius:50%;background:var(--amber);display:none;"></span></button>
 </div>
-
-<!-- MILESTONE BANNER (shown at 50% and 100%) -->
-<div class="cp-milestone" id="cp-milestone" style="display:none;">
-  <div class="cp-milestone-inner" id="cp-milestone-inner"></div>
+<div class="cp-sb-kpi">
+<div class="cp-sb-kpi-label">Прогресс</div>
+<div class="cp-sb-kpi-val" id="cp2-sb-pct" style="color:#c9a84c;">0%</div>
+<div class="cp-sb-kpi-sub" id="cp2-sb-steps">0 из 9 этапов</div>
+<div class="cp-sb-progress-track"><div class="cp-sb-progress-fill" id="cp2-sb-bar" style="width:0%;"></div></div>
 </div>
-<br>
-<!-- ═══════════════════════════════════════════ -->
-
-  <div class="cp-stages-wrap">
-    <div class="cp-stages-scroll" id="cp-stages-scroll"></div>
-  </div>
-  <div class="cp-reports-section">
-    <div class="cp-section-title">Отчёты</div>
-    <div class="cp-report-blocks">
-      <div class="cp-report-block" id="cpb-smm" onclick="cpToggleBlock('smm')">
-        <div class="cp-block-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.6" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-        </div>
-        <div class="cp-block-text">
-          <div class="cp-block-title">SMM Отчёты</div>
-          <div class="cp-block-sub" id="cpb-smm-sub">Загрузка...</div>
-        </div>
-        <div class="cp-block-arrow" id="cpb-smm-arrow">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
-        </div>
-      </div>
-      <div class="cp-months-panel" id="cp-smm-panel">
-        <div class="cp-months-grid" id="cp-smm-months"></div>
-      </div>
-      <div class="cp-report-block" id="cpb-perf" onclick="cpToggleBlock('perf')">
-        <div class="cp-block-icon" style="background:rgba(56,189,248,.08);border-color:rgba(56,189,248,.2);">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="1.6" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        </div>
-        <div class="cp-block-text">
-          <div class="cp-block-title">Performance Отчёты</div>
-          <div class="cp-block-sub" id="cpb-perf-sub">Загрузка...</div>
-        </div>
-        <div class="cp-block-arrow" id="cpb-perf-arrow">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
-        </div>
-      </div>
-      <div class="cp-months-panel" id="cp-perf-panel">
-        <div class="cp-months-grid" id="cp-perf-months"></div>
-      </div>
-    </div>
-  </div>
-  <!-- Company footer -->
-  <div class="cph-footer">
-    <div class="cph-footer-brand">
-      <svg width="18" height="18" viewBox="0 0 32 32" fill="none">
-        <rect x="2" y="2" width="12" height="12" rx="3" fill="#b8923a"/>
-        <rect x="18" y="2" width="12" height="12" rx="3" fill="#c9a84c" opacity=".5"/>
-        <rect x="2" y="18" width="12" height="12" rx="3" fill="#c9a84c" opacity=".5"/>
-        <rect x="18" y="18" width="12" height="12" rx="3" fill="#22d3ee" opacity=".4"/>
-      </svg>
-      <span class="cph-footer-name">DETROYD SMART SYSTEM</span>
-      <span class="cph-footer-sep">·</span>
-      <span class="cph-footer-company">DeTroyd System Group</span>
-    </div>
-    <div class="cph-footer-copy">© 2026 Все права защищены</div>
-  </div>
+<button class="cp-sb-logout" onclick="doLogout()">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+Выйти</button>
+</aside>
+<main class="cp-main">
+<div class="cp-topbar">
+<div class="cp-topbar-greeting" id="cp2-greeting">ДОБРЫЙ ДЕНЬ, <span>—</span></div>
+<div class="cp-topbar-date" id="cp2-date">—</div>
+</div>
+<div class="cp-content">
+<div class="cp-tab-content cp-tab-visible" id="cp2-tab-overview">
+<div class="cp-hero-strip" id="cp2-hero-strip">
+<div class="cp-hero-card"><div class="cp-hero-eyebrow">Выручка Δ</div><div class="cp-hero-num" id="cp2-kpi-rev" style="color:var(--green);">—</div><div class="cp-hero-sub" id="cp2-kpi-rev-sub">—</div></div>
+<div class="cp-hero-divider"></div>
+<div class="cp-hero-card"><div class="cp-hero-eyebrow">Трафик Δ</div><div class="cp-hero-num" id="cp2-kpi-traffic" style="color:var(--cyan);">—</div><div class="cp-hero-sub" id="cp2-kpi-traffic-sub">—</div></div>
+<div class="cp-hero-divider"></div>
+<div class="cp-hero-card"><div class="cp-hero-eyebrow">Ср. чек Δ</div><div class="cp-hero-num" id="cp2-kpi-check" style="color:var(--amber);">—</div><div class="cp-hero-sub" id="cp2-kpi-check-sub">—</div></div>
+<div class="cp-hero-divider"></div>
+<div class="cp-hero-card"><div class="cp-hero-eyebrow">ER Instagram</div><div class="cp-hero-num" id="cp2-kpi-er" style="color:var(--pink);">—</div><div class="cp-hero-sub" id="cp2-kpi-er-sub">—</div></div>
+</div>
+<div class="cp-progress-card">
+<div class="cp-progress-header"><div class="cp-progress-title">Ход проекта</div><div class="cp-progress-pct" id="cp2-progress-pct" style="color:var(--a2);">0%</div></div>
+<div class="cp-stages-bar" id="cp2-stages-bar"></div>
+<div class="cp-dual-bars" id="cp2-dual-bars"></div>
+<div class="cp-next-inline" id="cp2-next-step" style="display:none;">
+<div class="cp-next-emoji" id="cp2-next-emoji">🎯</div>
+<div class="cp-next-info"><div class="cp-next-info-title" id="cp2-next-title">—</div><div class="cp-next-info-sub" id="cp2-next-sub">—</div></div>
+<div class="cp-next-tag" id="cp2-next-tag" style="background:rgba(232,153,58,.1);color:var(--amber);">—</div>
+</div></div>
+<div class="cp-cols">
+<div class="cp-card"><div class="cp-card-header"><div class="cp-card-title">Отчёты</div><div class="cp-card-count" id="cp2-reports-count" style="color:var(--a2);">—</div></div><div id="cp2-reports-list"></div></div>
+<div class="cp-card"><div class="cp-card-header"><div class="cp-card-title">Активность команды</div><div style="display:flex;align-items:center;gap:5px;"><div style="width:5px;height:5px;border-radius:50%;background:#3ecf8e;box-shadow:0 0 6px rgba(62,207,142,.5);"></div><span style="font-family:var(--font-mono);font-size:8px;color:#3ecf8e;letter-spacing:.1em;">LIVE</span></div></div><div id="cp2-activity-feed"></div></div>
+</div>
+<div class="cp-smm-strip" id="cp2-smm-strip" style="display:none;"><div class="cp-smm-header"><div class="cp-smm-title">SMM показатели</div><div class="cp-smm-period" id="cp2-smm-period">—</div></div><div class="cp-smm-grid" id="cp2-smm-grid"></div><div class="cp-smm-bench-row" id="cp2-smm-bench"></div></div>
+<div class="cp-focus-strip" id="cp2-focus" style="display:none;"><div class="cp-focus-eyebrow">ФОКУС ЭТОГО МЕСЯЦА</div><div class="cp-focus-text" id="cp2-focus-text">—</div><div class="cp-focus-tip" id="cp2-focus-tip">—</div></div>
+<div class="cp-milestone-strip" id="cp2-milestone" style="display:none;"><div class="cp-milestone-emoji" id="cp2-ms-emoji">🏆</div><div class="cp-milestone-title" id="cp2-ms-title">—</div><div class="cp-milestone-sub" id="cp2-ms-sub">—</div></div>
+</div>
+<div class="cp-tab-content" id="cp2-tab-stages">
+<div class="cp-progress-card" style="margin-bottom:18px;"><div class="cp-progress-header"><div class="cp-progress-title">Все этапы проекта</div><div class="cp-progress-pct" id="cp2-stages-pct2" style="color:var(--a2);">0%</div></div><div class="cp-dual-bars" id="cp2-dual-bars2"></div></div>
+<div class="cp-stages-list" id="cp2-stages-detail"></div>
+</div>
+<div class="cp-tab-content" id="cp2-tab-reports">
+<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.16em;color:rgba(255,255,255,.25);text-transform:uppercase;margin-bottom:16px;">Все отчёты</div>
+<div class="cp-cols" style="margin-bottom:0;">
+<div class="cp-card"><div class="cp-card-header"><div class="cp-card-title">Performance</div><div class="cp-card-count" id="cp2-perf-cnt" style="color:var(--cyan);">—</div></div><div id="cp2-perf-list"></div></div>
+<div class="cp-card"><div class="cp-card-header"><div class="cp-card-title">SMM</div><div class="cp-card-count" id="cp2-smm-cnt" style="color:var(--a2);">—</div></div><div id="cp2-smm-list"></div></div>
+</div></div>
+<div class="cp-tab-content" id="cp2-tab-updates">
+<div class="cp-card"><div class="cp-card-header"><div class="cp-card-title">Вся активность</div><div style="display:flex;align-items:center;gap:5px;"><div style="width:5px;height:5px;border-radius:50%;background:#3ecf8e;"></div><span style="font-family:var(--font-mono);font-size:8px;color:#3ecf8e;letter-spacing:.1em;">LIVE</span></div></div><div id="cp2-activity-full"></div></div>
+</div>
+</div>
+<div class="cp-footer"><div style="display:flex;align-items:center;gap:8px;"><div style="width:14px;height:14px;display:grid;grid-template-columns:1fr 1fr;gap:1px;"><div style="background:#b8923a;border-radius:1px;"></div><div style="background:rgba(184,146,58,.45);border-radius:1px;"></div><div style="background:rgba(184,146,58,.45);border-radius:1px;"></div><div style="background:rgba(56,178,172,.4);border-radius:1px;"></div></div><span class="cp-footer-name">DETROYD SMART SYSTEM</span></div><span class="cp-footer-copy">&copy; 2026</span></div>
+</main>
 </div>
 
 <!-- ═══════════════════════════════════════════
@@ -33882,174 +33879,315 @@ let cpSMMReports = []
 let cpPerfReports = []
 let cpBlockOpen = null // 'smm' | 'perf' | null
 
+/* ══════════════════════════════════════════════
+// CLIENT PORTAL v2 — McKinsey Finance Style
+// ══════════════════════════════════════════════ */
+
+function cpSwitchTab(tab) {
+  document.querySelectorAll('.cp-tab-content').forEach(function(el){ el.classList.remove('cp-tab-visible'); });
+  document.querySelectorAll('.cp-sb-nav-item').forEach(function(el){ el.classList.remove('cp-nav-active'); });
+  var tabEl = g('cp2-tab-' + tab);
+  var navEl = g('cp2-nav-' + tab);
+  if (tabEl) tabEl.classList.add('cp-tab-visible');
+  if (navEl) navEl.classList.add('cp-nav-active');
+  if (tab === 'updates' && currentProject) cp2RenderActivityFull(currentProject);
+}
+
 async function showClientPortal(project) {
-  currentProject = project
-  _isClientCache = true
+  currentProject = project;
+  _isClientCache = true;
 
-  // Set header brand name
-  const el = g('cp-brand-name')
-  if (el) el.textContent = project.name
+  var name = project.name || '—';
+  if (g('cp2-client-name')) g('cp2-client-name').textContent = name;
+  var av = g('cp2-avatar');
+  if (av) { av.textContent = name.charAt(0).toUpperCase(); var col = project.brand_color || '#b8923a'; av.style.background = col + '22'; av.style.color = col; }
 
-  // Set hero
-  const hour = new Date().getHours()
-  const greet = hour < 12 ? 'Доброе утро' : hour < 18 ? 'Добрый день' : 'Добрый вечер'
-  if (g('cp-greeting')) g('cp-greeting').textContent = greet
-  if (g('cp-project-title')) g('cp-project-title').textContent = project.name
-  if (g('cp-project-desc')) g('cp-project-desc').textContent = project.description || 'Ваш проект'
+  var hour = new Date().getHours();
+  var greet = hour < 12 ? 'ДОБРОЕ УТРО' : hour < 18 ? 'ДОБРЫЙ ДЕНЬ' : 'ДОБРЫЙ ВЕЧЕР';
+  if (g('cp2-greeting')) g('cp2-greeting').innerHTML = greet + ', <span style="color:rgba(255,255,255,.5);">' + esc(name) + '</span>';
 
-  showPage('page-client')
+  var now = new Date();
+  var mos = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  if (g('cp2-date')) g('cp2-date').textContent = now.getDate() + ' ' + mos[now.getMonth()] + ' ' + now.getFullYear();
 
-  // Load all data in parallel
+  showPage('page-client');
+  cpSwitchTab('overview');
+
   await Promise.all([
-    cpLoadTracker(),
-    cpLoadSMMReports(),
-    cpLoadPerfReports()
-  ])
+    cp2LoadTracker(project),
+    cp2LoadReports(project),
+    cp2LoadActivity(project, 5, 'cp2-activity-feed'),
+    cp2LoadSMM(project),
+    cp2LoadFocus(project),
+    cp2LoadMilestone(project),
+    cp2LoadROI(project)
+  ]);
 }
 
-async function cpLoadTracker() {
-  const { data: stages } = await sb.from('project_stages')
-    .select('*')
-    .eq('project_id', currentProject.id)
-    .order('stage_index')
-  const arr = stages || []
-  const completed = arr.filter(s => s.status === 'completed').length
-  const total = 9
-  const pct = Math.round((completed / total) * 100)
+async function cp2LoadTracker(project) {
+  var pid = project.id;
+  var res = await sb.from('project_stages').select('*').eq('project_id', pid).order('stage_index');
+  var arr = res.data || [];
+  var done = arr.filter(function(s){ return s.status==='completed'; }).length;
+  var active = arr.filter(function(s){ return s.status==='active'; }).length;
+  var pending = 9 - done - active;
+  var pct = Math.round(done / 9 * 100);
 
-  // Ring — r=82, circumference≈515 (2*π*82)
-  const circumference = 515
-  const offset = circumference - (circumference * pct / 100)
-  if (g('cp-ring-fill')) { g('cp-ring-fill').style.strokeDashoffset = offset; g('cp-ring-fill').style.strokeDasharray = 515; }
-  if (g('cp-ring-pct')) g('cp-ring-pct').textContent = pct + '%'
-  if (g('cph-ring-steps')) g('cph-ring-steps').textContent = completed + ' / ' + 9
-  // Fill stats strip — use arr (already loaded above), not redeclare stages
-  var doneC = arr.filter(s => s.status === 'completed').length
-  var actC  = arr.filter(s => s.status === 'active').length
-  var leftC = 9 - doneC - actC
-  if (g('cp-stat-done'))    g('cp-stat-done').textContent    = doneC
-  if (g('cp-stat-active'))  g('cp-stat-active').textContent  = actC
-  if (g('cp-stat-left'))    g('cp-stat-left').textContent    = Math.max(0, leftC)
-  // Report count
-  const cpReportTotal = (window._cpSMMReports ? window._cpSMMReports.length : 0) + (window._cpPerfReports ? window._cpPerfReports.length : 0)
-  if (g('cp-stat-reports')) g('cp-stat-reports').textContent = cpReportTotal || '—'
+  // Sidebar
+  if (g('cp2-sb-pct')) g('cp2-sb-pct').textContent = pct + '%';
+  if (g('cp2-sb-steps')) g('cp2-sb-steps').textContent = done + ' из 9 этапов';
+  if (g('cp2-sb-bar')) g('cp2-sb-bar').style.width = pct + '%';
+  if (g('cp2-stages-badge')) g('cp2-stages-badge').textContent = done + '/9';
 
-  // Status
-  const activeStage = arr.find(s => s.status === 'active')
-  const dot = g('cp-status-dot-el')
-  const txt = g('cp-status-text')
-  if (completed === 0) {
-    if (dot) dot.className = 'cp-status-dot inactive'
-    if (txt) txt.textContent = 'Проект готовится к старту'
-  } else if (completed === total) {
-    if (dot) dot.className = 'cp-status-dot'
-    if (txt) txt.textContent = '🎉 Все этапы завершены!'
-  } else {
-    if (dot) dot.className = 'cp-status-dot'
-    const stageName = activeStage ? STAGES[activeStage.stage_index]?.name : STAGES[completed]?.name
-    if (txt) txt.textContent = `Сейчас в работе: ${stageName} · ${completed} из ${total} этапов выполнено`
+  // Progress card
+  if (g('cp2-progress-pct')) g('cp2-progress-pct').textContent = pct + '%';
+  if (g('cp2-stages-pct2')) g('cp2-stages-pct2').textContent = pct + '%';
+
+  // Stages bar
+  var bar = g('cp2-stages-bar');
+  if (bar) {
+    bar.innerHTML = STAGES.map(function(st, i) {
+      var rec = arr.find(function(r){ return r.stage_index === i; }) || { status: 'pending' };
+      var cls = rec.status === 'completed' ? 'cp-st-done' : rec.status === 'active' ? 'cp-st-active' : 'cp-st-pending';
+      return '<div class="cp-stage-block ' + cls + '" title="' + esc(st.name) + '">' + (i+1) + '</div>';
+    }).join('');
   }
 
-  // Stages scroll
-  const scroll = g('cp-stages-scroll')
-  if (!scroll) return
-  scroll.innerHTML = STAGES.map((stage, i) => {
-    const rec = arr.find(r => r.stage_index === i) || { status: 'pending' }
-    const st = rec.status || 'pending'
-    const cls = st === 'completed' ? 's-done' : st === 'active' ? 's-active' : ''
-    const icon = st === 'completed'
-      ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>`
-      : st === 'active'
-      ? `<div style="width:8px;height:8px;border-radius:50%;background:var(--a2);animation:pulse 2s infinite;"></div>`
-      : ''
-    return `<div class="cp-stage-item ${cls}">
-      <div class="cp-stage-dot">${icon}</div>
-      <div class="cp-stage-label">${stage.name}</div>
-    </div>`
-  }).join('')
-}
+  // Dual bars
+  function renderDual(id) {
+    var el = g(id);
+    if (!el) return;
+    el.innerHTML = '<div class="cp-bar-done" style="flex:' + (done||0.01) + ';"></div>' +
+      (active ? '<div class="cp-bar-active" style="flex:' + active + ';"></div>' : '') +
+      '<div class="cp-bar-pending" style="flex:' + (pending||0.01) + ';"></div>';
+  }
+  renderDual('cp2-dual-bars');
+  renderDual('cp2-dual-bars2');
 
-async function cpLoadSMMReports() {
-  const { data } = await sb.from('smm_reports')
-    .select('id, period_label, created_at, metrics')
-    .eq('project_id', currentProject.id)
-    .order('created_at', { ascending: false })
-  cpSMMReports = data || []
-  const count = cpSMMReports.length
-  const sub = g('cpb-smm-sub')
-  if (sub) sub.textContent = count ? `${count} ${count===1?'отчёт':count<5?'отчёта':'отчётов'} доступно` : 'Отчётов пока нет'
-  cpRenderMonths('smm')
-}
-
-async function cpLoadPerfReports() {
-  const { data } = await sb.from('reports')
-    .select('id, title, period_b_label, period_d_label, created_at, status')
-    .eq('project_id', currentProject.id)
-    .eq('status', 'published')
-    .order('created_at', { ascending: false })
-  cpPerfReports = (data || []).filter(r => !r.hidden_for_client)
-  const count = cpPerfReports.length
-  const sub = g('cpb-perf-sub')
-  if (sub) sub.textContent = count ? `${count} ${count===1?'отчёт':count<5?'отчёта':'отчётов'} доступно` : 'Отчётов пока нет'
-  cpRenderMonths('perf')
-}
-
-function cpRenderMonths(type) {
-  const grid = g(type === 'smm' ? 'cp-smm-months' : 'cp-perf-months')
-  if (!grid) return
-  const reports = type === 'smm' ? cpSMMReports : cpPerfReports
-
-  // Build month → report map
-  // Try to match period_label to month name
-  const monthMap = {}
-  reports.forEach(r => {
-    const label = (r.period_label || r.title || '').toLowerCase()
-    MONTHS_RU.forEach((m, idx) => {
-      if (label.includes(m.toLowerCase())) {
-        if (!monthMap[idx]) monthMap[idx] = r
-      }
-    })
-    // Also try to parse created_at month as fallback
-    if (Object.keys(monthMap).length === 0 || !Object.values(monthMap).includes(r)) {
-      const d = new Date(r.created_at)
-      const mo = d.getMonth()
-      if (!monthMap[mo]) monthMap[mo] = r
+  // Next step
+  var nextStage = arr.find(function(s){ return s.status==='active'; }) || arr.find(function(s){ return s.status==='pending'; });
+  var nsEl = g('cp2-next-step');
+  if (nextStage && nsEl) {
+    var stObj = STAGES[nextStage.stage_index] || { name:'Этап', icon:'•' };
+    if (g('cp2-next-emoji')) g('cp2-next-emoji').textContent = stObj.icon;
+    if (g('cp2-next-title')) g('cp2-next-title').textContent = (nextStage.status==='active' ? 'В работе: ' : 'Следующий: ') + stObj.name;
+    if (g('cp2-next-sub')) g('cp2-next-sub').textContent = 'Этап ' + (nextStage.stage_index+1) + ' из 9';
+    var tagEl = g('cp2-next-tag');
+    if (tagEl) {
+      if (nextStage.status==='active') { tagEl.textContent = 'В работе'; tagEl.style.background = 'rgba(62,207,142,.1)'; tagEl.style.color = 'var(--green)'; }
+      else { tagEl.textContent = 'Ожидает'; tagEl.style.background = 'rgba(232,153,58,.1)'; tagEl.style.color = 'var(--amber)'; }
     }
-  })
+    nsEl.style.display = 'flex';
+  }
 
-  grid.innerHTML = MONTHS_RU.map((name, idx) => {
-    const report = monthMap[idx]
-    const hasReport = !!report
-    const cls = hasReport ? 'has-report' : 'no-report'
-    const onclick = hasReport
-      ? `onclick="${type==='smm' ? `loadAndOpenSMM('${report.id}')` : `openReport('${report.id}')`}"`
-      : ''
-    return `<div class="cp-month-chip ${cls}" ${onclick}>
-      <div class="cp-month-name">${name}</div>
-      <div class="cp-month-dot"></div>
-      <div class="cp-month-badge">${hasReport ? 'Открыть' : ''}</div>
-    </div>`
-  }).join('')
+  // Stages detail tab
+  var detail = g('cp2-stages-detail');
+  if (detail) {
+    detail.innerHTML = STAGES.map(function(st, i) {
+      var rec = arr.find(function(r){ return r.stage_index === i; }) || { status: 'pending' };
+      var s = rec.status || 'pending';
+      var numCls = s==='completed' ? 'cp-sn-done' : s==='active' ? 'cp-sn-active' : 'cp-sn-pending';
+      var tagStyle = '', tagText = '';
+      if (s==='completed') { tagStyle = 'background:rgba(62,207,142,.08);color:var(--green);'; tagText = 'Завершён'; }
+      else if (s==='active') { tagStyle = 'background:rgba(232,153,58,.08);color:var(--amber);'; tagText = 'В работе'; }
+      else { tagStyle = 'background:rgba(255,255,255,.03);color:rgba(255,255,255,.15);'; tagText = 'Ожидает'; }
+      return '<div class="cp-stage-row"><div class="cp-stage-num ' + numCls + '">' + (i+1) + '</div>' +
+        '<div style="font-size:16px;flex-shrink:0;">' + st.icon + '</div>' +
+        '<div class="cp-stage-name" style="' + (s==='completed' ? 'color:rgba(255,255,255,.35);' : '') + '">' + esc(st.name) + '</div>' +
+        '<div class="cp-stage-status-tag" style="' + tagStyle + '">' + tagText + '</div></div>';
+    }).join('');
+  }
 }
 
-function cpToggleBlock(type) {
-  const panelId = type === 'smm' ? 'cp-smm-panel' : 'cp-perf-panel'
-  const blockId = type === 'smm' ? 'cpb-smm' : 'cpb-perf'
-  const panel = g(panelId)
-  const block = g(blockId)
-  const isOpen = panel && panel.classList.contains('cp-open')
+async function cp2LoadReports(project) {
+  var pid = project.id;
+  // Performance reports
+  var r1 = await sb.from('reports').select('id,title,period_b_label,period_d_label,created_at,status').eq('project_id', pid).eq('status','published').order('created_at',{ascending:false});
+  var perfReports = (r1.data || []).filter(function(r){ return !r.hidden_for_client; });
+  cpPerfReports = perfReports;
 
-  // Close all
-  ;['cp-smm-panel','cp-perf-panel'].forEach(id => { const p = g(id); if(p) { p.classList.remove('cp-open') } })
-  ;['cpb-smm','cpb-perf'].forEach(id => { const b = g(id); if(b) { b.classList.remove('cp-active') } })
+  // SMM reports
+  var r2 = await sb.from('smm_reports').select('id,period_label,created_at,metrics').eq('project_id', pid).order('created_at',{ascending:false});
+  var smmReports = r2.data || [];
+  cpSMMReports = smmReports;
 
-  if (!isOpen) {
-    if (panel) panel.classList.add('cp-open')
-    if (block) block.classList.add('cp-active')
-    cpBlockOpen = type
-  } else {
-    cpBlockOpen = null
+  var total = perfReports.length + smmReports.length;
+  if (g('cp2-reports-count')) g('cp2-reports-count').textContent = total + ' готово';
+  if (g('cp2-reports-badge')) g('cp2-reports-badge').textContent = total;
+  if (g('cp2-perf-cnt')) g('cp2-perf-cnt').textContent = perfReports.length;
+  if (g('cp2-smm-cnt')) g('cp2-smm-cnt').textContent = smmReports.length;
+
+  // Overview reports list (combined, max 4)
+  var combined = [];
+  perfReports.forEach(function(r){ combined.push({ id:r.id, type:'perf', title:r.title||r.period_d_label||'Отчёт', date:r.created_at }); });
+  smmReports.forEach(function(r){ combined.push({ id:r.id, type:'smm', title:r.period_label||'SMM', date:r.created_at }); });
+  combined.sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
+
+  function renderReportList(items, containerId) {
+    var el = g(containerId);
+    if (!el) return;
+    if (!items.length) { el.innerHTML = '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.15);text-align:center;padding:16px 0;">Отчётов пока нет</div>'; return; }
+    el.innerHTML = items.map(function(r) {
+      var isSmm = r.type === 'smm';
+      var iconBg = isSmm ? 'rgba(184,146,58,.08)' : 'rgba(56,178,172,.08)';
+      var iconCol = isSmm ? 'var(--a2)' : 'var(--cyan)';
+      var iconSvg = isSmm
+        ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="' + iconCol + '" stroke-width="1.8" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>'
+        : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="' + iconCol + '" stroke-width="1.8" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>';
+      var onclick = isSmm ? "loadAndOpenSMM('" + r.id + "')" : "openReport('" + r.id + "')";
+      return '<div class="cp-report-row" onclick="' + onclick + '">' +
+        '<div class="cp-report-icon" style="background:' + iconBg + ';">' + iconSvg + '</div>' +
+        '<div class="cp-report-info"><div class="cp-report-name">' + esc(r.title) + '</div>' +
+        '<div class="cp-report-meta">' + (isSmm ? 'SMM' : 'Performance') + '</div></div>' +
+        '<svg class="cp-report-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div>';
+    }).join('');
   }
+
+  renderReportList(combined.slice(0, 4), 'cp2-reports-list');
+  renderReportList(perfReports.map(function(r){ return {id:r.id,type:'perf',title:r.title||r.period_d_label||'Отчёт',date:r.created_at}; }), 'cp2-perf-list');
+  renderReportList(smmReports.map(function(r){ return {id:r.id,type:'smm',title:r.period_label||'SMM',date:r.created_at}; }), 'cp2-smm-list');
+}
+
+async function cp2LoadActivity(project, limit, containerId) {
+  var el = g(containerId);
+  if (!el) return;
+  var res = await sb.from('stage_history').select('*').eq('project_id', project.id).order('created_at',{ascending:false}).limit(limit||5);
+  var hist = res.data || [];
+  if (!hist.length) { el.innerHTML = '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.15);text-align:center;padding:16px 0;">Пока нет активности</div>'; return; }
+  if (hist.length > 0 && g('cp2-updates-dot')) g('cp2-updates-dot').style.display = 'block';
+
+  var evCol = { 'Начат':'var(--a2)', 'Завершён':'#3ecf8e', 'Возвращён в ожидание':'#fbbf24' };
+  var evText = { 'Начат':'начала работу над', 'Завершён':'завершила', 'Возвращён в ожидание':'вернула в ожидание' };
+  el.innerHTML = hist.map(function(h) {
+    var stObj = (typeof STAGES !== 'undefined' && STAGES[h.stage_index]) || { name:'этапом' };
+    var col = evCol[h.event] || 'var(--a2)';
+    var verb = evText[h.event] || h.event;
+    var d = new Date(h.created_at);
+    var today = new Date(); today.setHours(0,0,0,0);
+    var dd = new Date(h.created_at); dd.setHours(0,0,0,0);
+    var diff = Math.floor((today - dd) / 86400000);
+    var timeStr = diff === 0 ? 'Сегодня, ' + new Date(h.created_at).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) : diff === 1 ? 'Вчера' : diff + ' дн. назад';
+    return '<div class="cp-act-row"><div class="cp-act-dot" style="background:' + col + ';box-shadow:0 0 6px ' + col + '44;"></div>' +
+      '<div class="cp-act-text">Команда <b>' + verb + '</b> «' + esc(stObj.name) + '»' + (h.note ? ' — ' + esc(h.note) : '') + '</div>' +
+      '<div class="cp-act-time">' + timeStr + '</div></div>';
+  }).join('');
+}
+
+async function cp2RenderActivityFull(project) {
+  await cp2LoadActivity(project, 20, 'cp2-activity-full');
+}
+
+async function cp2LoadSMM(project) {
+  var el = g('cp2-smm-strip');
+  var grid = g('cp2-smm-grid');
+  if (!el || !grid) return;
+  var res = await sb.from('smm_reports').select('id,period_label,created_at,metrics').eq('project_id', project.id).order('created_at',{ascending:false}).limit(1);
+  var rep = res.data && res.data[0];
+  var m = rep && rep.metrics;
+  if (!m) return;
+
+  if (g('cp2-smm-period')) g('cp2-smm-period').textContent = rep.period_label || '—';
+
+  var metrics = [
+    {key:'er',label:'ER',color:'var(--a2)'},
+    {key:'lr',label:'LR',color:'var(--cyan)'},
+    {key:'tr',label:'C/R',color:'var(--amber)'},
+    {key:'shr',label:'SH/R',color:'var(--pink)'},
+    {key:'sr',label:'SR',color:'var(--green)'}
+  ];
+  grid.innerHTML = metrics.map(function(mt) {
+    var val = m[mt.key];
+    if (val == null) return '';
+    return '<div class="cp-smm-cell"><div class="cp-smm-lbl">' + mt.label + '</div><div class="cp-smm-val" style="color:' + mt.color + ';">' + val.toFixed(2) + '%</div></div>';
+  }).join('');
+
+  // ER in KPI strip
+  if (m.er != null && g('cp2-kpi-er')) {
+    g('cp2-kpi-er').textContent = m.er.toFixed(2) + '%';
+    var bench = (typeof CP_SMM_BENCH !== 'undefined' && CP_SMM_BENCH.er) ? CP_SMM_BENCH.er : { good: 3 };
+    if (g('cp2-kpi-er-sub')) g('cp2-kpi-er-sub').textContent = m.er >= bench.good ? '✓ выше нормы' : '↑ есть потенциал';
+  }
+  // Bench row
+  var benchEl = g('cp2-smm-bench');
+  if (benchEl && m.er != null) {
+    var b = (typeof CP_SMM_BENCH !== 'undefined' && CP_SMM_BENCH.er) ? CP_SMM_BENCH.er : { good: 3 };
+    var isGood = m.er >= b.good;
+    benchEl.innerHTML = '<span>ER ' + m.er.toFixed(2) + '%</span>' +
+      '<span style="background:' + (isGood ? 'rgba(62,207,142,.1)' : 'rgba(232,153,58,.1)') + ';color:' + (isGood ? '#3ecf8e' : 'var(--amber)') + ';padding:2px 8px;border-radius:6px;font-weight:600;">' +
+      (isGood ? '✓ Выше среднего' : '↑ Потенциал роста') + '</span>';
+  }
+  el.style.display = 'block';
+}
+
+async function cp2LoadROI(project) {
+  var res = await sb.from('reports').select('id,title,summary,period_b_label,period_d_label,created_at').eq('project_id', project.id).eq('status','published').order('created_at',{ascending:false}).limit(1);
+  var rep = res.data && res.data[0];
+  var sm = rep && rep.summary;
+  if (!sm) return;
+
+  var sign = function(v) { return v > 0 ? '+' : v < 0 ? '−' : ''; };
+  var f = function(v) { return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(Math.round(Math.abs(v))); };
+
+  if (sm.growth_pct != null && g('cp2-kpi-rev')) {
+    g('cp2-kpi-rev').textContent = sign(sm.growth_pct) + f(sm.growth_pct) + '%';
+    g('cp2-kpi-rev').style.color = sm.growth_pct >= 0 ? 'var(--green)' : 'var(--red)';
+    if (g('cp2-kpi-rev-sub')) g('cp2-kpi-rev-sub').textContent = sm.growth_pct >= 0 ? '↑ рост выручки' : '↓ снижение';
+  }
+  if (sm.traffic_delta != null && g('cp2-kpi-traffic')) {
+    g('cp2-kpi-traffic').textContent = sign(sm.traffic_delta) + f(sm.traffic_delta);
+    g('cp2-kpi-traffic').style.color = sm.traffic_delta >= 0 ? 'var(--cyan)' : 'var(--red)';
+    if (g('cp2-kpi-traffic-sub')) g('cp2-kpi-traffic-sub').textContent = 'гостей / день';
+  }
+  if (sm.avg_check_delta != null && g('cp2-kpi-check')) {
+    g('cp2-kpi-check').textContent = sign(sm.avg_check_delta) + f(sm.avg_check_delta);
+    g('cp2-kpi-check').style.color = sm.avg_check_delta >= 0 ? 'var(--amber)' : 'var(--red)';
+    if (g('cp2-kpi-check-sub')) g('cp2-kpi-check-sub').textContent = 'сум / чек';
+  }
+}
+
+async function cp2LoadFocus(project) {
+  var el = g('cp2-focus');
+  if (!el) return;
+  var res = await sb.from('project_stages').select('*').eq('project_id', project.id).order('stage_index');
+  var arr = res.data || [];
+  var active = arr.find(function(s){ return s.status==='active'; });
+  var completed = arr.filter(function(s){ return s.status==='completed'; }).length;
+  if (!active && completed === 0) return;
+
+  var FOCUS = {
+    0:['Изучаем вашу аудиторию — кто ваши гости, что им важно, почему они выбирают именно вас.','Это фундамент. Без глубокого понимания аудитории любой контент — выстрел вслепую.'],
+    1:['Анализируем конкурентов: что они делают хорошо и где ваше конкурентное преимущество.','Знание конкурентов помогает занять чёткую позицию.'],
+    2:['Разрабатываем контент-стратегию: голос бренда, рубрики, визуальный стиль.','Хорошая стратегия — это когда каждый пост работает на общую цель.'],
+    3:['Настраиваем таргетированную рекламу — показываем ваш ресторан тем, кто готов прийти.','Правильные аудитории = деньги работают эффективно.'],
+    4:['Создаём контент-план: темы, форматы, даты выхода на месяц вперёд.','Системный план убирает хаос.'],
+    5:['Пишем сценарии для Reels — главный инструмент роста в Instagram.','Один сильный Reel может принести больше, чем 30 постов.'],
+    6:['Первая съёмка: создаём визуальный контент для публикаций.','Профессиональный контент — то, что отличает серьёзный бренд.'],
+    7:['Второй раунд съёмок — расширяем форматы и ракурсы.','Разнообразие контента удерживает аудиторию.'],
+    8:['Готовим финальный отчёт — цифры, выводы, рекомендации.','Отчёт показывает, что сделано и что это дало бизнесу.']
+  };
+  var si = active ? active.stage_index : completed - 1;
+  var stObj = active && STAGES[active.stage_index] ? STAGES[active.stage_index] : null;
+  var texts = FOCUS[si] || ['Проект в активной фазе.', ''];
+  if (g('cp2-focus-text')) g('cp2-focus-text').textContent = stObj ? stObj.icon + ' ' + stObj.name + ': ' + texts[0] : texts[0];
+  if (g('cp2-focus-tip')) g('cp2-focus-tip').textContent = texts[1];
+  el.style.display = 'block';
+}
+
+async function cp2LoadMilestone(project) {
+  var el = g('cp2-milestone');
+  if (!el) return;
+  var res = await sb.from('project_stages').select('*').eq('project_id', project.id).order('stage_index');
+  var arr = res.data || [];
+  var completed = arr.filter(function(s){ return s.status==='completed'; }).length;
+  var ms = null;
+  if (completed === 9) ms = { emoji:'🏆', title:'Проект завершён!', sub:'Все 9 этапов выполнены · отличная работа' };
+  else if (completed >= 5) ms = { emoji:'🎯', title:'Больше половины пути!', sub:completed + ' из 9 этапов · стратегия запущена' };
+  else if (completed >= 2) ms = { emoji:'🚀', title:'Старт взят!', sub:'Аналитика готова — контент в работе' };
+  if (!ms) return;
+  if (g('cp2-ms-emoji')) g('cp2-ms-emoji').textContent = ms.emoji;
+  if (g('cp2-ms-title')) g('cp2-ms-title').textContent = ms.title;
+  if (g('cp2-ms-sub')) g('cp2-ms-sub').textContent = ms.sub;
+  el.style.display = 'block';
 }
 
 // ══════════════════════════════════════════════
@@ -37581,12 +37719,7 @@ var CP_SMM_COLORS = {
   er: 'var(--a2)', lr: '#22d3ee', tr: '#fbbf24', shr: '#e879f9', sr: '#34d399'
 };
 
-// Override showClientPortal to also load new blocks
-var _origShowClientPortal = window.showClientPortal;
-window.showClientPortal = async function(project) {
-  await _origShowClientPortal.call(this, project);
-  await cpLoadNewBlocks(project);
-};
+// cpLoadNewBlocks — disabled: v2 client portal handles everything internally
 
 async function cpLoadNewBlocks(project) {
   await Promise.all([
