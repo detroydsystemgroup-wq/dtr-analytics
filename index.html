@@ -25370,11 +25370,12 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
       <div class="proj-table-wrap">
         <div class="proj-thead">
           <div class="proj-th">Проект</div>
-          <div class="proj-th">Пайплайн · Прогресс</div>
+          <div class="proj-th">Пайплайн</div>
+          <div class="proj-th proj-th-r">Прогресс</div>
           <div class="proj-th proj-th-r">Дедлайн</div>
           <div class="proj-th proj-th-r">Статус</div>
           <div class="proj-th proj-th-r">Обновлён</div>
-          <div class="proj-th" style="width:150px;"></div>
+          <div class="proj-th"></div>
         </div>
         <div id="projects-grid" class="projects-grid-new"></div>
       </div>
@@ -29623,6 +29624,7 @@ function renderProjectGrid() {
 
     return `<div class="proj-row${overdue?' proj-row-overdue':''}" style="border-left-color:${col};" onclick="openProject('${p.id}')">
 
+      <!-- 1. Проект -->
       <div class="prow-name-cell">
         ${p.photo_url
           ? `<div class="prow-avatar" style="border:1.5px solid ${col}44;overflow:hidden;padding:0;"><img src="${p.photo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:11px;"></div>`
@@ -29634,33 +29636,37 @@ function renderProjectGrid() {
         </div>
       </div>
 
-      <!-- Пайплайн + прогресс в одном блоке -->
-      <div style="padding-right:16px;">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:7px;">
-          <div class="prow-pipe" style="flex:1;">${segs}</div>
-          <div style="font-family:var(--font-display);font-size:17px;font-weight:800;letter-spacing:-.03em;color:${progColor};line-height:1;flex-shrink:0;min-width:42px;text-align:right;">${pct}%</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;">
-          <div style="flex:1;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;">
-            <div style="width:${pct}%;height:100%;background:${progColor};border-radius:2px;"></div>
-          </div>
-          <div style="font-family:var(--font-mono);font-size:9px;color:var(--txt3);letter-spacing:.04em;flex-shrink:0;min-width:42px;text-align:right;">${completed}/9</div>
+      <!-- 2. Пайплайн -->
+      <div style="padding-right:12px;">
+        <div class="prow-pipe">${segs}</div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--txt3);margin-top:4px;letter-spacing:.04em;">${completed}/9 этапов</div>
+      </div>
+
+      <!-- 3. Прогресс -->
+      <div style="text-align:right;">
+        <div style="font-family:var(--font-display);font-size:19px;font-weight:800;letter-spacing:-.03em;color:${progColor};line-height:1;">${pct}%</div>
+        <div style="width:100%;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;margin-top:6px;">
+          <div style="width:${pct}%;height:100%;background:${progColor};border-radius:2px;"></div>
         </div>
       </div>
 
+      <!-- 4. Дедлайн -->
       <div style="text-align:right;">
         <div style="font-family:var(--font-mono);font-size:12px;font-weight:700;color:${dlColor};">${dlTxt}</div>
       </div>
 
+      <!-- 5. Статус -->
       <div style="text-align:right;">
         <span class="prow-status" style="background:${statusBg};color:${statusCol};">${statusTxt}</span>
       </div>
 
+      <!-- 6. Обновлён -->
       <div style="text-align:right;">
         <div style="font-family:var(--font-mono);font-size:11px;color:var(--txt2);font-weight:600;">${updTxt}</div>
         <div style="font-family:var(--font-mono);font-size:9px;color:var(--txt3);margin-top:3px;">${Math.floor((Date.now()-new Date(p.created_at))/86400000)}д с нами</div>
       </div>
 
+      <!-- 7. Кнопки -->
       <div style="display:flex;align-items:center;justify-content:flex-end;gap:5px;" onclick="event.stopPropagation()">
         <button class="prow-btn" title="Заметка" onclick="openQuickNote('${p.id}','${p.name.replace(/'/g,"\\'")}','${(p.quick_note||'').replace(/'/g,"\\'")}')">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
@@ -37549,8 +37555,8 @@ async function cpRenderMilestone(project) {
 /* Columns: Проект(fixed) | Пайплайн(flex) | % | Дедлайн | Статус | Обновлён | Действия */
 .proj-thead {
   display: grid;
-  grid-template-columns: 280px 1fr 110px 110px 110px 80px;
-  min-width: 920px;
+  grid-template-columns: 280px 1fr 90px 100px 110px 120px 80px;
+  min-width: 960px;
   padding: 9px 20px;
   background: var(--bg3);
   border-bottom: 1px solid var(--brd);
@@ -37563,8 +37569,8 @@ async function cpRenderMilestone(project) {
 
 .proj-row {
   display: grid;
-  grid-template-columns: 280px 1fr 110px 110px 110px 80px;
-  min-width: 920px;
+  grid-template-columns: 280px 1fr 90px 100px 110px 120px 80px;
+  min-width: 960px;
   align-items: center;
   padding: 14px 20px;
   border-bottom: 1px solid rgba(240,236,230,.05);
