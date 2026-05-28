@@ -37528,15 +37528,16 @@ async function cpRenderMilestone(project) {
   border: none;
   border-top: 1px solid var(--brd);
   border-radius: 0;
-  overflow: hidden;
+  overflow-x: auto;
   background: var(--bg2);
 }
 .proj-thead {
   display: grid;
-  grid-template-columns: minmax(240px,1.6fr) 200px 90px 100px 100px 100px 130px;
+  grid-template-columns: minmax(200px,1.4fr) 180px 80px 90px 90px 90px 120px;
   padding: 10px 0;
   background: var(--bg3);
   border-bottom: 1px solid var(--brd);
+  min-width: 900px;
 }
 .proj-th { font-family: var(--font-mono); font-size: 9px; color: var(--txt3); letter-spacing: .1em; text-transform: uppercase; }
 .proj-th-r { text-align: right; }
@@ -37544,7 +37545,7 @@ async function cpRenderMilestone(project) {
 /* ── Row: увеличенный ── */
 .proj-row {
   display: grid;
-  grid-template-columns: minmax(240px,1.6fr) 200px 90px 100px 100px 100px 130px;
+  grid-template-columns: minmax(200px,1.4fr) 180px 80px 90px 90px 90px 120px;
   align-items: center;
   padding: 16px 0;
   border-bottom: 1px solid rgba(240,236,230,.05);
@@ -37552,6 +37553,7 @@ async function cpRenderMilestone(project) {
   cursor: pointer;
   transition: background .14s;
   min-height: 70px;
+  min-width: 900px;
 }
 .proj-row:hover { background: rgba(240,236,230,.025); }
 .proj-row:last-child { border-bottom: none; }
