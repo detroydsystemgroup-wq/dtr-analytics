@@ -25482,88 +25482,93 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
       <!-- Активность секция -->
       <div id="tl-activity-wrap" style="display:none;">
 
-      <!-- Command Bar -->
-      <div class="act-command-bar">
-        <div class="act-search-wrap">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-          <input class="act-search-inp" id="act-search" placeholder="Поиск по этапу, проекту, заметке..." oninput="filterActivity()">
+      <!-- ① HERO STRIP -->
+      <div class="apl-hero-strip act-hero">
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">ВСЕГО СОБЫТИЙ</div>
+          <div class="apl-hero-num" id="act-stat-total" style="color:var(--a2);">—</div>
+          <div class="apl-hero-sub">в истории</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="act-stat-projects-foot">— проектов</div>
         </div>
-        <div class="act-proj-wrap">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
-          <select class="act-proj-sel" id="act-proj-filter" onchange="filterActivity()">
-            <option value="">Все проекты</option>
-          </select>
+        <div class="apl-hero-divider"></div>
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">ЗАВЕРШЕНО ЭТАПОВ</div>
+          <div class="apl-hero-num" id="act-stat-done" style="color:var(--green);">—</div>
+          <div class="apl-hero-sub">в активном статусе</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="act-stat-done-foot">из всех этапов</div>
         </div>
-        <div class="act-event-pills" id="act-event-pills">
-          <button class="act-epill act-epill-active" data-event="all" onclick="setActEvent('all',this)">Все действия</button>
-          <button class="act-epill" data-event="done" onclick="setActEvent('done',this)">
-            <span class="act-epill-dot" style="background:#34d399;"></span>Завершён
-          </button>
-          <button class="act-epill" data-event="start" onclick="setActEvent('start',this)">
-            <span class="act-epill-dot" style="background:var(--a2);"></span>Начат
-          </button>
-          <button class="act-epill" data-event="pending" onclick="setActEvent('pending',this)">
-            <span class="act-epill-dot" style="background:#fbbf24;"></span>Возврат
-          </button>
+        <div class="apl-hero-divider"></div>
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">В РАБОТЕ</div>
+          <div class="apl-hero-num" id="act-stat-started" style="color:var(--a2);">—</div>
+          <div class="apl-hero-sub">активных этапов</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="act-stat-started-foot">по всем проектам</div>
         </div>
-        <div class="act-view-toggle">
-          <button class="act-vbtn act-vbtn-active" id="act-view-timeline" onclick="setActView('timeline',this)" title="Таймлайн">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-          </button>
-          <button class="act-vbtn" id="act-view-project" onclick="setActView('project',this)" title="По проектам">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-          </button>
-          <button class="act-vbtn" id="act-view-stage" onclick="setActView('stage',this)" title="По этапам">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          </button>
-        </div>
-        <button class="act-reset-btn" id="act-reset-btn" onclick="resetActFilters()" title="Сбросить фильтры" style="display:none;">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-        </button>
-        <!-- Тумблер режима -->
-        <div class="tl-tumbler tl-act" id="tl-tumbler-act">
-          <div class="tl-tumbler-track"></div>
-          <button class="tl-tumbler-btn" onclick="switchTimelineMode('deadlines')">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            Дедлайны
-          </button>
-          <button class="tl-tumbler-btn tl-active" onclick="switchTimelineMode('activity')">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            Активность
-          </button>
+        <div class="apl-hero-divider"></div>
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">СЕГОДНЯ</div>
+          <div class="apl-hero-num" id="act-stat-today" style="color:var(--cyan);">—</div>
+          <div class="apl-hero-sub">событий за сегодня</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="act-stat-projects" style="display:none;">—</div>
+          <div class="apl-hero-foot" id="act-stat-today-foot">активность команды</div>
         </div>
       </div>
 
-      <!-- Stats Strip -->
-      <div class="act-stats-strip">
-        <div class="act-stat-item">
-          <div class="act-stat-val" id="act-stat-total">—</div>
-          <div class="act-stat-lbl">Всего событий</div>
+      <!-- ② COMMAND BAR -->
+      <div class="dl-cmd2">
+        <div class="dl-cmd2-left">
+          <div class="dl-search2-wrap">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input class="dl-search2" id="act-search" placeholder="Поиск по этапу, проекту, заметке..." oninput="filterActivity()">
+          </div>
+          <div class="dl-select2-wrap">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+            <select class="dl-select2" id="act-proj-filter" onchange="filterActivity()">
+              <option value="">Все проекты</option>
+            </select>
+          </div>
+          <div class="sv-seg-pills" id="act-event-pills">
+            <button class="sv-pill sv-pill-active" data-event="all" onclick="setActEvent('all',this)">Все</button>
+            <button class="sv-pill" data-event="done" onclick="setActEvent('done',this)"><span class="dl-dot" style="background:var(--green);"></span>Завершён</button>
+            <button class="sv-pill" data-event="start" onclick="setActEvent('start',this)"><span class="dl-dot" style="background:var(--a2);"></span>Начат</button>
+            <button class="sv-pill" data-event="pending" onclick="setActEvent('pending',this)"><span class="dl-dot" style="background:var(--amber);"></span>Возврат</button>
+          </div>
         </div>
-        <div class="act-stat-div"></div>
-        <div class="act-stat-item">
-          <div class="act-stat-val" id="act-stat-done" style="color:#34d399;">—</div>
-          <div class="act-stat-lbl">Завершено</div>
-        </div>
-        <div class="act-stat-div"></div>
-        <div class="act-stat-item">
-          <div class="act-stat-val" id="act-stat-started" style="color:var(--a2);">—</div>
-          <div class="act-stat-lbl">Начато</div>
-        </div>
-        <div class="act-stat-div"></div>
-        <div class="act-stat-item">
-          <div class="act-stat-val" id="act-stat-projects" style="color:#22d3ee;">—</div>
-          <div class="act-stat-lbl">Проектов</div>
-        </div>
-        <div class="act-stat-div"></div>
-        <div class="act-stat-item">
-          <div class="act-stat-val" id="act-stat-today" style="color:#fbbf24;">—</div>
-          <div class="act-stat-lbl">Сегодня</div>
+        <div class="dl-cmd2-right">
+          <div class="dl-view2-wrap">
+            <button class="dl-view2-btn dl-view-active" id="act-view-timeline" onclick="setActView('timeline',this)" title="Таймлайн">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            </button>
+            <button class="dl-view2-btn" id="act-view-project" onclick="setActView('project',this)" title="По проектам">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            </button>
+            <button class="dl-view2-btn" id="act-view-stage" onclick="setActView('stage',this)" title="По этапам">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </button>
+          </div>
+          <button class="dl-reset2" id="act-reset-btn" onclick="resetActFilters()" title="Сбросить" style="display:none;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          </button>
+          <div class="tl-tumbler tl-act" id="tl-tumbler-act">
+            <div class="tl-tumbler-track"></div>
+            <button class="tl-tumbler-btn" onclick="switchTimelineMode('deadlines')">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Дедлайны
+            </button>
+            <button class="tl-tumbler-btn tl-active" onclick="switchTimelineMode('activity')">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              Активность
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- Feed -->
-      <div class="activity-feed" id="activity-feed">
+      <div class="activity-feed" id="activity-feed" style="padding:16px 24px 24px;">
         <div class="activity-loading">Загрузка активности...</div>
       </div>
       </div><!-- /tl-activity-wrap -->
@@ -35205,15 +35210,15 @@ var _actAllItems = [];
 
 function setActEvent(ev, btn) {
   _actEventFilter = ev;
-  document.querySelectorAll('.act-epill').forEach(function(b){ b.classList.remove('act-epill-active'); });
-  if (btn) btn.classList.add('act-epill-active');
+  document.querySelectorAll('#act-event-pills .sv-pill').forEach(function(b){ b.classList.remove('sv-pill-active'); });
+  if (btn) btn.classList.add('sv-pill-active');
   renderActivityFeed();
 }
 
 function setActView(view, btn) {
   _actViewMode = view;
-  document.querySelectorAll('.act-vbtn').forEach(function(b){ b.classList.remove('act-vbtn-active'); });
-  if (btn) btn.classList.add('act-vbtn-active');
+  document.querySelectorAll('#tl-activity-wrap .dl-view2-btn').forEach(function(b){ b.classList.remove('dl-view-active'); });
+  if (btn) btn.classList.add('dl-view-active');
   renderActivityFeed();
 }
 
@@ -35224,12 +35229,12 @@ function resetActFilters() {
   var pf = document.getElementById('act-proj-filter');
   if (si) si.value = '';
   if (pf) pf.value = '';
-  document.querySelectorAll('.act-epill').forEach(function(b){ b.classList.remove('act-epill-active'); });
-  var ap = document.querySelector('.act-epill[data-event="all"]');
-  if (ap) ap.classList.add('act-epill-active');
-  document.querySelectorAll('.act-vbtn').forEach(function(b){ b.classList.remove('act-vbtn-active'); });
+  document.querySelectorAll('#act-event-pills .sv-pill').forEach(function(b){ b.classList.remove('sv-pill-active'); });
+  var ap = document.querySelector('#act-event-pills .sv-pill[data-event="all"]');
+  if (ap) ap.classList.add('sv-pill-active');
+  document.querySelectorAll('#tl-activity-wrap .dl-view2-btn').forEach(function(b){ b.classList.remove('dl-view-active'); });
   var vt = document.getElementById('act-view-timeline');
-  if (vt) vt.classList.add('act-vbtn-active');
+  if (vt) vt.classList.add('dl-view-active');
   var rb = document.getElementById('act-reset-btn');
   if (rb) rb.style.display = 'none';
   renderActivityFeed();
@@ -35295,14 +35300,13 @@ function renderActivityFeed() {
   var feed = document.getElementById('activity-feed');
   if (!feed) return;
   if (!_actAllItems.length) {
-    feed.innerHTML = '<div class="act-empty"><div class="act-empty-icon">\u26a1</div><div class="act-empty-title">\u0410\u043a\u0442\u0438\u0432\u043d\u043e\u0441\u0442\u0438 \u043f\u043e\u043a\u0430 \u043d\u0435\u0442</div><div class="act-empty-sub">\u041d\u0430\u0447\u043d\u0438 \u0440\u0430\u0431\u043e\u0442\u0430\u0442\u044c \u0441 \u044d\u0442\u0430\u043f\u0430\u043c\u0438 \u043f\u0440\u043e\u0435\u043a\u0442\u043e\u0432</div></div>';
+    feed.innerHTML = '<div style="padding:48px;text-align:center;font-family:var(--font-mono);font-size:11px;color:var(--txt3);">Нет активности — начни работать с этапами проектов</div>';
     return;
   }
 
   var search = (document.getElementById('act-search') ? document.getElementById('act-search').value : '').toLowerCase().trim();
   var projId = document.getElementById('act-proj-filter') ? document.getElementById('act-proj-filter').value : '';
 
-  // Filter
   var filtered = _actAllItems.filter(function(item) {
     if (search) {
       var haystack = (item.stage.name + ' ' + item.proj.name + ' ' + (item.h.note || '')).toLowerCase();
@@ -35310,49 +35314,78 @@ function renderActivityFeed() {
     }
     if (projId && item.proj.id !== projId) return false;
     if (_actEventFilter === 'done') {
-      var stageNowD = typeof _allStages !== 'undefined'
-        ? _allStages.find(function(s){ return s.project_id === item.proj.id && s.stage_index === item.h.stage_index; })
-        : null;
-      if (!(stageNowD ? stageNowD.status === 'completed' : item.h.event === '\u0417\u0430\u0432\u0435\u0440\u0448\u0451\u043d')) return false;
+      var stageNowD = typeof _allStages !== 'undefined' ? _allStages.find(function(s){ return s.project_id === item.proj.id && s.stage_index === item.h.stage_index; }) : null;
+      if (!(stageNowD ? stageNowD.status === 'completed' : item.h.event === 'Завершён')) return false;
     }
     if (_actEventFilter === 'start') {
-      var stageNow = typeof _allStages !== 'undefined'
-        ? _allStages.find(function(s){ return s.project_id === item.proj.id && s.stage_index === item.h.stage_index; })
-        : null;
-      if (!(stageNow ? stageNow.status === 'active' : item.h.event === '\u041d\u0430\u0447\u0430\u0442')) return false;
+      var stageNow = typeof _allStages !== 'undefined' ? _allStages.find(function(s){ return s.project_id === item.proj.id && s.stage_index === item.h.stage_index; }) : null;
+      if (!(stageNow ? stageNow.status === 'active' : item.h.event === 'Начат')) return false;
     }
-    if (_actEventFilter === 'pending' && item.h.event.indexOf('\u043e\u0436\u0438\u0434\u0430') === -1) return false;
+    if (_actEventFilter === 'pending' && item.h.event.indexOf('ожида') === -1) return false;
     return true;
   });
 
-  // Update stats — real-time
+  // Update hero strip
   function setS(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
   var today = new Date(); today.setHours(0,0,0,0);
   var todayCount = filtered.filter(function(item) {
     var d = new Date(item.h.created_at); d.setHours(0,0,0,0);
     return d.getTime() === today.getTime();
   }).length;
-  // Real-time: count currently active/completed stages, not history events
-  var activeNow = typeof _allStages !== 'undefined'
-    ? _allStages.filter(function(s){ return s.status === 'active'; }).length
-    : filtered.filter(function(i){ return i.h.event === '\u041d\u0430\u0447\u0430\u0442'; }).length;
-  var doneNow = typeof _allStages !== 'undefined'
-    ? _allStages.filter(function(s){ return s.status === 'completed'; }).length
-    : filtered.filter(function(i){ return i.h.event === '\u0417\u0430\u0432\u0435\u0440\u0448\u0451\u043d'; }).length;
-  var projSet = {};
-  filtered.forEach(function(i){ projSet[i.proj.id] = true; });
-  setS('act-stat-total', filtered.length);
-  setS('act-stat-done', doneNow);
-  setS('act-stat-started', activeNow);
-  setS('act-stat-projects', Object.keys(projSet).length);
-  setS('act-stat-today', todayCount);
+  var activeNow = typeof _allStages !== 'undefined' ? _allStages.filter(function(s){ return s.status === 'active'; }).length : 0;
+  var doneNow   = typeof _allStages !== 'undefined' ? _allStages.filter(function(s){ return s.status === 'completed'; }).length : 0;
+  var totalStages = typeof _allStages !== 'undefined' ? _allStages.length : 0;
+  var projSet = {}; filtered.forEach(function(i){ projSet[i.proj.id] = true; });
+  setS('act-stat-total',    filtered.length);
+  setS('act-stat-done',     doneNow);
+  setS('act-stat-started',  activeNow);
+  setS('act-stat-today',    todayCount);
+  setS('act-stat-projects-foot', Object.keys(projSet).length + ' проектов');
+  setS('act-stat-done-foot', 'из ' + totalStages + ' этапов');
+  setS('act-stat-started-foot', typeof _allProjects !== 'undefined' ? 'в ' + _allProjects.length + ' проектах' : '');
 
   if (!filtered.length) {
-    feed.innerHTML = '<div class="act-empty"><div class="act-empty-icon">\ud83d\udd0d</div><div class="act-empty-title">\u041d\u0438\u0447\u0435\u0433\u043e \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043e</div><div class="act-empty-sub">\u0418\u0437\u043c\u0435\u043d\u0438 \u0444\u0438\u043b\u044c\u0442\u0440\u044b</div></div>';
+    feed.innerHTML = '<div style="padding:48px;text-align:center;font-family:var(--font-mono);font-size:11px;color:var(--txt3);">Ничего не найдено — измени фильтры</div>';
     return;
   }
 
-  // ── STAGE VIEW ──
+  // Event helpers
+  function evColor(ev) {
+    return ev === 'Завершён' ? 'var(--green)' : ev === 'Начат' ? 'var(--a2)' : 'var(--amber)';
+  }
+  function evBg(ev) {
+    return ev === 'Завершён' ? 'rgba(62,207,142,.1)' : ev === 'Начат' ? 'rgba(184,146,58,.1)' : 'rgba(232,153,58,.1)';
+  }
+  function evIcon(ev) {
+    if (ev === 'Завершён') return '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    if (ev === 'Начат')    return '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+    return '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3"/></svg>';
+  }
+
+  // Build act-row (shared across views)
+  function buildRow(item) {
+    var col = item.proj.brand_color || 'var(--a)';
+    var ec = evColor(item.h.event), eb = evBg(item.h.event), ei = evIcon(item.h.event);
+    var time = new Date(item.h.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+    return '<div class="act-row2" onclick="openProject(\'' + item.proj.id + '\')">'
+      + '<div class="act-row2-ev" style="background:' + eb + ';color:' + ec + ';border:1px solid ' + ec + '33;">'
+          + ei + ' ' + item.h.event
+      + '</div>'
+      + '<div class="act-row2-stage">'
+          + '<span class="act-row2-icon">' + item.stage.icon + '</span>'
+          + item.stage.name
+      + '</div>'
+      + '<div class="act-row2-proj" style="color:' + col + ';">'
+          + '<span class="act-row2-dot" style="background:' + col + ';"></span>'
+          + item.proj.name
+      + '</div>'
+      + (item.h.note ? '<div class="act-row2-note">' + item.h.note + '</div>' : '<div></div>')
+      + '<div class="act-row2-time">' + time + '</div>'
+      + '<button class="sv-proj-btn" onclick="event.stopPropagation();openProject(\'' + item.proj.id + '\')">Открыть</button>'
+    + '</div>';
+  }
+
+  // STAGE VIEW
   if (_actViewMode === 'stage') {
     var stageMap = {};
     filtered.forEach(function(item) {
@@ -35360,158 +35393,76 @@ function renderActivityFeed() {
       if (!stageMap[key]) stageMap[key] = { stage: item.stage, items: [] };
       stageMap[key].items.push(item);
     });
-    var html = '';
-    var gi = 0;
-    Object.values(stageMap).forEach(function(group) {
-      var delay = (gi * 0.06).toFixed(2);
-      gi++;
-      var rowsHtml = '';
-      group.items.forEach(function(item) {
-        var col = item.proj.brand_color || 'var(--a)';
-        var evBg = item.h.event === '\u0417\u0430\u0432\u0435\u0440\u0448\u0451\u043d' ? 'rgba(52,211,153,.1)' : item.h.event === '\u041d\u0430\u0447\u0430\u0442' ? 'rgba(184,146,58,.1)' : 'rgba(251,191,36,.1)';
-        var evCol = item.h.event === '\u0417\u0430\u0432\u0435\u0440\u0448\u0451\u043d' ? '#34d399' : item.h.event === '\u041d\u0430\u0447\u0430\u0442' ? 'var(--a2)' : '#fbbf24';
-        var time = new Date(item.h.created_at).toLocaleString('ru-RU', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
-        rowsHtml += '<div class="act-stage-row" onclick="openProject(\'' + item.proj.id + '\')">'
-          + '<div class="act-stage-row-ev" style="background:' + evBg + ';color:' + evCol + ';">' + item.h.event + '</div>'
-          + '<div class="act-stage-row-proj" style="background:' + col + '12;color:' + col + ';"><span style="width:5px;height:5px;border-radius:50%;background:' + col + ';display:inline-block;flex-shrink:0;"></span>' + item.proj.name + '</div>'
-          + '<div class="act-stage-row-note">' + (item.h.note ? '\ud83d\udcac ' + item.h.note : '') + '</div>'
-          + '<div class="act-stage-row-time">' + time + '</div>'
-          + '<button class="act-stage-row-open" onclick="event.stopPropagation();openProject(\'' + item.proj.id + '\')">\u2192</button>'
-          + '</div>';
-      });
-      html += '<div class="act-stage-group" style="animation-delay:' + delay + 's">'
-        + '<div class="act-stage-header">'
-        +   '<div class="act-stage-header-icon">' + group.stage.icon + '</div>'
-        +   '<div class="act-stage-header-name">' + group.stage.name + '</div>'
-        +   '<div class="act-stage-header-count">' + group.items.length + ' \u0441\u043e\u0431\u044b\u0442\u0438\u0439</div>'
+    var html = Object.values(stageMap).map(function(group) {
+      return '<div class="act-group2">'
+        + '<div class="act-group2-hdr">'
+            + '<div class="act-group2-icon">' + group.stage.icon + '</div>'
+            + '<div class="act-group2-title">' + group.stage.name + '</div>'
+            + '<span class="act-group2-count">' + group.items.length + ' событий</span>'
         + '</div>'
-        + '<div class="act-stage-body">' + rowsHtml + '</div>'
-        + '</div>';
-    });
+        + '<div class="act-group2-body">'
+            + '<div class="act-rows-thead"><div>Событие</div><div>Этап</div><div>Проект</div><div>Заметка</div><div>Время</div><div></div></div>'
+            + group.items.map(buildRow).join('')
+        + '</div>'
+      + '</div>';
+    }).join('');
     feed.innerHTML = html;
     return;
   }
 
-  // ── PROJECT VIEW ──
+  // PROJECT VIEW
   if (_actViewMode === 'project') {
     var projMap = {};
     filtered.forEach(function(item) {
       if (!projMap[item.proj.id]) projMap[item.proj.id] = { proj: item.proj, items: [] };
       projMap[item.proj.id].items.push(item);
     });
-    var html2 = '';
-    var gi2 = 0;
-    Object.values(projMap).forEach(function(group) {
+    var html2 = Object.values(projMap).map(function(group) {
       var col = group.proj.brand_color || 'var(--a)';
-      var delay = (gi2 * 0.06).toFixed(2);
-      gi2++;
-      var doneC = group.items.filter(function(i){ return i.h.event === '\u0417\u0430\u0432\u0435\u0440\u0448\u0451\u043d'; }).length;
-      var rowsHtml = '';
-      group.items.forEach(function(item) {
-        var evBg = item.h.event === '\u0417\u0430\u0432\u0435\u0440\u0448\u0451\u043d' ? 'rgba(52,211,153,.1)' : item.h.event === '\u041d\u0430\u0447\u0430\u0442' ? 'rgba(184,146,58,.1)' : 'rgba(251,191,36,.1)';
-        var evCol = item.h.event === '\u0417\u0430\u0432\u0435\u0440\u0448\u0451\u043d' ? '#34d399' : item.h.event === '\u041d\u0430\u0447\u0430\u0442' ? 'var(--a2)' : '#fbbf24';
-        var dotCol = item.h.event === '\u0417\u0430\u0432\u0435\u0440\u0448\u0451\u043d' ? '#34d399' : item.h.event === '\u041d\u0430\u0447\u0430\u0442' ? 'var(--a2)' : '#fbbf24';
-        var time = new Date(item.h.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-        rowsHtml += '<div class="act-proj-row" onclick="openProject(\'' + item.proj.id + '\')">'
-          + '<div class="act-proj-row-dot" style="background:' + dotCol + ';"></div>'
-          + '<div class="act-proj-row-icon">' + item.stage.icon + '</div>'
-          + '<div class="act-proj-row-name">' + item.stage.name + '</div>'
-          + '<div class="act-proj-row-badge" style="background:' + evBg + ';color:' + evCol + ';">' + item.h.event + '</div>'
-          + '<div class="act-proj-row-time">' + time + '</div>'
-          + '<button class="act-proj-row-open" onclick="event.stopPropagation();openProject(\'' + item.proj.id + '\')">\u2192</button>'
-          + '</div>';
-      });
-      html2 += '<div class="act-proj-group" style="animation-delay:' + delay + 's">'
-        + '<div class="act-proj-header" onclick="openProject(\'' + group.proj.id + '\')">'
-        +   '<div class="act-proj-avatar" style="background:' + col + '18;border:1.5px solid ' + col + '44;color:' + col + ';">' + group.proj.name[0] + '</div>'
-        +   '<div class="act-proj-title">' + group.proj.name + '</div>'
-        +   (doneC ? '<div class="act-proj-done-count">' + doneC + ' \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043d\u043e</div>' : '')
-        +   '<div class="act-proj-badge">' + group.items.length + ' \u0441\u043e\u0431\u044b\u0442\u0438\u0439</div>'
+      var doneC = group.items.filter(function(i){ return i.h.event === 'Завершён'; }).length;
+      return '<div class="act-group2" style="border-left:3px solid ' + col + ';">'
+        + '<div class="act-group2-hdr">'
+            + '<div class="act-group2-icon" style="background:' + col + '18;color:' + col + ';">' + group.proj.name[0] + '</div>'
+            + '<div class="act-group2-title">' + group.proj.name + '</div>'
+            + '<span class="act-group2-count">' + doneC + ' завершено · ' + group.items.length + ' событий</span>'
         + '</div>'
-        + '<div class="act-proj-body">' + rowsHtml + '</div>'
-        + '</div>';
-    });
+        + '<div class="act-group2-body">'
+            + '<div class="act-rows-thead"><div>Событие</div><div>Этап</div><div>Проект</div><div>Заметка</div><div>Время</div><div></div></div>'
+            + group.items.map(buildRow).join('')
+        + '</div>'
+      + '</div>';
+    }).join('');
     feed.innerHTML = html2;
     return;
   }
 
-  // ── TIMELINE VIEW (default) ──
+  // TIMELINE VIEW (default)
   var groups = {};
   var todayObj = new Date(); todayObj.setHours(0,0,0,0);
   var yest = new Date(todayObj); yest.setDate(todayObj.getDate()-1);
-
   filtered.forEach(function(item) {
     var d = new Date(item.h.created_at); d.setHours(0,0,0,0);
-    var label;
-    if (d.getTime() === todayObj.getTime()) label = '\u0421\u0435\u0433\u043e\u0434\u043d\u044f';
-    else if (d.getTime() === yest.getTime()) label = '\u0412\u0447\u0435\u0440\u0430';
-    else label = d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+    var label = d.getTime() === todayObj.getTime() ? 'Сегодня' : d.getTime() === yest.getTime() ? 'Вчера'
+      : d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
     if (!groups[label]) groups[label] = { items: [], date: d };
     groups[label].items.push(item);
   });
 
-  var html3 = '';
-  var gi3 = 0;
-  Object.entries(groups).forEach(function(entry) {
-    var label = entry[0];
-    var grp = entry[1];
-    var delay = (gi3 * 0.07).toFixed(2);
-    gi3++;
+  var html3 = Object.entries(groups).map(function(entry) {
+    var label = entry[0], grp = entry[1];
     var dateStr = grp.date.toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' });
-
-    var itemsHtml = '';
-    grp.items.forEach(function(item, ii) {
-      var col = item.proj.brand_color || 'var(--a)';
-      var dotColor = item.h.event === '\u0417\u0430\u0432\u0435\u0440\u0448\u0451\u043d' ? '#34d399'
-        : item.h.event === '\u041d\u0430\u0447\u0430\u0442' ? 'var(--a2)' : '#fbbf24';
-      var evCls = item.h.event === '\u0417\u0430\u0432\u0435\u0440\u0448\u0451\u043d' ? 'aeb-done'
-        : item.h.event === '\u041d\u0430\u0447\u0430\u0442' ? 'aeb-start' : 'aeb-pending';
-      var evEmoji = item.h.event === '\u0417\u0430\u0432\u0435\u0440\u0448\u0451\u043d' ? '\u2705'
-        : item.h.event === '\u041d\u0430\u0447\u0430\u0442' ? '\ud83d\udd35' : '\u23f3';
-      var time = new Date(item.h.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-      var aDelay = (ii * 0.04).toFixed(2);
-
-      itemsHtml += '<div class="act-item" style="animation-delay:' + aDelay + 's">'
-        + '<div class="act-timeline-col">'
-        +   '<div class="act-dot-wrap"><div class="act-dot" style="background:' + dotColor + ';box-shadow:0 0 8px ' + dotColor + '66;"></div></div>'
-        +   '<div class="act-connector"></div>'
-        + '</div>'
-        + '<div class="act-card">'
-        +   '<div class="act-card-head">'
-        +     '<div class="act-card-left">'
-        +       '<span class="act-stage-icon">' + item.stage.icon + '</span>'
-        +       '<span class="act-stage-name">' + item.stage.name + '</span>'
-        +     '</div>'
-        +     '<div class="act-card-right">'
-        +       '<div class="act-event-badge ' + evCls + '">' + evEmoji + ' ' + item.h.event + '</div>'
-        +       '<button class="act-goto" onclick="event.stopPropagation();openProject(\'' + item.proj.id + '\')">&#1054;&#1090;&#1082;&#1088;&#1099;&#1090;&#1100; &#8594;</button>'
-        +     '</div>'
-        +   '</div>'
-        +   '<div class="act-card-meta">'
-        +     '<span class="act-proj-chip" style="background:' + col + '12;color:' + col + ';">'
-        +       '<span class="act-proj-chip-dot" style="background:' + col + ';"></span>'
-        +       item.proj.name
-        +     '</span>'
-        +     '<span class="act-time-chip">'
-        +       '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
-        +       time
-        +     '</span>'
-        +   '</div>'
-        +   (item.h.note ? '<div class="act-note-row"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(184,146,58,.4)" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="act-note-text">' + item.h.note + '</span></div>' : '')
-        + '</div>'
-        + '</div>';
-    });
-
-    html3 += '<div class="act-day-group" style="animation-delay:' + delay + 's">'
-      + '<div class="act-day-label">'
-      +   label
-      +   '<span class="act-day-count">' + grp.items.length + '</span>'
-      +   '<span class="act-day-date">' + dateStr + '</span>'
+    return '<div class="act-group2">'
+      + '<div class="act-group2-hdr">'
+          + '<div class="act-group2-title">' + label + '</div>'
+          + '<span class="act-group2-count">' + grp.items.length + ' событий</span>'
+          + '<span class="act-group2-date">' + dateStr + '</span>'
       + '</div>'
-      + itemsHtml
-      + '</div>';
-  });
-
+      + '<div class="act-group2-body">'
+          + '<div class="act-rows-thead"><div>Событие</div><div>Этап</div><div>Проект</div><div>Заметка</div><div>Время</div><div></div></div>'
+          + grp.items.map(buildRow).join('')
+      + '</div>'
+    + '</div>';
+  }).join('');
   feed.innerHTML = html3;
 }
 </script>
@@ -37590,6 +37541,59 @@ async function cpRenderMilestone(project) {
 .cc-main:has(#dtab-kb-panel[style*="block"]) {
   padding: 0 !important;
 }
+/* ══ ACTIVITY v2 — McKinsey table rows ══ */
+.act-hero { animation: fadeUp .38s cubic-bezier(.16,1,.3,1) both; }
+.act-group2 {
+  background: var(--bg2); border: 1px solid var(--brd);
+  border-radius: var(--r-lg); overflow: hidden; margin-bottom: 12px;
+  border-left-width: 3px; border-left-style: solid; border-left-color: var(--brd);
+  animation: kbFadeUp .3s cubic-bezier(.16,1,.3,1) both;
+}
+.act-group2-hdr {
+  display: flex; align-items: center; gap: 12px; padding: 12px 18px;
+  background: var(--bg3); border-bottom: 1px solid var(--brd);
+}
+.act-group2-icon {
+  width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; background: rgba(184,146,58,.1); color: var(--a2);
+}
+.act-group2-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--txt); }
+.act-group2-count { font-family: var(--font-mono); font-size: 10px; color: var(--txt3); padding: 3px 9px; background: var(--bg4); border: 1px solid var(--brd); border-radius: 20px; }
+.act-group2-date  { font-family: var(--font-mono); font-size: 10px; color: var(--txt3); margin-left: auto; }
+.act-rows-thead {
+  display: grid; grid-template-columns: 110px 1fr 130px 1fr 60px 80px;
+  padding: 7px 18px; border-bottom: 1px solid rgba(240,236,230,.04);
+  font-family: var(--font-mono); font-size: 9px; color: var(--txt3); letter-spacing: .1em; text-transform: uppercase;
+}
+.act-row2 {
+  display: grid; grid-template-columns: 110px 1fr 130px 1fr 60px 80px;
+  align-items: center; padding: 10px 18px;
+  border-bottom: 1px solid rgba(240,236,230,.04);
+  cursor: pointer; transition: background .12s;
+}
+.act-row2:hover { background: rgba(240,236,230,.02); }
+.act-row2:last-child { border-bottom: none; }
+.act-row2-ev {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+  padding: 4px 9px; border-radius: 20px; letter-spacing: .04em; white-space: nowrap;
+}
+.act-row2-stage {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-display); font-size: 12px; font-weight: 500; color: var(--txt);
+  padding-right: 12px;
+}
+.act-row2-icon { font-size: 14px; flex-shrink: 0; }
+.act-row2-proj {
+  display: flex; align-items: center; gap: 5px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.act-row2-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.act-row2-note { font-size: 11px; color: var(--txt3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 8px; }
+.act-row2-time { font-family: var(--font-mono); font-size: 10px; color: var(--txt3); }
+
 /* ══════════════════════════════════════════
    ПРОЕКТЫ v2 — McKinsey table design
 ══════════════════════════════════════════ */
