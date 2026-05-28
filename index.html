@@ -27418,11 +27418,7 @@ button, a, [role="button"],
 .cp-smm-lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.25)}
 .cp-smm-val{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
 .cp-smm-bench-row{display:flex;align-items:center;gap:8px;padding:10px 20px;border-top:1px solid rgba(255,255,255,.04);font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.2)}
-.cp-milestone-strip{background:linear-gradient(135deg,rgba(184,146,58,.06),rgba(56,178,172,.03));border:1px solid rgba(184,146,58,.15);border-radius:16px;padding:20px 24px;text-align:center;position:relative;overflow:hidden;margin-bottom:14px}
-.cp-milestone-strip::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--a),var(--cyan))}
-.cp-milestone-emoji{font-size:32px;margin-bottom:8px}
-.cp-milestone-title{font-family:var(--font-display);font-size:18px;font-weight:800;letter-spacing:-.03em;color:var(--txt);margin-bottom:4px}
-.cp-milestone-sub{font-family:var(--font-mono);font-size:10px;color:rgba(184,146,58,.45);letter-spacing:.06em}
+
 .cp-footer{padding:12px 36px;border-top:1px solid rgba(255,255,255,.04);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .cp-footer-name{font-family:var(--font-mono);font-size:8px;letter-spacing:.1em;color:rgba(255,255,255,.15);text-transform:uppercase}
 .cp-footer-copy{font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.1)}
@@ -27528,7 +27524,6 @@ button, a, [role="button"],
 </div>
 <div class="cp-smm-strip" id="cp2-smm-strip" style="display:none;"><div class="cp-smm-header"><div class="cp-smm-title">SMM показатели</div><div class="cp-smm-period" id="cp2-smm-period">—</div></div><div class="cp-smm-grid" id="cp2-smm-grid"></div><div class="cp-smm-bench-row" id="cp2-smm-bench"></div></div>
 <div class="cp-focus-strip" id="cp2-focus" style="display:none;"><div class="cp-focus-eyebrow">ФОКУС ЭТОГО МЕСЯЦА</div><div class="cp-focus-text" id="cp2-focus-text">—</div><div class="cp-focus-tip" id="cp2-focus-tip">—</div></div>
-<div class="cp-milestone-strip" id="cp2-milestone" style="display:none;"><div class="cp-milestone-emoji" id="cp2-ms-emoji">🏆</div><div class="cp-milestone-title" id="cp2-ms-title">—</div><div class="cp-milestone-sub" id="cp2-ms-sub">—</div></div>
 </div>
 <div class="cp-tab-content" id="cp2-tab-stages">
 <div class="cp-progress-card" style="margin-bottom:18px;"><div class="cp-progress-header"><div class="cp-progress-title">Все этапы проекта</div><div class="cp-progress-pct" id="cp2-stages-pct2" style="color:var(--a2);">0%</div></div><div class="cp-dual-bars" id="cp2-dual-bars2"></div></div>
@@ -34267,7 +34262,6 @@ async function showClientPortal(project) {
     cp2LoadActivity(project, 5, 'cp2-activity-feed'),
     cp2LoadSMM(project),
     cp2LoadFocus(project),
-    cp2LoadMilestone(project),
     cp2LoadROI(project)
   ]);
 }
@@ -34571,23 +34565,6 @@ async function cp2LoadFocus(project) {
   var texts = FOCUS[si] || ['Проект в активной фазе.', ''];
   if (g('cp2-focus-text')) g('cp2-focus-text').textContent = stObj ? stObj.icon + ' ' + stObj.name + ': ' + texts[0] : texts[0];
   if (g('cp2-focus-tip')) g('cp2-focus-tip').textContent = texts[1];
-  el.style.display = 'block';
-}
-
-async function cp2LoadMilestone(project) {
-  var el = g('cp2-milestone');
-  if (!el) return;
-  var res = await sb.from('project_stages').select('*').eq('project_id', project.id).order('stage_index');
-  var arr = res.data || [];
-  var completed = arr.filter(function(s){ return s.status==='completed'; }).length;
-  var ms = null;
-  if (completed === 9) ms = { emoji:'🏆', title:'Проект завершён!', sub:'Все 9 этапов выполнены · отличная работа' };
-  else if (completed >= 5) ms = { emoji:'🎯', title:'Больше половины пути!', sub:completed + ' из 9 этапов · стратегия запущена' };
-  else if (completed >= 2) ms = { emoji:'🚀', title:'Старт взят!', sub:'Аналитика готова — контент в работе' };
-  if (!ms) return;
-  if (g('cp2-ms-emoji')) g('cp2-ms-emoji').textContent = ms.emoji;
-  if (g('cp2-ms-title')) g('cp2-ms-title').textContent = ms.title;
-  if (g('cp2-ms-sub')) g('cp2-ms-sub').textContent = ms.sub;
   el.style.display = 'block';
 }
 
