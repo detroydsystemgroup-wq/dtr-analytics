@@ -1602,7 +1602,7 @@ input[type=file] { display: none; }
    PROJECT PAGE — новый дизайн
 ══════════════════════════════════════════════ */
 .pp-header {
-  position: sticky; top: 0; z-index: 90;
+  position: sticky; top: 52px; z-index: 90;
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 40px; height: 58px;
   background: rgba(9,9,9,.92); backdrop-filter: blur(24px);
@@ -1646,7 +1646,7 @@ input[type=file] { display: none; }
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 40px; height: 48px;
   background: var(--bg2); border-bottom: 1px solid var(--brd);
-  position: sticky; top: 58px; z-index: 89;
+  position: sticky; top: 110px; z-index: 89;
 }
 .pp-tabs { display: flex; gap: 2px; }
 .pp-tab {
@@ -1662,10 +1662,13 @@ input[type=file] { display: none; }
   color: var(--txt); background: var(--bg3);
 }
 .pp-tab.pp-tab-active::after {
-  content: ''; position: absolute; bottom: -9px; left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 16px); height: 2px;
-  background: var(--a2); border-radius: 2px;
+  display: none; /* заменено на border-bottom на самом элементе */
+}
+.pp-tab.pp-tab-active {
+  color: var(--txt);
+  background: var(--bg3);
+  border-bottom: 2px solid var(--a2);
+  padding-bottom: 6px; /* компенсируем 2px border чтобы высота не прыгала */
 }
 .pp-tab-count {
   background: var(--bg5); color: var(--txt3);
@@ -12421,7 +12424,7 @@ canvas {
   margin-bottom: 24px !important;
   gap: 3px !important;
   backdrop-filter: blur(24px) !important;
-  top: 58px !important;
+  top: 52px !important;
 }
 
 .passport-tab {
@@ -16219,9 +16222,11 @@ select:focus {
   transform: scale(1.02) !important;
 }
 
-/* Hide old hero */
+/* Hide old hero — только когда есть pill-система */
 .pcard-pct-hero { display: none !important; }
-.pcard-icon { display: none !important; }
+/* Скрываем pcard-icon только если есть pill-photo (у проектов без фото иконка остаётся как fallback) */
+.pcard-pill-photo + .pcard-pill-info + .pcard-pill-pct ~ .pcard-icon { display: none !important; }
+.pcard-head:has(.pcard-pill-photo) .pcard-icon { display: none !important; }
 </style>
 <style>
 /* ═══════════════════════════════════════════════════════════════════
@@ -16266,12 +16271,12 @@ select:focus {
   --font-body:    'DM Sans', -apple-system, sans-serif;
   --font-mono:    'DM Mono', 'SF Mono', monospace;
 
-  /* Premium radius scale */
+  /* Radius scale — unified with design system Stage 5 */
   --r-xs: 8px;
-  --r-sm: 12px;
-  --r-md: 16px;
-  --r-lg: 22px;
-  --r-xl: 28px;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 16px;
 
   /* Deep shadows */
   --shadow-sm:  0 2px 8px rgba(0,0,0,.55);
@@ -16793,7 +16798,7 @@ body::before {
    6. SIDEBAR — Premium command center nav
 ══════════════════════════════════════════════════════ */
 .cc-shell {
-  height: calc(100vh - 60px) !important;
+  height: calc(100vh - 52px) !important;
 }
 
 .cc-sidebar {
@@ -18354,7 +18359,7 @@ button:active:not(:disabled),
 
 /* Smooth all color transitions */
 * {
-  transition-property: color, background-color, border-color, box-shadow !important;
+  transition-property: color, background-color, border-color, box-shadow, transform !important;
   transition-duration: 0.15s !important;
   transition-timing-function: ease !important;
 }
@@ -18390,7 +18395,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   padding: 5px !important;
   margin-bottom: 32px !important;
   position: sticky !important;
-  top: 60px !important;
+  top: 52px !important;
   z-index: 50 !important;
   backdrop-filter: blur(32px) saturate(1.5) !important;
   box-shadow: 0 8px 32px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.05) !important;
@@ -19142,7 +19147,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
     grid-template-columns: 1fr !important;
   }
   .passport-nav {
-    top: 60px !important;
+    top: 52px !important;
     border-radius: 16px !important;
   }
   .ps-card {
@@ -22160,6 +22165,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 }
 
 /* ── PHASE 4: AI-БРИФ ПАСПОРТА ── */
+.bi-kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
@@ -25630,6 +25636,72 @@ html.light .theme-toggle:hover {
   });
 })();
 </script>
+
+<style id="dtr-bugfix-final">
+/*
+ * DTR BUGFIX LAYER — финальные исправления всех найденных конфликтов
+ * Применяется последним и перекрывает все предыдущие слои.
+ */
+
+/* ── Единые токены радиуса (БАГ 6) ── */
+:root {
+  --r-xs: 8px  !important;
+  --r-sm: 8px  !important;
+  --r-md: 12px !important;
+  --r-lg: 16px !important;
+  --r-xl: 16px !important;
+}
+
+/* ── cc-shell: точная высота под app-header = 52px (БАГ 3) ── */
+.cc-shell {
+  height: calc(100vh - 52px) !important;
+}
+
+/* ── pp-header: прилипает ниже app-header (БАГ 4) ── */
+.pp-header {
+  top: 52px !important;
+}
+
+/* ── pp-tabs-bar: прилипает ниже pp-header (БАГ 4) ── */
+.pp-tabs-bar {
+  top: 110px !important; /* 52px app-header + 58px pp-header */
+}
+
+/* ── passport-nav: выровнен с реальным хедером (БАГ 5) ── */
+.passport-nav {
+  top: 52px !important;
+}
+
+/* ── Активный таб: индикатор через border, не ломкий ::after (БАГ 7) ── */
+.pp-tab.pp-tab-active::after {
+  display: none !important;
+}
+.pp-tab.pp-tab-active {
+  border-bottom: 2px solid var(--a2) !important;
+}
+
+/* ── Глобальный transition: включаем transform (БАГ 2) ── */
+* {
+  transition-property: color, background-color, border-color, box-shadow, transform !important;
+  transition-duration: 0.15s !important;
+  transition-timing-function: ease !important;
+}
+
+/* ── Интерактивные элементы: spring-physics transition (БАГ 2) ── */
+button, a, [role="button"],
+.pcard, .stat-card, .ov-card, .ov2-kpi-card,
+.smm-stat-card, .report-card, .ov-list-item,
+.cc-nav-item, .act-card, .smm-lb-row,
+.ov2-dl-item, .tracker-stage-card, .dl-item, .ov2-health-card {
+  transition: all 280ms cubic-bezier(.34,1.28,.64,1) !important;
+}
+
+/* ── pcard-icon fallback: скрываем только при наличии pill-photo (БАГ 8) ── */
+.pcard-head:has(.pcard-pill-photo) .pcard-icon {
+  display: none !important;
+}
+.pcard-pct-hero { display: none !important; }
+</style>
 </head>
 <body>
 
