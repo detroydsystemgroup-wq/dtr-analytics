@@ -27432,12 +27432,40 @@ button, a, [role="button"],
 }
 .cp-report-arrow{color:rgba(255,255,255,.18);flex-shrink:0;margin-left:4px}
 .cp-report-row:hover .cp-report-arrow{color:rgba(255,255,255,.4)}
-.cp-act-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.03)}
-.cp-act-row:last-child{border-bottom:none}
-.cp-act-dot{width:6px;height:6px;border-radius:50%;margin-top:4px;flex-shrink:0}
-.cp-act-text{font-family:var(--font-display);font-size:11px;color:rgba(255,255,255,.55);line-height:1.45;flex:1}
-.cp-act-text b{color:var(--txt);font-weight:600}
-.cp-act-time{font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.15);flex-shrink:0;padding-top:2px}
+.cp-act-row{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:8px 10px;border-radius:10px;
+  margin-bottom:2px;
+  transition:background .15s;
+}
+.cp-act-row:hover{background:rgba(255,255,255,.03)}
+.cp-act-icon{
+  width:28px;height:28px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px;
+}
+.cp-act-icon.done{background:rgba(62,207,142,.1)}
+.cp-act-icon.start{background:rgba(184,146,58,.1)}
+.cp-act-icon.back{background:rgba(251,191,36,.1)}
+.cp-act-body{flex:1;min-width:0}
+.cp-act-text{
+  font-family:var(--font-display);font-size:12px;
+  color:rgba(255,255,255,.7);line-height:1.5;
+}
+.cp-act-text b{color:rgba(255,255,255,.9);font-weight:600}
+.cp-act-tag{
+  display:inline-block;margin-top:4px;
+  font-family:var(--font-mono);font-size:10px;
+  padding:2px 8px;border-radius:20px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);
+  color:rgba(255,255,255,.4);
+}
+.cp-act-time{
+  font-family:var(--font-mono);font-size:10px;
+  color:rgba(255,255,255,.2);flex-shrink:0;
+  padding-top:3px;white-space:nowrap;
+}
 .cp-focus-strip{background:var(--bg3);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:18px 22px;position:relative;overflow:hidden;margin-bottom:14px}
 .cp-focus-strip::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--a),var(--cyan))}
 .cp-focus-eyebrow{font-family:var(--font-mono);font-size:8px;letter-spacing:.2em;color:rgba(184,146,58,.4);text-transform:uppercase;margin-bottom:8px}
@@ -34517,20 +34545,33 @@ async function cp2LoadActivity(project, limit, containerId) {
   if (!hist.length) { el.innerHTML = '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.15);text-align:center;padding:16px 0;">Пока нет активности</div>'; return; }
   if (hist.length > 0 && g('cp2-updates-dot')) g('cp2-updates-dot').style.display = 'block';
 
-  var evCol = { 'Начат':'var(--a2)', 'Завершён':'#3ecf8e', 'Возвращён в ожидание':'#fbbf24' };
-  var evText = { 'Начат':'начала работу над', 'Завершён':'завершила', 'Возвращён в ожидание':'вернула в ожидание' };
+  var evCol  = { 'Начат':'start', 'Завершён':'done', 'Возвращён в ожидание':'back' };
+  var evText = { 'Начат':'начала работу над этапом', 'Завершён':'завершила этап', 'Возвращён в ожидание':'вернула в ожидание' };
+  var evIcon = {
+    'Начат':   '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>',
+    'Завершён':'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3ecf8e" stroke-width="2.2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>',
+    'Возвращён в ожидание':'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.21"/></svg>'
+  };
   el.innerHTML = hist.map(function(h) {
-    var stObj = (typeof STAGES !== 'undefined' && STAGES[h.stage_index]) || { name:'этапом' };
-    var col = evCol[h.event] || 'var(--a2)';
-    var verb = evText[h.event] || h.event;
-    var d = new Date(h.created_at);
-    var today = new Date(); today.setHours(0,0,0,0);
-    var dd = new Date(h.created_at); dd.setHours(0,0,0,0);
-    var diff = Math.floor((today - dd) / 86400000);
-    var timeStr = diff === 0 ? 'Сегодня, ' + new Date(h.created_at).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) : diff === 1 ? 'Вчера' : diff + ' дн. назад';
-    return '<div class="cp-act-row"><div class="cp-act-dot" style="background:' + col + ';box-shadow:0 0 6px ' + col + '44;"></div>' +
-      '<div class="cp-act-text">Команда <b>' + verb + '</b> «' + esc(stObj.name) + '»' + (h.note ? ' — ' + esc(h.note) : '') + '</div>' +
-      '<div class="cp-act-time">' + timeStr + '</div></div>';
+    var stObj  = (typeof STAGES !== 'undefined' && STAGES[h.stage_index]) || { name: 'этап' };
+    var cls    = evCol[h.event]  || 'start';
+    var verb   = evText[h.event] || h.event;
+    var icon   = evIcon[h.event] || evIcon['Начат'];
+    var d      = new Date(h.created_at);
+    var today  = new Date(); today.setHours(0,0,0,0);
+    var dd     = new Date(h.created_at); dd.setHours(0,0,0,0);
+    var diff   = Math.floor((today - dd) / 86400000);
+    var timeStr = diff === 0
+      ? 'Сегодня, ' + d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})
+      : diff === 1 ? 'Вчера' : diff + ' дн. назад';
+    return '<div class="cp-act-row">' +
+      '<div class="cp-act-icon ' + cls + '">' + icon + '</div>' +
+      '<div class="cp-act-body">' +
+        '<div class="cp-act-text">Команда <b>' + verb + '</b></div>' +
+        '<div class="cp-act-tag">' + esc(stObj.name) + (h.note ? ' — ' + esc(h.note) : '') + '</div>' +
+      '</div>' +
+      '<div class="cp-act-time">' + timeStr + '</div>' +
+    '</div>';
   }).join('');
 }
 
