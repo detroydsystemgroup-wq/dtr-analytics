@@ -27523,7 +27523,11 @@ button, a, [role="button"],
 <div class="cp-card"><div class="cp-card-header"><div class="cp-card-title">Активность команды</div><div style="display:flex;align-items:center;gap:5px;"><div style="width:5px;height:5px;border-radius:50%;background:#3ecf8e;box-shadow:0 0 6px rgba(62,207,142,.5);"></div><span style="font-family:var(--font-mono);font-size:8px;color:#3ecf8e;letter-spacing:.1em;">LIVE</span></div></div><div id="cp2-activity-feed"></div></div>
 </div>
 <div class="cp-smm-strip" id="cp2-smm-strip" style="display:none;"><div class="cp-smm-header"><div class="cp-smm-title">SMM показатели</div><div class="cp-smm-period" id="cp2-smm-period">—</div></div><div class="cp-smm-grid" id="cp2-smm-grid"></div><div class="cp-smm-bench-row" id="cp2-smm-bench"></div></div>
-<div class="cp-focus-strip" id="cp2-focus" style="display:none;"><div class="cp-focus-eyebrow">ФОКУС ЭТОГО МЕСЯЦА</div><div class="cp-focus-text" id="cp2-focus-text">—</div><div class="cp-focus-tip" id="cp2-focus-tip">—</div></div>
+<div class="cp-focus-strip" id="cp2-focus" style="display:none;">
+  <div class="cp-focus-eyebrow">СЛЕДУЮЩИЙ ЭТАП</div>
+  <div class="cp-focus-text" id="cp2-focus-text">—</div>
+  <div class="cp-focus-tip" id="cp2-focus-tip">—</div>
+</div>
 </div>
 <div class="cp-tab-content" id="cp2-tab-stages">
 <div class="cp-progress-card" style="margin-bottom:18px;"><div class="cp-progress-header"><div class="cp-progress-title">Все этапы проекта</div><div class="cp-progress-pct" id="cp2-stages-pct2" style="color:var(--a2);">0%</div></div><div class="cp-dual-bars" id="cp2-dual-bars2"></div></div>
@@ -34545,26 +34549,35 @@ async function cp2LoadFocus(project) {
   if (!el) return;
   var res = await sb.from('project_stages').select('*').eq('project_id', project.id).order('stage_index');
   var arr = res.data || [];
-  var active = arr.find(function(s){ return s.status==='active'; });
-  var completed = arr.filter(function(s){ return s.status==='completed'; }).length;
-  if (!active && completed === 0) return;
 
-  var FOCUS = {
-    0:['Изучаем вашу аудиторию — кто ваши гости, что им важно, почему они выбирают именно вас.','Это фундамент. Без глубокого понимания аудитории любой контент — выстрел вслепую.'],
-    1:['Анализируем конкурентов: что они делают хорошо и где ваше конкурентное преимущество.','Знание конкурентов помогает занять чёткую позицию.'],
-    2:['Разрабатываем контент-стратегию: голос бренда, рубрики, визуальный стиль.','Хорошая стратегия — это когда каждый пост работает на общую цель.'],
-    3:['Настраиваем таргетированную рекламу — показываем ваш ресторан тем, кто готов прийти.','Правильные аудитории = деньги работают эффективно.'],
-    4:['Создаём контент-план: темы, форматы, даты выхода на месяц вперёд.','Системный план убирает хаос.'],
-    5:['Пишем сценарии для Reels — главный инструмент роста в Instagram.','Один сильный Reel может принести больше, чем 30 постов.'],
-    6:['Первая съёмка: создаём визуальный контент для публикаций.','Профессиональный контент — то, что отличает серьёзный бренд.'],
-    7:['Второй раунд съёмок — расширяем форматы и ракурсы.','Разнообразие контента удерживает аудиторию.'],
-    8:['Готовим финальный отчёт — цифры, выводы, рекомендации.','Отчёт показывает, что сделано и что это дало бизнесу.']
-  };
-  var si = active ? active.stage_index : completed - 1;
-  var stObj = active && STAGES[active.stage_index] ? STAGES[active.stage_index] : null;
-  var texts = FOCUS[si] || ['Проект в активной фазе.', ''];
-  if (g('cp2-focus-text')) g('cp2-focus-text').textContent = stObj ? stObj.icon + ' ' + stObj.name + ': ' + texts[0] : texts[0];
-  if (g('cp2-focus-tip')) g('cp2-focus-tip').textContent = texts[1];
+  // Находим следующий этап: первый pending после последнего active/completed
+  var nextStage = arr.find(function(s){ return s.status === 'pending'; });
+  var activeStage = arr.find(function(s){ return s.status === 'active'; });
+  var completedCount = arr.filter(function(s){ return s.status === 'completed'; }).length;
+
+  // Если всё завершено — не показываем блок
+  if (!nextStage && !activeStage) { el.style.display = 'none'; return; }
+
+  // Следующий — pending этап (если нет pending, значит active — последний)
+  var target = nextStage || activeStage;
+  if (!target) { el.style.display = 'none'; return; }
+
+  var stObj = STAGES[target.stage_index] || { name: 'Следующий этап', icon: '▶' };
+  var numStr = (target.stage_index + 1 < 10 ? '0' : '') + (target.stage_index + 1);
+
+  // Обновляем eyebrow
+  var eyebrow = el.querySelector('.cp-focus-eyebrow');
+  if (eyebrow) eyebrow.textContent = 'СЛЕДУЮЩИЙ ЭТАП';
+
+  // Заголовок: номер + название
+  if (g('cp2-focus-text')) {
+    g('cp2-focus-text').textContent = numStr + ' — ' + stObj.name;
+  }
+  // Подсказка: прогресс
+  if (g('cp2-focus-tip')) {
+    g('cp2-focus-tip').textContent = completedCount + ' из 9 этапов завершено · этап ' + (target.stage_index + 1) + ' в очереди';
+  }
+
   el.style.display = 'block';
 }
 
