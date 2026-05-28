@@ -25375,7 +25375,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
           <div class="proj-th proj-th-r">Дедлайн</div>
           <div class="proj-th proj-th-r">Статус</div>
           <div class="proj-th proj-th-r">Обновлён</div>
-          <div class="proj-th" style="width:100px;"></div>
+          <div class="proj-th" style="width:140px;"></div>
         </div>
         <div id="projects-grid" class="projects-grid-new"></div>
       </div>
@@ -29623,6 +29623,8 @@ function renderProjectGrid() {
     ).join('') : ''
 
     return `<div class="proj-row${overdue?' proj-row-overdue':''}" style="border-left-color:${col};" onclick="openProject('${p.id}')">
+
+      <!-- 1. Проект -->
       <div class="prow-name-cell">
         ${p.photo_url
           ? `<div class="prow-avatar" style="border:1.5px solid ${col}44;overflow:hidden;padding:0;"><img src="${p.photo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:11px;"></div>`
@@ -29630,15 +29632,43 @@ function renderProjectGrid() {
         }
         <div style="min-width:0;">
           <div class="prow-name">${esc(p.name)}</div>
-          <div class="prow-meta">${catChips || esc((p.description||'').substring(0,30))}</div>
+          <div class="prow-meta">${catChips || esc((p.description||'').substring(0,28))}</div>
         </div>
       </div>
-      <div class="prow-pipe">${segs}</div>
-      <div style="text-align:right;font-family:var(--font-display);font-size:14px;font-weight:700;color:${progColor};">${pct}%</div>
-      <div style="text-align:right;font-family:var(--font-mono);font-size:12px;font-weight:600;color:${dlColor};">${dlTxt}</div>
-      <div style="text-align:right;"><span class="prow-status" style="background:${statusBg};color:${statusCol};">${statusTxt}</span></div>
-      <div style="text-align:right;font-family:var(--font-mono);font-size:11px;color:var(--txt3);">${updTxt}</div>
-      <div style="text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:4px;" onclick="event.stopPropagation()">
+
+      <!-- 2. Пайплайн -->
+      <div style="padding:0 16px;">
+        <div class="prow-pipe" style="margin-bottom:5px;">${segs}</div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--txt3);letter-spacing:.05em;">${completed}/9 этапов</div>
+      </div>
+
+      <!-- 3. Прогресс -->
+      <div style="text-align:right;padding-right:8px;">
+        <div style="font-family:var(--font-display);font-size:18px;font-weight:800;letter-spacing:-.03em;color:${progColor};line-height:1;">${pct}%</div>
+        <div style="width:100%;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;margin-top:5px;">
+          <div style="width:${pct}%;height:100%;background:${progColor};border-radius:2px;transition:width .6s ease;"></div>
+        </div>
+      </div>
+
+      <!-- 4. Дедлайн -->
+      <div style="text-align:right;padding-right:8px;">
+        <div style="font-family:var(--font-mono);font-size:12px;font-weight:700;color:${dlColor};">${dlTxt}</div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--txt3);margin-top:3px;">дедлайн</div>
+      </div>
+
+      <!-- 5. Статус -->
+      <div style="text-align:right;padding-right:8px;">
+        <span class="prow-status" style="background:${statusBg};color:${statusCol};">${statusTxt}</span>
+      </div>
+
+      <!-- 6. Обновлён -->
+      <div style="text-align:right;padding-right:8px;">
+        <div style="font-family:var(--font-mono);font-size:11px;color:var(--txt2);">${updTxt}</div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--txt3);margin-top:3px;">${Math.floor((Date.now()-new Date(p.created_at))/86400000)}д с нами</div>
+      </div>
+
+      <!-- 7. Действия -->
+      <div style="display:flex;align-items:center;justify-content:flex-end;gap:5px;" onclick="event.stopPropagation()">
         <button class="prow-btn" title="Заметка" onclick="openQuickNote('${p.id}','${p.name.replace(/'/g,"\\'")}','${(p.quick_note||'').replace(/'/g,"\\'")}')">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
         </button>
@@ -29647,7 +29677,7 @@ function renderProjectGrid() {
         </button>
         <button class="prow-btn prow-btn-open" onclick="openProject('${p.id}')">
           Открыть
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </button>
       </div>
     </div>`
@@ -37522,38 +37552,28 @@ async function cpRenderMilestone(project) {
 .proj-cmd-left  { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .proj-cmd-right { display: flex; align-items: center; gap: 8px; }
 
-/* ── Table: полная ширина ── */
-.proj-table-wrap {
-  margin: 0;
-  border: none;
-  border-top: 1px solid var(--brd);
-  border-radius: 0;
-  overflow-x: auto;
-  background: var(--bg2);
-}
+/* ── Table header & rows — правильные пропорции ── */
 .proj-thead {
   display: grid;
-  grid-template-columns: minmax(200px,1.4fr) 180px 80px 90px 90px 90px 120px;
-  padding: 10px 0;
+  grid-template-columns: 260px 1fr 100px 110px 110px 110px 140px;
+  padding: 9px 0;
   background: var(--bg3);
   border-bottom: 1px solid var(--brd);
-  min-width: 900px;
+  min-width: 1000px;
 }
 .proj-th { font-family: var(--font-mono); font-size: 9px; color: var(--txt3); letter-spacing: .1em; text-transform: uppercase; }
 .proj-th-r { text-align: right; }
 
-/* ── Row: увеличенный ── */
 .proj-row {
   display: grid;
-  grid-template-columns: minmax(200px,1.4fr) 180px 80px 90px 90px 90px 120px;
+  grid-template-columns: 260px 1fr 100px 110px 110px 110px 140px;
   align-items: center;
-  padding: 16px 0;
+  padding: 14px 0;
   border-bottom: 1px solid rgba(240,236,230,.05);
   border-left: 4px solid transparent;
   cursor: pointer;
   transition: background .14s;
-  min-height: 70px;
-  min-width: 900px;
+  min-width: 1000px;
 }
 .proj-row:hover { background: rgba(240,236,230,.025); }
 .proj-row:last-child { border-bottom: none; }
