@@ -37541,10 +37541,8 @@ async function cpRenderMilestone(project) {
 
 /* Table wrapper */
 .proj-table-wrap {
-  margin: 0;
-  border-top: 1px solid var(--brd);
   overflow-x: auto;
-  background: var(--bg2);
+  padding: 4px 0 8px;
 }
 
 /* Columns: Проект(fixed) | Пайплайн(flex) | % | Дедлайн | Статус | Обновлён | Действия */
@@ -37568,13 +37566,16 @@ async function cpRenderMilestone(project) {
   min-width: 960px;
   align-items: center;
   padding: 14px 20px;
-  border-bottom: 1px solid rgba(240,236,230,.05);
+  margin: 0 0 8px 0;
+  border: 1px solid var(--brd);
   border-left: 4px solid transparent;
+  border-radius: 14px;
+  background: var(--bg2);
   cursor: pointer;
-  transition: background .14s;
+  transition: border-color .18s, background .14s;
 }
-.proj-row:hover { background: rgba(240,236,230,.025); }
-.proj-row:last-child { border-bottom: none; }
+.proj-row:hover { background: var(--bg3); border-color: var(--brd2); }
+.proj-row:last-child { margin-bottom: 0; }
 .proj-row-overdue { border-left-color: var(--red) !important; }
 
 /* Name cell */
