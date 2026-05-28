@@ -29658,12 +29658,12 @@ function renderProjectGrid() {
       </div>
 
       <!-- 7. Кнопки -->
-      <div style="display:flex;align-items:center;justify-content:flex-end;gap:5px;" onclick="event.stopPropagation()">
-        <button class="prow-btn" title="Заметка" onclick="openQuickNote('${p.id}','${p.name.replace(/'/g,"\\'")}','${(p.quick_note||'').replace(/'/g,"\\'")}')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;width:100%;" onclick="event.stopPropagation()">
+        <button class="prow-btn prow-btn-rect" title="Заметка" onclick="openQuickNote('${p.id}','${p.name.replace(/'/g,"\\'")}','${(p.quick_note||'').replace(/'/g,"\\'")}')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
         </button>
-        <button class="prow-btn" title="Настройки" onclick="openProjectSettings('${p.id}')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <button class="prow-btn prow-btn-rect" title="Настройки" onclick="openProjectSettings('${p.id}')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         </button>
       </div>
     </div>`
@@ -37546,7 +37546,7 @@ async function cpRenderMilestone(project) {
 /* Columns: Проект(fixed) | Пайплайн(flex) | % | Дедлайн | Статус | Обновлён | Действия */
 .proj-thead {
   display: grid;
-  grid-template-columns: 280px minmax(0,420px) 100px 110px 130px 76px;
+  grid-template-columns: 280px minmax(0,400px) 100px 110px 130px 100px;
   min-width: 960px;
   padding: 9px 20px;
   background: var(--bg3);
@@ -37560,7 +37560,7 @@ async function cpRenderMilestone(project) {
 
 .proj-row {
   display: grid;
-  grid-template-columns: 280px minmax(0,420px) 100px 110px 130px 76px;
+  grid-template-columns: 280px minmax(0,400px) 100px 110px 130px 100px;
   min-width: 960px;
   align-items: center;
   padding: 14px 20px;
@@ -37605,12 +37605,15 @@ async function cpRenderMilestone(project) {
 
 /* Buttons */
 .prow-btn {
-  width: 32px; height: 32px; border-radius: 8px;
+  width: 32px; height: 26px; border-radius: 6px;
   border: 1px solid var(--brd2); background: var(--bg4); color: var(--txt2); cursor: pointer;
   display: flex; align-items: center; justify-content: center; gap: 4px;
   transition: all .14s; flex-shrink: 0;
 }
 .prow-btn:hover { border-color: rgba(240,236,230,.25); color: var(--txt); background: var(--bg5); }
+.prow-btn-rect {
+  width: 36px; height: 26px; border-radius: 6px;
+}
 .prow-btn-open {
   width: auto; padding: 0 14px; height: 32px;
   font-family: var(--font-mono); font-size: 12px; font-weight: 600;
