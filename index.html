@@ -25711,13 +25711,14 @@ button, a, [role="button"],
 }
 
 /* Квадраты этапов */
-.cp-stage-dot-inner { width:32px !important; height:32px !important; }
+.cp-stage-dot-inner { width:32px !important; height:32px !important; z-index:10 !important; }
 .cp-stage-dot-inner svg { width:14px !important; height:14px !important; display:block !important; }
+.cp-dot-wrap { z-index:10 !important; }
 
-.cp-stage-block.cp-st-done .cp-stage-dot-inner    { background:rgba(184,146,58,.14) !important; border:1.5px solid rgba(184,146,58,.5) !important; }
+.cp-stage-block.cp-st-done .cp-stage-dot-inner    { background:#1a1508 !important; border:1.5px solid rgba(184,146,58,.5) !important; }
 .cp-stage-block.cp-st-done .cp-stage-dot-inner svg { stroke:#c9a84c !important; stroke-width:2.5 !important; }
 
-.cp-stage-block.cp-st-active .cp-stage-dot-inner    { background:rgba(184,146,58,.08) !important; border:2px solid #c9a84c !important; }
+.cp-stage-block.cp-st-active .cp-stage-dot-inner    { background:#12100a !important; border:2px solid #c9a84c !important; }
 .cp-stage-block.cp-st-active .cp-stage-dot-inner svg { stroke:#dec17a !important; stroke-width:2.2 !important; }
 
 .cp-stage-block.cp-st-pending .cp-stage-dot-inner    { background:#111 !important; border:1px solid rgba(240,236,230,.1) !important; }
@@ -27302,31 +27303,31 @@ button, a, [role="button"],
 
 /* Квадрат-обёртка */
 .cp-dot-wrap{
-  position:relative;z-index:2;
+  position:relative;z-index:10;  /* выше линии (z-index:1) */
   width:32px;height:32px;flex-shrink:0;
 }
 .cp-dot-spinner{display:none!important}
 
-/* Квадрат */
+/* Квадрат — непрозрачный фон чтобы перекрывать линию */
 .cp-stage-dot-inner{
   width:32px;height:32px;
   border-radius:9px;
   display:flex;align-items:center;justify-content:center;
-  position:relative;z-index:2;
-  background:#0b0b0b; /* маскирует линию */
+  position:relative;z-index:10;
+  background:#0b0b0b; /* solid — маскирует линию */
 }
 .cp-stage-dot-inner svg{width:14px;height:14px;flex-shrink:0;display:block;}
 
-/* Done */
+/* Done — смешиваем золото поверх непрозрачного фона через box-shadow inset */
 .cp-stage-block.cp-st-done .cp-stage-dot-inner{
-  background:rgba(184,146,58,.14);
+  background:#1a1508;           /* тёмно-золотой непрозрачный */
   border:1.5px solid rgba(184,146,58,.5);
 }
 .cp-stage-block.cp-st-done .cp-stage-dot-inner svg{stroke:#c9a84c;stroke-width:2.5}
 
 /* Active */
 .cp-stage-block.cp-st-active .cp-stage-dot-inner{
-  background:rgba(184,146,58,.08);
+  background:#12100a;           /* непрозрачный тёмный */
   border:2px solid #c9a84c;
   animation:cpBreatheBorder 2.6s ease-in-out infinite;
 }
@@ -27334,7 +27335,7 @@ button, a, [role="button"],
 
 /* Pending */
 .cp-stage-block.cp-st-pending .cp-stage-dot-inner{
-  background:#111;
+  background:#111;              /* непрозрачный */
   border:1px solid rgba(240,236,230,.1);
 }
 .cp-stage-block.cp-st-pending .cp-stage-dot-inner svg{stroke:rgba(240,236,230,.28);stroke-width:1.5}
