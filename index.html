@@ -31695,8 +31695,18 @@ function renderFinance() {
   s('bi-costs-sub',    'зарплаты + расходы + opex')
   s('bi-profit',       totalMRR>0 ? (totalProfit>=0?'+':'')+fmtM(totalProfit)+' сум' : '—')
   s('bi-margin-pct',   totalMRR>0 ? 'маржинальность '+agencyMargin+'%' : 'задай бюджеты')
-  s('bi-hours',        totalHours > 0 ? totalHours+'ч' : '—')
-  s('bi-hours-sub',    'по всем проектам')
+  // Format hours: if < 1h show minutes, else show Xч Yм
+  function fmtHours(h) {
+    if (h <= 0) return '—'
+    const totalMin = Math.round(h * 60)
+    const hrs = Math.floor(totalMin / 60)
+    const mins = totalMin % 60
+    if (hrs === 0) return mins + 'м'
+    if (mins === 0) return hrs + 'ч'
+    return hrs + 'ч ' + mins + 'м'
+  }
+  s('bi-hours',     totalHours > 0 ? fmtHours(totalHours) : '—')
+  s('bi-hours-sub', 'по всем проектам')
 
   const profitEl=g('bi-profit')
   if(profitEl && totalMRR>0) profitEl.style.color=totalProfit>=0?'var(--green)':'var(--red)'
@@ -31871,7 +31881,15 @@ function biShowDetail(row) {
     {name:'Операционные',  amount:opex,     color:costColors[2]},
   ].filter(c=>c.amount>0)
 
-  if(hours>0) costItems.push({name:'Часов: '+hours+'ч', amount:0, color:costColors[3], isHours:true})
+  function _fmtH(h) {
+    const totalMin = Math.round(h * 60)
+    const hrs = Math.floor(totalMin / 60)
+    const mins = totalMin % 60
+    if (hrs === 0) return mins + 'м'
+    if (mins === 0) return hrs + 'ч'
+    return hrs + 'ч ' + mins + 'м'
+  }
+  if(hours>0) costItems.push({name:'Часов: '+_fmtH(hours), amount:0, color:costColors[3], isHours:true})
 
   const maxAmt = Math.max(...costItems.filter(c=>c.amount>0).map(c=>c.amount), 1)
 
@@ -31884,7 +31902,7 @@ function biShowDetail(row) {
           <div class="apl-cost-fill" style="width:${Math.round(c.amount/maxAmt*100)}%;background:${c.color};"></div>
         </div>
       </div>` : '<div style="flex:1;"></div>'}
-      <span class="apl-cost-val">${c.amount>0 ? fmtM(c.amount)+' сум' : (c.isHours?hours+'ч':'—')}</span>
+      <span class="apl-cost-val">${c.amount>0 ? fmtM(c.amount)+' сум' : (c.isHours?_fmtH(hours):'—')}</span>
     </div>`).join('')
     : '<div style="font-family:var(--font-display);font-size:12px;color:rgba(255,255,255,.25);padding:8px 0;">Расходы не добавлены в P&L</div>'
 
