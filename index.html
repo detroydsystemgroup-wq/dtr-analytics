@@ -27377,12 +27377,47 @@ button, a, [role="button"],
 #cp2-dual-bars{display:none!important}
 .cp-dual-bars{display:none!important}
 .cp-bar-done,.cp-bar-active,.cp-bar-pending{display:none!important}
-.cp-next-inline{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:10px 14px;margin-top:12px}
-.cp-next-emoji{font-size:18px;flex-shrink:0}
-.cp-next-info{flex:1;min-width:0}
-.cp-next-info-title{font-family:var(--font-display);font-size:12px;font-weight:600;color:var(--txt);letter-spacing:-.01em}
-.cp-next-info-sub{font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.04em;margin-top:2px}
-.cp-next-tag{font-family:var(--font-mono);font-size:9px;font-weight:600;padding:3px 10px;border-radius:8px;flex-shrink:0}
+.cp-next-inline{
+  display:flex;align-items:stretch;gap:0;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;
+  margin-top:12px;
+  overflow:hidden;
+}
+.cp-next-left{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 16px;flex:1;min-width:0;
+  border-right:1px solid rgba(255,255,255,.06);
+}
+.cp-next-icon{
+  width:36px;height:36px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.cp-next-body{min-width:0}
+.cp-next-label{
+  font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;
+  text-transform:uppercase;margin-bottom:3px;
+}
+.cp-next-info-title{
+  font-family:var(--font-display);font-size:13px;font-weight:600;
+  color:rgba(255,255,255,.85);letter-spacing:-.01em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.cp-next-right{
+  padding:13px 20px;text-align:right;flex-shrink:0;
+  display:flex;flex-direction:column;justify-content:center;
+}
+.cp-next-count{
+  font-family:var(--font-display);font-size:22px;font-weight:800;
+  letter-spacing:-.04em;line-height:1;
+  color:rgba(255,255,255,.85);
+  font-variant-numeric:tabular-nums;
+}
+.cp-next-count-sub{
+  font-family:var(--font-mono);font-size:9px;
+  color:rgba(255,255,255,.25);letter-spacing:.04em;margin-top:3px;
+}
 .cp-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
 .cp-card{background:var(--bg3);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:18px 20px}
 .cp-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
@@ -27577,9 +27612,17 @@ button, a, [role="button"],
   <span class="cp-pf-right">этапов завершено</span>
 </div>
 <div class="cp-next-inline" id="cp2-next-step" style="display:none;">
-<div class="cp-next-emoji" id="cp2-next-emoji">🎯</div>
-<div class="cp-next-info"><div class="cp-next-info-title" id="cp2-next-title">—</div><div class="cp-next-info-sub" id="cp2-next-sub">—</div></div>
-<div class="cp-next-tag" id="cp2-next-tag" style="background:rgba(232,153,58,.1);color:var(--amber);">—</div>
+  <div class="cp-next-left">
+    <div class="cp-next-icon" id="cp2-next-icon"></div>
+    <div class="cp-next-body">
+      <div class="cp-next-label" id="cp2-next-label">В работе</div>
+      <div class="cp-next-info-title" id="cp2-next-title">—</div>
+    </div>
+  </div>
+  <div class="cp-next-right">
+    <div class="cp-next-count" id="cp2-next-count">— / 9</div>
+    <div class="cp-next-count-sub">этапов завершено</div>
+  </div>
 </div></div>
 <div class="cp-cols">
 <div class="cp-card"><div class="cp-card-header"><div class="cp-card-title">Отчёты</div><div class="cp-card-count" id="cp2-reports-count" style="color:var(--a2);">—</div></div><div id="cp2-reports-list"></div></div>
@@ -34431,14 +34474,22 @@ async function cp2LoadTracker(project) {
   var nsEl = g('cp2-next-step');
   if (nextStage && nsEl) {
     var stObj = STAGES[nextStage.stage_index] || { name:'Этап', icon:'•' };
-    if (g('cp2-next-emoji')) g('cp2-next-emoji').textContent = stObj.icon;
-    if (g('cp2-next-title')) g('cp2-next-title').textContent = (nextStage.status==='active' ? 'В работе: ' : 'Следующий: ') + stObj.name;
-    if (g('cp2-next-sub')) g('cp2-next-sub').textContent = 'Этап ' + (nextStage.stage_index+1) + ' из 9';
-    var tagEl = g('cp2-next-tag');
-    if (tagEl) {
-      if (nextStage.status==='active') { tagEl.textContent = 'В работе'; tagEl.style.background = 'rgba(62,207,142,.1)'; tagEl.style.color = 'var(--green)'; }
-      else { tagEl.textContent = 'Ожидает'; tagEl.style.background = 'rgba(232,153,58,.1)'; tagEl.style.color = 'var(--amber)'; }
-    }
+    var isActive = nextStage.status === 'active';
+    var iconCol  = isActive ? '#3ecf8e' : '#c9a84c';
+    var iconBg   = isActive ? 'rgba(62,207,142,.1);border:1px solid rgba(62,207,142,.18)' : 'rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.18)';
+    var iconSvg  = isActive
+      ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="' + iconCol + '" stroke-width="2.2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>'
+      : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="' + iconCol + '" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+
+    var iconEl = g('cp2-next-icon');
+    if (iconEl) { iconEl.style.cssText = 'background:' + iconBg; iconEl.innerHTML = iconSvg; }
+
+    var labelEl = g('cp2-next-label');
+    if (labelEl) { labelEl.textContent = isActive ? 'В работе' : 'Следующий этап'; labelEl.style.color = iconCol; }
+
+    if (g('cp2-next-title')) g('cp2-next-title').textContent = stObj.name;
+    if (g('cp2-next-count')) g('cp2-next-count').textContent = done + ' / ' + arr.length;
+
     nsEl.style.display = 'flex';
   }
 
