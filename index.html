@@ -37541,8 +37541,27 @@ async function cpRenderMilestone(project) {
 
 /* Table wrapper */
 .proj-table-wrap {
-  overflow-x: auto;
+  overflow-x: visible;
   padding: 0;
+}
+#dtab-projects-panel .projects-grid-new {
+  display: flex; flex-direction: column;
+  width: 100%;
+}
+.proj-row {
+  display: grid;
+  grid-template-columns: 280px minmax(0,360px) 1fr;
+  width: 100%;
+  box-sizing: border-box;
+  align-items: center;
+  padding: 14px 20px;
+  margin: 0 0 8px 0;
+  border: 1px solid var(--brd);
+  border-left: 4px solid transparent;
+  border-radius: 14px;
+  background: var(--bg2);
+  cursor: pointer;
+  transition: border-color .18s, background .14s;
 }
 
 /* Columns: Проект(fixed) | Пайплайн(flex) | % | Дедлайн | Статус | Обновлён | Действия */
@@ -37560,20 +37579,6 @@ async function cpRenderMilestone(project) {
 }
 .proj-th-r { text-align: right; }
 
-.proj-row {
-  display: grid;
-  grid-template-columns: 280px minmax(0,360px) 1fr;
-  min-width: 960px;
-  align-items: center;
-  padding: 14px 20px;
-  margin: 0 0 8px 0;
-  border: 1px solid var(--brd);
-  border-left: 4px solid transparent;
-  border-radius: 14px;
-  background: var(--bg2);
-  cursor: pointer;
-  transition: border-color .18s, background .14s;
-}
 .proj-row:hover { background: var(--bg3); border-color: var(--brd2); }
 .proj-row:last-child { margin-bottom: 0; }
 .proj-row-overdue { border-left-color: var(--red) !important; }
