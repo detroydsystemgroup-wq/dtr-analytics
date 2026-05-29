@@ -35218,6 +35218,7 @@ async function cp2LoadROI(project) {
   if (!sm) return;
 
   var sign = function(v) { return v > 0 ? '+' : v < 0 ? '−' : ''; };
+  var f    = function(v) { return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:1}).format(Math.abs(v)); };
   if (sm.growth_pct != null && g('cp2-kpi-rev')) {
     g('cp2-kpi-rev').textContent = sign(sm.growth_pct) + f(sm.growth_pct) + '%';
     g('cp2-kpi-rev').style.color = sm.growth_pct >= 0 ? 'var(--green)' : 'var(--red)';
