@@ -27763,7 +27763,7 @@ button, a, [role="button"],
 <div class="cp-hero-divider"></div>
 <div class="cp-hero-card"><div class="cp-hero-eyebrow">Ср. чек Δ</div><div class="cp-hero-num" id="cp2-kpi-check" style="color:var(--amber);">—</div><div class="cp-hero-sub" id="cp2-kpi-check-sub">—</div></div>
 <div class="cp-hero-divider"></div>
-<div class="cp-hero-card"><div class="cp-hero-eyebrow">ER Instagram</div><div class="cp-hero-num" id="cp2-kpi-er" style="color:var(--pink);">—</div><div class="cp-hero-sub" id="cp2-kpi-er-sub">—</div></div>
+<div class="cp-hero-card"><div class="cp-hero-eyebrow">Прогресс проекта</div><div class="cp-hero-num" id="cp2-kpi-progress" style="color:#c9a84c;">—</div><div class="cp-hero-sub" id="cp2-kpi-progress-sub">—</div></div>
 </div>
 <div class="cp-progress-card">
 <div class="cp-progress-header">
@@ -34637,6 +34637,10 @@ async function cp2LoadTracker(project) {
   if (g('cp2-progress-pct')) g('cp2-progress-pct').textContent = pct + '%';
   if (g('cp2-stages-pct2')) g('cp2-stages-pct2').textContent = pct + '%';
 
+  // KPI hero — прогресс проекта
+  if (g('cp2-kpi-progress')) g('cp2-kpi-progress').textContent = pct + '%';
+  if (g('cp2-kpi-progress-sub')) g('cp2-kpi-progress-sub').textContent = done + ' из ' + arr.length + ' этапов';
+
   // ── Прогрессбар: fill + lead dot ──
   var barFill = g('cp2-bar-fill');
   var barLead = g('cp2-bar-lead');
@@ -34966,11 +34970,18 @@ async function cp2LoadSMM(project) {
     return '<div class="cp-smm-cell"><div class="cp-smm-lbl">' + mt.label + '</div><div class="cp-smm-val" style="color:' + mt.color + ';">' + val.toFixed(2) + '%</div></div>';
   }).join('');
 
-  // ER in KPI strip
-  if (m.er != null && g('cp2-kpi-er')) {
-    g('cp2-kpi-er').textContent = m.er.toFixed(2) + '%';
-    var bench = (typeof CP_SMM_BENCH !== 'undefined' && CP_SMM_BENCH.er) ? CP_SMM_BENCH.er : { good: 3 };
-    if (g('cp2-kpi-er-sub')) g('cp2-kpi-er-sub').textContent = m.er >= bench.good ? '✓ выше нормы' : '↑ есть потенциал';
+  // Прогресс проекта в KPI strip (вместо ER)
+  // Данные уже загружены в cp2LoadTracker — берём из DOM если уже есть
+  var progressEl = g('cp2-kpi-progress');
+  if (progressEl && progressEl.textContent === '—') {
+    var stRes = await sb.from('project_stages').select('status').eq('project_id', project.id);
+    var stArr = stRes.data || [];
+    var total = stArr.length || 9;
+    var done  = stArr.filter(function(s){ return s.status === 'completed'; }).length;
+    var pct   = total > 0 ? Math.round(done / total * 100) : 0;
+    progressEl.textContent = pct + '%';
+    var subEl = g('cp2-kpi-progress-sub');
+    if (subEl) subEl.textContent = done + ' из ' + total + ' этапов';
   }
   // Bench row
   var benchEl = g('cp2-smm-bench');
