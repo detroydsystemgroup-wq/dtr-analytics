@@ -41752,8 +41752,8 @@ function kbRenderProjectSidebar() {
   if (!list) return;
 
   var all = (typeof _allProjects !== 'undefined' && _allProjects) ? _allProjects : [];
-  var projects  = all.filter(function(p){ return p.status !== 'archived'; });
-  var archived  = all.filter(function(p){ return p.status === 'archived'; });
+  var projects  = all.filter(function(p){ return p.status !== 'archived' && (typeof getProjectProgress === 'undefined' || getProjectProgress(p.id).pct < 100); });
+  var archived  = all.filter(function(p){ return p.status === 'archived' || (typeof getProjectProgress !== 'undefined' && getProjectProgress(p.id).pct === 100); });
 
   var projStat  = document.getElementById('kb-proj-stat-proj');
   var itemsStat = document.getElementById('kb-proj-stat-items');
@@ -41767,7 +41767,7 @@ function kbRenderProjectSidebar() {
       ? '<img src="'+p.photo_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:4px;display:block;">'
       : '<span style="color:'+col+';">'+letter+'</span>';
     var divider = '<div class="kb-proj-divider"><div class="kb-proj-divider-line"></div><div class="kb-proj-divider-dot"></div><div class="kb-proj-divider-line"></div></div>';
-    var isArch = p.status === 'archived';
+    var isArch = p.status === 'archived' || (typeof getProjectProgress !== 'undefined' && getProjectProgress(p.id).pct === 100);
     var item = '<div class="kb-proj-item'+(isArch?' kb-proj-archived':'')+'" id="kb-proj-row-'+p.id+'" onclick="kbSelectProject(\''+p.id+'\',\''+esc(p.name)+'\')">'+
       '<div class="kb-proj-avatar" style="background:'+col+'22;border-color:'+col+'44;overflow:hidden;padding:0;'+(isArch?'opacity:.6;filter:grayscale(.4);':'')+'">'+
         avatarInner+
