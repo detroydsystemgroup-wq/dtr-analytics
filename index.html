@@ -37548,17 +37548,16 @@ async function loadOverview() {
   var doneProjs = activeProjects.filter(function(p){ return getProjectProgress(p.id).pct === 100; }).concat(archivedProjs);
 
   // On-time delivery rate
-  // БАГ 2 ИСПРАВЛЕН: используем только done_at как дату выполнения.
-  // updated_at и created_at НЕ используем — они меняются при любом редактировании
-  // задачи и не отражают момент фактического закрытия.
-  // Если done_at отсутствует и задача помечена done — считаем просроченной
-  // (benefit of doubt убран: нет даты закрытия = нет доказательства своевременности).
+  // БАГ 2 ИСПРАВЛЕН v2: done_at приоритет, updated_at как fallback.
+  // Только done_at и updated_at — created_at не отражает момент закрытия.
+  // Задачи без обеих дат не считаются выполненными в срок.
   var tasksWithDeadline = allTasks.filter(function(t){ return t.deadline; });
   var tasksOnTime = tasksWithDeadline.filter(function(t){
     if (!t.done) return false;
-    if (!t.done_at) return false; // нет точной даты закрытия — не считаем в срок
+    var doneDate = t.done_at || t.updated_at;
+    if (!doneDate) return false;
     var dl = new Date(t.deadline); dl.setHours(23,59,59,0);
-    return new Date(t.done_at) <= dl;
+    return new Date(doneDate) <= dl;
   });
   var onTimeRate = tasksWithDeadline.length ? Math.round(tasksOnTime.length / tasksWithDeadline.length * 100) : null;
 
@@ -37566,14 +37565,10 @@ async function loadOverview() {
   var thirtyAgo = new Date(today); thirtyAgo.setDate(today.getDate() - 30);
   var sevenAgo  = new Date(today); sevenAgo.setDate(today.getDate() - 7);
   var doneTasks = allTasks.filter(function(t){ return t.done; });
-  // БАГ 3 ИСПРАВЛЕН: задачи без какой-либо даты НЕ попадают в velocity.
-  // Раньше: if (!d) return true — это искусственно завышало показатель,
-  // добавляя в счётчик старые задачи без дат.
-  // Теперь: если нет done_at — пробуем updated_at, но только если задача помечена done.
-  // Если нет вообще никакой даты — задача из velocity исключается.
+  // БАГ 3 ИСПРАВЛЕН: задачи без дат не попадают в velocity
   var velocity30 = doneTasks.filter(function(t){
     var d = t.done_at || t.updated_at;
-    if (!d) return false; // нет даты — не включаем в velocity
+    if (!d) return false;
     return new Date(d) >= thirtyAgo;
   }).length;
   var velocity7 = doneTasks.filter(function(t){
@@ -37587,20 +37582,40 @@ async function loadOverview() {
   var overdueDL  = allStageDL.filter(function(s){ return new Date(s.deadline + 'T00:00:00') < today; });
   var weekDL     = allStageDL.filter(function(s){ var d=new Date(s.deadline + 'T00:00:00'); return d>=today && d<=weekEnd; });
   var futureDL   = allStageDL.filter(function(s){ return new Date(s.deadline + 'T00:00:00') > weekEnd; });
-  // Просроченные задачи (не выполненные с прошедшим дедлайном)
   var overdueTasksDL = allTasks.filter(function(t){ return t.deadline && !t.done && new Date(t.deadline + 'T00:00:00') < today; });
   var totalOverdue = overdueDL.length + overdueTasksDL.length;
 
-  // Health score
-  // БАГ 7 ИСПРАВЛЕН: добавлен штраф за churn risk проекты (просрочка теперь тоже
-  // влияет на health через churn). Формула сохраняет 4 компонента по 100 баллов,
-  // но churnCount уменьшает компонент "нет просроченных проектов".
+  // ── CHURN RISK — считаем ДО healthScore, т.к. используется в формуле ──
+  // БАГ NaN ИСПРАВЛЕН: churnCount объявлен выше healthScore
+  // БАГ 5 ИСПРАВЛЕН: просроченный проект = churn risk
+  var twentyOneAgo = new Date(today); twentyOneAgo.setDate(today.getDate() - 21);
+  var churnOnlyActive = activeProjects.filter(function(p){ return getProjectProgress(p.id).pct < 100; });
+  var churnRisk = churnOnlyActive.filter(function(p) {
+    if (isProjectOverdue(p.id)) return true;
+    var lastStage = stageHistory.find(function(h){ return h.project_id === p.id; });
+    var lastStageDate = lastStage ? new Date(lastStage.created_at || lastStage.changed_at) : null;
+    var projTasks = allTasks.filter(function(t){ return t.project_id === p.id; });
+    var lastTaskDate = null;
+    projTasks.forEach(function(t) {
+      var d = new Date(t.updated_at || t.created_at);
+      if (!lastTaskDate || d > lastTaskDate) lastTaskDate = d;
+    });
+    var lastActivity = null;
+    if (lastStageDate && lastTaskDate) lastActivity = lastStageDate > lastTaskDate ? lastStageDate : lastTaskDate;
+    else lastActivity = lastStageDate || lastTaskDate;
+    if (!lastActivity) return true;
+    return lastActivity < twentyOneAgo;
+  });
+  var churnCount = churnRisk.length;
+
+  // Health score — все слагаемые теперь объявлены выше
+  // БАГ 7 ИСПРАВЛЕН: churnCount доступен, штраф за churn risk включён
   var healthScore = Math.max(0, Math.min(100, Math.round(
     globalPct * 0.35 +
     (overdueProjs.length === 0 ? 25 : Math.max(0, 25 - overdueProjs.length * 8)) +
     (onTimeRate !== null ? onTimeRate * 0.25 : 15) +
     (overdueDL.length === 0 ? 15 : Math.max(0, 15 - overdueDL.length * 3)) -
-    churnCount * 5  // каждый churn risk проект снимает 5 баллов
+    churnCount * 5
   )));
   var healthColor = healthScore >= 75 ? 'var(--green)' : healthScore >= 45 ? 'var(--amber)' : 'var(--red)';
   var healthLabel = healthScore >= 75 ? 'Отличное' : healthScore >= 45 ? 'Требует внимания' : 'Критическое';
@@ -37619,31 +37634,6 @@ async function loadOverview() {
     totalHours = Math.round(th.reduce(function(s,t){ return s + (t.time_logged||0); }, 0) / 60);
   } catch(e) {}
   var revPerHour = (totalMRR > 0 && totalHours > 0) ? Math.round(totalMRR / totalHours) : null;
-
-  // Churn risk: проекты без активности 21+ дней (только не завершённые из активных)
-  // БАГ 5 ИСПРАВЛЕН: добавлен второй критерий — просроченный проект тоже
-  // попадает в churn risk, потому что срыв дедлайна = прямой риск потери клиента.
-  var twentyOneAgo = new Date(today); twentyOneAgo.setDate(today.getDate() - 21);
-  var churnOnlyActive = activeProjects.filter(function(p){ return getProjectProgress(p.id).pct < 100; });
-  var churnRisk = churnOnlyActive.filter(function(p) {
-    // Критерий 1: просроченный проект — всегда churn risk
-    if (isProjectOverdue(p.id)) return true;
-    // Критерий 2: нет активности 21+ дней
-    var lastStage = stageHistory.find(function(h){ return h.project_id === p.id; });
-    var lastStageDate = lastStage ? new Date(lastStage.created_at || lastStage.changed_at) : null;
-    var projTasks = allTasks.filter(function(t){ return t.project_id === p.id; });
-    var lastTaskDate = null;
-    projTasks.forEach(function(t) {
-      var d = new Date(t.updated_at || t.created_at);
-      if (!lastTaskDate || d > lastTaskDate) lastTaskDate = d;
-    });
-    var lastActivity = null;
-    if (lastStageDate && lastTaskDate) lastActivity = lastStageDate > lastTaskDate ? lastStageDate : lastTaskDate;
-    else lastActivity = lastStageDate || lastTaskDate;
-    if (!lastActivity) return true;
-    return lastActivity < twentyOneAgo;
-  });
-  var churnCount = churnRisk.length;
 
   // Rework rate: этапы откаченные назад (по event или old/new_status)
   var reworkStages = stageHistory.filter(function(h){
