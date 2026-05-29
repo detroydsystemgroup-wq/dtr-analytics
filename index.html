@@ -38139,20 +38139,23 @@ function renderChannelShare(b4, d4, b1, d1) {
     var shareB = Math.round(vB.rev/totalRevB*100);
     var delta = shareD - shareB;
     var col = CHAN_COLS[k]||'#c9a84c';
-    return '<div style="margin-bottom:12px;">'
-      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">'
-      +'<div style="display:flex;align-items:center;gap:7px;">'
-      +'<span style="font-size:15px;">'+(CHAN_ICONS[k]||'📦')+'</span>'
-      +'<span style="font-size:12px;font-weight:600;">'+k+'</span>'
-      +(delta!==0?'<span style="font-size:10px;font-family:DM Mono,monospace;padding:2px 7px;border-radius:4px;background:'+(delta>0?'rgba(0,229,163,.1)':'rgba(255,61,107,.1)')+';color:'+(delta>0?'var(--green)':'var(--red)')+';">'+( delta>0?'+':'')+delta+'%</span>':'')
+    return '<div style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05);">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
+      +'<div style="display:flex;align-items:center;gap:8px;">'
+      +'<div style="width:10px;height:10px;border-radius:2px;background:'+col+';flex-shrink:0;"></div>'
+      +'<span style="font-size:12px;font-weight:600;color:#e8e4de;letter-spacing:-.01em;">'+k+'</span>'
+      +(delta!==0?'<span style="font-size:9px;font-family:DM Mono,monospace;padding:2px 7px;border-radius:2px;font-weight:700;background:'+(delta>0?'rgba(22,163,74,.1)':'rgba(220,38,38,.1)')+';color:'+(delta>0?'#22c55e':'#ef4444')+';">'+(delta>0?'+':'')+delta+'%</span>':'')
       +'</div>'
-      +'<div style="font-size:13px;font-weight:700;color:'+col+';">'+shareD+'%'
-      +'<span style="font-size:10px;color:#6b6760;font-family:DM Mono,monospace;margin-left:6px;">'+Math.round(vD.rev/1e6)+' млн</span></div></div>'
-      +'<div style="position:relative;height:10px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;">'
-      +'<div style="position:absolute;top:0;left:0;height:100%;width:'+shareD+'%;background:'+col+';border-radius:2px;transition:width 1s ease;"></div>'
-      +(shareB>0?'<div style="position:absolute;top:2px;left:'+shareB+'%;width:2px;height:6px;background:rgba(255,255,255,.4);border-radius:1px;" title="База"></div>':'')
+      +'<div style="text-align:right;">'
+      +'<div style="font-family:DM Sans,sans-serif;font-size:20px;font-weight:800;letter-spacing:-.03em;color:'+col+';font-variant-numeric:tabular-nums;line-height:1;">'+shareD+'%</div>'
+      +'<div style="font-size:9px;color:#3a3835;font-family:DM Mono,monospace;margin-top:2px;">'+Math.round(vD.rev/1e6)+' млн сум</div>'
+      +'</div></div>'
+      +'<div style="height:3px;background:rgba(255,255,255,.05);overflow:hidden;position:relative;">'
+      +'<div style="position:absolute;top:0;left:0;height:100%;width:'+shareD+'%;background:'+col+';transition:width 1s ease;"></div>'
+      +(shareB>0?'<div style="position:absolute;top:0;left:'+shareB+'%;width:1px;height:100%;background:rgba(255,255,255,.3);" title="База"></div>':'')
       +'</div>'
-      +'<div style="font-size:10px;color:#3a3835;font-family:DM Mono,monospace;margin-top:3px;">avg чек: '+fmt2(vD.chk?vD.rev/vD.chk:0)+' сум</div></div>'
+      +'<div style="font-size:9px;color:#3a3835;font-family:DM Mono,monospace;margin-top:4px;letter-spacing:.04em;">avg чек: '+fmt2(vD.chk?Math.round(vD.rev/vD.chk):0)+' сум</div>'
+      +'</div>'
   }).join('');
 
   // === ТРАФИК: горизонтальные бары ===
@@ -38164,20 +38167,23 @@ function renderChannelShare(b4, d4, b1, d1) {
     var delta = shareD - shareB;
     var col = CHAN_COLS[k]||'#c9a84c';
     var avgRev = vD.chk ? Math.round(vD.rev/vD.chk) : 0;
-    return '<div style="margin-bottom:12px;">'
-      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">'
-      +'<div style="display:flex;align-items:center;gap:7px;">'
-      +'<span style="font-size:15px;">'+(CHAN_ICONS[k]||'📦')+'</span>'
-      +'<span style="font-size:12px;font-weight:600;">'+k+'</span>'
-      +(delta!==0?'<span style="font-size:10px;font-family:DM Mono,monospace;padding:2px 7px;border-radius:4px;background:'+(delta>0?'rgba(0,229,163,.1)':'rgba(255,61,107,.1)')+';color:'+(delta>0?'var(--green)':'var(--red)')+';">'+( delta>0?'+':'')+delta+'%</span>':'')
+    return '<div style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05);">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
+      +'<div style="display:flex;align-items:center;gap:8px;">'
+      +'<div style="width:10px;height:10px;border-radius:2px;background:'+col+';flex-shrink:0;"></div>'
+      +'<span style="font-size:12px;font-weight:600;color:#e8e4de;letter-spacing:-.01em;">'+k+'</span>'
+      +(delta!==0?'<span style="font-size:9px;font-family:DM Mono,monospace;padding:2px 7px;border-radius:2px;font-weight:700;background:'+(delta>0?'rgba(22,163,74,.1)':'rgba(220,38,38,.1)')+';color:'+(delta>0?'#22c55e':'#ef4444')+';">'+(delta>0?'+':'')+delta+'%</span>':'')
       +'</div>'
-      +'<div style="font-size:13px;font-weight:700;color:'+col+';">'+shareD+'%'
-      +'<span style="font-size:10px;color:#6b6760;font-family:DM Mono,monospace;margin-left:6px;">'+fmt2(vD.chk)+' чек</span></div></div>'
-      +'<div style="position:relative;height:10px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;">'
-      +'<div style="position:absolute;top:0;left:0;height:100%;width:'+shareD+'%;background:'+col+';border-radius:2px;transition:width 1s ease;"></div>'
-      +(shareB>0?'<div style="position:absolute;top:2px;left:'+shareB+'%;width:2px;height:6px;background:rgba(255,255,255,.4);border-radius:1px;"></div>':'')
+      +'<div style="text-align:right;">'
+      +'<div style="font-family:DM Sans,sans-serif;font-size:20px;font-weight:800;letter-spacing:-.03em;color:'+col+';font-variant-numeric:tabular-nums;line-height:1;">'+shareD+'%</div>'
+      +'<div style="font-size:9px;color:#3a3835;font-family:DM Mono,monospace;margin-top:2px;">'+fmt2(vD.chk)+' чеков</div>'
+      +'</div></div>'
+      +'<div style="height:3px;background:rgba(255,255,255,.05);overflow:hidden;position:relative;">'
+      +'<div style="position:absolute;top:0;left:0;height:100%;width:'+shareD+'%;background:'+col+';transition:width 1s ease;"></div>'
+      +(shareB>0?'<div style="position:absolute;top:0;left:'+shareB+'%;width:1px;height:100%;background:rgba(255,255,255,.3);"></div>':'')
       +'</div>'
-      +'<div style="font-size:10px;color:#3a3835;font-family:DM Mono,monospace;margin-top:3px;">ср. чек: '+fmt2(avgRev)+' сум</div></div>'
+      +'<div style="font-size:9px;color:#3a3835;font-family:DM Mono,monospace;margin-top:4px;letter-spacing:.04em;">ср. чек: '+fmt2(avgRev)+' сум</div>'
+      +'</div>'
   }).join('');
 
   // === HEATMAP: интенсивность каналов по часам ===
@@ -38235,18 +38241,22 @@ function renderChannelShare(b4, d4, b1, d1) {
           var totalRev = hours.reduce(function(s,h){return s+(hourData[h][t]?hourData[h][t].rev:0)},0);
           var avgChk = totalChk ? Math.round(totalRev/totalChk) : 0;
           var ph = peakHour[t];
-          return '<div style="background:#101012;border:1px solid rgba('+r+','+g+','+b+',.18);border-top:2px solid '+col+';border-radius:4px;padding:14px;">'
-            +'<div style="display:flex;align-items:center;gap:7px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.05);">'
-            +'<span style="font-size:15px;line-height:1;">'+icon+'</span>'
-            +'<span style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:'+col+';">'+t+'</span>'
+          return '<div style="background:#101012;border:1px solid rgba(255,255,255,.07);border-top:2px solid '+col+';border-radius:4px;padding:16px;">'
+            +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.06);">'
+            +'<span style="font-size:14px;line-height:1;opacity:.8;">'+icon+'</span>'
+            +'<span style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:'+col+';">'+t+'</span>'
             +'</div>'
-            +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
-            +'<div><div style="font-size:9px;color:#6b6760;font-family:\"DM Mono\",monospace;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">Пик часа</div>'
-            +'<div style="font-family:\"DM Sans\",sans-serif;font-size:22px;font-weight:800;letter-spacing:-.02em;color:'+col+';font-variant-numeric:tabular-nums;">'+ph+'<span style="font-size:11px;color:#3a3835;margin-left:1px;">:00</span></div></div>'
-            +'<div><div style="font-size:9px;color:#6b6760;font-family:\"DM Mono\",monospace;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">Ср. чек</div>'
-            +'<div style="font-size:16px;font-weight:700;color:#e8e4de;font-variant-numeric:tabular-nums;">'+fmt3(Math.round(avgChk/1000))+'K</div></div>'
+            +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">'
+            +'<div>'
+            +'<div style="font-size:9px;color:#3a3835;font-family:DM Mono,monospace;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;">Пик часа</div>'
+            +'<div style="font-family:DM Sans,sans-serif;font-size:26px;font-weight:800;letter-spacing:-.03em;color:'+col+';font-variant-numeric:tabular-nums;line-height:1;">'+ph+'<span style="font-size:11px;color:#3a3835;font-weight:400;margin-left:2px;">:00</span></div>'
             +'</div>'
-            +'<div style="margin-top:8px;font-size:9px;color:#3a3835;font-family:\"DM Mono\",monospace;letter-spacing:.04em;">'+fmt3(totalChk)+' чеков всего</div>'
+            +'<div>'
+            +'<div style="font-size:9px;color:#3a3835;font-family:DM Mono,monospace;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;">Ср. чек</div>'
+            +'<div style="font-family:DM Sans,sans-serif;font-size:22px;font-weight:800;letter-spacing:-.02em;color:#e8e4de;font-variant-numeric:tabular-nums;line-height:1;">'+fmt3(Math.round(avgChk/1000))+'K</div>'
+            +'</div>'
+            +'</div>'
+            +'<div style="font-size:9px;color:#3a3835;font-family:DM Mono,monospace;letter-spacing:.06em;border-top:1px solid rgba(255,255,255,.04);padding-top:8px;">'+fmt3(totalChk)+' чеков всего</div>'
             +'</div>';
         }).join('')
       +'</div>';
