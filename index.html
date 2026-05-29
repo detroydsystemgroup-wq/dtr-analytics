@@ -40777,7 +40777,7 @@ function kbRenderProjectSidebar() {
 
   var projStat  = document.getElementById('kb-proj-stat-proj');
   var itemsStat = document.getElementById('kb-proj-stat-items');
-  if (projStat)  projStat.textContent = projects.length + (archived.length ? '+'+archived.length : '');
+  if (projStat)  projStat.textContent = projects.length + archived.length;
   if (itemsStat) itemsStat.textContent = '—';
 
   function buildItem(p, i, arr) {
@@ -40807,12 +40807,14 @@ function kbRenderProjectSidebar() {
     list.innerHTML = projects.map(buildItem).join('');
   }
 
-  // Archived section
+  // Archived section — уважаем состояние _kbArchiveOpen
   if (listArchived && archLbl) {
     if (archived.length) {
-      listArchived.style.display = '';
       archLbl.style.display = '';
       listArchived.innerHTML = archived.map(buildItem).join('');
+      listArchived.style.display = _kbArchiveOpen ? '' : 'none';
+      var chevron = document.getElementById('kb-archive-chevron');
+      if (chevron) chevron.style.transform = _kbArchiveOpen ? 'rotate(0deg)' : 'rotate(-90deg)';
     } else {
       listArchived.style.display = 'none';
       archLbl.style.display = 'none';
