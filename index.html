@@ -30722,7 +30722,8 @@ function renderProjectGrid() {
   const doneCount = _activeProjs.filter(p => getProjectProgress(p.id).pct === 100).length + archivedProjs.length
   const activeCount = _activeProjs.filter(p => getProjectProgress(p.id).pct < 100).length
   const totalStagesDone = _activeStgs.filter(s => s.status === 'completed').length
-  const totalMRR = _activeProjs.reduce((s,p) => s + (p.monthly_budget||0), 0)
+  const doneProjs = _activeProjs.filter(p => getProjectProgress(p.id).pct === 100)
+  const totalMRR = [...doneProjs, ...archivedProjs].reduce((s,p) => s + (p.monthly_budget||0), 0)
   const setH = (id, v) => { const e = g(id); if(e) e.textContent = v }
   setH('proj-hero-total', activeCount)
   setH('proj-hero-active', activeCount + ' активных · ' + doneCount + ' завершено')
