@@ -34964,7 +34964,10 @@ async function cp2LoadReports(project) {
   // Overview reports list (combined, max 4)
   var combined = [];
   perfReports.forEach(function(r){ combined.push({ id:r.id, type:'perf', title:r.title||r.period_d_label||'Отчёт', date:r.created_at }); });
-  smmReports.forEach(function(r){ combined.push({ id:r.id, type:'smm', title:r.period_label||'SMM', date:r.created_at }); });
+  smmReports.forEach(function(r){
+    var label = r.period_label && r.period_label.length > 2 ? r.period_label : ('SMM · ' + (r.period_label || new Date(r.created_at).toLocaleDateString('ru-RU',{month:'long',year:'numeric'})));
+    combined.push({ id:r.id, type:'smm', title:label, date:r.created_at });
+  });
   combined.sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
 
   // Заполняем дату в разделителе
@@ -35000,13 +35003,19 @@ async function cp2LoadReports(project) {
   }
 
   // Сохраняем все отчёты для поиска
+  var smmTitle = function(r) {
+    var lbl = r.period_label || '';
+    // Если period_label короткий (число или пусто) — генерируем читаемое название
+    if (!lbl || lbl.length <= 3) return 'SMM · ' + new Date(r.created_at).toLocaleDateString('ru-RU',{month:'long',year:'numeric'});
+    return lbl;
+  };
   window._cp2AllReports = {
     perf: perfReports.map(function(r){ return {id:r.id,type:'perf',title:r.title||r.period_d_label||'Отчёт',date:r.created_at}; }),
-    smm:  smmReports.map(function(r){ return {id:r.id,type:'smm',title:r.period_label||'SMM',date:r.created_at}; })
+    smm:  smmReports.map(function(r){ return {id:r.id,type:'smm',title:smmTitle(r),date:r.created_at}; })
   };
   renderReportList(combined.slice(0, 4), 'cp2-reports-list');
   renderReportList(perfReports.map(function(r){ return {id:r.id,type:'perf',title:r.title||r.period_d_label||'Отчёт',date:r.created_at}; }), 'cp2-perf-list');
-  renderReportList(smmReports.map(function(r){ return {id:r.id,type:'smm',title:r.period_label||'SMM',date:r.created_at}; }), 'cp2-smm-list');
+  renderReportList(smmReports.map(function(r){ return {id:r.id,type:'smm',title:smmTitle(r),date:r.created_at}; }), 'cp2-smm-list');
 }
 
 async function cp2LoadActivity(project, limit, containerId) {
