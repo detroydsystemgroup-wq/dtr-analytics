@@ -37602,8 +37602,8 @@ async function loadOverview() {
   var weekEnd = new Date(today); weekEnd.setDate(today.getDate() + 7);
   var MONTHS = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
 
-  // ── Только активные проекты для всех метрик ──
-  var activeProjects = _allProjects.filter(function(p){ return p.status !== 'archived'; });
+  // ── Только активные проекты для всех метрик (не архивные и прогресс < 100%) ──
+  var activeProjects = _allProjects.filter(function(p){ return p.status !== 'archived' && (typeof getProjectProgress === 'undefined' || getProjectProgress(p.id).pct < 100); });
   var activeProjectIds = activeProjects.map(function(p){ return p.id; });
   var activeStagesAll = _allStages.filter(function(s){ return activeProjectIds.indexOf(s.project_id) !== -1; });
 
@@ -37744,7 +37744,8 @@ async function loadOverview() {
   s('sv-health-num', healthScore + '%');
   sc('sv-health-num', healthColor);
   s('sv-health-sub', healthLabel + ' состояние');
-  s('sv-health-foot', activeProjects.length + ' активных · ' + doneProjs.length + ' на 100%');
+  var trulyDoneCount = _allProjects.filter(function(p){ return p.status === 'archived' || (p.status !== 'archived' && typeof getProjectProgress !== 'undefined' && getProjectProgress(p.id).pct === 100); }).length;
+  s('sv-health-foot', activeProjects.length + ' активных · ' + trulyDoneCount + ' завершено');
 
   s('sv-ontime-num', onTimeRate !== null ? onTimeRate + '%' : '—');
   sc('sv-ontime-num', onTimeRate !== null ? (onTimeRate >= 70 ? 'var(--green)' : onTimeRate >= 50 ? 'var(--amber)' : 'var(--red)') : 'var(--txt3)');
