@@ -22201,11 +22201,11 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   pointer-events: none;
 }
 .apl-donut-center-val {
-  font-family: var(--font-display);
-  font-size: 16px;
-  font-weight: 800;
-  letter-spacing: -.04em;
-  color: var(--txt);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: -.01em;
+  color: var(--txt2);
   line-height: 1;
   margin-bottom: 4px;
 }
@@ -33262,7 +33262,7 @@ function _biComputeRow(p) {
   const extras   = (p.extra_expenses || []).reduce((s,e) => s+(parseInt(e.amount)||0), 0)
   const opex     = p.operational_cost || 0
   const mins     = _finTaskHours[p.id] || 0
-  const hours    = Math.round(mins / 60 * 10) / 10
+  const hours    = Math.round(mins / 60)  // целые часы — как в сводке
   const totalCost= salaries + extras + opex
   const profit   = budget > 0 ? budget - totalCost : null
   const marginPct= budget > 0 && totalCost >= 0 ? Math.round(((budget-totalCost)/budget)*100) : (budget > 0 ? 100 : null)
@@ -33299,10 +33299,11 @@ function biSetSegment(seg, btn) {
 
 async function loadFinance() {
   if (!_allProjects.length) await loadProjects()
-  const ids = _allProjects.map(p=>p.id)
+  // Только активные проекты — как в сводке
+  const activeIds = _allProjects.filter(p=>p.status!=='archived').map(p=>p.id)
   _finTaskHours = {}
   try {
-    const {data:tasks} = await sb.from('stage_tasks').select('project_id,time_logged').in('project_id',ids)
+    const {data:tasks} = await sb.from('stage_tasks').select('project_id,time_logged').in('project_id',activeIds)
     ;(tasks||[]).forEach(t=>{ _finTaskHours[t.project_id]=(_finTaskHours[t.project_id]||0)+(t.time_logged||0) })
   } catch(e){}
   renderFinance()
