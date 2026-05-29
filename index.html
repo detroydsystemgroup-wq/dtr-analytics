@@ -27506,37 +27506,81 @@ button, a, [role="button"],
 .cp-act-icon.back{background:rgba(251,191,36,.1)}
 .cp-act-icon.task-open{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
 
-/* Группа: этап + его задачи */
-.cp-act-group{margin-bottom:4px}
-.cp-act-stage-row{border-radius:10px}
-
-/* Задачи внутри этапа */
-.cp-act-tasks-wrap{
-  margin-left:14px;
-  padding-left:14px;
-  border-left:1px solid rgba(255,255,255,.06);
-  margin-top:2px;
-  margin-bottom:4px;
+/* ── Activity Feed: блочная группировка по этапам ── */
+.cp-act-group{
+  margin-bottom:10px;
+  border-radius:14px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.06);
+  background:rgba(255,255,255,.015);
 }
-.cp-act-task-row{padding:5px 8px;border-radius:8px}
+.cp-act-group-header{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 16px;
+  background:rgba(255,255,255,.03);
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.cp-act-group-icon{
+  width:28px;height:28px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.cp-act-group-icon.done {background:rgba(62,207,142,.12);border:1px solid rgba(62,207,142,.18);}
+.cp-act-group-icon.start{background:rgba(184,146,58,.12);border:1px solid rgba(184,146,58,.18);}
+.cp-act-group-icon.back {background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.18);}
+.cp-act-group-title{
+  flex:1;min-width:0;
+  font-family:var(--font-display);font-size:13px;font-weight:600;
+  color:rgba(255,255,255,.85);letter-spacing:-.01em;
+}
+.cp-act-group-title b{font-weight:700;color:#fff;}
+.cp-act-group-stage{
+  font-family:var(--font-mono);font-size:9px;font-weight:600;
+  padding:3px 10px;border-radius:20px;letter-spacing:.04em;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);
+  color:rgba(255,255,255,.4);flex-shrink:0;
+}
+.cp-act-group-stage.done{background:rgba(62,207,142,.07);border-color:rgba(62,207,142,.15);color:#3ecf8e;}
+.cp-act-group-stage.start{background:rgba(184,146,58,.07);border-color:rgba(184,146,58,.15);color:#c9a84c;}
+.cp-act-group-time{
+  font-family:var(--font-mono);font-size:10px;
+  color:rgba(255,255,255,.2);flex-shrink:0;white-space:nowrap;
+}
+
+/* Задачи внутри группы */
+.cp-act-tasks-wrap{padding:6px 0 4px;}
+.cp-act-task-row{
+  display:flex;align-items:center;gap:10px;
+  padding:7px 16px;
+  transition:background .15s;
+}
 .cp-act-task-row:hover{background:rgba(255,255,255,.025)}
-.cp-act-task-icon{width:22px!important;height:22px!important;border-radius:6px!important;flex-shrink:0}
+.cp-act-task-row:not(:last-child){border-bottom:1px solid rgba(255,255,255,.04);}
+.cp-act-task-icon{
+  width:20px;height:20px;border-radius:5px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+}
+.cp-act-task-icon.done{background:rgba(62,207,142,.08);border-color:rgba(62,207,142,.15);}
 .cp-act-connector{display:none}
 
 /* Задача выполнена */
 .cp-act-done-text{
-  color:rgba(255,255,255,.3)!important;
+  color:rgba(255,255,255,.28)!important;
   text-decoration:line-through;
+  text-decoration-color:rgba(255,255,255,.15);
 }
 
 /* Приоритет */
 .cp-act-priority{
   font-family:var(--font-mono);font-size:8px;
   color:#f87171;margin-left:6px;
-  padding:1px 5px;border-radius:4px;
-  background:rgba(248,113,113,.1);
+  padding:1px 6px;border-radius:4px;
+  background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.15);
   vertical-align:middle;
 }
+
+/* stage-row старый — скрываем, используем group-header */
+.cp-act-stage-row{display:none!important;}
 .cp-act-body{flex:1;min-width:0}
 .cp-act-text{
   font-family:var(--font-display);font-size:12px;
@@ -35192,51 +35236,50 @@ async function cp2RenderActivityFull(project) {
     tasksByStage[t.stage_index].push(t);
   });
 
-  // Строим HTML
+  // Строим HTML — блочная группировка по этапам
   var html = '';
-  // Уже отрисованные stage_index чтобы не дублировать задачи
   var renderedStages = {};
 
   stageEvents.forEach(function(h) {
-    var stObj = (typeof STAGES !== 'undefined' && STAGES[h.stage_index]) || { name:'Этап' };
-    var icon  = evIcon[h.event] || evIcon['Начат'];
-    var cls   = h.event === 'Завершён' ? 'done' : h.event === 'Начат' ? 'start' : 'back';
-    var verb  = evText[h.event] || h.event;
+    var stObj  = (typeof STAGES !== 'undefined' && STAGES[h.stage_index]) || { name:'Этап' };
+    var icon   = evIcon[h.event] || evIcon['Начат'];
+    var cls    = h.event === 'Завершён' ? 'done' : h.event === 'Начат' ? 'start' : 'back';
+    var verb   = evText[h.event] || h.event;
+    var tasks  = (!renderedStages[h.stage_index]) ? (tasksByStage[h.stage_index] || []) : [];
+    if (!renderedStages[h.stage_index]) renderedStages[h.stage_index] = true;
 
-    // Блок этапа
+    var stageNum = h.stage_index + 1;
+    var numStr   = (stageNum < 10 ? '0' : '') + stageNum;
+
     html += '<div class="cp-act-group">';
-    html += '<div class="cp-act-row cp-act-stage-row">' +
-      '<div class="cp-act-icon ' + cls + '">' + icon + '</div>' +
-      '<div class="cp-act-body">' +
-        '<div class="cp-act-text">Команда <b>' + verb + '</b></div>' +
-        '<div class="cp-act-tag">' + esc(stObj.name) + (h.note ? ' — ' + esc(h.note) : '') + '</div>' +
-      '</div>' +
-      '<div class="cp-act-time">' + fmtTime(h.created_at) + '</div>' +
-    '</div>';
 
-    // Задачи этого этапа — только первый раз встречаем stage_index
-    if (!renderedStages[h.stage_index]) {
-      renderedStages[h.stage_index] = true;
-      var tasks = tasksByStage[h.stage_index] || [];
-      if (tasks.length) {
-        html += '<div class="cp-act-tasks-wrap">';
-        tasks.forEach(function(t) {
-          var isDone = t.done;
-          var tIcon = isDone ? taskDoneIcon : taskOpenIcon;
-          var tCls  = isDone ? 'done' : 'task-open';
-          var highPriority = t.priority === 'high'
-            ? '<span class="cp-act-priority">срочно</span>' : '';
-          html += '<div class="cp-act-row cp-act-task-row">' +
-            '<div class="cp-act-connector"></div>' +
-            '<div class="cp-act-icon cp-act-task-icon ' + tCls + '">' + tIcon + '</div>' +
-            '<div class="cp-act-body">' +
-              '<div class="cp-act-text ' + (isDone ? 'cp-act-done-text' : '') + '">' + esc(t.title) + highPriority + '</div>' +
-            '</div>' +
-            '<div class="cp-act-time">' + fmtTime(t.created_at) + '</div>' +
+    // ── Заголовок блока ──
+    html +=
+      '<div class="cp-act-group-header">' +
+        '<div class="cp-act-group-icon ' + cls + '">' + icon + '</div>' +
+        '<div class="cp-act-group-title">Команда <b>' + verb + '</b></div>' +
+        '<div class="cp-act-group-stage ' + cls + '">' + numStr + ' · ' + esc(stObj.name).toUpperCase() + '</div>' +
+        '<div class="cp-act-group-time">' + fmtTime(h.created_at) + '</div>' +
+      '</div>';
+
+    // ── Задачи этапа ──
+    if (tasks.length) {
+      html += '<div class="cp-act-tasks-wrap">';
+      tasks.forEach(function(t) {
+        var isDone = t.done;
+        var tIcon  = isDone ? taskDoneIcon : taskOpenIcon;
+        var tCls   = isDone ? 'done' : '';
+        var hiPri  = t.priority === 'high' ? '<span class="cp-act-priority">срочно</span>' : '';
+        html +=
+          '<div class="cp-act-task-row">' +
+            '<div class="cp-act-task-icon ' + tCls + '">' + tIcon + '</div>' +
+            '<div style="flex:1;min-width:0;font-family:var(--font-display);font-size:12px;' +
+              (isDone ? 'color:rgba(255,255,255,.28);text-decoration:line-through;text-decoration-color:rgba(255,255,255,.15);' : 'color:rgba(255,255,255,.7);') +
+            '">' + esc(t.title) + hiPri + '</div>' +
+            '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.18);white-space:nowrap;flex-shrink:0;">' + fmtTime(t.created_at) + '</div>' +
           '</div>';
-        });
-        html += '</div>';
-      }
+      });
+      html += '</div>';
     }
 
     html += '</div>';
