@@ -27687,7 +27687,38 @@ button, a, [role="button"],
   transition:opacity .15s;
 }
 
-/* Горизонтальный разделитель между секциями */
+/* Поиск */
+.mck-search-wrap{padding:0 32px 16px}
+.mck-search-box{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;
+  padding:10px 14px;
+  transition:border-color .2s;
+}
+.mck-search-box:focus-within{
+  border-color:rgba(255,255,255,.18);
+  background:rgba(255,255,255,.06);
+}
+.mck-search-input{
+  flex:1;background:none;border:none;outline:none;
+  font-family:var(--font-mono);font-size:12px;
+  color:rgba(255,255,255,.8);letter-spacing:.02em;
+}
+.mck-search-input::placeholder{color:rgba(255,255,255,.22)}
+.mck-search-clear{
+  background:none;border:none;cursor:pointer;
+  padding:2px;display:flex;align-items:center;
+  opacity:.6;transition:opacity .15s;
+}
+.mck-search-clear:hover{opacity:1}
+.mck-search-hint{
+  font-family:var(--font-mono);font-size:10px;
+  color:rgba(255,255,255,.25);letter-spacing:.04em;
+  margin-top:6px;min-height:14px;
+  padding:0 2px;
+}
 .mck-hr{
   height:1px;background:rgba(255,255,255,.06);
   margin:0 0 4px;
@@ -27855,6 +27886,25 @@ button, a, [role="button"],
     </div>
   </div>
 
+  <!-- Поиск -->
+  <div class="mck-search-wrap">
+    <div class="mck-search-box">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input
+        class="mck-search-input"
+        id="cp2-reports-search"
+        type="text"
+        placeholder="Поиск по отчётам — например, «май» или «SMM»"
+        autocomplete="off"
+        oninput="cp2FilterReports(this.value)"
+      />
+      <button class="mck-search-clear" id="cp2-search-clear" onclick="cp2ClearSearch()" style="display:none;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="mck-search-hint" id="cp2-search-hint"></div>
+  </div>
+
   <!-- Разделитель с датой -->
   <div class="mck-divider">
     <div class="mck-divider-line"></div>
@@ -27864,8 +27914,6 @@ button, a, [role="button"],
 
   <!-- Секции -->
   <div class="mck-sections">
-
-    <!-- Performance -->
     <div class="mck-section">
       <div class="mck-section-head">
         <div class="mck-section-label">
@@ -27882,7 +27930,6 @@ button, a, [role="button"],
 
     <div class="mck-hr"></div>
 
-    <!-- SMM -->
     <div class="mck-section">
       <div class="mck-section-head">
         <div class="mck-section-label">
@@ -27896,7 +27943,6 @@ button, a, [role="button"],
       </div>
       <div id="cp2-smm-list" class="mck-list"></div>
     </div>
-
   </div>
 
   <!-- Футер -->
@@ -34847,7 +34893,11 @@ async function cp2LoadReports(project) {
     }).join('');
   }
 
-  renderReportList(combined.slice(0, 4), 'cp2-reports-list');
+  // Сохраняем все отчёты для поиска
+  window._cp2AllReports = {
+    perf: perfReports.map(function(r){ return {id:r.id,type:'perf',title:r.title||r.period_d_label||'Отчёт',date:r.created_at}; }),
+    smm:  smmReports.map(function(r){ return {id:r.id,type:'smm',title:r.period_label||'SMM',date:r.created_at}; })
+  };
   renderReportList(perfReports.map(function(r){ return {id:r.id,type:'perf',title:r.title||r.period_d_label||'Отчёт',date:r.created_at}; }), 'cp2-perf-list');
   renderReportList(smmReports.map(function(r){ return {id:r.id,type:'smm',title:r.period_label||'SMM',date:r.created_at}; }), 'cp2-smm-list');
 }
@@ -40537,5 +40587,111 @@ window.kbDeleteCat = async function(id) {
 })();
 </script>
 
-</body>
+<script>
+/* ── Поиск отчётов ── */
+function cp2FilterReports(query) {
+  var q = (query || '').trim().toLowerCase();
+  var clearBtn = document.getElementById('cp2-search-clear');
+  var hint     = document.getElementById('cp2-search-hint');
+  if (clearBtn) clearBtn.style.display = q ? 'flex' : 'none';
+
+  var all = window._cp2AllReports;
+  if (!all) return;
+
+  // Словарь месяцев для поиска по-русски
+  var MONTHS = {
+    'янв':'01','фев':'02','мар':'03','апр':'04','май':'05','июн':'06',
+    'июл':'07','авг':'08','сен':'09','окт':'10','ноя':'11','дек':'12',
+    'январ':'01','феврал':'02','март':'03','апрел':'04','июнь':'06',
+    'июль':'07','август':'08','сентябр':'09','октябр':'10','ноябр':'11','декабр':'12',
+    'january':'01','february':'02','march':'03','april':'04','may':'05','june':'06',
+    'july':'07','august':'08','september':'09','october':'10','november':'11','december':'12'
+  };
+
+  function matches(r) {
+    if (!q) return true;
+    var title = (r.title || '').toLowerCase();
+    var dateStr = r.date ? new Date(r.date).toLocaleDateString('ru-RU', {month:'long',year:'numeric',day:'numeric'}).toLowerCase() : '';
+    var dateEn  = r.date ? new Date(r.date).toLocaleDateString('en-US', {month:'long',year:'numeric'}).toLowerCase() : '';
+    var type    = r.type === 'smm' ? 'smm социальные медиа' : 'performance эффективность perf';
+
+    // Проверяем прямое совпадение
+    if (title.includes(q) || dateStr.includes(q) || dateEn.includes(q) || type.includes(q)) return true;
+
+    // Проверяем месяц через словарь
+    for (var key in MONTHS) {
+      if (q.startsWith(key)) {
+        var mon = MONTHS[key];
+        if (r.date) {
+          var d = new Date(r.date);
+          var m = ('0' + (d.getMonth() + 1)).slice(-2);
+          if (m === mon) return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  var perfFiltered = (all.perf || []).filter(matches);
+  var smmFiltered  = (all.smm  || []).filter(matches);
+  var total = perfFiltered.length + smmFiltered.length;
+
+  // Ре-рендер с подсветкой
+  renderReportListFiltered(perfFiltered, 'cp2-perf-list', q);
+  renderReportListFiltered(smmFiltered,  'cp2-smm-list',  q);
+
+  // Счётчики
+  var perfCnt = document.getElementById('cp2-perf-cnt');
+  var smmCnt  = document.getElementById('cp2-smm-cnt');
+  if (perfCnt) perfCnt.textContent = perfFiltered.length;
+  if (smmCnt)  smmCnt.textContent  = smmFiltered.length;
+
+  // Подсказка
+  if (hint) {
+    if (!q) { hint.textContent = ''; return; }
+    hint.textContent = total > 0
+      ? 'Найдено: ' + total + ' ' + (total === 1 ? 'отчёт' : total < 5 ? 'отчёта' : 'отчётов')
+      : 'По запросу «' + query + '» ничего не найдено';
+  }
+}
+
+function renderReportListFiltered(items, containerId, q) {
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  if (!items.length) {
+    el.innerHTML = '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.12);padding:16px 0;letter-spacing:.06em;">Нет совпадений</div>';
+    return;
+  }
+
+  function highlight(text, query) {
+    if (!query) return esc(text);
+    var re = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi');
+    return esc(text).replace(re, '<mark style="background:rgba(201,168,76,.25);color:#dec17a;border-radius:2px;padding:0 1px;">$1</mark>');
+  }
+
+  el.innerHTML = items.map(function(r, idx) {
+    var isSmm   = r.type === 'smm';
+    var typeCls = isSmm ? 'smm' : 'perf';
+    var typeLbl = isSmm ? 'SMM' : 'PERF';
+    var onclick = isSmm ? "loadAndOpenSMM('" + r.id + "')" : "openReport('" + r.id + "')";
+    var dateStr = '—';
+    if (r.date) {
+      try { dateStr = new Date(r.date).toLocaleDateString('ru-RU', {day:'numeric',month:'short',year:'numeric'}); } catch(e){}
+    }
+    return '<div class="mck-report-row" onclick="' + onclick + '">' +
+      '<div class="mck-report-index">0' + (idx + 1) + '</div>' +
+      '<div class="mck-report-name">' + highlight(r.title, q) + '</div>' +
+      '<div class="mck-report-date">' + highlight(dateStr, q) + '</div>' +
+      '<div class="mck-report-type ' + typeCls + '">' + typeLbl + '</div>' +
+      '<svg class="mck-report-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>' +
+    '</div>';
+  }).join('');
+}
+
+function cp2ClearSearch() {
+  var inp = document.getElementById('cp2-reports-search');
+  if (inp) { inp.value = ''; inp.focus(); }
+  cp2FilterReports('');
+}
+</script>
 </html>
