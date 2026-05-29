@@ -34989,6 +34989,7 @@ async function cp2LoadReports(project) {
     perf: perfReports.map(function(r){ return {id:r.id,type:'perf',title:r.title||r.period_d_label||'Отчёт',date:r.created_at}; }),
     smm:  smmReports.map(function(r){ return {id:r.id,type:'smm',title:r.period_label||'SMM',date:r.created_at}; })
   };
+  renderReportList(combined.slice(0, 4), 'cp2-reports-list');
   renderReportList(perfReports.map(function(r){ return {id:r.id,type:'perf',title:r.title||r.period_d_label||'Отчёт',date:r.created_at}; }), 'cp2-perf-list');
   renderReportList(smmReports.map(function(r){ return {id:r.id,type:'smm',title:r.period_label||'SMM',date:r.created_at}; }), 'cp2-smm-list');
 }
