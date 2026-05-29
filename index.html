@@ -27563,18 +27563,137 @@ button, a, [role="button"],
 .cp-smm-val{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
 .cp-smm-bench-row{display:flex;align-items:center;gap:8px;padding:10px 20px;border-top:1px solid rgba(255,255,255,.04);font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.2)}
 
-.cp-reports-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.cp-reports-title{font-family:var(--font-mono);font-size:9px;letter-spacing:.18em;color:rgba(255,255,255,.25);text-transform:uppercase}
-.cp-reports-total{font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.2)}
-.cp-reports-sections{display:flex;flex-direction:column;gap:20px}
-.cp-reports-section-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.05)}
-.cp-reports-section-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.cp-reports-section-icon.perf{background:rgba(56,178,172,.1);border:1px solid rgba(56,178,172,.18)}
-.cp-reports-section-icon.smm{background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.18)}
-.cp-reports-section-name{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);flex:1}
-.cp-reports-section-count{font-family:var(--font-mono);font-size:11px;font-weight:600;padding:2px 10px;border-radius:20px}
-.cp-reports-section-count.perf{background:rgba(56,178,172,.1);color:#38b2ac}
-.cp-reports-section-count.smm{background:rgba(184,146,58,.1);color:#c9a84c}
+/* ══ McKinsey Reports Panel ══ */
+.mck-header{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  padding:28px 32px 20px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.mck-eyebrow{
+  font-family:var(--font-mono);font-size:9px;letter-spacing:.22em;
+  text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:6px;
+}
+.mck-title{
+  font-family:var(--font-display);font-size:22px;font-weight:700;
+  letter-spacing:-.03em;color:rgba(255,255,255,.88);
+}
+.mck-total-block{text-align:right}
+.mck-total-num{
+  font-family:var(--font-display);font-size:40px;font-weight:800;
+  letter-spacing:-.05em;line-height:1;color:#fff;
+  font-variant-numeric:tabular-nums;
+}
+.mck-total-lbl{
+  font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;
+  color:rgba(255,255,255,.25);margin-top:4px;text-transform:uppercase;
+}
+
+/* Разделитель */
+.mck-divider{
+  display:flex;align-items:center;gap:12px;
+  padding:16px 32px;
+}
+.mck-divider-line{flex:1;height:1px;background:rgba(255,255,255,.06)}
+.mck-divider-label{
+  font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;
+  color:rgba(255,255,255,.2);white-space:nowrap;text-transform:uppercase;
+}
+
+/* Секции */
+.mck-sections{padding:0 32px 24px}
+.mck-section{padding:20px 0}
+.mck-section-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;
+}
+.mck-section-label{
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--font-mono);font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.35);
+}
+.mck-section-bar{
+  width:3px;height:14px;border-radius:2px;flex-shrink:0;
+}
+.mck-section-bar.perf{background:#38b2ac}
+.mck-section-bar.smm{background:#c9a84c}
+.mck-section-meta{display:flex;align-items:baseline;gap:5px}
+.mck-section-count{
+  font-family:var(--font-display);font-size:20px;font-weight:700;
+  letter-spacing:-.03em;line-height:1;
+}
+.mck-section-count.perf{color:#38b2ac}
+.mck-section-count.smm{color:#c9a84c}
+.mck-section-unit{
+  font-family:var(--font-mono);font-size:9px;
+  color:rgba(255,255,255,.2);letter-spacing:.06em;
+}
+.mck-list{}
+
+/* Строка отчёта в McKinsey стиле */
+.mck-report-row{
+  display:flex;align-items:center;
+  padding:14px 0;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  cursor:pointer;
+  transition:background .15s;
+  gap:16px;
+}
+.mck-report-row:last-child{border-bottom:none}
+.mck-report-row:hover .mck-report-name{color:#fff}
+.mck-report-row:hover .mck-report-arrow{opacity:.7}
+.mck-report-index{
+  font-family:var(--font-mono);font-size:10px;
+  color:rgba(255,255,255,.15);width:20px;flex-shrink:0;text-align:right;
+}
+.mck-report-name{
+  flex:1;min-width:0;
+  font-family:var(--font-display);font-size:14px;font-weight:500;
+  color:rgba(255,255,255,.72);letter-spacing:-.01em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  transition:color .15s;
+}
+.mck-report-date{
+  font-family:var(--font-mono);font-size:10px;
+  color:rgba(255,255,255,.2);flex-shrink:0;letter-spacing:.03em;
+}
+.mck-report-type{
+  font-family:var(--font-mono);font-size:9px;font-weight:600;
+  padding:3px 10px;border-radius:4px;flex-shrink:0;letter-spacing:.06em;
+}
+.mck-report-type.perf{
+  background:rgba(56,178,172,.08);color:#38b2ac;
+  border:1px solid rgba(56,178,172,.2);
+}
+.mck-report-type.smm{
+  background:rgba(184,146,58,.08);color:#c9a84c;
+  border:1px solid rgba(184,146,58,.2);
+}
+.mck-report-arrow{
+  flex-shrink:0;color:rgba(255,255,255,.15);opacity:.4;
+  transition:opacity .15s;
+}
+
+/* Горизонтальный разделитель между секциями */
+.mck-hr{
+  height:1px;background:rgba(255,255,255,.06);
+  margin:0 0 4px;
+}
+
+/* Футер */
+.mck-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 32px;
+  border-top:1px solid rgba(255,255,255,.06);
+  margin-top:4px;
+}
+.mck-footer-brand{
+  font-family:var(--font-mono);font-size:8px;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(255,255,255,.12);
+}
+.mck-footer-copy{
+  font-family:var(--font-mono);font-size:8px;letter-spacing:.06em;
+  color:rgba(255,255,255,.1);
+}
 .cp-footer{padding:12px 36px;border-top:1px solid rgba(255,255,255,.04);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .cp-footer-name{font-family:var(--font-mono);font-size:8px;letter-spacing:.1em;color:rgba(255,255,255,.15);text-transform:uppercase}
 .cp-footer-copy{font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.1)}
@@ -27693,32 +27812,69 @@ button, a, [role="button"],
 <div class="cp-stages-list" id="cp2-stages-detail"></div>
 </div>
 <div class="cp-tab-content" id="cp2-tab-reports">
-<div class="cp-reports-header">
-  <div class="cp-reports-title">ВСЕ ОТЧЁТЫ</div>
-  <div class="cp-reports-total" id="cp2-reports-total">—</div>
-</div>
-<div class="cp-reports-sections">
-  <div class="cp-reports-section">
-    <div class="cp-reports-section-head">
-      <div class="cp-reports-section-icon perf">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#38b2ac" stroke-width="1.8" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      </div>
-      <div class="cp-reports-section-name">Performance</div>
-      <div class="cp-reports-section-count perf" id="cp2-perf-cnt">—</div>
+
+  <!-- Шапка -->
+  <div class="mck-header">
+    <div>
+      <div class="mck-eyebrow">АНАЛИТИКА ПРОЕКТА</div>
+      <div class="mck-title">Отчётная документация</div>
     </div>
-    <div id="cp2-perf-list"></div>
-  </div>
-  <div class="cp-reports-section">
-    <div class="cp-reports-section-head">
-      <div class="cp-reports-section-icon smm">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-      </div>
-      <div class="cp-reports-section-name">SMM</div>
-      <div class="cp-reports-section-count smm" id="cp2-smm-cnt">—</div>
+    <div class="mck-total-block">
+      <div class="mck-total-num" id="cp2-reports-total">—</div>
+      <div class="mck-total-lbl">документов готово</div>
     </div>
-    <div id="cp2-smm-list"></div>
   </div>
-</div>
+
+  <!-- Разделитель с датой -->
+  <div class="mck-divider">
+    <div class="mck-divider-line"></div>
+    <div class="mck-divider-label" id="mck-date-label">—</div>
+    <div class="mck-divider-line"></div>
+  </div>
+
+  <!-- Секции -->
+  <div class="mck-sections">
+
+    <!-- Performance -->
+    <div class="mck-section">
+      <div class="mck-section-head">
+        <div class="mck-section-label">
+          <div class="mck-section-bar perf"></div>
+          PERFORMANCE — АНАЛИЗ ЭФФЕКТИВНОСТИ
+        </div>
+        <div class="mck-section-meta">
+          <span class="mck-section-count perf" id="cp2-perf-cnt">—</span>
+          <span class="mck-section-unit">отчётов</span>
+        </div>
+      </div>
+      <div id="cp2-perf-list" class="mck-list"></div>
+    </div>
+
+    <div class="mck-hr"></div>
+
+    <!-- SMM -->
+    <div class="mck-section">
+      <div class="mck-section-head">
+        <div class="mck-section-label">
+          <div class="mck-section-bar smm"></div>
+          SMM — СОЦИАЛЬНЫЕ МЕДИА
+        </div>
+        <div class="mck-section-meta">
+          <span class="mck-section-count smm" id="cp2-smm-cnt">—</span>
+          <span class="mck-section-unit">отчётов</span>
+        </div>
+      </div>
+      <div id="cp2-smm-list" class="mck-list"></div>
+    </div>
+
+  </div>
+
+  <!-- Футер -->
+  <div class="mck-footer">
+    <div class="mck-footer-brand">DETROYD ANALYTICS SYSTEM</div>
+    <div class="mck-footer-copy">Конфиденциально · только для клиента</div>
+  </div>
+
 </div>
 <div class="cp-tab-content" id="cp2-tab-updates">
 <div class="cp-card"><div class="cp-card-header"><div class="cp-card-title">Вся активность</div><div style="display:flex;align-items:center;gap:5px;"><div style="width:5px;height:5px;border-radius:50%;background:#3ecf8e;"></div><span style="font-family:var(--font-mono);font-size:8px;color:#3ecf8e;letter-spacing:.1em;">LIVE</span></div></div><div id="cp2-activity-full"></div></div>
@@ -34615,49 +34771,34 @@ async function cp2LoadReports(project) {
   smmReports.forEach(function(r){ combined.push({ id:r.id, type:'smm', title:r.period_label||'SMM', date:r.created_at }); });
   combined.sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
 
+  // Заполняем дату в разделителе
+  var dateLabel = g('mck-date-label');
+  if (dateLabel) {
+    dateLabel.textContent = new Date().toLocaleDateString('ru-RU', {day:'numeric', month:'long', year:'numeric'}).toUpperCase();
+  }
+
   function renderReportList(items, containerId) {
     var el = g(containerId);
     if (!el) return;
     if (!items.length) {
-      el.innerHTML = '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.15);text-align:center;padding:16px 0;">Отчётов пока нет</div>';
+      el.innerHTML = '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.12);padding:16px 0;letter-spacing:.06em;">Нет данных</div>';
       return;
     }
-    el.innerHTML = items.map(function(r) {
+    el.innerHTML = items.map(function(r, idx) {
       var isSmm = r.type === 'smm';
-
-      /* Иконка */
-      var iconBg  = isSmm ? 'rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.18)' : 'rgba(56,178,172,.1);border:1px solid rgba(56,178,172,.18)';
-      var iconCol = isSmm ? '#c9a84c' : '#38b2ac';
-      var iconSvg = isSmm
-        ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="' + iconCol + '" stroke-width="1.8" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>'
-        : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="' + iconCol + '" stroke-width="1.8" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>';
-
-      /* Дата */
+      var typeCls = isSmm ? 'smm' : 'perf';
+      var typeLabel = isSmm ? 'SMM' : 'PERF';
+      var onclick = isSmm ? "loadAndOpenSMM('" + r.id + "')" : "openReport('" + r.id + "')";
       var dateStr = '—';
       if (r.date) {
-        try {
-          dateStr = new Date(r.date).toLocaleDateString('ru-RU', { day:'numeric', month:'long', year:'numeric' });
-        } catch(e) {}
+        try { dateStr = new Date(r.date).toLocaleDateString('ru-RU', {day:'numeric', month:'short', year:'numeric'}); } catch(e){}
       }
-
-      /* Subtitle: дата · тип-уточнение */
-      var subtitle = dateStr;
-
-      /* Бейдж */
-      var badgeCls = isSmm ? 'smm' : 'perf';
-      var badgeTxt = isSmm ? 'SMM' : 'Performance';
-
-      /* Onclick */
-      var onclick = isSmm ? "loadAndOpenSMM('" + r.id + "')" : "openReport('" + r.id + "')";
-
-      return '<div class="cp-report-row" onclick="' + onclick + '">' +
-        '<div class="cp-report-icon" style="background:' + iconBg + ';">' + iconSvg + '</div>' +
-        '<div class="cp-report-info">' +
-          '<div class="cp-report-name">' + esc(r.title) + '</div>' +
-          '<div class="cp-report-meta">' + subtitle + '</div>' +
-        '</div>' +
-        '<span class="cp-report-badge ' + badgeCls + '">' + badgeTxt + '</span>' +
-        '<svg class="cp-report-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>' +
+      return '<div class="mck-report-row" onclick="' + onclick + '">' +
+        '<div class="mck-report-index">0' + (idx + 1) + '</div>' +
+        '<div class="mck-report-name">' + esc(r.title) + '</div>' +
+        '<div class="mck-report-date">' + dateStr + '</div>' +
+        '<div class="mck-report-type ' + typeCls + '">' + typeLabel + '</div>' +
+        '<svg class="mck-report-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>' +
       '</div>';
     }).join('');
   }
