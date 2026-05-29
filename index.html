@@ -21383,6 +21383,22 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   height: 60px !important;
   padding: 0 40px !important;
 }
+
+/* ══ 10. STACKING FIX — контент не проходит сквозь sticky-хедеры ══
+   .page задаёт position:relative + z-index:1 → создаёт stacking context.
+   Sticky-элементы внутри должны иметь z-index выше любого контента.     */
+#page-project .pp-header   { z-index: 50 !important; }
+#page-project .pp-tabs-bar { z-index: 49 !important; }
+
+#page-project .pp-body,
+#page-project .tracker-stage,
+#page-project .tracker-stage-card,
+#page-project .pp-tab-content,
+#page-project .pp-mini-stats,
+#page-project .pp-prog-strip {
+  position: relative;
+  z-index: 0 !important;
+}
 </style>
 <style id="dtr-live-indicator-fix">
 /* ── LIVE INDICATOR — clean dot + label ── */
