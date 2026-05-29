@@ -14550,6 +14550,19 @@ select:focus {
   letter-spacing: -.01em;
 }
 /* Column headers above row lists */
+.fin-col-head3 {
+  display: grid;
+  grid-template-columns: 1fr 130px 28px;
+  gap: 8px;
+  padding: 0 0 4px;
+  margin-bottom: 2px;
+  border-bottom: 1px solid var(--brd);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--txt3);
+}
 .fin-col-head {
   display: grid;
   grid-template-columns: 1fr 128px 28px;
@@ -26791,46 +26804,43 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
         </div>
       </div>
 
-      <!-- ② ЗАРПЛАТЫ ПОДРЯДЧИКОВ -->
+      <!-- ② ЗАРПЛАТЫ -->
       <div class="fin-section">
         <div class="fin-section-label" style="display:flex;align-items:center;justify-content:space-between;">
-          <span>Зарплаты подрядчиков</span>
-          <button class="task-add-btn" onclick="finAddContractor()">+ Добавить</button>
+          <span>Зарплаты</span>
+          <button class="task-add-btn" onclick="finAddRow('salary')">+ Добавить</button>
         </div>
-        <div class="fin-col-head">
-          <span>Категория</span>
-          <span>Сумма / мес</span>
-          <span></span>
-        </div>
-        <div id="fin-contractors-list"></div>
+        <div class="fin-col-head3"><span>Имя / роль</span><span>Сумма / мес</span><span></span></div>
+        <div id="fin-list-salary"></div>
       </div>
 
-      <!-- ③ ДОПОЛНИТЕЛЬНЫЕ РАСХОДЫ -->
+      <!-- ③ ОПЕРАЦИОННЫЕ (opex) -->
       <div class="fin-section">
         <div class="fin-section-label" style="display:flex;align-items:center;justify-content:space-between;">
-          <span>Доп. расходы</span>
-          <button class="task-add-btn" onclick="finAddExpense()">+ Добавить</button>
+          <span>Операционные расходы</span>
+          <button class="task-add-btn" onclick="finAddRow('opex')">+ Добавить</button>
         </div>
-        <div class="fin-col-head">
-          <span>Категория</span>
-          <span>Сумма / мес</span>
-          <span></span>
-        </div>
-        <div id="fin-expenses-list"></div>
+        <div class="fin-col-head3"><span>Статья (аренда, инструменты...)</span><span>Сумма / мес</span><span></span></div>
+        <div id="fin-list-opex"></div>
       </div>
 
-      <!-- ④ ОПЕРАЦИОННЫЕ РАСХОДЫ -->
+      <!-- ④ РАСХОДЫ НА ПРОЕКТ -->
       <div class="fin-section">
-        <div class="fin-section-label">Операционные расходы</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:end;">
-          <div class="field" style="margin-bottom:0;">
-            <label>Сумма / мес <span style="color:var(--txt3);font-size:9px;">(сум)</span></label>
-            <input type="number" id="fin-opex-inp" placeholder="500 000" min="0" oninput="finRecalc()" style="-moz-appearance:textfield;">
-          </div>
-          <div class="field" style="margin-bottom:0;">
-            <label>Потрач. часы <span style="color:var(--txt3);font-size:9px;">(авто из задач)</span></label>
-            <input type="number" id="fin-hours-inp" placeholder="0" min="0" oninput="finRecalc()" style="background:rgba(184,146,58,.06);border-color:rgba(184,146,58,.2);color:var(--txt2);-moz-appearance:textfield;">
-          </div>
+        <div class="fin-section-label" style="display:flex;align-items:center;justify-content:space-between;">
+          <span>Расходы на проект</span>
+          <button class="task-add-btn" onclick="finAddRow('project')">+ Добавить</button>
+        </div>
+        <div class="fin-col-head3"><span>Статья (съёмка, реквизит...)</span><span>Сумма / мес</span><span></span></div>
+        <div id="fin-list-project"></div>
+      </div>
+
+      <!-- ⑤ Часы (авто) -->
+      <div class="fin-section" style="padding-bottom:6px;">
+        <div class="fin-section-label">Отработанные часы</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <input type="number" id="fin-hours-inp" placeholder="0" min="0" oninput="finRecalc()"
+            style="flex:1;background:rgba(184,146,58,.06);border:1px solid rgba(184,146,58,.2);color:var(--txt2);border-radius:var(--r-sm);padding:10px 14px;font-family:var(--font-mono);font-size:13px;-moz-appearance:textfield;">
+          <span style="font-family:var(--font-mono);font-size:11px;color:var(--txt3);">часов (авто из задач)</span>
         </div>
       </div>
 
@@ -26846,14 +26856,17 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
             <span style="padding-left:12px;">↳ Зарплаты</span>
             <span id="fpv-salaries" style="font-family:var(--font-mono);">—</span>
           </div>
-          <div class="fin-pnl-row" style="font-size:11px;color:var(--txt3);">
-            <span style="padding-left:12px;">↳ Доп. расходы</span>
-            <span id="fpv-extras" style="font-family:var(--font-mono);">—</span>
-          </div>
+          <div id="fpv-salary-detail" style="padding-left:24px;"></div>
           <div class="fin-pnl-row" style="font-size:11px;color:var(--txt3);">
             <span style="padding-left:12px;">↳ Операционные</span>
             <span id="fpv-opex" style="font-family:var(--font-mono);">—</span>
           </div>
+          <div id="fpv-opex-detail" style="padding-left:24px;"></div>
+          <div class="fin-pnl-row" style="font-size:11px;color:var(--txt3);">
+            <span style="padding-left:12px;">↳ На проект</span>
+            <span id="fpv-extras" style="font-family:var(--font-mono);">—</span>
+          </div>
+          <div id="fpv-project-detail" style="padding-left:24px;"></div>
           <div class="fin-pnl-sep"></div>
           <div class="fin-pnl-row">
             <span>Итого расходы</span>
@@ -33261,16 +33274,24 @@ let _biSelectedId = null
 // ── Compute P&L row for one project ──
 function _biComputeRow(p) {
   const budget   = p.monthly_budget || 0
-  const salaries = (p.contractors || []).reduce((s,c) => s+(parseInt(c.amount)||0), 0)
-  const extras   = (p.extra_expenses || []).reduce((s,e) => s+(parseInt(e.amount)||0), 0)
-  const opex     = p.operational_cost || 0
   const mins     = _finTaskHours[p.id] || 0
-  const hours    = Math.round(mins / 60)  // целые часы — как в сводке
-  const totalCost= salaries + extras + opex
-  const profit   = budget > 0 ? budget - totalCost : null
-  const marginPct= budget > 0 && totalCost >= 0 ? Math.round(((budget-totalCost)/budget)*100) : (budget > 0 ? 100 : null)
-  const hasBudget= budget > 0
-  return { p, budget, salaries, extras, opex, hours, totalCost, profit, marginPct, hasBudget }
+  const hours    = Math.round(mins / 60)
+
+  // Поддержка нового unified формата (cat-поле) и старого формата
+  const allExp   = [
+    ...(p.contractors   ||[]).map(c=>({...c, cat: c.cat||'salary'})),
+    ...(p.extra_expenses||[]).map(e=>({...e, cat: e.cat||'project'}))
+  ]
+  const salaries = allExp.filter(e=>e.cat==='salary').reduce((s,e)=>s+(parseInt(e.amount)||0),0)
+  const opex     = allExp.filter(e=>e.cat==='opex').reduce((s,e)=>s+(parseInt(e.amount)||0),0)
+    + (p.operational_cost && !allExp.some(e=>e.cat==='opex') ? p.operational_cost : 0)
+  const project  = allExp.filter(e=>e.cat==='project').reduce((s,e)=>s+(parseInt(e.amount)||0),0)
+
+  const totalCost = salaries + opex + project
+  const profit    = budget > 0 ? budget - totalCost : null
+  const marginPct = budget > 0 ? Math.round(((budget-totalCost)/budget)*100) : (budget>0?100:null)
+  const hasBudget = budget > 0
+  return { p, budget, salaries, extras:project, opex, project, hours, totalCost, profit, marginPct, hasBudget, allExp }
 }
 
 // ── Segment filter ──
@@ -33567,37 +33588,47 @@ function biShowDetail(row) {
     <div class="apl-dkpi-lbl">${k.label}</div>
   </div>`).join('')
 
-  const costColors = ['var(--a2)','#f59e0b','#f87171','#4ade80']
-  const costItems = [
-    {name:'Зарплаты',      amount:salaries, color:costColors[0]},
-    {name:'Доп. расходы',  amount:extras,   color:costColors[1]},
-    {name:'Операционные',  amount:opex,     color:costColors[2]},
-  ].filter(c=>c.amount>0)
+  // Детализация по категориям
+  const catColors = { salary:'var(--a2)', opex:'#f59e0b', project:'#f87171' }
+  const catLabels = { salary:'Зарплаты', opex:'Операционные', project:'На проект' }
+  const allExpDetail = row.allExp || []
 
   function _fmtH(h) {
     const totalMin = Math.round(h * 60)
-    const hrs = Math.floor(totalMin / 60)
-    const mins = totalMin % 60
-    if (hrs === 0) return mins + 'м'
-    if (mins === 0) return hrs + 'ч'
-    return hrs + 'ч ' + mins + 'м'
+    const hrs = Math.floor(totalMin / 60); const mins = totalMin % 60
+    if (hrs===0) return mins+'м'; if (mins===0) return hrs+'ч'; return hrs+'ч '+mins+'м'
   }
-  if(hours>0) costItems.push({name:'Часов: '+_fmtH(hours), amount:0, color:costColors[3], isHours:true})
 
-  const maxAmt = Math.max(...costItems.filter(c=>c.amount>0).map(c=>c.amount), 1)
+  // Строим HTML: сначала группы, внутри строки
+  let detailHTML = ''
+  ;['salary','opex','project'].forEach(cat => {
+    const rows = allExpDetail.filter(e=>e.cat===cat && (e.amount||0)>0)
+    if (!rows.length) return
+    const total = rows.reduce((s,e)=>s+(parseInt(e.amount)||0),0)
+    const col = catColors[cat]
+    detailHTML += `<div style="margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <span style="font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:${col};opacity:.7;">${catLabels[cat]}</span>
+        <span style="font-family:var(--font-mono);font-size:10px;color:${col};">${fmtM(total)} сум</span>
+      </div>`
+    rows.forEach(e => {
+      const pct = Math.round(e.amount/total*100)
+      detailHTML += `<div class="apl-cost-item" style="margin-bottom:3px;">
+        <span class="apl-cost-dot" style="background:${col};opacity:.6;"></span>
+        <span class="apl-cost-name" style="color:rgba(255,255,255,.6);">${esc(e.name||'—')}</span>
+        <div class="apl-cost-bar-wrap"><div class="apl-cost-track"><div class="apl-cost-fill" style="width:${pct}%;background:${col};opacity:.7;"></div></div></div>
+        <span class="apl-cost-val">${fmtM(e.amount)} сум</span>
+      </div>`
+    })
+    detailHTML += '</div>'
+  })
+  if (hours>0) detailHTML += `<div style="display:flex;justify-content:space-between;padding-top:6px;border-top:1px solid var(--brd);margin-top:4px;">
+    <span style="font-family:var(--font-display);font-size:11px;color:rgba(255,255,255,.4);">Отработано часов</span>
+    <span style="font-family:var(--font-mono);font-size:11px;color:#4ade80;">${_fmtH(hours)}</span>
+  </div>`
 
-  g('bi-detail-costs').innerHTML = costItems.length ? costItems.map(c=>`
-    <div class="apl-cost-item">
-      <span class="apl-cost-dot" style="background:${c.color};"></span>
-      <span class="apl-cost-name">${esc(c.name)}</span>
-      ${c.amount>0 ? `<div class="apl-cost-bar-wrap">
-        <div class="apl-cost-track">
-          <div class="apl-cost-fill" style="width:${Math.round(c.amount/maxAmt*100)}%;background:${c.color};"></div>
-        </div>
-      </div>` : '<div style="flex:1;"></div>'}
-      <span class="apl-cost-val">${c.amount>0 ? fmtM(c.amount)+' сум' : (c.isHours?_fmtH(hours):'—')}</span>
-    </div>`).join('')
-    : '<div style="font-family:var(--font-display);font-size:12px;color:rgba(255,255,255,.25);padding:8px 0;">Расходы не добавлены в P&L</div>'
+  g('bi-detail-costs').innerHTML = detailHTML ||
+    '<div style="font-family:var(--font-display);font-size:12px;color:rgba(255,255,255,.25);padding:8px 0;">Расходы не добавлены в P&L</div>'
 
   const editBtn = g('bi-detail-edit-btn')
   if(editBtn) editBtn.onclick = ()=>openFinanceModal(p.id, p.name)
@@ -33816,14 +33847,15 @@ async function stopActiveTimer() {
 }
 
 // ── Finance modal open ──
+// ── Finance: единая структура расходов { name, amount, cat: 'salary'|'opex'|'project' } ──
+let _finAllExpenses = []  // все расходы в одном массиве
+
 async function openFinanceModal(projId, projName) {
   g('fin-modal-proj-id').value = projId
   g('fin-modal-proj-name').textContent = projName
 
-  // Load full project finance data
   const p = _allProjects.find(x => x.id === projId) || {}
 
-  // Update modal icon with project photo or color
   const iconEl = g('fin-modal-icon')
   if (iconEl) {
     const col = p.brand_color || '#b8923a'
@@ -33831,124 +33863,136 @@ async function openFinanceModal(projId, projName) {
       iconEl.style.cssText = 'width:38px;height:38px;border-radius:10px;overflow:hidden;flex-shrink:0;border:1px solid '+col+'44;background:transparent;padding:0;'
       iconEl.innerHTML = '<img src="'+p.photo_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:9px;display:block;">'
     } else {
-      iconEl.style.cssText = 'width:38px;height:38px;border-radius:10px;background:'+col+'22;border:1px solid '+col+'44;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--font-display);font-size:16px;font-weight:800;color:'+col+';overflow:hidden;'
+      iconEl.style.cssText = 'width:38px;height:38px;border-radius:10px;background:'+col+'22;border:1px solid '+col+'44;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--font-display);font-size:16px;font-weight:700;color:'+col+';overflow:hidden;'
       iconEl.textContent = (projName||'?')[0].toUpperCase()
     }
   }
+
   g('fin-budget-inp').value = p.monthly_budget || ''
-  g('fin-opex-inp').value   = p.operational_cost || ''
-
-  // Hours from task time logs
   const totalMins = _finTaskHours[projId] || 0
-  g('fin-hours-inp').value = Math.round(totalMins / 60 * 10) / 10
+  g('fin-hours-inp').value = Math.round(totalMins / 60)
 
-  _finContractors = (p.contractors || []).map(c => ({...c}))
-  _finExpenses    = (p.extra_expenses || []).map(e => ({...e}))
+  // Собираем все расходы в единый массив
+  // Старый формат: contractors[] + extra_expenses[] + operational_cost
+  // Новый формат: extra_expenses[] с полем cat
+  _finAllExpenses = []
 
-  renderFinContractors()
-  renderFinExpenses()
+  // Мигрируем старые contractors → cat:'salary'
+  ;(p.contractors || []).forEach(c => {
+    _finAllExpenses.push({ name: c.name||'', amount: parseInt(c.amount)||0, cat: 'salary' })
+  })
+
+  // Мигрируем extra_expenses — если есть поле cat используем, иначе 'project'
+  ;(p.extra_expenses || []).forEach(e => {
+    _finAllExpenses.push({ name: e.name||e.category||'', amount: parseInt(e.amount)||0, cat: e.cat||'project' })
+  })
+
+  // Мигрируем operational_cost → одна строка opex если нет уже opex-строк
+  if ((p.operational_cost||0) > 0 && !_finAllExpenses.some(e=>e.cat==='opex')) {
+    _finAllExpenses.push({ name: 'Операционные', amount: p.operational_cost, cat: 'opex' })
+  }
+
+  finRenderAll()
   finRecalc()
-
   openModal('modal-finance')
-  setTimeout(() => g('fin-budget-inp').focus(), 100)
+  setTimeout(() => g('fin-budget-inp')?.focus(), 100)
 }
 
-function renderFinContractors() {
-  const list = g('fin-contractors-list'); if (!list) return
-  if (!_finContractors.length) {
-    list.innerHTML = '<div style="font-size:11px;color:var(--txt3);font-family:var(--font-display);padding:4px 0;">Подрядчики не добавлены</div>'
-    return
-  }
-  list.innerHTML = _finContractors.map((c, i) => `
-    <div class="fin-row-item">
-      <input placeholder="Имя / роль" value="${esc(c.name||'')}" oninput="_finContrUpdate(${i},'name',this.value)">
-      <input type="number" placeholder="Сумма (сум)" value="${c.amount||''}" oninput="_finContrUpdate(${i},'amount',+this.value)">
-      <button class="fin-row-del" onclick="_finContrDel(${i})">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>`).join('')
+function finRenderAll() {
+  ['salary','opex','project'].forEach(cat => {
+    const listId = 'fin-list-' + cat
+    const list = g(listId); if (!list) return
+    const rows = _finAllExpenses.filter(e => e.cat === cat)
+    if (!rows.length) {
+      const hints = { salary:'Сотрудники и подрядчики не добавлены', opex:'Аренда, инструменты, реклама...', project:'Съёмка, реквизит, студия...' }
+      list.innerHTML = '<div style="font-size:11px;color:var(--txt3);font-family:var(--font-display);padding:6px 0;">'+hints[cat]+'</div>'
+      return
+    }
+    list.innerHTML = rows.map((e, localI) => {
+      const globalI = _finAllExpenses.indexOf(e)
+      const ph = cat==='salary' ? 'Имя, роль (Аслан — SMM)' : cat==='opex' ? 'Статья (Аренда офиса)' : 'Статья (Съёмка, студия)'
+      return `<div class="fin-row-item">
+        <input placeholder="\${ph}" value="\${esc(e.name||'')}" oninput="_finRowUpdate(\${globalI},'name',this.value)">
+        <input type="number" placeholder="Сумма" value="\${e.amount||''}" oninput="_finRowUpdate(\${globalI},'amount',+this.value)" style="-moz-appearance:textfield;">
+        <button class="fin-row-del" onclick="_finRowDel(\${globalI})">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>`
+    }).join('')
+  })
 }
-function finAddContractor() {
-  _finContractors.push({ name:'', amount:0 })
-  renderFinContractors(); finRecalc()
-  // focus last name input
-  const inputs = g('fin-contractors-list')?.querySelectorAll('input')
-  if (inputs?.length) inputs[inputs.length-2]?.focus()
-}
-function _finContrUpdate(i, key, val) { _finContractors[i][key] = val; finRecalc() }
-function _finContrDel(i) { _finContractors.splice(i,1); renderFinContractors(); finRecalc() }
 
-function renderFinExpenses() {
-  const list = g('fin-expenses-list'); if (!list) return
-  if (!_finExpenses.length) {
-    list.innerHTML = '<div style="font-size:11px;color:var(--txt3);font-family:var(--font-display);padding:4px 0;">Расходы не добавлены</div>'
-    return
-  }
-  list.innerHTML = _finExpenses.map((e, i) => `
-    <div class="fin-row-item">
-      <input placeholder="Категория (реклама, съёмка...)" value="${esc(e.category||'')}" oninput="_finExpUpdate(${i},'category',this.value)">
-      <input type="number" placeholder="Сумма (сум)" value="${e.amount||''}" oninput="_finExpUpdate(${i},'amount',+this.value)">
-      <button class="fin-row-del" onclick="_finExpDel(${i})">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>`).join('')
-}
-function finAddExpense() {
-  _finExpenses.push({ category:'', amount:0 })
-  renderFinExpenses(); finRecalc()
-  const inputs = g('fin-expenses-list')?.querySelectorAll('input')
+function finAddRow(cat) {
+  _finAllExpenses.push({ name:'', amount:0, cat })
+  finRenderAll(); finRecalc()
+  const list = g('fin-list-'+cat)
+  const inputs = list?.querySelectorAll('input')
   if (inputs?.length) inputs[inputs.length-2]?.focus()
 }
-function _finExpUpdate(i, key, val) { _finExpenses[i][key] = val; finRecalc() }
-function _finExpDel(i) { _finExpenses.splice(i,1); renderFinExpenses(); finRecalc() }
+function _finRowUpdate(i, key, val) { if(_finAllExpenses[i]) { _finAllExpenses[i][key]=val; finRecalc() } }
+function _finRowDel(i) { _finAllExpenses.splice(i,1); finRenderAll(); finRecalc() }
+
+// Legacy stubs for old callers
+function finAddContractor() { finAddRow('salary') }
+function finAddExpense()    { finAddRow('project') }
 
 function finRecalc() {
-  const income    = parseInt(g('fin-budget-inp')?.value) || 0
-  const opex      = parseInt(g('fin-opex-inp')?.value) || 0
-  const salaries  = _finContractors.reduce((s,c) => s + (parseInt(c.amount)||0), 0)
-  const extras    = _finExpenses.reduce((s,e) => s + (parseInt(e.amount)||0), 0)
-  const totalCost = salaries + extras + opex
+  const income   = parseInt(g('fin-budget-inp')?.value) || 0
+  const salaries = _finAllExpenses.filter(e=>e.cat==='salary').reduce((s,e)=>s+(parseInt(e.amount)||0),0)
+  const opex     = _finAllExpenses.filter(e=>e.cat==='opex').reduce((s,e)=>s+(parseInt(e.amount)||0),0)
+  const project  = _finAllExpenses.filter(e=>e.cat==='project').reduce((s,e)=>s+(parseInt(e.amount)||0),0)
+  const totalCost = salaries + opex + project
   const margin    = income - totalCost
-  const marginPct = income > 0 ? Math.round((margin / income) * 100) : null
+  const marginPct = income > 0 ? Math.round((margin/income)*100) : null
   const col = margin >= 0 ? 'var(--green)' : 'var(--red)'
 
-  const sv = v => v > 0 ? fmtM(v) + ' сум' : '—'
-  const set2 = (id, val) => { const el=g(id); if(el) el.textContent=val }
-  set2('fpv-income',     income > 0 ? fmtM(income)+' сум' : '—')
-  set2('fpv-salaries',   salaries > 0 ? '−' + fmtM(salaries)+' сум' : '—')
-  set2('fpv-extras',     extras > 0   ? '−' + fmtM(extras)  +' сум' : '—')
-  set2('fpv-opex',       opex > 0     ? '−' + fmtM(opex)    +' сум' : '—')
-  set2('fpv-total-cost', totalCost > 0 ? fmtM(totalCost)+' сум' : '—')
+  const set2 = (id,val) => { const el=g(id); if(el) el.textContent=val }
+  set2('fpv-income',     income>0 ? fmtM(income)+' сум' : '—')
+  set2('fpv-salaries',   salaries>0 ? '−'+fmtM(salaries)+' сум' : '—')
+  set2('fpv-opex',       opex>0    ? '−'+fmtM(opex)    +' сум' : '—')
+  set2('fpv-extras',     project>0 ? '−'+fmtM(project) +' сум' : '—')
+  set2('fpv-total-cost', totalCost>0 ? fmtM(totalCost)+' сум' : '—')
+
+  // Детальные строки в P&L
+  function renderDetail(containerId, cat) {
+    const el = g(containerId); if(!el) return
+    const rows = _finAllExpenses.filter(e=>e.cat===cat && e.name && e.amount>0)
+    el.innerHTML = rows.map(e=>
+      `<div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.3);padding:1px 0;">
+        <span>\${esc(e.name)}</span><span>\${fmtM(e.amount)} сум</span>
+      </div>`
+    ).join('')
+  }
+  renderDetail('fpv-salary-detail',  'salary')
+  renderDetail('fpv-opex-detail',    'opex')
+  renderDetail('fpv-project-detail', 'project')
 
   const marginEl = g('fpv-margin')
   const pctEl    = g('fpv-margin-pct')
-  if (marginEl) {
-    marginEl.textContent = income > 0 ? (margin >= 0 ? '+' : '') + fmtM(margin)+' сум' : '—'
-    marginEl.style.color = col
-  }
-  if (pctEl) {
-    pctEl.textContent = marginPct !== null ? marginPct + '%' : '—'
-    pctEl.style.color = col
-  }
+  if (marginEl) { marginEl.textContent = income>0 ? (margin>=0?'+':'')+fmtM(margin)+' сум' : '—'; marginEl.style.color=col }
+  if (pctEl)    { pctEl.textContent = marginPct!==null ? marginPct+'%' : '—'; pctEl.style.color=col }
 }
 
 async function saveFinanceSettings() {
   const projId = g('fin-modal-proj-id').value
-  const budget = parseInt(g('fin-budget-inp').value) || 0
-  const opex   = parseInt(g('fin-opex-inp').value)   || 0
+  const budget = parseInt(g('fin-budget-inp')?.value) || 0
+
+  // Сохраняем в unified формате в extra_expenses, contractors пустой, opex=0
+  const salaryRows  = _finAllExpenses.filter(e=>e.cat==='salary')
+  const otherRows   = _finAllExpenses.filter(e=>e.cat!=='salary')
+  const opexTotal   = _finAllExpenses.filter(e=>e.cat==='opex').reduce((s,e)=>s+(parseInt(e.amount)||0),0)
+
   try {
     await sb.from('projects').update({
       monthly_budget:   budget,
-      contractors:      _finContractors,
-      extra_expenses:   _finExpenses,
-      operational_cost: opex
+      contractors:      salaryRows,          // зарплаты в contractors для совместимости
+      extra_expenses:   otherRows,           // opex + project в extra_expenses с полем cat
+      operational_cost: opexTotal            // сумма opex для обратной совместимости
     }).eq('id', projId)
-    const p = _allProjects.find(x => x.id === projId)
+    const p = _allProjects.find(x=>x.id===projId)
     if (p) {
-      p.monthly_budget   = budget
-      p.contractors      = _finContractors
-      p.extra_expenses   = _finExpenses
-      p.operational_cost = opex
+      p.monthly_budget=budget; p.contractors=salaryRows
+      p.extra_expenses=otherRows; p.operational_cost=opexTotal
     }
   } catch(e) {
     console.warn('Save finance failed:', e.message)
@@ -33956,7 +34000,7 @@ async function saveFinanceSettings() {
   }
   closeModal('modal-finance')
   renderFinance()
-  showAlertToast('💰', 'Финансы сохранены', 'P&L обновлён')
+  showAlertToast('💰','Финансы сохранены','P&L обновлён')
 }
 
 // ── ROI block in Performance report ──
