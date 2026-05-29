@@ -29847,16 +29847,19 @@ const STAGE_ICONS = [
   /* 7 Съёмки 2 */      '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 00-1.95 1.96A29 29 0 001 12a29 29 0 00.46 5.58A2.78 2.78 0 003.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 001.95-1.95A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg>',
   /* 8 Отчётность */    '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
 ];
+// Текстовые иконки для textContent-контекстов (не SVG)
+const STAGE_EMOJI = ['🔍','🏆','📄','🎯','📅','✍️','🎬','📹','📊'];
+
 const STAGES = [
-  { name: 'Анализ клиентских данных' },
-  { name: 'Анализ конкурентов' },
-  { name: 'Разработка контент стратегии' },
-  { name: 'Разработка таргет стратегии' },
-  { name: 'Разработка контент плана' },
-  { name: 'Написание сценариев' },
-  { name: 'Съёмки раунд 1' },
-  { name: 'Съёмки раунд 2' },
-  { name: 'Подготовка отчётности' },
+  { name: 'Анализ клиентских данных',       icon: STAGE_ICONS[0] || '', emoji: STAGE_EMOJI[0] },
+  { name: 'Анализ конкурентов',              icon: STAGE_ICONS[1] || '', emoji: STAGE_EMOJI[1] },
+  { name: 'Разработка контент стратегии',    icon: STAGE_ICONS[2] || '', emoji: STAGE_EMOJI[2] },
+  { name: 'Разработка таргет стратегии',     icon: STAGE_ICONS[3] || '', emoji: STAGE_EMOJI[3] },
+  { name: 'Разработка контент плана',        icon: STAGE_ICONS[4] || '', emoji: STAGE_EMOJI[4] },
+  { name: 'Написание сценариев',             icon: STAGE_ICONS[5] || '', emoji: STAGE_EMOJI[5] },
+  { name: 'Съёмки раунд 1',                 icon: STAGE_ICONS[6] || '', emoji: STAGE_EMOJI[6] },
+  { name: 'Съёмки раунд 2',                 icon: STAGE_ICONS[7] || '', emoji: STAGE_EMOJI[7] },
+  { name: 'Подготовка отчётности',           icon: STAGE_ICONS[8] || '', emoji: STAGE_EMOJI[8] },
 ]
 
 // ══════════════════════════════════════════════
@@ -30626,7 +30629,7 @@ function globalSearch(q) {
       if (!proj || !stage) return ''
       const stColor = s.status === 'completed' ? 'var(--green)' : s.status === 'active' ? 'var(--a2)' : 'var(--txt3)'
       return `<div class="gsr-item" onclick="closeGlobalSearch();openProject('${proj.id}')">
-        <div class="gsr-icon" style="background:var(--bg4);font-size:16px;">${stage.icon}</div>
+        <div class="gsr-icon" style="background:var(--bg4);font-size:16px;">${stage.emoji || '•'}</div>
         <div>
           <div class="gsr-title">${stage.name}</div>
           <div class="gsr-sub">${esc(proj.name)} · <span style="color:${stColor}">${s.status === 'completed' ? 'Завершён' : s.status === 'active' ? 'В работе' : 'Ожидает'}</span></div>
@@ -33845,7 +33848,7 @@ function renderKanban() {
   if (lbl) {
     const idx = getActiveStageIndex()
     const stage = STAGES[idx]
-    lbl.textContent = stage ? `Активный этап: ${stage.icon} ${stage.name}` : 'Активный этап: —'
+    lbl.textContent = stage ? `Активный этап: ${stage.emoji || '•'} ${stage.name}` : 'Активный этап: —'
   }
 
   // Render each column
@@ -37351,7 +37354,7 @@ function renderActivityFeed() {
           + ei + ' ' + item.h.event
       + '</div>'
       + '<div class="act-row2-stage">'
-          + '<span class="act-row2-icon">' + item.stage.icon + '</span>'
+          + '<span class="act-row2-icon">' + (item.stage.emoji || item.stage.icon || '•') + '</span>'
           + item.stage.name
       + '</div>'
       + '<div class="act-row2-proj" style="color:' + col + ';">'
@@ -37375,7 +37378,7 @@ function renderActivityFeed() {
     var html = Object.values(stageMap).map(function(group) {
       return '<div class="act-group2">'
         + '<div class="act-group2-hdr">'
-            + '<div class="act-group2-icon">' + group.stage.icon + '</div>'
+            + '<div class="act-group2-icon">' + (group.stage.emoji || group.stage.icon || '•') + '</div>'
             + '<div class="act-group2-title">' + group.stage.name + '</div>'
             + '<span class="act-group2-count">' + group.items.length + ' событий</span>'
         + '</div>'
@@ -39028,7 +39031,7 @@ async function cpRenderNextStep(project) {
   if (titleEl) titleEl.textContent = (active ? 'Сейчас в работе: ' : 'Следующий этап: ') + stageObj.name;
   if (subEl)   subEl.textContent   = tip;
   if (dlEl)    dlEl.textContent    = dlStr;
-  if (icEl)    icEl.textContent    = stageObj.icon;
+  if (icEl)    icEl.textContent    = stageObj.emoji || '•';
   if (!dlStr && dlEl) dlEl.style.display = 'none';
   el.style.display = 'block';
 }
@@ -39218,7 +39221,7 @@ async function cpRenderFocusCard(project) {
   
   const focusEl = g('cp-focus-text');
   const tipEl   = g('cp-focus-tip');
-  if (focusEl) focusEl.textContent = stageObj ? `${stageObj.icon} ${stageObj.name}: ${texts[0]}` : texts[0];
+  if (focusEl) focusEl.textContent = stageObj ? `${stageObj.emoji || '•'} ${stageObj.name}: ${texts[0]}` : texts[0];
   if (tipEl)   tipEl.textContent   = texts[1];
   el.style.display = 'flex';
 }
