@@ -31800,12 +31800,14 @@ function runAnalysis() {
 
   updateAllLabels()
 
-  // ИСПРАВЛЕНИЕ БАГ 3: если days=0 — файл не daily, предупреждаем и останавливаемся
-  const bD_raw = b.meta.days, dD_raw = d.meta.days
+  // ИСПРАВЛЕНИЕ БАГ 3: если days=0 — пробуем восстановить из rows.length,
+  // только если rows пустые — предупреждаем (данные могли быть сохранены старым кодом)
+  const bD_raw = b.meta.days || b.rows?.length || 0
+  const dD_raw = d.meta.days || d.rows?.length || 0
   if (!bD_raw || !dD_raw) {
     const which = !bD_raw ? 'Базовый период (файл 1)' : 'Текущий период (файл 2)'
-    showToast('⚠️', which + ': не удалось определить количество дней. Убедитесь что загружен ежедневный отчёт (не почасовой).', 'warn')
-    console.error('[runAnalysis] days=0, b.meta.days='+bD_raw+', d.meta.days='+dD_raw)
+    showToast('⚠️', which + ': не удалось определить количество дней. Загрузите ежедневный отчёт заново.', 'warn')
+    console.error('[runAnalysis] days=0 and no rows fallback, b.meta.days='+b.meta.days+', d.meta.days='+d.meta.days)
     return
   }
   const bD = bD_raw, dD = dD_raw
