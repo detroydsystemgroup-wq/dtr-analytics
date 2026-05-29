@@ -33754,8 +33754,15 @@ async function loadKanban() {
     }
     kanbanTasks = []
   }
+  // Синхронизируем tasksData из kanbanTasks для updateProjectTimeDisplay
+  tasksData = {}
+  kanbanTasks.forEach(function(t) {
+    if (!tasksData[t.stage_index]) tasksData[t.stage_index] = []
+    tasksData[t.stage_index].push(t)
+  })
   renderKanban()
   startKanbanLiveTimer()
+  updateProjectTimeDisplay()
 }
 
 // ── Render full kanban board ──
@@ -33987,6 +33994,7 @@ async function kbMoveTask(taskId, fromStatus, toStatus) {
     if (trackerTask) Object.assign(trackerTask, updates)
     renderKanban()
     renderTasksForStage(task.stage_index)
+    updateProjectTimeDisplay()
   } catch(e) {
     console.warn('Move task failed:', e)
     if (e.message?.includes('column')) { g('kb-sql-note').style.display='flex'; openSQLSetup() }
