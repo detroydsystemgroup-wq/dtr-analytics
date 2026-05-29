@@ -25609,7 +25609,7 @@ button, a, [role="button"],
         <div class="apl-hero-card">
           <div class="apl-hero-eyebrow">СРЕДНИЙ ПРОГРЕСС</div>
           <div class="apl-hero-num" id="proj-hero-avg" style="color:#3b82f6;">—</div>
-          <div class="apl-hero-sub">этапов завершено</div>
+          <div class="apl-hero-sub">по активным проектам</div>
           <div class="apl-hero-rule"></div>
           <div class="apl-hero-foot" id="proj-hero-stages">—</div>
         </div>
@@ -30706,7 +30706,7 @@ function renderProjectGrid() {
   // ── Update hero strip (только активные проекты) ──
   const _activeProjs = _allProjects.filter(p => p.status !== 'archived')
   const _activeStgs  = _allStages.filter(s => _activeProjs.some(p => p.id === s.project_id))
-  const allPcts = _activeProjs.map(p => getProjectProgress(p.id).pct)
+  const allPcts = _activeProjs.filter(p => getProjectProgress(p.id).pct < 100).map(p => getProjectProgress(p.id).pct)
   const avgPct = allPcts.length ? Math.round(allPcts.reduce((s,v)=>s+v,0)/allPcts.length) : 0
   const overdueCount = _activeProjs.filter(p => isProjectOverdue(p.id)).length
   const archivedProjs = _allProjects.filter(p => p.status === 'archived')
