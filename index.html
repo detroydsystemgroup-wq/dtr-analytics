@@ -25676,17 +25676,9 @@ button, a, [role="button"],
       <!-- ① HERO STRIP -->
       <div class="apl-hero-strip dl-hero">
         <div class="apl-hero-card">
-          <div class="apl-hero-eyebrow">ВСЕГО ДЕДЛАЙНОВ</div>
-          <div class="apl-hero-num" id="dl-stat-all" style="color:#e8e4de;">—</div>
-          <div class="apl-hero-sub">активных этапов</div>
-          <div class="apl-hero-rule"></div>
-          <div class="apl-hero-foot" id="dl-hero-projects">— проектов</div>
-        </div>
-        <div class="apl-hero-divider"></div>
-        <div class="apl-hero-card">
           <div class="apl-hero-eyebrow">ПРОСРОЧЕНО</div>
           <div class="apl-hero-num" id="dl-stat-overdue" style="color:#ef4444;">—</div>
-          <div class="apl-hero-sub">истёкших дедлайнов</div>
+          <div class="apl-hero-sub" id="dl-sub-overdue">этапов · задач</div>
           <div class="apl-hero-rule"></div>
           <div class="apl-hero-foot" id="dl-hero-overdue-days">—</div>
         </div>
@@ -25694,7 +25686,7 @@ button, a, [role="button"],
         <div class="apl-hero-card">
           <div class="apl-hero-eyebrow">СЕГОДНЯ</div>
           <div class="apl-hero-num" id="dl-stat-today" style="color:#c9a84c;">—</div>
-          <div class="apl-hero-sub">дедлайнов сегодня</div>
+          <div class="apl-hero-sub" id="dl-sub-today">этапов · задач</div>
           <div class="apl-hero-rule"></div>
           <div class="apl-hero-foot" id="dl-hero-week">— на этой неделе</div>
         </div>
@@ -25702,9 +25694,16 @@ button, a, [role="button"],
         <div class="apl-hero-card">
           <div class="apl-hero-eyebrow">БУДУЩИЕ</div>
           <div class="apl-hero-num" id="dl-stat-future" style="color:#c9a84c;">—</div>
-          <div class="apl-hero-sub">запланировано</div>
+          <div class="apl-hero-sub" id="dl-sub-future">этапов · задач</div>
           <div class="apl-hero-rule"></div>
-          <div class="apl-hero-foot" id="dl-stat-week" style="display:none;">—</div>
+          <div class="apl-hero-foot" id="dl-hero-week-detail">— на этой неделе</div>
+        </div>
+        <div class="apl-hero-divider"></div>
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">ВЫПОЛНЕНО</div>
+          <div class="apl-hero-num" id="dl-stat-done" style="color:#3ecf8e;">—</div>
+          <div class="apl-hero-sub" id="dl-sub-done">этапов · задач</div>
+          <div class="apl-hero-rule"></div>
           <div class="apl-hero-foot" id="dl-hero-on-time">—</div>
         </div>
       </div>
@@ -29723,6 +29722,7 @@ async function doLogout() {
   // Сброс всего состояния приложения
   currentUser = null
   _dlProjDropdownFilled = false
+  window._dlTasksLoaded = false; window._dlAllTasks = null;
   const dlDropdown = document.getElementById('dl-proj-filter')
   if (dlDropdown) { while (dlDropdown.options.length > 1) dlDropdown.remove(1) }
   currentProject = null
@@ -37064,13 +37064,17 @@ function renderDeadlinePanel() {
   var MONTHS_SH = ['ЯНВ','ФЕВ','МАР','АПР','МАЙ','ИЮН','ИЮЛ','АВГ','СЕН','ОКТ','НОЯ','ДЕК'];
   var DAYS_RU = ['ВС','ПН','ВТ','СР','ЧТ','ПТ','СБ'];
 
-  // Collect items
+  // Collect stage items (only active projects, not archived)
   var allItems = [];
-  if (typeof _allStages !== 'undefined' && typeof _allProjects !== 'undefined') {
+  var activeProjs = (typeof _allProjects !== 'undefined') ? _allProjects.filter(function(p){ return p.status !== 'archived' && (typeof getProjectProgress === 'undefined' || getProjectProgress(p.id).pct < 100); }) : [];
+  var activeProjIds = activeProjs.map(function(p){ return p.id; });
+
+  if (typeof _allStages !== 'undefined') {
     _allStages.forEach(function(s) {
       if (!s.deadline) return;
-      var proj = _allProjects.find(function(p){ return p.id === s.project_id; });
-      if (!proj || proj.status === 'archived') return;
+      if (activeProjIds.indexOf(s.project_id) === -1) return;
+      var proj = activeProjs.find(function(p){ return p.id === s.project_id; });
+      if (!proj) return;
       var stageObj = (typeof STAGES !== 'undefined' && STAGES[s.stage_index]) || { name: 'Этап ' + s.stage_index, icon: '•' };
       var dl = new Date(s.deadline); dl.setHours(0,0,0,0);
       var diff = Math.round((dl - today) / 86400000);
@@ -37079,41 +37083,96 @@ function renderDeadlinePanel() {
         : diff === 0 ? 'today'
         : diff <= 7  ? 'soon'
         : 'future';
-      allItems.push({ s: s, proj: proj, stageObj: stageObj, dl: dl, diff: diff, status: status });
+      allItems.push({ kind: 'stage', s: s, proj: proj, stageObj: stageObj, dl: dl, diff: diff, status: status });
+    });
+  }
+
+  // Collect task items from stage_tasks (only active projects)
+  var taskItems = [];
+  if (typeof _dlAllTasks === 'undefined') window._dlAllTasks = null;
+  // Load tasks async if not yet loaded
+  if (!window._dlTasksLoaded) {
+    window._dlTasksLoaded = true;
+    (async function() {
+      try {
+        if (typeof sb !== 'undefined' && activeProjIds.length) {
+          var tr = await sb.from('stage_tasks').select('*').in('project_id', activeProjIds);
+          window._dlAllTasks = tr.data || [];
+          renderDeadlinePanel(); // re-render once tasks loaded
+        }
+      } catch(e) {}
+    })();
+  }
+  if (window._dlAllTasks) {
+    window._dlAllTasks.forEach(function(t) {
+      if (!t.deadline) return;
+      if (activeProjIds.indexOf(t.project_id) === -1) return;
+      var proj = activeProjs.find(function(p){ return p.id === t.project_id; });
+      if (!proj) return;
+      var dl = new Date(t.deadline); dl.setHours(0,0,0,0);
+      var diff = Math.round((dl - today) / 86400000);
+      var status = t.done ? 'done'
+        : diff < 0  ? 'overdue'
+        : diff === 0 ? 'today'
+        : diff <= 7  ? 'soon'
+        : 'future';
+      allItems.push({ kind: 'task', t: t, proj: proj, dl: dl, diff: diff, status: status });
     });
   }
 
   allItems.sort(function(a,b){ return a.dl - b.dl; });
 
+  // Helpers: count by kind and status
+  function cnt(status, kind) {
+    return allItems.filter(function(i){ return i.status === status && (!kind || i.kind === kind); }).length;
+  }
+
+  function subLabel(status) {
+    var s = cnt(status, 'stage'), t = cnt(status, 'task');
+    return s + ' эт. · ' + t + ' зад.';
+  }
+
   // Update stats
   function setS(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
-  var cntAll     = allItems.length;
-  var cntOverdue = allItems.filter(function(i){ return i.status === 'overdue'; }).length;
-  var cntToday   = allItems.filter(function(i){ return i.status === 'today'; }).length;
-  var cntWeek    = allItems.filter(function(i){ return i.status === 'soon'; }).length;
-  var cntFuture  = allItems.filter(function(i){ return i.status === 'future'; }).length;
-  var cntDone    = allItems.filter(function(i){ return i.status === 'done'; }).length;
-  var projIds    = [...new Set(allItems.filter(function(i){ return i.status !== 'done'; }).map(function(i){ return i.proj.id; }))];
 
-  setS('dl-stat-all',     cntAll);
+  var stageOverdue = cnt('overdue','stage'), taskOverdue = cnt('overdue','task');
+  var stageToday   = cnt('today','stage'),   taskToday   = cnt('today','task');
+  var stageFuture  = cnt('future','stage'),  taskFuture  = cnt('future','task');
+  var stageSoon    = cnt('soon','stage'),     taskSoon    = cnt('soon','task');
+  var stageDone    = cnt('done','stage'),     taskDone    = cnt('done','task');
+
+  var cntOverdue = stageOverdue + taskOverdue;
+  var cntToday   = stageToday + taskToday;
+  var cntFuture  = stageFuture + taskFuture;
+  var cntWeek    = stageSoon + taskSoon;
+  var cntDone    = stageDone + taskDone;
+  var cntAll     = allItems.length;
+
   setS('dl-stat-overdue', cntOverdue);
   setS('dl-stat-today',   cntToday);
-  setS('dl-stat-week',    cntWeek);
   setS('dl-stat-future',  cntFuture);
+  setS('dl-stat-done',    cntDone);
 
-  // Update hero strip
-  setS('dl-hero-projects',  projIds.length + ' проектов');
-  // Worst overdue: how many days
+  // Sub-labels: этапов · задач
+  setS('dl-sub-overdue', subLabel('overdue'));
+  setS('dl-sub-today',   subLabel('today'));
+  setS('dl-sub-future',  subLabel('future'));
+  setS('dl-sub-done',    stageDone + ' эт. · ' + taskDone + ' зад.');
+
+  // Footer details
   var overdueItems = allItems.filter(function(i){ return i.status === 'overdue'; });
   if (overdueItems.length) {
     var worst = Math.max.apply(null, overdueItems.map(function(i){ return Math.abs(i.diff); }));
     setS('dl-hero-overdue-days', 'Макс. ' + worst + ' дн. просрочки');
   } else {
-    setS('dl-hero-overdue-days', 'Всё в срок');
+    setS('dl-hero-overdue-days', 'Всё в срок ✓');
   }
-  setS('dl-hero-week', cntWeek + ' на этой неделе');
-  var onTimePct = (cntDone + cntAll) > 0 ? Math.round(cntDone / (cntDone + cntOverdue + 1) * 100) : 0;
-  setS('dl-hero-on-time', cntDone + ' выполнено из ' + (cntDone + cntOverdue + cntToday + cntWeek + cntFuture));
+  setS('dl-hero-week',        (stageSoon + taskSoon) + ' на этой неделе');
+  setS('dl-hero-week-detail', (stageSoon + taskSoon) + ' на этой неделе');
+  setS('dl-hero-on-time',     cntDone + ' выполнено из ' + cntAll);
+
+  // legacy stubs
+  var cntWeekStub = cntWeek;
 
   // Populate project dropdown once
   var pf = document.getElementById('dl-proj-filter');
