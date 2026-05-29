@@ -27563,6 +27563,18 @@ button, a, [role="button"],
 .cp-smm-val{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
 .cp-smm-bench-row{display:flex;align-items:center;gap:8px;padding:10px 20px;border-top:1px solid rgba(255,255,255,.04);font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.2)}
 
+.cp-reports-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.cp-reports-title{font-family:var(--font-mono);font-size:9px;letter-spacing:.18em;color:rgba(255,255,255,.25);text-transform:uppercase}
+.cp-reports-total{font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.2)}
+.cp-reports-sections{display:flex;flex-direction:column;gap:20px}
+.cp-reports-section-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.05)}
+.cp-reports-section-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cp-reports-section-icon.perf{background:rgba(56,178,172,.1);border:1px solid rgba(56,178,172,.18)}
+.cp-reports-section-icon.smm{background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.18)}
+.cp-reports-section-name{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);flex:1}
+.cp-reports-section-count{font-family:var(--font-mono);font-size:11px;font-weight:600;padding:2px 10px;border-radius:20px}
+.cp-reports-section-count.perf{background:rgba(56,178,172,.1);color:#38b2ac}
+.cp-reports-section-count.smm{background:rgba(184,146,58,.1);color:#c9a84c}
 .cp-footer{padding:12px 36px;border-top:1px solid rgba(255,255,255,.04);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .cp-footer-name{font-family:var(--font-mono);font-size:8px;letter-spacing:.1em;color:rgba(255,255,255,.15);text-transform:uppercase}
 .cp-footer-copy{font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.1)}
@@ -27681,11 +27693,33 @@ button, a, [role="button"],
 <div class="cp-stages-list" id="cp2-stages-detail"></div>
 </div>
 <div class="cp-tab-content" id="cp2-tab-reports">
-<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.16em;color:rgba(255,255,255,.25);text-transform:uppercase;margin-bottom:16px;">Все отчёты</div>
-<div class="cp-cols" style="margin-bottom:0;">
-<div class="cp-card"><div class="cp-card-header"><div class="cp-card-title">Performance</div><div class="cp-card-count" id="cp2-perf-cnt" style="color:var(--cyan);">—</div></div><div id="cp2-perf-list"></div></div>
-<div class="cp-card"><div class="cp-card-header"><div class="cp-card-title">SMM</div><div class="cp-card-count" id="cp2-smm-cnt" style="color:var(--a2);">—</div></div><div id="cp2-smm-list"></div></div>
-</div></div>
+<div class="cp-reports-header">
+  <div class="cp-reports-title">ВСЕ ОТЧЁТЫ</div>
+  <div class="cp-reports-total" id="cp2-reports-total">—</div>
+</div>
+<div class="cp-reports-sections">
+  <div class="cp-reports-section">
+    <div class="cp-reports-section-head">
+      <div class="cp-reports-section-icon perf">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#38b2ac" stroke-width="1.8" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <div class="cp-reports-section-name">Performance</div>
+      <div class="cp-reports-section-count perf" id="cp2-perf-cnt">—</div>
+    </div>
+    <div id="cp2-perf-list"></div>
+  </div>
+  <div class="cp-reports-section">
+    <div class="cp-reports-section-head">
+      <div class="cp-reports-section-icon smm">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.8" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      </div>
+      <div class="cp-reports-section-name">SMM</div>
+      <div class="cp-reports-section-count smm" id="cp2-smm-cnt">—</div>
+    </div>
+    <div id="cp2-smm-list"></div>
+  </div>
+</div>
+</div>
 <div class="cp-tab-content" id="cp2-tab-updates">
 <div class="cp-card"><div class="cp-card-header"><div class="cp-card-title">Вся активность</div><div style="display:flex;align-items:center;gap:5px;"><div style="width:5px;height:5px;border-radius:50%;background:#3ecf8e;"></div><span style="font-family:var(--font-mono);font-size:8px;color:#3ecf8e;letter-spacing:.1em;">LIVE</span></div></div><div id="cp2-activity-full"></div></div>
 </div>
@@ -29407,16 +29441,27 @@ ALTER TABLE stage_history ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "allow_all_history" ON stage_history FOR ALL USING (true) WITH CHECK (true);
 */
 
+const STAGE_ICONS = [
+  /* 0 Анализ */        '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+  /* 1 Конкуренты */    '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>',
+  /* 2 Контент стр. */  '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>',
+  /* 3 Таргет стр. */   '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
+  /* 4 Контент план */  '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+  /* 5 Сценарии */      '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>',
+  /* 6 Съёмки 1 */      '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>',
+  /* 7 Съёмки 2 */      '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 00-1.95 1.96A29 29 0 001 12a29 29 0 00.46 5.58A2.78 2.78 0 003.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 001.95-1.95A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg>',
+  /* 8 Отчётность */    '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+];
 const STAGES = [
-  { icon: '🔍', name: 'Анализ клиентских данных' },
-  { icon: '🏆', name: 'Анализ конкурентов' },
-  { icon: '📝', name: 'Разработка контент стратегии' },
-  { icon: '🎯', name: 'Разработка таргет стратегии' },
-  { icon: '📅', name: 'Разработка контент плана' },
-  { icon: '✍️', name: 'Написание сценариев' },
-  { icon: '🎬', name: 'Съёмки раунд 1' },
-  { icon: '🎥', name: 'Съёмки раунд 2' },
-  { icon: '📊', name: 'Подготовка отчётности' },
+  { name: 'Анализ клиентских данных' },
+  { name: 'Анализ конкурентов' },
+  { name: 'Разработка контент стратегии' },
+  { name: 'Разработка таргет стратегии' },
+  { name: 'Разработка контент плана' },
+  { name: 'Написание сценариев' },
+  { name: 'Съёмки раунд 1' },
+  { name: 'Съёмки раунд 2' },
+  { name: 'Подготовка отчётности' },
 ]
 
 // ══════════════════════════════════════════════
@@ -34534,8 +34579,11 @@ async function cp2LoadTracker(project) {
       if (s==='completed') { tagStyle = 'background:rgba(62,207,142,.08);color:var(--green);'; tagText = 'Завершён'; }
       else if (s==='active') { tagStyle = 'background:rgba(232,153,58,.08);color:var(--amber);'; tagText = 'В работе'; }
       else { tagStyle = 'background:rgba(255,255,255,.03);color:rgba(255,255,255,.15);'; tagText = 'Ожидает'; }
+      var iconCol = s==='completed' ? '#c9a84c' : s==='active' ? '#3ecf8e' : 'rgba(255,255,255,.2)';
+      var iconBg  = s==='completed' ? 'background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.2)' : s==='active' ? 'background:rgba(62,207,142,.1);border:1px solid rgba(62,207,142,.2)' : 'background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07)';
+      var svgIcon = (STAGE_ICONS[i] || '').replace('stroke="currentColor"', 'stroke="' + iconCol + '"');
       return '<div class="cp-stage-row"><div class="cp-stage-num ' + numCls + '">' + (i+1) + '</div>' +
-        '<div style="font-size:16px;flex-shrink:0;">' + st.icon + '</div>' +
+        '<div style="width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;' + iconBg + ';">' + svgIcon + '</div>' +
         '<div class="cp-stage-name" style="' + (s==='completed' ? 'color:rgba(255,255,255,.35);' : '') + '">' + esc(st.name) + '</div>' +
         '<div class="cp-stage-status-tag" style="' + tagStyle + '">' + tagText + '</div></div>';
     }).join('');
@@ -34556,6 +34604,7 @@ async function cp2LoadReports(project) {
 
   var total = perfReports.length + smmReports.length;
   if (g('cp2-reports-count')) g('cp2-reports-count').textContent = total + ' готово';
+  if (g('cp2-reports-total')) g('cp2-reports-total').textContent = total + ' ' + (total === 1 ? 'отчёт' : total < 5 ? 'отчёта' : 'отчётов');
   if (g('cp2-reports-badge')) g('cp2-reports-badge').textContent = total;
   if (g('cp2-perf-cnt')) g('cp2-perf-cnt').textContent = perfReports.length;
   if (g('cp2-smm-cnt')) g('cp2-smm-cnt').textContent = smmReports.length;
