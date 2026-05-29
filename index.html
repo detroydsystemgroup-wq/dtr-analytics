@@ -27909,6 +27909,8 @@ button, a, [role="button"],
 </div>
 <div class="cp-content">
 <div class="cp-tab-content cp-tab-visible" id="cp2-tab-overview">
+
+<!-- 1. KPI ШАПКА — 4 ключевых числа, мгновенный срез -->
 <div class="cp-hero-strip" id="cp2-hero-strip">
 <div class="cp-hero-card"><div class="cp-hero-eyebrow">Выручка Δ</div><div class="cp-hero-num" id="cp2-kpi-rev" style="color:var(--green);">—</div><div class="cp-hero-sub" id="cp2-kpi-rev-sub">—</div></div>
 <div class="cp-hero-divider"></div>
@@ -27918,68 +27920,24 @@ button, a, [role="button"],
 <div class="cp-hero-divider"></div>
 <div class="cp-hero-card"><div class="cp-hero-eyebrow">Прогресс проекта</div><div class="cp-hero-num" id="cp2-kpi-progress" style="color:#c9a84c;">—</div><div class="cp-hero-sub" id="cp2-kpi-progress-sub">—</div></div>
 </div>
-<div class="cp-progress-card">
-<div class="cp-progress-header">
-  <div>
-    <div class="cp-progress-eyebrow">Ход проекта</div>
-    <div class="cp-progress-title">Производственный цикл</div>
-  </div>
-  <div style="text-align:right">
-    <div class="cp-progress-pct" id="cp2-progress-pct">0%</div>
-    <div class="cp-progress-pct-sub">завершено</div>
-  </div>
-</div>
-<div class="cp-stages-wrap">
-  <div class="cp-bar-fill-v5" id="cp2-bar-fill"></div>
-  <div class="cp-bar-lead-v5" id="cp2-bar-lead"></div>
-  <div class="cp-stages-bar" id="cp2-stages-bar"></div>
-</div>
-<div class="cp-dual-bars" id="cp2-dual-bars"></div>
-<div class="cp-progress-footer" id="cp2-progress-footer">
-  <div class="cp-pf-dot"></div>
-  <span class="cp-pf-text">Активный этап: <strong id="cp2-pf-active-name">—</strong></span>
-  <span class="cp-pf-pill" id="cp2-pf-pill">— / 9</span>
-  <span class="cp-pf-right">этапов завершено</span>
-</div>
-<div class="cp-next-inline" id="cp2-next-step" style="display:none;">
-  <div class="cp-next-dot-wrap"><div class="cp-next-dot"></div></div>
-  <div class="cp-next-info-title" id="cp2-next-title">—</div>
-  <div class="cp-next-right">
-    <div class="cp-next-count" id="cp2-next-count">— / 9</div>
-    <div class="cp-next-count-sub">этапов завершено</div>
-  </div>
-</div></div>
-<div class="cp-cols">
-<div class="cp-card"><div class="cp-card-header"><div class="cp-card-title">Отчёты</div><div class="cp-card-count" id="cp2-reports-count" style="color:var(--a2);">—</div></div><div id="cp2-reports-list"></div></div>
-<div class="cp-card"><div class="cp-card-header"><div class="cp-card-title">Активность команды</div><div style="display:flex;align-items:center;gap:5px;"><div style="width:5px;height:5px;border-radius:50%;background:#3ecf8e;box-shadow:0 0 6px rgba(62,207,142,.5);"></div><span style="font-family:var(--font-mono);font-size:8px;color:#3ecf8e;letter-spacing:.1em;">LIVE</span></div></div><div id="cp2-activity-feed"></div></div>
-</div>
-<div class="cp-smm-strip" id="cp2-smm-strip" style="display:none;"><div class="cp-smm-header"><div class="cp-smm-title">SMM показатели</div><div class="cp-smm-period" id="cp2-smm-period">—</div></div><div class="cp-smm-grid" id="cp2-smm-grid"></div><div class="cp-smm-bench-row" id="cp2-smm-bench"></div></div>
-<div class="cp-focus-strip" id="cp2-focus" style="display:none;">
-  <div class="cp-focus-eyebrow">СЛЕДУЮЩИЙ ЭТАП</div>
-  <div class="cp-focus-text" id="cp2-focus-text">—</div>
-  <div class="cp-focus-tip" id="cp2-focus-tip">—</div>
-</div>
 
-<!-- McKinsey Analytics Block -->
+<!-- 2. WOW АНАЛИТИКА — главный результат в деньгах (если есть отчёт) -->
 <div class="mck-analytics" id="cp2-mck-analytics" style="display:none;">
-  <!-- WOW блок -->
   <div class="mck-an-eyebrow">РЕЗУЛЬТАТЫ ПЕРИОДА</div>
   <div class="mck-wow-card green" id="cp2-mck-extra">
     <div class="mck-wow-num green" id="cp2-mck-extra-num">—</div>
     <div>
       <div class="mck-wow-title">Дополнительная выручка за период</div>
-      <div class="mck-wow-sub" id="cp2-mck-extra-sub">Сверх базового уровня — прямой результат работы агентства</div>
+      <div class="mck-wow-sub" id="cp2-mck-extra-sub">—</div>
     </div>
   </div>
   <div class="mck-wow-card gold" id="cp2-mck-roi">
     <div class="mck-wow-num gold" id="cp2-mck-roi-num">—</div>
     <div>
       <div class="mck-wow-title">Мультипликатор роста выручки</div>
-      <div class="mck-wow-sub" id="cp2-mck-roi-sub">Отношение выручки периода 2 к периоду 1</div>
+      <div class="mck-wow-sub" id="cp2-mck-roi-sub">—</div>
     </div>
   </div>
-
-  <!-- Сравнение было / стало -->
   <div class="mck-an-eyebrow">БЫЛО / СТАЛО</div>
   <div class="mck-compare-grid">
     <div class="mck-compare-card green">
@@ -28007,11 +27965,61 @@ button, a, [role="button"],
       <div class="mck-compare-badge" id="cp2-mck-total-badge">—</div>
     </div>
   </div>
-
-  <!-- Приоритеты -->
   <div class="mck-an-eyebrow">ФОКУС СЛЕДУЮЩЕГО ПЕРИОДА</div>
   <div class="mck-priorities" id="cp2-mck-priorities"></div>
 </div>
+
+<!-- 3. ХОД ПРОЕКТА — прогрессбар + этапы -->
+<div class="cp-progress-card">
+<div class="cp-progress-header">
+  <div>
+    <div class="cp-progress-eyebrow">Ход проекта</div>
+    <div class="cp-progress-title">Производственный цикл</div>
+  </div>
+  <div style="text-align:right">
+    <div class="cp-progress-pct" id="cp2-progress-pct">0%</div>
+    <div class="cp-progress-pct-sub">завершено</div>
+  </div>
+</div>
+<div class="cp-stages-wrap">
+  <div class="cp-bar-fill-v5" id="cp2-bar-fill"></div>
+  <div class="cp-bar-lead-v5" id="cp2-bar-lead"></div>
+  <div class="cp-stages-bar" id="cp2-stages-bar"></div>
+</div>
+<div class="cp-dual-bars" id="cp2-dual-bars"></div>
+<div class="cp-progress-footer" id="cp2-progress-footer">
+  <div class="cp-pf-dot"></div>
+  <span class="cp-pf-text">Активный этап: <strong id="cp2-pf-active-name">—</strong></span>
+  <span class="cp-pf-pill" id="cp2-pf-pill">— / 9</span>
+  <span class="cp-pf-right">этапов завершено</span>
+</div>
+<!-- 4. АКТИВНЫЙ ЭТАП — что в работе прямо сейчас -->
+<div class="cp-next-inline" id="cp2-next-step" style="display:none;">
+  <div class="cp-next-dot-wrap"><div class="cp-next-dot"></div></div>
+  <div class="cp-next-info-title" id="cp2-next-title">—</div>
+  <div class="cp-next-right">
+    <div class="cp-next-count" id="cp2-next-count">— / 9</div>
+    <div class="cp-next-count-sub">этапов завершено</div>
+  </div>
+</div>
+</div>
+
+<!-- 5. ОТЧЁТЫ + АКТИВНОСТЬ — оперативная информация рядом -->
+<div class="cp-cols">
+<div class="cp-card"><div class="cp-card-header"><div class="cp-card-title">Отчёты</div><div class="cp-card-count" id="cp2-reports-count" style="color:var(--a2);">—</div></div><div id="cp2-reports-list"></div></div>
+<div class="cp-card"><div class="cp-card-header"><div class="cp-card-title">Активность команды</div><div style="display:flex;align-items:center;gap:5px;"><div style="width:5px;height:5px;border-radius:50%;background:#3ecf8e;box-shadow:0 0 6px rgba(62,207,142,.5);"></div><span style="font-family:var(--font-mono);font-size:8px;color:#3ecf8e;letter-spacing:.1em;">LIVE</span></div></div><div id="cp2-activity-feed"></div></div>
+</div>
+
+<!-- 6. SMM ПОКАЗАТЕЛИ — детализация по контенту -->
+<div class="cp-smm-strip" id="cp2-smm-strip" style="display:none;"><div class="cp-smm-header"><div class="cp-smm-title">SMM показатели</div><div class="cp-smm-period" id="cp2-smm-period">—</div></div><div class="cp-smm-grid" id="cp2-smm-grid"></div><div class="cp-smm-bench-row" id="cp2-smm-bench"></div></div>
+
+<!-- 7. СЛЕДУЮЩИЙ ЭТАП — куда движемся (в конце, как точка дальнейшего действия) -->
+<div class="cp-focus-strip" id="cp2-focus" style="display:none;">
+  <div class="cp-focus-eyebrow">СЛЕДУЮЩИЙ ЭТАП</div>
+  <div class="cp-focus-text" id="cp2-focus-text">—</div>
+  <div class="cp-focus-tip" id="cp2-focus-tip">—</div>
+</div>
+
 </div>
 <div class="cp-tab-content" id="cp2-tab-stages">
 <div class="cp-progress-card" style="margin-bottom:18px;">
