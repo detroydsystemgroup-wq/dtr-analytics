@@ -37784,11 +37784,13 @@ async function loadOverview() {
   var hEl = document.getElementById('sv-health-body');
   if (hEl) {
     var STAGE_NAMES2 = ['Анализ клиентов','Конкуренты','Контент-стратегия','Таргет','Контент-план','Сценарии','Съёмки #1','Съёмки #2','Отчётность'];
+    var activeProjs = _allProjects.filter(function(p){ return p.status !== 'archived'; });
+    var activeProjIds = activeProjs.map(function(p){ return p.id; });
     hEl.innerHTML = STAGE_NAMES2.map(function(name, i) {
-      var done = _allStages.filter(function(s){ return s.stage_index===i && s.status==='completed'; }).length;
-      var total = _allProjects.length;
+      var done  = _allStages.filter(function(s){ return activeProjIds.indexOf(s.project_id)!==-1 && s.stage_index===i && s.status==='completed'; }).length;
+      var total = activeProjs.length;
       var pct = total ? Math.round(done/total*100) : 0;
-      var col = pct >= 80 ? 'var(--green)' : pct >= 40 ? 'var(--a2)' : 'var(--amber)';
+      var col = pct === 100 ? 'var(--green)' : pct >= 60 ? 'var(--a2)' : pct >= 30 ? 'var(--amber)' : 'rgba(255,255,255,.2)';
       return '<div class="sv-health-row">' +
         '<div class="sv-health-name">' + name + '</div>' +
         '<div class="sv-health-bar-wrap"><div class="sv-health-bar" style="width:' + pct + '%;background:' + col + ';"></div></div>' +
