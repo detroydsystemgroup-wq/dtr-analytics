@@ -31066,7 +31066,7 @@ async function loadReports() {
     }
     function fmtRev(v) {
       if (v == null) return '—';
-      return Math.round(v).toLocaleString('ru-RU') + ' ₽';
+      return Math.round(v).toLocaleString('ru-RU') + ' сум';
     }
     function mCol(v) {
       if (v == null) return 'rgba(184,146,58,.3)';
@@ -31084,7 +31084,7 @@ async function loadReports() {
     var metricsStrip = '<div class="rp-metrics-strip">'
       + rpMetricFull('Рост выручки', fmtPct(growthPct), mCol(growthPct), mBg(growthPct), mArrow(growthPct), growthPct != null)
       + rpMetricFull('Трафик Δ', growthPct != null ? fmtNum(trafficD) + '&nbsp;гост.' : '—', mCol(trafficD), mBg(trafficD), mArrow(trafficD), trafficD != null)
-      + rpMetricFull('Ср. чек Δ', avgChkD != null ? fmtNum(avgChkD) + '&nbsp;₽' : '—', mCol(avgChkD), mBg(avgChkD), mArrow(avgChkD), avgChkD != null)
+      + rpMetricFull('Ср. чек Δ', avgChkD != null ? fmtNum(avgChkD) + '&nbsp;сум' : '—', mCol(avgChkD), mBg(avgChkD), mArrow(avgChkD), avgChkD != null)
       + rpMetricFull('Выручка факт', fmtRev(dRev), 'var(--a2)', 'rgba(184,146,58,.07)', '', dRev != null)
       + rpMetricFull('База', fmtRev(bRev), 'rgba(184,146,58,.45)', 'rgba(184,146,58,.05)', '', bRev != null)
       + (!hasAnyData ? '<div class="rp-no-analysis">Запустите анализ в отчёте чтобы увидеть метрики</div>' : '')
