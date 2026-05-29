@@ -26585,9 +26585,12 @@ button, a, [role="button"],
           </div>
           <div class="kb-proj-section-lbl">Активные проекты</div>
           <div class="kb-proj-list" id="kb-proj-list"></div>
-          <div class="kb-proj-section-lbl kb-proj-section-archived" id="kb-archived-lbl" style="display:none;margin-top:12px;">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="opacity:.5;"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
-            Архив
+          <div class="kb-proj-section-lbl kb-proj-section-archived" id="kb-archived-lbl" style="display:none;margin-top:12px;cursor:pointer;justify-content:space-between;" onclick="kbToggleArchive()">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="opacity:.5;"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+              Архив
+            </div>
+            <svg id="kb-archive-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="opacity:.4;transition:transform .2s;"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <div class="kb-proj-list" id="kb-proj-list-archived" style="display:none;"></div>
           <div class="kb-sidebar-bottom"></div>
@@ -40649,6 +40652,16 @@ function kbShowNoProject() {
 }
 
 /* ══ SELECT PROJECT ══ */
+/* ── Toggle archive section ── */
+var _kbArchiveOpen = true;
+window.kbToggleArchive = function() {
+  _kbArchiveOpen = !_kbArchiveOpen;
+  var list     = document.getElementById('kb-proj-list-archived');
+  var chevron  = document.getElementById('kb-archive-chevron');
+  if (list)    list.style.display    = _kbArchiveOpen ? '' : 'none';
+  if (chevron) chevron.style.transform = _kbArchiveOpen ? 'rotate(0deg)' : 'rotate(-90deg)';
+};
+
 window.kbSelectProject = async function(projectId, projectName) {
   _kbProjectId   = projectId;
   _kbProjectName = projectName;
