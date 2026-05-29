@@ -34950,9 +34950,10 @@ async function cp2LoadTracker(project) {
       var iconBg  = s==='completed' ? 'background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.2)' : s==='active' ? 'background:rgba(62,207,142,.1);border:1px solid rgba(62,207,142,.2)' : 'background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07)';
       var svgIcon = (STAGE_ICONS[i] || '').replace('stroke="currentColor"', 'stroke="' + iconCol + '"');
 
-      // Дата: для completed — когда завершён, для active — когда начат
+      // Дата: для completed — когда завершён, для active — когда начат + дедлайн
       var dateStr = '';
       var dateLabel = '';
+      var deadlinePart = '';
       if (s === 'completed') {
         var doneEv = hist.find(function(h){ return h.stage_index === i && h.event === 'Завершён'; });
         if (doneEv) {
@@ -34965,6 +34966,26 @@ async function cp2LoadTracker(project) {
           dateLabel = 'В работе с';
           dateStr = new Date(startEv.created_at).toLocaleDateString('ru-RU',{day:'numeric',month:'short',year:'numeric'});
         }
+        // Дедлайн этапа — если установлен агентом
+        if (rec.deadline) {
+          var dlDate = new Date(rec.deadline + 'T00:00:00');
+          var today = new Date(); today.setHours(0,0,0,0);
+          var dlStr = dlDate.toLocaleDateString('ru-RU',{day:'numeric',month:'short',year:'numeric'});
+          var isOverdue = dlDate < today;
+          var dlColor = isOverdue ? 'color:#e05252;' : 'color:#c9a84c;';
+          var dlBg    = isOverdue ? 'background:rgba(224,82,82,.08);border:1px solid rgba(224,82,82,.2);' : 'background:rgba(184,146,58,.08);border:1px solid rgba(184,146,58,.2);';
+          var dlIcon  = isOverdue
+            ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+            : '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
+          var dlLabel = isOverdue ? 'ПРОСРОЧЕН' : 'ЗАВЕРШИТЬ ДО';
+          deadlinePart = '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;margin-left:12px;">' +
+            '<span style="font-family:var(--font-mono);font-size:8px;letter-spacing:.1em;text-transform:uppercase;' + (isOverdue ? 'color:rgba(224,82,82,.5);' : 'color:rgba(184,146,58,.4);') + '">' + dlLabel + '</span>' +
+            '<span style="display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:11px;font-weight:500;padding:3px 8px;border-radius:7px;' + dlBg + dlColor + '">' +
+              '<span style="' + dlColor + '">' + dlIcon + '</span>' +
+              dlStr +
+            '</span>' +
+          '</div>';
+        }
       }
 
       var datePart = dateStr
@@ -34976,6 +34997,7 @@ async function cp2LoadTracker(project) {
         '<div style="width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;' + iconBg + ';">' + svgIcon + '</div>' +
         '<div class="cp-stage-name" style="' + (s==='completed' ? 'color:rgba(255,255,255,.35);' : '') + '">' + esc(st.name) + '</div>' +
         datePart +
+        deadlinePart +
         '<div class="cp-stage-status-tag" style="' + tagStyle + '">' + tagText + '</div>' +
       '</div>';
     }).join('');
