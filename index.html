@@ -31060,16 +31060,18 @@ function renderProjectGrid() {
     return new Date(b.updated_at||b.created_at) - new Date(a.updated_at||a.created_at)
   })
 
-  // ── Update hero strip ──
-  const allPcts = _allProjects.map(p => getProjectProgress(p.id).pct)
+  // ── Update hero strip (только активные проекты) ──
+  const _activeProjs = _allProjects.filter(p => p.status !== 'archived')
+  const _activeStgs  = _allStages.filter(s => _activeProjs.some(p => p.id === s.project_id))
+  const allPcts = _activeProjs.map(p => getProjectProgress(p.id).pct)
   const avgPct = allPcts.length ? Math.round(allPcts.reduce((s,v)=>s+v,0)/allPcts.length) : 0
-  const overdueCount = _allProjects.filter(p => isProjectOverdue(p.id)).length
-  const doneCount = _allProjects.filter(p => getProjectProgress(p.id).pct === 100).length
-  const activeCount = _allProjects.filter(p => p.status !== 'archived' && getProjectProgress(p.id).pct < 100).length
-  const totalStagesDone = _allStages.filter(s => s.status === 'completed').length
-  const totalMRR = _allProjects.reduce((s,p) => s + (p.monthly_budget||0), 0)
+  const overdueCount = _activeProjs.filter(p => isProjectOverdue(p.id)).length
+  const doneCount = _activeProjs.filter(p => getProjectProgress(p.id).pct === 100).length
+  const activeCount = _activeProjs.filter(p => getProjectProgress(p.id).pct < 100).length
+  const totalStagesDone = _activeStgs.filter(s => s.status === 'completed').length
+  const totalMRR = _activeProjs.reduce((s,p) => s + (p.monthly_budget||0), 0)
   const setH = (id, v) => { const e = g(id); if(e) e.textContent = v }
-  setH('proj-hero-total', _allProjects.length)
+  setH('proj-hero-total', _activeProjs.length)
   setH('proj-hero-active', activeCount + ' активных · ' + doneCount + ' завершено')
   setH('proj-hero-avg', avgPct + '%')
   setH('proj-hero-stages', totalStagesDone + ' этапов завершено')
@@ -37611,25 +37613,30 @@ async function loadOverview() {
   var weekEnd = new Date(today); weekEnd.setDate(today.getDate() + 7);
   var MONTHS = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
 
-  // ── Load additional data ──
+  // ── Только активные проекты для всех метрик ──
+  var activeProjects = _allProjects.filter(function(p){ return p.status !== 'archived'; });
+  var activeProjectIds = activeProjects.map(function(p){ return p.id; });
+  var activeStagesAll = _allStages.filter(function(s){ return activeProjectIds.indexOf(s.project_id) !== -1; });
+
+  // ── Load additional data (только по активным) ──
   var allTasks = [];
   var stageHistory = [];
   try {
-    var tr = await sb.from('stage_tasks').select('*').in('project_id', _allProjects.map(function(p){return p.id;}));
+    var tr = await sb.from('stage_tasks').select('*').in('project_id', activeProjectIds);
     allTasks = tr.data || [];
   } catch(e) {}
   try {
-    var hr = await sb.from('stage_history').select('*').in('project_id', _allProjects.map(function(p){return p.id;})).order('created_at', {ascending:false}).limit(500);
+    var hr = await sb.from('stage_history').select('*').in('project_id', activeProjectIds).order('created_at', {ascending:false}).limit(500);
     stageHistory = hr.data || [];
   } catch(e) {}
 
-  // ── Core computations ──
-  var totalStages = _allProjects.length * 9;
-  var completedStages = _allStages.filter(function(s){ return s.status === 'completed'; }).length;
-  var activeStages = _allStages.filter(function(s){ return s.status === 'active'; }).length;
+  // ── Core computations (только активные проекты) ──
+  var totalStages = activeProjects.length * 9;
+  var completedStages = activeStagesAll.filter(function(s){ return s.status === 'completed'; }).length;
+  var activeStages = activeStagesAll.filter(function(s){ return s.status === 'active'; }).length;
   var globalPct = totalStages ? Math.round(completedStages / totalStages * 100) : 0;
-  var overdueProjs = _allProjects.filter(function(p){ return isProjectOverdue(p.id); });
-  var doneProjs = _allProjects.filter(function(p){ return getProjectProgress(p.id).pct === 100; });
+  var overdueProjs = activeProjects.filter(function(p){ return isProjectOverdue(p.id); });
+  var doneProjs = activeProjects.filter(function(p){ return getProjectProgress(p.id).pct === 100; });
 
   // On-time delivery rate
   var tasksWithDeadline = allTasks.filter(function(t){ return t.deadline; });
@@ -37661,7 +37668,7 @@ async function loadOverview() {
   }).length;
 
   // Overdue deadlines — этапы + задачи с истёкшим дедлайном
-  var allStageDL = _allStages.filter(function(s){ return s.deadline && s.status !== 'completed'; });
+  var allStageDL = activeStagesAll.filter(function(s){ return s.deadline && s.status !== 'completed'; });
   var overdueDL  = allStageDL.filter(function(s){ return new Date(s.deadline + 'T00:00:00') < today; });
   var weekDL     = allStageDL.filter(function(s){ var d=new Date(s.deadline + 'T00:00:00'); return d>=today && d<=weekEnd; });
   var futureDL   = allStageDL.filter(function(s){ return new Date(s.deadline + 'T00:00:00') > weekEnd; });
@@ -37680,24 +37687,24 @@ async function loadOverview() {
   var healthLabel = healthScore >= 75 ? 'Отличное' : healthScore >= 45 ? 'Требует внимания' : 'Критическое';
 
   // Revenue concentration
-  var budgets = _allProjects.map(function(p){ return p.monthly_budget || 0; }).filter(function(b){ return b > 0; });
+  var budgets = activeProjects.map(function(p){ return p.monthly_budget || 0; }).filter(function(b){ return b > 0; });
   var totalMRR = budgets.reduce(function(s,b){ return s+b; }, 0);
   var maxBudget = budgets.length ? Math.max.apply(null, budgets) : 0;
   var concPct = totalMRR > 0 ? Math.round(maxBudget / totalMRR * 100) : null;
-  var topClient = concPct !== null ? _allProjects.find(function(p){ return p.monthly_budget === maxBudget; }) : null;
+  var topClient = concPct !== null ? activeProjects.find(function(p){ return p.monthly_budget === maxBudget; }) : null;
 
   // Revenue per hour
   var totalHours = 0;
   try {
-    var th = (await sb.from('stage_tasks').select('time_logged').in('project_id', _allProjects.map(function(p){return p.id;}))).data || [];
+    var th = (await sb.from('stage_tasks').select('time_logged').in('project_id', activeProjectIds)).data || [];
     totalHours = Math.round(th.reduce(function(s,t){ return s + (t.time_logged||0); }, 0) / 60);
   } catch(e) {}
   var revPerHour = (totalMRR > 0 && totalHours > 0) ? Math.round(totalMRR / totalHours) : null;
 
-  // Churn risk: проекты без активности 21+ дней
-  var activeProjects = _allProjects.filter(function(p){ return p.status !== 'archived' && getProjectProgress(p.id).pct < 100; });
+  // Churn risk: проекты без активности 21+ дней (только не завершённые из активных)
   var twentyOneAgo = new Date(today); twentyOneAgo.setDate(today.getDate() - 21);
-  var churnRisk = activeProjects.filter(function(p) {
+  var churnOnlyActive = activeProjects.filter(function(p){ return getProjectProgress(p.id).pct < 100; });
+  var churnRisk = churnOnlyActive.filter(function(p) {
     // Последняя активность в истории этапов
     var lastStage = stageHistory.find(function(h){ return h.project_id === p.id; });
     var lastStageDate = lastStage ? new Date(lastStage.created_at || lastStage.changed_at) : null;
@@ -37741,7 +37748,7 @@ async function loadOverview() {
   s('sv-health-num', healthScore + '%');
   sc('sv-health-num', healthColor);
   s('sv-health-sub', healthLabel + ' состояние');
-  s('sv-health-foot', _allProjects.length + ' проектов · ' + doneProjs.length + ' завершено');
+  s('sv-health-foot', activeProjects.length + ' активных · ' + doneProjs.length + ' на 100%');
 
   s('sv-ontime-num', onTimeRate !== null ? onTimeRate + '%' : '—');
   sc('sv-ontime-num', onTimeRate !== null ? (onTimeRate >= 70 ? 'var(--green)' : onTimeRate >= 50 ? 'var(--amber)' : 'var(--red)') : 'var(--txt3)');
@@ -37807,7 +37814,7 @@ async function loadOverview() {
   // ─────────────────────────────
   // RENDER: Projects table
   // ─────────────────────────────
-  var projData = _allProjects.map(function(p) {
+  var projData = activeProjects.map(function(p) {
     var prog = getProjectProgress(p.id);
     var overdue = isProjectOverdue(p.id);
     var next = getNextDeadline(p.id);
