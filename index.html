@@ -34426,8 +34426,8 @@ function renderTracker() {
 
     let meta = ''
     if (rec.deadline) {
-      const d = new Date(rec.deadline)
-      const dateStr = d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })
+      const d = new Date(rec.deadline + 'T00:00:00')
+      const dateStr = d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
       meta += `<div class="tracker-meta-chip">
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         ${st === 'completed' ? 'Выполнено' : 'Срок'}: ${dateStr}
@@ -34473,7 +34473,7 @@ function renderTracker() {
       <div class="tracker-stage-card t-${st}" style="margin-bottom:${isLast ? '0' : '10px'};">
         <div class="tracker-stage-head">
           <div class="tracker-stage-name-wrap">
-            <span class="tracker-stage-icon">${stage.icon}</span>
+            <span class="tracker-stage-icon">${STAGE_ICONS[i] || ''}</span>
             <span class="tracker-stage-name${st === 'pending' ? ' t-pending' : ''}">${stage.name}</span>
           </div>
           <div style="display:flex;align-items:center;gap:8px;">
