@@ -27577,6 +27577,40 @@ button, a, [role="button"],
 .cp-smm-val{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
 .cp-smm-bench-row{display:flex;align-items:center;gap:8px;padding:10px 20px;border-top:1px solid rgba(255,255,255,.04);font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.2)}
 
+/* ══ McKinsey Analytics Block ══ */
+.mck-analytics{margin-bottom:14px}
+.mck-wow-card{display:flex;align-items:center;gap:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px 20px;margin-bottom:8px;position:relative;overflow:hidden}
+.mck-wow-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.mck-wow-card.green::before{background:#3ecf8e}
+.mck-wow-card.gold::before{background:#c9a84c}
+.mck-wow-card.red::before{background:#f87171}
+.mck-wow-num{font-family:var(--font-display);font-size:28px;font-weight:800;letter-spacing:-.04em;line-height:1;min-width:110px;flex-shrink:0;font-variant-numeric:tabular-nums}
+.mck-wow-num.green{color:#3ecf8e} .mck-wow-num.gold{color:#c9a84c} .mck-wow-num.red{color:#f87171}
+.mck-wow-title{font-family:var(--font-display);font-size:13px;font-weight:600;color:rgba(255,255,255,.85);margin-bottom:4px}
+.mck-wow-sub{font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.3);letter-spacing:.02em;line-height:1.5}
+.mck-an-eyebrow{font-family:var(--font-mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.2);margin:16px 0 8px}
+.mck-compare-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px}
+.mck-compare-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 14px;position:relative;overflow:hidden}
+.mck-compare-card::after{content:'';position:absolute;top:0;left:0;right:0;height:1.5px}
+.mck-compare-card.green::after{background:#3ecf8e} .mck-compare-card.gold::after{background:#c9a84c}
+.mck-compare-card.blue::after{background:#38b2ac} .mck-compare-card.purple::after{background:#a78bfa}
+.mck-compare-card.red::after{background:#f87171}
+.mck-compare-eyebrow{font-family:var(--font-mono);font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:6px}
+.mck-compare-val{font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-.03em;line-height:1;margin-bottom:3px;font-variant-numeric:tabular-nums}
+.mck-compare-val.green{color:#3ecf8e} .mck-compare-val.gold{color:#c9a84c}
+.mck-compare-val.blue{color:#38b2ac} .mck-compare-val.purple{color:#a78bfa} .mck-compare-val.red{color:#f87171}
+.mck-compare-sub{font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.25)}
+.mck-compare-badge{display:inline-flex;align-items:center;font-family:var(--font-mono);font-size:8px;font-weight:600;padding:2px 7px;border-radius:20px;margin-top:5px}
+.mck-compare-badge.up{background:rgba(62,207,142,.1);color:#3ecf8e}
+.mck-compare-badge.down{background:rgba(248,113,113,.1);color:#f87171}
+.mck-compare-badge.neutral{background:rgba(255,255,255,.05);color:rgba(255,255,255,.3)}
+.mck-priorities{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;overflow:hidden}
+.mck-priority-row{display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid rgba(255,255,255,.04)}
+.mck-priority-row:last-child{border-bottom:none}
+.mck-priority-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.mck-priority-text{flex:1;font-family:var(--font-display);font-size:12px;color:rgba(255,255,255,.6)}
+.mck-priority-val{font-family:var(--font-mono);font-size:10px;font-weight:600;flex-shrink:0}
+
 /* ══ McKinsey Reports Panel ══ */
 .mck-header{
   display:flex;align-items:flex-start;justify-content:space-between;
@@ -27924,6 +27958,59 @@ button, a, [role="button"],
   <div class="cp-focus-eyebrow">СЛЕДУЮЩИЙ ЭТАП</div>
   <div class="cp-focus-text" id="cp2-focus-text">—</div>
   <div class="cp-focus-tip" id="cp2-focus-tip">—</div>
+</div>
+
+<!-- McKinsey Analytics Block -->
+<div class="mck-analytics" id="cp2-mck-analytics" style="display:none;">
+  <!-- WOW блок -->
+  <div class="mck-an-eyebrow">РЕЗУЛЬТАТЫ ПЕРИОДА</div>
+  <div class="mck-wow-card green" id="cp2-mck-extra">
+    <div class="mck-wow-num green" id="cp2-mck-extra-num">—</div>
+    <div>
+      <div class="mck-wow-title">Дополнительная выручка за период</div>
+      <div class="mck-wow-sub" id="cp2-mck-extra-sub">Сверх базового уровня — прямой результат работы агентства</div>
+    </div>
+  </div>
+  <div class="mck-wow-card gold" id="cp2-mck-roi">
+    <div class="mck-wow-num gold" id="cp2-mck-roi-num">—</div>
+    <div>
+      <div class="mck-wow-title">Мультипликатор роста выручки</div>
+      <div class="mck-wow-sub" id="cp2-mck-roi-sub">Отношение выручки периода 2 к периоду 1</div>
+    </div>
+  </div>
+
+  <!-- Сравнение было / стало -->
+  <div class="mck-an-eyebrow">БЫЛО / СТАЛО</div>
+  <div class="mck-compare-grid">
+    <div class="mck-compare-card green">
+      <div class="mck-compare-eyebrow">Выручка / день</div>
+      <div class="mck-compare-val green" id="cp2-mck-rev-day">—</div>
+      <div class="mck-compare-sub" id="cp2-mck-rev-day-sub">—</div>
+      <div class="mck-compare-badge" id="cp2-mck-rev-day-badge">—</div>
+    </div>
+    <div class="mck-compare-card blue">
+      <div class="mck-compare-eyebrow">Чеков / день</div>
+      <div class="mck-compare-val blue" id="cp2-mck-chk-day">—</div>
+      <div class="mck-compare-sub" id="cp2-mck-chk-day-sub">—</div>
+      <div class="mck-compare-badge" id="cp2-mck-chk-day-badge">—</div>
+    </div>
+    <div class="mck-compare-card gold">
+      <div class="mck-compare-eyebrow">Средний чек</div>
+      <div class="mck-compare-val gold" id="cp2-mck-avg">—</div>
+      <div class="mck-compare-sub" id="cp2-mck-avg-sub">—</div>
+      <div class="mck-compare-badge" id="cp2-mck-avg-badge">—</div>
+    </div>
+    <div class="mck-compare-card purple">
+      <div class="mck-compare-eyebrow">Всего выручки</div>
+      <div class="mck-compare-val purple" id="cp2-mck-total">—</div>
+      <div class="mck-compare-sub" id="cp2-mck-total-sub">—</div>
+      <div class="mck-compare-badge" id="cp2-mck-total-badge">—</div>
+    </div>
+  </div>
+
+  <!-- Приоритеты -->
+  <div class="mck-an-eyebrow">ФОКУС СЛЕДУЮЩЕГО ПЕРИОДА</div>
+  <div class="mck-priorities" id="cp2-mck-priorities"></div>
 </div>
 </div>
 <div class="cp-tab-content" id="cp2-tab-stages">
@@ -35206,6 +35293,83 @@ async function cp2LoadROI(project) {
 
   var sign = function(v) { return v > 0 ? '+' : v < 0 ? '−' : ''; };
   var f = function(v) { return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:1}).format(Math.abs(v)); };
+
+  var sign = function(v) { return v > 0 ? '+' : v < 0 ? '−' : ''; };
+  var f    = function(v) { return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:1}).format(Math.abs(v)); };
+  var fM   = function(v) { // форматирование в тысячах/миллионах
+    var a = Math.abs(v);
+    if (a >= 1000000) return (v < 0 ? '−' : '') + (a/1000000).toFixed(1) + 'M';
+    if (a >= 1000)    return (v < 0 ? '−' : '') + Math.round(a/1000) + 'K';
+    return (v < 0 ? '−' : '') + Math.round(a) + '';
+  };
+  var setBadge = function(id, val, suffix) {
+    var el = g(id); if (!el) return;
+    el.textContent = (val >= 0 ? '↑ +' : '↓ ') + f(val) + (suffix||'');
+    el.className = 'mck-compare-badge ' + (val >= 0 ? 'up' : 'down');
+  };
+
+  // ── WOW блок ──
+  var analyticsEl = g('cp2-mck-analytics');
+  if (analyticsEl && sm.extra_revenue != null) {
+    analyticsEl.style.display = 'block';
+
+    // Дополнительная выручка
+    if (g('cp2-mck-extra-num')) g('cp2-mck-extra-num').textContent = (sm.extra_revenue >= 0 ? '+' : '−') + fM(sm.extra_revenue) + ' сум';
+    if (g('cp2-mck-extra-sub')) g('cp2-mck-extra-sub').textContent =
+      'За ' + (sm.d_days||30) + ' дней сверх базового уровня · было: ' + fM(sm.b_total_rev||0) + ' сум';
+
+    // Мультипликатор
+    var mult = sm.b_total_rev > 0 ? (sm.d_total_rev / sm.b_total_rev) : null;
+    if (mult && g('cp2-mck-roi-num')) g('cp2-mck-roi-num').textContent = '×' + mult.toFixed(2);
+    if (mult && g('cp2-mck-roi-sub')) g('cp2-mck-roi-sub').textContent =
+      'Период 2: ' + fM(sm.d_total_rev||0) + ' сум / Период 1: ' + fM(sm.b_total_rev||0) + ' сум';
+
+    // Сравнение: выручка/день
+    if (g('cp2-mck-rev-day'))     g('cp2-mck-rev-day').textContent     = fM(sm.d_rev_per_day||0) + ' сум';
+    if (g('cp2-mck-rev-day-sub')) g('cp2-mck-rev-day-sub').textContent = 'было: ' + fM(sm.b_rev_per_day||0) + ' сум';
+    if (sm.growth_pct != null)    setBadge('cp2-mck-rev-day-badge', sm.growth_pct, '%');
+
+    // Сравнение: чеков/день
+    var bCD = sm.b_total_chk > 0 ? sm.b_total_chk / (sm.b_days||30) : null;
+    var dCD = sm.d_total_chk > 0 ? sm.d_total_chk / (sm.d_days||30) : null;
+    if (dCD != null && g('cp2-mck-chk-day'))     g('cp2-mck-chk-day').textContent     = Math.round(dCD) + ' шт.';
+    if (bCD != null && g('cp2-mck-chk-day-sub')) g('cp2-mck-chk-day-sub').textContent = 'было: ' + Math.round(bCD) + ' шт.';
+    if (dCD != null && bCD != null)               setBadge('cp2-mck-chk-day-badge', dCD - bCD, ' шт.');
+
+    // Сравнение: средний чек
+    if (g('cp2-mck-avg'))     g('cp2-mck-avg').textContent     = fM(sm.d_avg_check||0) + ' сум';
+    if (g('cp2-mck-avg-sub')) g('cp2-mck-avg-sub').textContent = 'было: ' + fM(sm.b_avg_check||0) + ' сум';
+    if (sm.avg_check_delta != null) setBadge('cp2-mck-avg-badge', sm.avg_check_delta, ' сум');
+
+    // Сравнение: всего выручки
+    if (g('cp2-mck-total'))     g('cp2-mck-total').textContent     = fM(sm.d_total_rev||0) + ' сум';
+    if (g('cp2-mck-total-sub')) g('cp2-mck-total-sub').textContent = 'было: ' + fM(sm.b_total_rev||0) + ' сум';
+    if (sm.growth_abs != null)  setBadge('cp2-mck-total-badge', sm.growth_abs * (sm.d_days||30), ' сум');
+
+    // Приоритеты — автоматически из данных
+    var priorities = [];
+    if (sm.avg_check_delta != null && sm.avg_check_delta < 0)
+      priorities.push({col:'#f87171', text:'Средний чек снизился — проработать up-sell и допродажи', val: sign(sm.avg_check_delta) + f(sm.avg_check_delta) + ' сум', cls:'red'});
+    if (sm.avg_check_delta != null && sm.avg_check_delta > 0)
+      priorities.push({col:'#3ecf8e', text:'Средний чек вырос — масштабировать успешные механики', val: '+' + f(sm.avg_check_delta) + ' сум', cls:'green'});
+    if (sm.growth_pct != null && sm.growth_pct > 0)
+      priorities.push({col:'#c9a84c', text:'Выручка растёт — удержать динамику в следующем периоде', val: '+' + f(sm.growth_pct) + '%', cls:'gold'});
+    if (sm.traffic_delta != null && sm.traffic_delta > 0)
+      priorities.push({col:'#38b2ac', text:'Рост чеков — конвертировать новых клиентов в постоянных', val: '+' + Math.round(sm.traffic_delta) + ' шт/д', cls:'blue'});
+    if (sm.traffic_delta != null && sm.traffic_delta < 0)
+      priorities.push({col:'#f87171', text:'Чеки снижаются — усилить привлечение и акционные механики', val: Math.round(sm.traffic_delta) + ' шт/д', cls:'red'});
+
+    var prEl = g('cp2-mck-priorities');
+    if (prEl && priorities.length) {
+      prEl.innerHTML = priorities.map(function(p){
+        return '<div class="mck-priority-row">' +
+          '<div class="mck-priority-dot" style="background:' + p.col + '"></div>' +
+          '<div class="mck-priority-text">' + p.text + '</div>' +
+          '<div class="mck-priority-val" style="color:' + p.col + '">' + p.val + '</div>' +
+        '</div>';
+      }).join('');
+    }
+  }
 
   if (sm.growth_pct != null && g('cp2-kpi-rev')) {
     g('cp2-kpi-rev').textContent = sign(sm.growth_pct) + f(sm.growth_pct) + '%';
