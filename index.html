@@ -35188,7 +35188,10 @@ async function cp2LoadROI(project) {
     .limit(10);
 
   var reports = res.data || [];
-  console.log('[cp2LoadROI] отчётов найдено:', reports.length, reports.map(function(r){ return {id:r.id, status:r.status, hasSummary:!!r.summary, keys:r.summary?Object.keys(r.summary):[]}; }));
+  console.log('[cp2LoadROI] найдено отчётов:', reports.length);
+  reports.forEach(function(r, i){
+    console.log('[cp2LoadROI] отчёт', i, '| id:', r.id, '| title:', r.title, '| summary:', JSON.stringify(r.summary));
+  });
 
   // Ищем первый отчёт где summary содержит нужные поля
   var sm = null;
