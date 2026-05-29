@@ -31832,22 +31832,18 @@ function renderMenuEfficiency(b3,d3) {
 function runAnalysis() {
   const b = S['b1'], d = S['d1']
   if (!b || !d) return
-
+  try {
   updateAllLabels()
 
   // БАГ 3 FIX: days из meta, или из rows.length, или минимум 1
   // (данные из Supabase могли быть сохранены старым кодом с days=0)
   const bRows = Array.isArray(b.rows) ? b.rows : []
   const dRows = Array.isArray(d.rows) ? d.rows : []
-  console.log('[runAnalysis] b1 structure:', {type:b.type, days:b.meta?.days, rows:bRows.length, totalRev:b.meta?.totalRev, metaKeys:Object.keys(b.meta||{})})
-  console.log('[runAnalysis] d1 structure:', {type:d.type, days:d.meta?.days, rows:dRows.length, totalRev:d.meta?.totalRev, metaKeys:Object.keys(d.meta||{})})
-  // Если days=0 но totalRev есть — данные целые, восстанавливаем days
+  // Восстанавливаем days: из meta → из кол-ва строк с данными → из всех rows → минимум 1
   const bD_fromRows = bRows.filter(r => r && r.rev > 0).length
   const dD_fromRows = dRows.filter(r => r && r.rev > 0).length
-  // Для старых данных без rows: пробуем вычислить из totalRev/avgRevPerDay (нет данных) → используем 1
   const bD = b.meta?.days || bD_fromRows || bRows.length || 1
   const dD = d.meta?.days || dD_fromRows || dRows.length || 1
-  console.log('[runAnalysis] resolved: bD='+bD+', dD='+dD)
   const bR = b.meta.totalRev, dR = d.meta.totalRev
   const bC = b.meta.totalChk, dC = d.meta.totalChk
   const bRD = bR/bD, dRD = dR/dD, bCD = bC/bD, dCD = dC/dD
@@ -32174,6 +32170,11 @@ function runAnalysis() {
   // Auto-collapse files section after analysis runs
   collapseFilesSection(true)
   setTimeout(()=>g('analytics-wrap').scrollIntoView({behavior:'smooth',block:'start'}),100)
+  } catch(e) {
+    console.error('[runAnalysis] CRASH:', e.message, e.stack)
+    // Показываем отчёт даже при частичной ошибке
+    g('analytics-wrap').classList.add('visible')
+  }
 }
 
 
