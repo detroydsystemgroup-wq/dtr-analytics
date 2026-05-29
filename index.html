@@ -14655,6 +14655,83 @@ select:focus {
   align-items: center;
   flex-shrink: 0;
 }
+/* ── Finance Trend Row ── */
+.fin-trend-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin: 14px 0;
+}
+.fin-trend-card {
+  background: var(--bg3);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  transition: border-color .15s;
+}
+.fin-trend-card:hover { border-color: var(--brd2); }
+.fin-trend-label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: .14em;
+  color: var(--txt3);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.fin-trend-val {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--txt);
+  letter-spacing: -.02em;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.fin-trend-sub {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--txt3);
+  letter-spacing: .04em;
+}
+
+/* ── Unit Economics card ── */
+.fin-unit-card {
+  background: var(--bg3);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-md);
+  padding: 16px;
+  margin-top: 12px;
+}
+.fin-unit-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 0;
+}
+.fin-unit-lbl {
+  font-family: var(--font-display);
+  font-size: 12px;
+  color: var(--txt2);
+}
+.fin-unit-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--txt);
+}
+.fin-unit-val.fin-unit-red   { color: var(--red); }
+.fin-unit-val.fin-unit-green { color: var(--green); }
+.fin-unit-div {
+  height: 1px;
+  background: var(--brd);
+}
+@media (max-width: 1100px) {
+  .fin-trend-row { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 700px) {
+  .fin-trend-row { grid-template-columns: repeat(2, 1fr); }
+}
+
 /* P&L card */
 .fin-pnl-preview {
   background: var(--bg2);
@@ -26430,7 +26507,36 @@ button, a, [role="button"],
         </div>
       </div>
 
-      <!-- ② BODY: filter pill row + two-column layout -->
+      <!-- ② LEVEL 2: MoM Trend Row -->
+      <div class="fin-trend-row" id="fin-trend-row">
+        <div class="fin-trend-card">
+          <div class="fin-trend-label">ВЫРУЧКА / ЧАС</div>
+          <div class="fin-trend-val" id="bi-rev-hour">—</div>
+          <div class="fin-trend-sub">сум за час работы</div>
+        </div>
+        <div class="fin-trend-card">
+          <div class="fin-trend-label">RUNWAY</div>
+          <div class="fin-trend-val" id="bi-runway">—</div>
+          <div class="fin-trend-sub" id="bi-runway-sub">месяцев при текущей марже</div>
+        </div>
+        <div class="fin-trend-card">
+          <div class="fin-trend-label">CONCENTRATION RISK</div>
+          <div class="fin-trend-val" id="bi-conc-pct2">—</div>
+          <div class="fin-trend-sub" id="bi-conc-client">крупнейший клиент</div>
+        </div>
+        <div class="fin-trend-card">
+          <div class="fin-trend-label">BREAK-EVEN</div>
+          <div class="fin-trend-val" id="bi-breakeven">—</div>
+          <div class="fin-trend-sub">минимум для нулевой прибыли</div>
+        </div>
+        <div class="fin-trend-card">
+          <div class="fin-trend-label">EBITDA MARGIN</div>
+          <div class="fin-trend-val" id="bi-ebitda">—</div>
+          <div class="fin-trend-sub">операционная эффективность</div>
+        </div>
+      </div>
+
+      <!-- ③ FILTER + SORT -->
       <div class="apl-filter-row">
         <div class="apl-pill-bar" id="apl-pill-bar">
           <button class="apl-pill apl-pill-active" data-seg="all" onclick="biSetSegment('all',this)">Все <span id="bsc-all">0</span></button>
@@ -26449,18 +26555,15 @@ button, a, [role="button"],
         </select>
       </div>
 
+      <!-- ④ MAIN GRID: Projects + Right panel -->
       <div class="apl-body-grid">
 
-        <!-- LEFT: Projects table (main) -->
+        <!-- LEFT: Bar chart + Table -->
         <div class="apl-main-col">
-
-          <!-- Bar chart -->
           <div class="apl-chart-card" id="bi-bar-wrap" style="display:none;">
             <div class="apl-chart-label">МАРЖИНАЛЬНОСТЬ ПО ПРОЕКТАМ</div>
             <div style="position:relative;height:110px;"><canvas id="cFinBar"></canvas></div>
           </div>
-
-          <!-- Table -->
           <div style="display:contents;">
             <div class="apl-thead" style="display:none;">
               <div class="apl-th apl-th-name">Проект</div>
@@ -26473,8 +26576,6 @@ button, a, [role="button"],
             </div>
             <div id="bi-proj-tbody" class="bi-cards-list"></div>
           </div>
-
-          <!-- Empty state -->
           <div id="bi-empty" style="display:none;">
             <div class="apl-empty-state">
               <div class="apl-empty-icon">
@@ -26484,8 +26585,6 @@ button, a, [role="button"],
               <div class="apl-empty-sub">Нажми «Задать» напротив любого проекта<br>чтобы добавить бюджет и расходы</div>
             </div>
           </div>
-
-          <!-- Detail panel -->
           <div class="apl-detail-card" id="bi-detail-panel" style="display:none;">
             <div class="apl-detail-top">
               <div>
@@ -26506,7 +26605,7 @@ button, a, [role="button"],
           </div>
         </div>
 
-        <!-- RIGHT: Cost donut -->
+        <!-- RIGHT: Donut + Unit Economics -->
         <div class="apl-side-col">
           <div class="apl-donut-card">
             <div class="apl-chart-label">СТРУКТУРА РАСХОДОВ</div>
@@ -26519,6 +26618,30 @@ button, a, [role="button"],
             </div>
             <div id="bi-donut-legend" class="apl-donut-legend"></div>
           </div>
+
+          <!-- Unit Economics card -->
+          <div class="fin-unit-card" id="fin-unit-card">
+            <div class="apl-chart-label">UNIT ECONOMICS</div>
+            <div class="fin-unit-row">
+              <span class="fin-unit-lbl">Выручка на клиента</span>
+              <span class="fin-unit-val" id="bi-rev-per-client">—</span>
+            </div>
+            <div class="fin-unit-div"></div>
+            <div class="fin-unit-row">
+              <span class="fin-unit-lbl">Расходы на клиента</span>
+              <span class="fin-unit-val fin-unit-red" id="bi-cost-per-client">—</span>
+            </div>
+            <div class="fin-unit-div"></div>
+            <div class="fin-unit-row">
+              <span class="fin-unit-lbl">Прибыль на клиента</span>
+              <span class="fin-unit-val fin-unit-green" id="bi-profit-per-client">—</span>
+            </div>
+            <div class="fin-unit-div"></div>
+            <div class="fin-unit-row">
+              <span class="fin-unit-lbl">Часов на клиента</span>
+              <span class="fin-unit-val" id="bi-hours-per-client">—</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -26527,10 +26650,11 @@ button, a, [role="button"],
         <summary class="apl-sql-summary">▸ SQL — колонки для полного P&L</summary>
         <div class="fin-sql-hint" style="margin-top:8px;">
           <code>ALTER TABLE projects ADD COLUMN IF NOT EXISTS contractors jsonb DEFAULT '[]';<br>ALTER TABLE projects ADD COLUMN IF NOT EXISTS extra_expenses jsonb DEFAULT '[]';<br>ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;</code>
-          <button onclick="navigator.clipboard.writeText('ALTER TABLE projects ADD COLUMN IF NOT EXISTS contractors jsonb DEFAULT \'[]\';\nALTER TABLE projects ADD COLUMN IF NOT EXISTS extra_expenses jsonb DEFAULT \'[]\';\nALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;').then(()=>{this.textContent='✓';setTimeout(()=>this.textContent='SQL',1500)})" class="fin-sql-copy">SQL</button>
+          <button onclick="navigator.clipboard.writeText('ALTER TABLE projects ADD COLUMN IF NOT EXISTS contractors jsonb DEFAULT \'[]\';
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS extra_expenses jsonb DEFAULT \'[]\';
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;').then(()=>{this.textContent='✓';setTimeout(()=>this.textContent='SQL',1500)})" class="fin-sql-copy">SQL</button>
         </div>
       </details>
-
     </div>
 
     <!-- ══ БАЗА ЗНАНИЙ ══ -->
@@ -33223,6 +33347,62 @@ function renderFinance() {
   // Margin bar
   const bar = g('bi-margin-bar')
   if(bar) bar.style.width = Math.max(0, Math.min(100, agencyMargin)) + '%'
+
+  // ── LEVEL 2: Advanced metrics ──
+  const nClients = withBudget.length || 1
+
+  // 1. Revenue per hour
+  const revPerH = totalHours > 0 ? Math.round(totalMRR / totalHours) : null
+  s('bi-rev-hour', revPerH ? fmtM(revPerH) + ' сум' : '—')
+
+  // 2. Runway = accumulated profit reserve / monthly costs
+  //    Simplified: if margin > 0, runway = "sustainable"
+  //    If margin < 0, runway = reserve / |monthly_loss| — we show months
+  const monthly_loss = totalProfit < 0 ? Math.abs(totalProfit) : 0
+  if (monthly_loss > 0) {
+    // assume 3 months reserve
+    const runway = Math.round((totalMRR * 3) / monthly_loss)
+    s('bi-runway', runway + ' мес')
+    const runwayEl = g('bi-runway'); if(runwayEl) runwayEl.style.color = runway < 3 ? 'var(--red)' : 'var(--amber)'
+    s('bi-runway-sub', 'при текущих убытках')
+  } else if (totalProfit > 0) {
+    s('bi-runway', '∞')
+    const runwayEl = g('bi-runway'); if(runwayEl) runwayEl.style.color = 'var(--green)'
+    s('bi-runway-sub', 'прибыльная операция')
+  } else {
+    s('bi-runway', '—')
+    s('bi-runway-sub', 'нет данных')
+  }
+
+  // 3. Concentration risk
+  const maxBudRow = withBudget.length ? withBudget.reduce((mx,r)=>r.budget>mx.budget?r:mx) : null
+  if (maxBudRow && totalMRR > 0) {
+    const concPct = Math.round(maxBudRow.budget / totalMRR * 100)
+    s('bi-conc-pct2', concPct + '%')
+    s('bi-conc-client', maxBudRow.p.name)
+    const concEl = g('bi-conc-pct2')
+    if(concEl) concEl.style.color = concPct >= 50 ? 'var(--red)' : concPct >= 30 ? 'var(--amber)' : 'var(--green)'
+  } else {
+    s('bi-conc-pct2', '—'); s('bi-conc-client', 'нет данных')
+  }
+
+  // 4. Break-even MRR = total costs (minimum revenue for zero profit)
+  s('bi-breakeven', totalCosts > 0 ? fmtM(totalCosts) + ' сум' : '—')
+
+  // 5. EBITDA margin (= operating margin before interest/tax/depreciation)
+  //    For agency: EBITDA ≈ Gross profit / Revenue (no D&A to subtract)
+  const ebitda = totalMRR > 0 ? agencyMargin : null
+  s('bi-ebitda', ebitda !== null ? ebitda + '%' : '—')
+  const ebitdaEl = g('bi-ebitda')
+  if(ebitdaEl && ebitda !== null) ebitdaEl.style.color = ebitda >= 30 ? 'var(--green)' : ebitda >= 15 ? 'var(--amber)' : 'var(--red)'
+
+  // ── Unit Economics ──
+  s('bi-rev-per-client',    totalMRR    > 0 ? fmtM(Math.round(totalMRR    / nClients)) + ' сум' : '—')
+  s('bi-cost-per-client',   totalCosts  > 0 ? fmtM(Math.round(totalCosts  / nClients)) + ' сум' : '—')
+  s('bi-profit-per-client', totalMRR    > 0 ? (totalProfit>=0?'+':'')+fmtM(Math.round(totalProfit / nClients)) + ' сум' : '—')
+  s('bi-hours-per-client',  totalHours  > 0 ? fmtHours(Math.round(totalHours / nClients)) : '—')
+  const ppEl = g('bi-profit-per-client')
+  if(ppEl && totalMRR>0) ppEl.style.color = totalProfit>=0 ? 'var(--green)' : 'var(--red)'
 
   // ── Segment counts ──
   const sc=(id,rows)=>{ const el=g(id); if(el) el.textContent=rows.length }
