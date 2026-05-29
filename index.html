@@ -602,7 +602,7 @@ body::before {
   letter-spacing: -.02em;
   margin-bottom: 22px;
 }
-.modal-footer { display:flex; gap:8px; margin-top:22px; }
+.modal-footer { display:flex; align-items:center; gap:10px; margin-top:22px; }
 
 /* ══════════════════════════════════════════════
    PROJECT PAGE
@@ -4730,14 +4730,21 @@ body::after {
 /* Stage status buttons in modal */
 .stage-status-btn {
   font-family: var(--font-display) !important;
-  font-size: 12px !important;
+  font-size: 13px !important;
   font-weight: 500 !important;
   background: rgba(184,146,58,.05) !important;
   border: 1px solid rgba(184,146,58,.12) !important;
   border-radius: 10px !important;
   color: rgba(240,236,230,.6) !important;
-  padding: 11px 8px !important;
+  padding: 0 8px !important;
+  height: 48px !important;
+  min-height: 48px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
   transition: all .18s !important;
+  white-space: nowrap !important;
 }
 .stage-status-btn:hover {
   border-color: rgba(184,146,58,.25) !important;
@@ -16591,14 +16598,15 @@ body::before {
   justify-content: center;
   gap: 10px;
   width: 100%;
-  padding: 16px 24px;
-  min-height: 54px;
+  padding: 0 24px;
+  min-height: 48px;
+  height: 48px;
   background: #b8923a;
   border: none;
-  border-radius: 14px;
+  border-radius: 12px;
   color: #fff;
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: -.02em;
   cursor: pointer;
@@ -16607,7 +16615,7 @@ body::before {
     0 4px 20px rgba(184,146,58,.4),
     0 1px 0 rgba(255,255,255,.15) inset,
     0 -1px 0 rgba(0,0,0,.2) inset;
-  margin-top: 12px;
+  margin-top: 0;
   position: relative;
   overflow: hidden;
 }
@@ -16648,18 +16656,21 @@ body::before {
 .btn-ghost {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  padding: 11px 18px;
-  min-height: 44px;
+  padding: 0 20px;
+  min-height: 48px;
+  height: 48px;
   background: rgba(255,255,255,.04);
   border: 1px solid rgba(255,255,255,.09);
   border-radius: 12px;
   color: rgba(255,255,255,.55);
   font-family: var(--font-body);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all var(--dur-fast) var(--ease-spring);
+  white-space: nowrap;
 }
 .btn-ghost:hover {
   border-color: rgba(255,255,255,.18);
@@ -29708,9 +29719,9 @@ ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS timer_started_at timestamptz;</
     <div style="margin-bottom:18px;">
       <div style="font-size:10px;font-family:var(--font-display);color:var(--txt3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;">Статус этапа</div>
       <div style="display:flex;gap:8px;">
-        <button class="stage-status-btn" data-status="pending" onclick="selectStageStatus('pending')">⏳ Ожидает</button>
-        <button class="stage-status-btn" data-status="active" onclick="selectStageStatus('active')">🔵 В работе</button>
-        <button class="stage-status-btn" data-status="completed" onclick="selectStageStatus('completed')">✅ Завершён</button>
+        <button class="stage-status-btn" data-status="pending" onclick="selectStageStatus('pending')" style="flex:1;">⏳ Ожидает</button>
+        <button class="stage-status-btn" data-status="active" onclick="selectStageStatus('active')" style="flex:1;">🔵 В работе</button>
+        <button class="stage-status-btn" data-status="completed" onclick="selectStageStatus('completed')" style="flex:1;">✅ Завершён</button>
       </div>
     </div>
     <div class="field"><label>Заметка для клиента</label><input type="text" id="stage-note-inp" placeholder="Например: собрали данные за 3 месяца"></div>
@@ -34623,7 +34634,7 @@ function setupRealtimeTracker() {
 function openEditStage(i) {
   editingStageIndex = i
   const rec = trackerData.find(r => r.stage_index === i) || {}
-  g('stage-modal-title').textContent = STAGES[i].icon + ' ' + STAGES[i].name
+  g('stage-modal-title').innerHTML = (STAGES[i].emoji ? '<span style="margin-right:6px;">' + STAGES[i].emoji + '</span>' : '') + '<span>' + STAGES[i].name + '</span>'
   g('stage-note-inp').value = rec.note || ''
   g('stage-deadline-inp').value = rec.deadline || ''
   g('stage-link-inp').value = rec.link || ''
