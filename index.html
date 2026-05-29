@@ -41734,8 +41734,9 @@ window.loadKB = async function() {
   _kbCats      = [];
   _kbItems     = [];
 
-  // Ждём проекты если ещё не загружены
-  if (typeof _allProjects === 'undefined' || !_allProjects || !_allProjects.length) {
+  // Ждём проекты и этапы если ещё не загружены
+  if (typeof _allProjects === 'undefined' || !_allProjects || !_allProjects.length ||
+      typeof _allStages === 'undefined' || _allStages === null) {
     if (typeof loadProjects === 'function') {
       try { await loadProjects(); } catch(e) {}
     }
