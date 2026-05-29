@@ -34310,11 +34310,17 @@ async function _toggleTask(taskId, stageIndex, newDone) {
   try {
     var taskUpdate = { done: newDone };
     if (newDone) taskUpdate.done_at = new Date().toISOString();
+    else taskUpdate.done_at = null;
     await sb.from('stage_tasks').update(taskUpdate).eq('id', taskId)
     const arr = tasksData[stageIndex] || []
     const t = arr.find(x => x.id === taskId)
-    if (t) { t.done = newDone; if (newDone) t.done_at = taskUpdate.done_at; }
+    if (t) { t.done = newDone; t.done_at = newDone ? taskUpdate.done_at : null; }
     renderTasksForStage(stageIndex)
+    // Обновляем сводку если открыта (чтобы on-time delivery пересчитался)
+    if (typeof loadOverview === 'function') {
+      const overviewPanel = document.getElementById('dtab-overview-panel')
+      if (overviewPanel && overviewPanel.style.display !== 'none') loadOverview()
+    }
   } catch(e) { console.warn('Toggle task failed:', e) }
 }
 
