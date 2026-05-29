@@ -31439,16 +31439,28 @@ function updateCounter() {
 }
 
 // ── Конвертация Excel serial → DD.MM.YYYY ──────────────────
+// ИСПРАВЛЕНИЕ БАГ 2: строковые даты нормализуются (1.5.2025 → 01.05.2025)
 function excelDateToStr(v) {
   const n = +v
-  if (isNaN(n) || n < 40000 || n > 60000) return String(v).trim()
-  // Excel epoch: 1 = 1 Jan 1900; JS epoch offset = 25569 days
-  const ms = (n - 25569) * 86400 * 1000
-  const d = new Date(ms)
-  const dd = String(d.getUTCDate()).padStart(2,'0')
-  const mm = String(d.getUTCMonth() + 1).padStart(2,'0')
-  const yyyy = d.getUTCFullYear()
-  return `${dd}.${mm}.${yyyy}`
+  if (!isNaN(n) && n >= 40000 && n <= 60000) {
+    // Excel serial → JS Date (UTC, без сдвига часового пояса)
+    const ms = (n - 25569) * 86400 * 1000
+    const d = new Date(ms)
+    const dd = String(d.getUTCDate()).padStart(2,'0')
+    const mm = String(d.getUTCMonth() + 1).padStart(2,'0')
+    const yyyy = d.getUTCFullYear()
+    return `${dd}.${mm}.${yyyy}`
+  }
+  // Строковая дата: нормализуем нули (1.5.2025 → 01.05.2025)
+  const s = String(v).trim()
+  const parts = s.split('.')
+  if (parts.length === 3) {
+    const dd = parts[0].padStart(2,'0')
+    const mm = parts[1].padStart(2,'0')
+    const yyyy = parts[2].length === 2 ? '20' + parts[2] : parts[2]
+    return `${dd}.${mm}.${yyyy}`
+  }
+  return s
 }
 
 function buildLabel(meta) {
@@ -31519,8 +31531,11 @@ function parseSheet(rows, key) {
   if (type === 'branch') return parseBranch(rows, hi, rc, cc)
 
   const result = { type, rows: [], meta: { totalRev: 0, totalChk: 0, days: 0 } }
-  let grandRev = 0, grandChk = 0
+  // ИСПРАВЛЕНИЕ БАГ 1: grandRev/grandChk — последняя строка «Итого», не максимум
+  let grandRev = 0, grandChk = 0, foundGrand = false
   const daySet = new Set()
+  // ИСПРАВЛЕНИЕ БАГ 4: hourly — Map для дедупликации по label
+  const hourlyMap = new Map()
   let curLabel = ''
 
   for (let i = hi + 1; i < rows.length; i++) {
@@ -31531,8 +31546,9 @@ function parseSheet(rows, key) {
     const rev = pn(r[rc]), chk = pn(r[cc]), qty = pn(r[qc])
     const lo = v0.toLowerCase()
 
+    // БАГ 1 FIX: перезаписываем каждый раз — берём ПОСЛЕДНЕЕ «Итого»
     if (lo.includes('итого') || lo.includes('всего')) {
-      if (rev > grandRev) { grandRev = rev; grandChk = chk }
+      if (rev > 0 || chk > 0) { grandRev = rev; grandChk = chk; foundGrand = true }
       continue
     }
 
@@ -31548,14 +31564,28 @@ function parseSheet(rows, key) {
       result.rows.push({ label: v0, rev, chk, qty })
       daySet.add(v0)
     } else if (type === 'hourly') {
-      result.rows.push({ label: v0.padStart(2,'0'), rev, chk, qty })
+      // БАГ 4 FIX: накапливаем в Map — дубликаты суммируются, не дублируются
+      const lbl = v0.padStart(2,'0')
+      if (hourlyMap.has(lbl)) {
+        const ex = hourlyMap.get(lbl)
+        hourlyMap.set(lbl, { rev: ex.rev+rev, chk: ex.chk+chk, qty: ex.qty+qty })
+      } else {
+        hourlyMap.set(lbl, { rev, chk, qty })
+      }
     } else if (type === 'items' && (rev > 0 || qty > 0)) {
       result.rows.push({ label: v0, rev, chk, qty })
     }
   }
 
-  result.meta.totalRev = grandRev || result.rows.reduce((s,r) => s+r.rev, 0)
-  result.meta.totalChk = grandChk || result.rows.reduce((s,r) => s+r.chk, 0)
+  // БАГ 4 FIX: собираем hourly rows из Map в отсортированном порядке
+  if (type === 'hourly') {
+    result.rows = Array.from(hourlyMap.entries())
+      .sort((a,b) => parseInt(a[0]) - parseInt(b[0]))
+      .map(([label, v]) => ({ label, ...v }))
+  }
+
+  result.meta.totalRev = (foundGrand ? grandRev : 0) || result.rows.reduce((s,r) => s+r.rev, 0)
+  result.meta.totalChk = (foundGrand ? grandChk : 0) || result.rows.reduce((s,r) => s+r.chk, 0)
 
   if (type === 'daily') {
     result.meta.days = daySet.size || result.rows.length
@@ -31770,7 +31800,15 @@ function runAnalysis() {
 
   updateAllLabels()
 
-  const bD = b.meta.days||1, dD = d.meta.days||1
+  // ИСПРАВЛЕНИЕ БАГ 3: если days=0 — файл не daily, предупреждаем и останавливаемся
+  const bD_raw = b.meta.days, dD_raw = d.meta.days
+  if (!bD_raw || !dD_raw) {
+    const which = !bD_raw ? 'Базовый период (файл 1)' : 'Текущий период (файл 2)'
+    showToast('⚠️', which + ': не удалось определить количество дней. Убедитесь что загружен ежедневный отчёт (не почасовой).', 'warn')
+    console.error('[runAnalysis] days=0, b.meta.days='+bD_raw+', d.meta.days='+dD_raw)
+    return
+  }
+  const bD = bD_raw, dD = dD_raw
   const bR = b.meta.totalRev, dR = d.meta.totalRev
   const bC = b.meta.totalChk, dC = d.meta.totalChk
   const bRD = bR/bD, dRD = dR/dD, bCD = bC/bD, dCD = dC/dD
@@ -40361,6 +40399,511 @@ async function cpRenderMilestone(project) {
   border:2.5px solid transparent; transition:all .18s; flex-shrink:0;
 }
 .kb-color-swatch.selected { border-color:#fff; transform:scale(1.2); }
+</style>
+
+<style id="dtr-mckinsey-report-v1">
+/* ══════════════════════════════════════════════════════════════
+   DTR PERFORMANCE REPORT — McKINSEY DESIGN SYSTEM
+   Philosophy: Data above decoration. Structure over aesthetics.
+   Grid: 8px base. Type: DM Sans + DM Mono only.
+   Palette: Near-black bg · Bone text · Blue accent · Amber signal
+══════════════════════════════════════════════════════════════ */
+
+/* ── McKinsey palette tokens ── */
+:root {
+  --mck-bg:       #0a0a0b;
+  --mck-bg2:      #101012;
+  --mck-bg3:      #161618;
+  --mck-bg4:      #1c1c1f;
+  --mck-line:     rgba(255,255,255,.07);
+  --mck-line2:    rgba(255,255,255,.12);
+  --mck-txt:      #e8e4de;
+  --mck-txt2:     #6b6760;
+  --mck-txt3:     #3a3835;
+  --mck-blue:     #2563eb;
+  --mck-blue-lt:  #3b82f6;
+  --mck-blue-dim: rgba(37,99,235,.12);
+  --mck-amber:    #b8923a;
+  --mck-amber-lt: #c9a84c;
+  --mck-green:    #16a34a;
+  --mck-green-lt: #22c55e;
+  --mck-red:      #dc2626;
+  --mck-red-lt:   #ef4444;
+  --mck-rule:     rgba(255,255,255,.055);
+}
+
+/* ════════════════════════════════
+   REPORT WRAPPER & LAYOUT
+════════════════════════════════ */
+.cp-report-view,
+#cp-report-view,
+.cp-analysis-wrap,
+#cp-analysis-wrap {
+  background: var(--mck-bg) !important;
+  font-family: 'DM Sans', sans-serif !important;
+}
+
+/* ════════════════════════════════
+   SECTION BLOCKS (rp-block)
+════════════════════════════════ */
+.rp-block {
+  background: var(--mck-bg2) !important;
+  border: 1px solid var(--mck-rule) !important;
+  border-radius: 4px !important;
+  margin-bottom: 2px !important;
+  transition: border-color .15s !important;
+  box-shadow: none !important;
+}
+.rp-block:hover {
+  border-color: var(--mck-line2) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Block header — McKinsey rule bar */
+.rp-block-hdr {
+  background: var(--mck-bg3) !important;
+  border-bottom: 1px solid var(--mck-rule) !important;
+  padding: 14px 24px !important;
+  gap: 14px !important;
+  border-left: 3px solid var(--mck-blue) !important;
+}
+
+/* Icon — flat, no glow */
+.rp-block-icon {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 4px !important;
+  background: var(--mck-blue-dim) !important;
+  border: 1px solid rgba(37,99,235,.2) !important;
+}
+
+/* Title — editorial weight */
+.rp-block-title {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: .1em !important;
+  text-transform: uppercase !important;
+  color: var(--mck-txt) !important;
+}
+
+/* Sub — mono caption */
+.rp-block-sub {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important;
+  color: var(--mck-txt2) !important;
+  letter-spacing: .03em !important;
+  margin-top: 2px !important;
+}
+
+/* Badge — chapter number */
+.rp-block-badge {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 9px !important;
+  font-weight: 600 !important;
+  letter-spacing: .12em !important;
+  padding: 4px 10px !important;
+  border-radius: 2px !important;
+  background: var(--mck-blue-dim) !important;
+  border: 1px solid rgba(37,99,235,.2) !important;
+  color: var(--mck-blue-lt) !important;
+}
+
+/* Body padding */
+.rp-block-body {
+  padding: 24px 24px !important;
+  gap: 20px !important;
+  background: var(--mck-bg2) !important;
+}
+
+/* ════════════════════════════════
+   HERO COMPARE (Period vs Period)
+════════════════════════════════ */
+.hero-compare {
+  border: none !important;
+  border-radius: 4px !important;
+  background: transparent !important;
+  gap: 2px !important;
+}
+
+.hb {
+  border-radius: 4px !important;
+  padding: 24px 28px !important;
+  border: 1px solid var(--mck-rule) !important;
+}
+.hb.before {
+  background: var(--mck-bg3) !important;
+  border-left: 3px solid var(--mck-txt2) !important;
+}
+.hb.during {
+  background: var(--mck-bg3) !important;
+  border-left: 3px solid var(--mck-blue) !important;
+}
+
+.hb-tag {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 9px !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+  color: var(--mck-txt2) !important;
+}
+
+.hb-rev {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 36px !important;
+  font-weight: 800 !important;
+  letter-spacing: -.04em !important;
+  color: var(--mck-txt) !important;
+  line-height: 1 !important;
+  margin: 8px 0 4px !important;
+}
+.hb.during .hb-rev { color: var(--mck-txt) !important; }
+
+.hb-day {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 11px !important;
+  color: var(--mck-txt2) !important;
+}
+
+/* Mini stat inside hb */
+.ms {
+  background: var(--mck-bg4) !important;
+  border: 1px solid var(--mck-rule) !important;
+  border-radius: 4px !important;
+}
+.ms-l {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 9px !important;
+  letter-spacing: .1em !important;
+  text-transform: uppercase !important;
+  color: var(--mck-txt2) !important;
+}
+.ms-v {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  letter-spacing: -.02em !important;
+  color: var(--mck-txt) !important;
+}
+
+/* Growth badge */
+#growth-badge span {
+  border-radius: 2px !important;
+  font-family: 'DM Mono', monospace !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: .06em !important;
+  padding: 5px 14px !important;
+}
+
+/* ════════════════════════════════
+   KPI ROW (5 delta cards)
+════════════════════════════════ */
+.kpi {
+  background: var(--mck-bg3) !important;
+  border: 1px solid var(--mck-rule) !important;
+  border-top: 2px solid var(--mck-blue) !important;
+  border-radius: 4px !important;
+  padding: 16px 18px !important;
+  transition: border-color .15s !important;
+  overflow: hidden !important;
+  box-shadow: none !important;
+}
+.kpi::before { display: none !important; }
+.kpi:hover {
+  border-color: var(--mck-line2) !important;
+  border-top-color: var(--mck-blue-lt) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.kpi-l {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 9px !important;
+  letter-spacing: .12em !important;
+  text-transform: uppercase !important;
+  color: var(--mck-txt2) !important;
+  margin-bottom: 8px !important;
+}
+.kpi-v {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 24px !important;
+  font-weight: 800 !important;
+  letter-spacing: -.03em !important;
+  line-height: 1 !important;
+}
+.kpi-s {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important;
+  color: var(--mck-txt2) !important;
+  margin-top: 4px !important;
+}
+
+/* ════════════════════════════════
+   CHART BLOCKS (cb)
+════════════════════════════════ */
+.cb {
+  background: var(--mck-bg3) !important;
+  border: 1px solid var(--mck-rule) !important;
+  border-radius: 4px !important;
+  padding: 20px 22px !important;
+  margin-bottom: 2px !important;
+  box-shadow: none !important;
+}
+.cb:hover { border-color: var(--mck-line2) !important; }
+
+.cb-title {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+  color: var(--mck-txt) !important;
+  margin-bottom: 4px !important;
+}
+.cb-sub {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important;
+  color: var(--mck-txt2) !important;
+  letter-spacing: .02em !important;
+  margin-bottom: 16px !important;
+}
+
+/* ════════════════════════════════
+   SECTION HEADERS (sh)
+════════════════════════════════ */
+.sh-title {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: .06em !important;
+  text-transform: uppercase !important;
+  color: var(--mck-txt) !important;
+}
+.sh-num {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 9px !important;
+  background: var(--mck-blue-dim) !important;
+  border: 1px solid rgba(37,99,235,.18) !important;
+  color: var(--mck-blue-lt) !important;
+  border-radius: 2px !important;
+  padding: 3px 8px !important;
+  letter-spacing: .1em !important;
+}
+.sh-line {
+  background: linear-gradient(90deg, rgba(37,99,235,.25), transparent) !important;
+  height: 1px !important;
+}
+
+/* ════════════════════════════════
+   WATERFALL BLOCK
+════════════════════════════════ */
+#waterfall-block {
+  background: var(--mck-bg3) !important;
+  border: 1px solid var(--mck-rule) !important;
+  border-radius: 4px !important;
+  padding: 20px 22px !important;
+}
+#waterfall-inner > div {
+  border-radius: 3px !important;
+  border-left-width: 3px !important;
+}
+
+/* ════════════════════════════════
+   HEALTH SCORE BLOCK
+════════════════════════════════ */
+#health-score-block {
+  background: var(--mck-bg3) !important;
+  border: 1px solid var(--mck-rule) !important;
+  border-radius: 4px !important;
+  padding: 20px 22px !important;
+}
+#health-score-inner > div:first-child {
+  border-radius: 4px !important;
+  border: 1px solid var(--mck-line2) !important;
+  background: var(--mck-bg4) !important;
+}
+#health-score-inner > div:last-child > div {
+  border-radius: 4px !important;
+  border: 1px solid var(--mck-rule) !important;
+  background: var(--mck-bg4) !important;
+}
+
+/* ════════════════════════════════
+   AI INSIGHT BLOCK
+════════════════════════════════ */
+.ai-block {
+  background: var(--mck-bg3) !important;
+  border: 1px solid var(--mck-rule) !important;
+  border-left: 3px solid var(--mck-blue) !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+}
+.ai-block:hover { border-color: var(--mck-line2) !important; }
+.ai-top-line {
+  background: var(--mck-blue) !important;
+  height: 1px !important;
+  opacity: .4 !important;
+}
+.ai-title {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+  color: var(--mck-txt) !important;
+}
+.ai-sub {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important;
+  color: var(--mck-txt2) !important;
+}
+.ai-section-title {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: .1em !important;
+  text-transform: uppercase !important;
+  color: var(--mck-blue-lt) !important;
+}
+
+/* ════════════════════════════════
+   PERIOD COMPAT WARNING
+════════════════════════════════ */
+#period-compat-warn {
+  border-radius: 3px !important;
+  border-left-width: 3px !important;
+}
+
+/* ════════════════════════════════
+   SEGMENT TIME BLOCK (завтрак/обед/ужин/ночь)
+════════════════════════════════ */
+#seg-time-inner > div {
+  border-radius: 4px !important;
+  border: 1px solid var(--mck-rule) !important;
+  background: var(--mck-bg3) !important;
+}
+#seg-time-inner > div:hover {
+  border-color: var(--mck-line2) !important;
+  transform: none !important;
+}
+
+/* ════════════════════════════════
+   REPORT HEADER (sh-compare)
+════════════════════════════════ */
+#sh-compare {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+  color: var(--mck-txt2) !important;
+}
+
+/* ════════════════════════════════
+   REPORT PAGE HEADER
+════════════════════════════════ */
+.rp-header-title {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+}
+
+/* ════════════════════════════════
+   REPORT CARD LIST
+════════════════════════════════ */
+.rp-card {
+  border-radius: 4px !important;
+  border: 1px solid var(--mck-rule) !important;
+  background: var(--mck-bg2) !important;
+}
+.rp-card:hover {
+  transform: none !important;
+  border-color: var(--mck-line2) !important;
+  box-shadow: none !important;
+}
+.rp-card::before { display: none !important; }
+
+/* ════════════════════════════════
+   GLOBAL TYPOGRAPHY OVERRIDES
+   (all text inside report view)
+════════════════════════════════ */
+.rp-block-body *,
+.hero-compare *,
+.kpi-row * {
+  -webkit-font-smoothing: antialiased !important;
+}
+
+/* Numbers: always tabular */
+.kpi-v, .hb-rev, .ms-v, .bi-mb-val {
+  font-variant-numeric: tabular-nums !important;
+}
+
+/* Positive = green, negative = red — sharper McKinsey colors */
+[style*="color:var(--green)"],
+[style*="color: var(--green)"] { color: var(--mck-green-lt) !important; }
+[style*="color:var(--red)"],
+[style*="color: var(--red)"] { color: var(--mck-red-lt) !important; }
+[style*="color:var(--cyan)"],
+[style*="color: var(--cyan)"] { color: var(--mck-blue-lt) !important; }
+[style*="color:var(--amber)"],
+[style*="color: var(--amber)"] { color: var(--mck-amber-lt) !important; }
+[style*="color:var(--a2)"],
+[style*="color: var(--a2)"] { color: var(--mck-amber-lt) !important; }
+
+/* ════════════════════════════════
+   UPLOAD AREA
+════════════════════════════════ */
+.drop-zone {
+  border-radius: 4px !important;
+  border-style: solid !important;
+  border-color: var(--mck-rule) !important;
+}
+.drop-zone.done {
+  border-color: rgba(22,163,74,.3) !important;
+  background: rgba(22,163,74,.04) !important;
+}
+.drop-zone.drag {
+  border-color: rgba(37,99,235,.4) !important;
+  background: rgba(37,99,235,.05) !important;
+}
+
+/* ════════════════════════════════
+   PEAKS BLOCK
+════════════════════════════════ */
+#peaks-block .cb {
+  border-radius: 4px !important;
+}
+
+/* ════════════════════════════════
+   SUBSECTION HEADERS inside blocks
+════════════════════════════════ */
+.rp-subsection-hdr {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 9px !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+  color: var(--mck-blue-lt) !important;
+  border-top: 1px solid var(--mck-rule) !important;
+  padding-top: 12px !important;
+}
+
+/* ════════════════════════════════
+   FORECAST & ROI BLOCKS
+════════════════════════════════ */
+#forecast-block,
+#roi-block {
+  background: var(--mck-bg3) !important;
+  border: 1px solid var(--mck-rule) !important;
+  border-radius: 4px !important;
+}
+
+/* ════════════════════════════════
+   SCROLLBARS inside report
+════════════════════════════════ */
+.rp-block-body::-webkit-scrollbar { width: 4px; }
+.rp-block-body::-webkit-scrollbar-thumb { background: var(--mck-rule); border-radius: 2px; }
 </style>
 
 <!-- ── KB JAVASCRIPT ── -->
