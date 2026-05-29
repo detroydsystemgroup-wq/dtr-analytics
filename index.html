@@ -37541,8 +37541,10 @@ async function loadOverview() {
   var tasksOnTime = tasksWithDeadline.filter(function(t){
     if (!t.done) return false;
     var dl = new Date(t.deadline); dl.setHours(23,59,59,0);
-    var done = t.done_at ? new Date(t.done_at) : today;
-    return done <= dl;
+    // done_at → updated_at → created_at → считаем в срок (нет данных = benefit of doubt)
+    var doneDate = t.done_at || t.updated_at || t.created_at;
+    if (!doneDate) return true;
+    return new Date(doneDate) <= dl;
   });
   var onTimeRate = tasksWithDeadline.length ? Math.round(tasksOnTime.length / tasksWithDeadline.length * 100) : null;
 
