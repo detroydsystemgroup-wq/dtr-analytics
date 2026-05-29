@@ -31077,7 +31077,8 @@ function renderProjectGrid() {
   const allPcts = _activeProjs.map(p => getProjectProgress(p.id).pct)
   const avgPct = allPcts.length ? Math.round(allPcts.reduce((s,v)=>s+v,0)/allPcts.length) : 0
   const overdueCount = _activeProjs.filter(p => isProjectOverdue(p.id)).length
-  const doneCount = _activeProjs.filter(p => getProjectProgress(p.id).pct === 100).length
+  const archivedProjs = _allProjects.filter(p => p.status === 'archived')
+  const doneCount = _activeProjs.filter(p => getProjectProgress(p.id).pct === 100).length + archivedProjs.length
   const activeCount = _activeProjs.filter(p => getProjectProgress(p.id).pct < 100).length
   const totalStagesDone = _activeStgs.filter(s => s.status === 'completed').length
   const totalMRR = _activeProjs.reduce((s,p) => s + (p.monthly_budget||0), 0)
@@ -37648,7 +37649,8 @@ async function loadOverview() {
   var activeStages = activeStagesAll.filter(function(s){ return s.status === 'active'; }).length;
   var globalPct = totalStages ? Math.round(completedStages / totalStages * 100) : 0;
   var overdueProjs = activeProjects.filter(function(p){ return isProjectOverdue(p.id); });
-  var doneProjs = activeProjects.filter(function(p){ return getProjectProgress(p.id).pct === 100; });
+  var archivedProjs = _allProjects.filter(function(p){ return p.status === 'archived'; });
+  var doneProjs = activeProjects.filter(function(p){ return getProjectProgress(p.id).pct === 100; }).concat(archivedProjs);
 
   // On-time delivery rate
   var tasksWithDeadline = allTasks.filter(function(t){ return t.deadline; });
