@@ -27382,31 +27382,26 @@ button, a, [role="button"],
 
 .cp-next-inline{
   position:relative;
-  display:flex;align-items:center;gap:14px;
-  padding:14px 18px;
-  background:rgba(62,207,142,.04);
+  display:flex;align-items:center;gap:12px;
+  padding:13px 18px;
+  background:rgba(62,207,142,.03);
+  border:1px solid rgba(62,207,142,.12);
   border-radius:12px;
   margin-top:12px;
   overflow:hidden;
 }
-/* Бегущая рамка */
-.cp-next-inline::before{
-  content:'';position:absolute;inset:0;border-radius:12px;
-  background:linear-gradient(90deg,rgba(62,207,142,0) 0%,rgba(62,207,142,.22) 50%,rgba(62,207,142,0) 100%);
-  background-size:200% 100%;
-  animation:cp-next-border-run 2.4s linear infinite;
-  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
-  -webkit-mask-composite:xor;
-  mask-composite:exclude;
-  padding:1px;
-  pointer-events:none;
-}
 /* Пульсирующая точка */
-.cp-next-dot-wrap{position:relative;width:10px;height:10px;flex-shrink:0}
-.cp-next-dot{width:10px;height:10px;border-radius:50%;background:#3ecf8e;position:relative;z-index:1}
+.cp-next-dot-wrap{position:relative;width:9px;height:9px;flex-shrink:0}
+.cp-next-dot{width:9px;height:9px;border-radius:50%;background:#3ecf8e;position:relative;z-index:1}
 .cp-next-dot::after{
   content:'';position:absolute;inset:0;border-radius:50%;background:#3ecf8e;
   animation:cp-next-pulse-ring 1.8s ease-out infinite;
+}
+/* Тонкая вертикальная полоса */
+.cp-next-divider{
+  width:1px;height:16px;
+  background:rgba(255,255,255,.1);
+  flex-shrink:0;
 }
 .cp-stages-bar2-wrap{margin:4px 0 8px}
 .cp-stages-bar2-track{
@@ -27425,11 +27420,11 @@ button, a, [role="button"],
 }
 .cp-next-label{display:none}
 .cp-next-info-title{
-  flex:1;
-  font-family:var(--font-display);font-size:14px;font-weight:600;
-  color:rgba(255,255,255,.88);letter-spacing:-.01em;
+  font-family:var(--font-mono);font-size:11px;font-weight:600;
+  color:rgba(255,255,255,.85);letter-spacing:.1em;
+  text-transform:uppercase;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  line-height:1;
+  line-height:1;flex-shrink:0;
 }
 .cp-next-right{
   text-align:right;flex-shrink:0;
@@ -27925,10 +27920,10 @@ button, a, [role="button"],
 <!-- 4. АКТИВНЫЙ ЭТАП — что в работе прямо сейчас -->
 <div class="cp-next-inline" id="cp2-next-step" style="display:none;">
   <div class="cp-next-dot-wrap"><div class="cp-next-dot"></div></div>
-  <div style="flex:1;min-width:0;">
-    <div class="cp-next-info-title" id="cp2-next-title">—</div>
-    <div id="cp2-next-deadline" style="display:none;margin-top:5px;"></div>
-  </div>
+  <div class="cp-next-info-title" id="cp2-next-title">—</div>
+  <div class="cp-next-divider" id="cp2-next-divider" style="display:none;"></div>
+  <div id="cp2-next-deadline" style="display:none;"></div>
+  <div style="flex:1;"></div>
   <div class="cp-next-right">
     <div class="cp-next-count" id="cp2-next-count">— / 9</div>
     <div class="cp-next-count-sub">этапов завершено</div>
@@ -34934,7 +34929,8 @@ async function cp2LoadTracker(project) {
     nsEl.style.display = 'flex';
 
     // Дедлайн этапа из агентской части
-    var dlEl = g('cp2-next-deadline');
+    var dlEl  = g('cp2-next-deadline');
+    var divEl = g('cp2-next-divider');
     if (dlEl) {
       if (isActive && nextStage.deadline) {
         var dlDate = new Date(nextStage.deadline + 'T00:00:00');
@@ -34942,22 +34938,24 @@ async function cp2LoadTracker(project) {
         var dlStr  = dlDate.toLocaleDateString('ru-RU', { day:'numeric', month:'long', year:'numeric' });
         var isOvD  = dlDate < todayD;
         var dlColor = isOvD ? '#e05252' : '#c9a84c';
-        var dlBg    = isOvD ? 'rgba(224,82,82,.1)' : 'rgba(184,146,58,.1)';
-        var dlBord  = isOvD ? 'rgba(224,82,82,.25)' : 'rgba(184,146,58,.25)';
-        var calIcon = isOvD
-          ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
-          : '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
+        var dlBg    = isOvD ? 'rgba(224,82,82,.08)' : 'rgba(184,146,58,.08)';
+        var dlBord  = isOvD ? 'rgba(224,82,82,.2)'  : 'rgba(184,146,58,.2)';
+        var calIcon = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
         var dlPrefix = isOvD ? 'Просрочен · ' : 'Этап будет завершён · ';
         dlEl.innerHTML =
-          '<span style="display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:10px;font-weight:500;' +
-          'padding:3px 10px;border-radius:8px;background:' + dlBg + ';border:1px solid ' + dlBord + ';color:' + dlColor + ';">' +
+          '<span style="display:inline-flex;align-items:center;gap:5px;' +
+          'font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:.03em;' +
+          'padding:4px 11px;border-radius:7px;' +
+          'background:' + dlBg + ';border:1px solid ' + dlBord + ';color:' + dlColor + ';">' +
             '<span style="color:' + dlColor + ';display:flex;align-items:center;">' + calIcon + '</span>' +
             dlPrefix + dlStr +
           '</span>';
         dlEl.style.display = 'flex';
+        if (divEl) divEl.style.display = 'block';
       } else {
         dlEl.style.display = 'none';
         dlEl.innerHTML = '';
+        if (divEl) divEl.style.display = 'none';
       }
     }
   }
