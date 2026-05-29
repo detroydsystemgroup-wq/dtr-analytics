@@ -34638,8 +34638,9 @@ async function cp2LoadTracker(project) {
   if (g('cp2-stages-pct2')) g('cp2-stages-pct2').textContent = pct + '%';
 
   // KPI hero — прогресс проекта
+  var totalSt = (typeof STAGES !== 'undefined' && STAGES.length) ? STAGES.length : 9;
   if (g('cp2-kpi-progress')) g('cp2-kpi-progress').textContent = pct + '%';
-  if (g('cp2-kpi-progress-sub')) g('cp2-kpi-progress-sub').textContent = done + ' из ' + arr.length + ' этапов';
+  if (g('cp2-kpi-progress-sub')) g('cp2-kpi-progress-sub').textContent = done + ' из ' + totalSt + ' этапов';
 
   // ── Прогрессбар: fill + lead dot ──
   var barFill = g('cp2-bar-fill');
@@ -34724,7 +34725,7 @@ async function cp2LoadTracker(project) {
     var labelEl  = g('cp2-next-label');
     if (labelEl) labelEl.textContent = isActive ? 'В работе' : 'Следующий этап';
     if (g('cp2-next-title')) g('cp2-next-title').textContent = stObj.name;
-    if (g('cp2-next-count')) g('cp2-next-count').textContent = done + ' / ' + arr.length;
+    if (g('cp2-next-count')) g('cp2-next-count').textContent = done + ' / ' + totalSt;
     nsEl.style.display = 'flex';
   }
 
