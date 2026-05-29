@@ -11573,6 +11573,14 @@ canvas {
 }
 
 /* ── Overdue indicator ── */
+.pcard.pc-archived {
+  opacity: .75;
+  filter: grayscale(.2);
+}
+.pcard.pc-archived:hover {
+  opacity: 1;
+  filter: none;
+}
 .pcard.pc-overdue .pcard-stripe {
   background: var(--red) !important;
 }
@@ -26010,10 +26018,10 @@ button, a, [role="button"],
             <input class="dl-search2" id="dash-search" placeholder="Поиск проекта..." oninput="filterProjects()">
           </div>
           <div class="sv-seg-pills">
-            <button class="sv-pill sv-pill-active" data-filter="all" onclick="setProjectFilter('all',this)">Все</button>
-            <button class="sv-pill" data-filter="active" onclick="setProjectFilter('active',this)">Активные</button>
+            <button class="sv-pill" data-filter="all" onclick="setProjectFilter('all',this)">Все</button>
+            <button class="sv-pill sv-pill-active" data-filter="active" onclick="setProjectFilter('active',this)">Активные</button>
             <button class="sv-pill" data-filter="overdue" onclick="setProjectFilter('overdue',this)"><span class="dl-dot" style="background:var(--red);"></span>Просрочены</button>
-            <button class="sv-pill" data-filter="done" onclick="setProjectFilter('done',this)"><span class="dl-dot" style="background:var(--green);"></span>Завершены</button>
+            <button class="sv-pill" data-filter="archived" onclick="setProjectFilter('archived',this)"><span class="dl-dot" style="background:var(--green);"></span>Завершены</button>
           </div>
           <!-- Category tags -->
           <div class="proj-tags-row" id="dash-tags-row"></div>
@@ -29737,6 +29745,31 @@ ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS timer_started_at timestamptz;</
   </div>
 </div>
 
+<!-- MODAL: PROJECT 100% COMPLETE — выбор сценария -->
+<div class="modal-overlay" id="modal-project-complete" style="z-index:9999;">
+  <div class="modal" style="max-width:520px;text-align:center;">
+    <div style="font-size:48px;margin-bottom:12px;">🎉</div>
+    <div class="modal-title" style="font-size:20px;margin-bottom:8px;">Все этапы завершены!</div>
+    <div style="font-family:var(--font-mono);font-size:11px;color:var(--txt3);letter-spacing:.08em;margin-bottom:24px;" id="complete-proj-name">—</div>
+    <div style="font-size:13px;color:var(--txt2);margin-bottom:28px;line-height:1.6;">Проект достиг 100%. Выберите дальнейшее действие:</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+      <!-- Продолжить -->
+      <div onclick="projectCompleteContinue()" style="cursor:pointer;padding:20px 16px;border-radius:14px;border:1px solid rgba(184,146,58,.25);background:rgba(184,146,58,.06);transition:all .2s;text-align:left;" onmouseover="this.style.background='rgba(184,146,58,.12)'" onmouseout="this.style.background='rgba(184,146,58,.06)'">
+        <div style="font-size:24px;margin-bottom:10px;">🔄</div>
+        <div style="font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--a2);margin-bottom:6px;">Продолжить работу</div>
+        <div style="font-size:11px;color:var(--txt3);line-height:1.5;">Новый цикл — сброс этапов для следующего месяца. Отчёты и история сохранятся.</div>
+      </div>
+      <!-- Завершить -->
+      <div onclick="projectCompleteArchive()" style="cursor:pointer;padding:20px 16px;border-radius:14px;border:1px solid rgba(62,207,142,.2);background:rgba(62,207,142,.05);transition:all .2s;text-align:left;" onmouseover="this.style.background='rgba(62,207,142,.1)'" onmouseout="this.style.background='rgba(62,207,142,.05)'">
+        <div style="font-size:24px;margin-bottom:10px;">✅</div>
+        <div style="font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--green);margin-bottom:6px;">Завершить контракт</div>
+        <div style="font-size:11px;color:var(--txt3);line-height:1.5;">Архивировать проект. Клиент получит финальный статус, доступ сохранится.</div>
+      </div>
+    </div>
+    <button class="btn-ghost" style="width:100%;" onclick="closeModal('modal-project-complete')">Решить позже</button>
+  </div>
+</div>
+
 <script>
 // ══════════════════════════════════════════════
 // CONFIG — замени на свои ключи
@@ -30863,7 +30896,7 @@ async function handleHashRoute() {
 // ── DASHBOARD STATE ──────────────────────────
 let _allProjects = []
 let _allStages = []
-let _projectFilter = 'all'
+let _projectFilter = 'active'
 let _activeCatTag = null
 
 async function loadProjects() {
@@ -31009,9 +31042,11 @@ function renderProjectGrid() {
     if (search && !p.name.toLowerCase().includes(search) && !(p.description||'').toLowerCase().includes(search)) return false
     if (_activeCatTag && !(p.category||'').includes(_activeCatTag)) return false
     if (_projectFilter === 'active') return p.status !== 'archived' && getProjectProgress(p.id).pct < 100
-    if (_projectFilter === 'done') return getProjectProgress(p.id).pct === 100
+    if (_projectFilter === 'archived') return p.status === 'archived' || getProjectProgress(p.id).pct === 100
+    if (_projectFilter === 'done') return p.status === 'archived' || getProjectProgress(p.id).pct === 100
     if (_projectFilter === 'overdue') return isProjectOverdue(p.id)
-    return true
+    // 'all' — скрываем архивные
+    return p.status !== 'archived'
   })
 
   list = list.sort((a,b) => {
@@ -34701,7 +34736,56 @@ async function saveStage() {
   }
 
   closeModal('modal-stage')
-  loadTracker()
+  await loadTracker()
+
+  // Проверяем — все 9 этапов завершены?
+  if (selectedStageStatus === 'completed' && !_isClientCache) {
+    const allDone = trackerData.filter(r => r.status === 'completed').length === 9
+    if (allDone) {
+      const alreadyShown = sessionStorage.getItem('complete_shown_' + currentProject.id)
+      if (!alreadyShown) {
+        sessionStorage.setItem('complete_shown_' + currentProject.id, '1')
+        const el = g('complete-proj-name')
+        if (el) el.textContent = currentProject.name.toUpperCase()
+        setTimeout(() => openModal('modal-project-complete'), 600)
+      }
+    }
+  }
+}
+
+// ── Продолжить работу: сброс всех этапов в pending ──
+window.projectCompleteContinue = async function() {
+  if (!currentProject) return
+  closeModal('modal-project-complete')
+  if (!confirm('Сбросить все этапы в «Ожидает» для нового цикла? Отчёты и история сохранятся.')) return
+  try {
+    await sb.from('project_stages')
+      .update({ status: 'pending', completed_at: null, deadline: null, note: null })
+      .eq('project_id', currentProject.id)
+    sessionStorage.removeItem('complete_shown_' + currentProject.id)
+    await loadTracker()
+    showToast && showToast('🔄', 'Новый цикл запущен', 'ok')
+  } catch(e) {
+    showToast && showToast('⚠️', 'Ошибка: ' + (e.message || ''), 'error')
+  }
+}
+
+// ── Завершить контракт: архивировать проект ──
+window.projectCompleteArchive = async function() {
+  if (!currentProject) return
+  closeModal('modal-project-complete')
+  if (!confirm('Архивировать проект «' + currentProject.name + '»? Клиентский доступ сохранится.')) return
+  try {
+    await sb.from('projects').update({ status: 'archived' }).eq('id', currentProject.id)
+    currentProject.status = 'archived'
+    // Обновляем в _allProjects
+    const idx = _allProjects.findIndex(p => p.id === currentProject.id)
+    if (idx !== -1) _allProjects[idx].status = 'archived'
+    showToast && showToast('✅', 'Проект завершён и архивирован', 'ok')
+    setTimeout(() => backToDashboard(), 1200)
+  } catch(e) {
+    showToast && showToast('⚠️', 'Ошибка: ' + (e.message || ''), 'error')
+  }
 }
 
 
@@ -39443,15 +39527,25 @@ async function cpRenderMilestone(project) {
           '<div style="position:absolute;top:0;right:0;bottom:0;width:56px;background:linear-gradient(90deg,transparent,#0f0f12);z-index:3;pointer-events:none;"></div>' +
         '</div>';
 
-    return '<div class="pcard' + (isOverdue ? ' pc-overdue' : '') + '" onclick="openProject(\'' + p.id + '\')">' +
+    var isArchived = p.status === 'archived' || pct === 100
+    var statusDot = isArchived
+      ? '<div style="width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>'
+      : isOverdue
+      ? '<div style="width:5px;height:5px;border-radius:50%;background:var(--red);box-shadow:0 0 5px rgba(224,82,82,.6);flex-shrink:0;"></div>'
+      : '<div style="width:5px;height:5px;border-radius:50%;background:#3ecf8e;box-shadow:0 0 5px rgba(62,207,142,.6);flex-shrink:0;"></div>'
+    var statusLabel = isArchived ? 'Завершён' : isOverdue ? 'Просрочен' : 'Активный проект'
+
+    return '<div class="pcard' + (isOverdue ? ' pc-overdue' : '') + (isArchived ? ' pc-archived' : '') + '" onclick="openProject(\'' + p.id + '\')">' +
+
+      (isArchived ? '<div style="position:absolute;top:10px;right:10px;z-index:10;font-family:var(--font-mono);font-size:9px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(62,207,142,.1);border:1px solid rgba(62,207,142,.2);color:var(--green);letter-spacing:.06em;">ЗАВЕРШЁН</div>' : '') +
 
       photoBlock +
 
       '<div style="padding:18px 20px 14px;display:flex;flex-direction:column;min-width:0;">' +
 
         '<div style="font-size:9px;font-family:\'DM Mono\',monospace;letter-spacing:.16em;color:rgba(255,255,255,.25);text-transform:uppercase;margin-bottom:7px;display:flex;align-items:center;gap:7px;">' +
-          '<div style="width:5px;height:5px;border-radius:50%;background:#3ecf8e;box-shadow:0 0 5px rgba(62,207,142,.6);flex-shrink:0;"></div>' +
-          'Активный проект' + (p.category ? ' · ' + p.category : '') +
+          statusDot +
+          statusLabel + (p.category ? ' · ' + p.category : '') +
         '</div>' +
 
         '<div style="font-size:22px;font-weight:800;letter-spacing:-.04em;color:#f0ece6;line-height:1;margin-bottom:4px;font-family:\'DM Sans\',sans-serif;">' + (p.name || '—') + '</div>' +
