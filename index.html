@@ -10908,8 +10908,10 @@ canvas {
 ══════════════════════════════ */
 .cc-main {
   flex: 1 !important;
-  overflow-y: auto !important;
+  overflow-y: visible !important;
+  overflow-x: visible !important;
   background: var(--bg) !important;
+  min-height: 0 !important;
 }
 
 .app-main {
@@ -20937,7 +20939,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 #page-project .pp-header {
   position: sticky !important;
   top: 0 !important;
-  z-index: 150 !important;
+  z-index: 50 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
@@ -21071,7 +21073,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 #page-project .pp-tabs-bar {
   position: sticky !important;
   top: 64px !important;
-  z-index: 140 !important;
+  z-index: 49 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
@@ -25671,16 +25673,16 @@ html.light .theme-toggle:hover {
 /* ── cc-shell: точная высота под app-header = 52px (БАГ 3) ── */
 .cc-shell {
   height: calc(100vh - 52px) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
 }
 
-/* ── pp-header: прилипает ниже app-header (БАГ 4) ── */
+/* pp-header и pp-tabs-bar — sticky внутри cc-shell (он скроллится) */
 .pp-header {
-  top: 52px !important;
+  top: 0 !important;
 }
-
-/* ── pp-tabs-bar: прилипает ниже pp-header (БАГ 4) ── */
 .pp-tabs-bar {
-  top: 110px !important; /* 52px app-header + 58px pp-header */
+  top: 64px !important; /* высота pp-header */
 }
 
 /* ── passport-nav: выровнен с реальным хедером (БАГ 5) ── */
