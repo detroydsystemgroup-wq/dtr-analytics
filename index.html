@@ -37199,8 +37199,7 @@ function renderDeadlinePanel() {
       var dow = DAYS_RU[item.dl.getDay()];
               var dvCls = item.status === 'overdue' ? ' dv-overdue' : item.status === 'today' ? ' dv-today' : item.status === 'done' ? ' dv-done' : '';
 
-                                    itemsHtml +=
-      (function(){
+                                    (function(){
         var dlBdr = item.status==='overdue'?'#f87171':item.status==='today'?'#fbbf24':item.status==='done'?'#34d399':col;
         var dlLbl = item.status==='today'?'\u0421\u0435\u0433\u043e\u0434\u043d\u044f':item.status==='overdue'?'\u2212'+Math.abs(item.diff)+'\u0434':item.dl.getDate()+' '+mon;
         var sTxt = item.status==='done'?'\u0412\u044b\u043f\u043e\u043b\u043d\u0435\u043d':item.s.status==='active'?'\u0412 \u0440\u0430\u0431\u043e\u0442\u0435':'\u041e\u0436\u0438\u0434\u0430\u0435\u0442';
