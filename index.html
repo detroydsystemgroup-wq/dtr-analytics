@@ -26584,6 +26584,11 @@ button, a, [role="button"],
           </div>
           <div class="kb-proj-section-lbl">Активные проекты</div>
           <div class="kb-proj-list" id="kb-proj-list"></div>
+          <div class="kb-proj-section-lbl kb-proj-section-archived" id="kb-archived-lbl" style="display:none;margin-top:12px;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="opacity:.5;"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+            Архив
+          </div>
+          <div class="kb-proj-list" id="kb-proj-list-archived" style="display:none;"></div>
           <div class="kb-sidebar-bottom"></div>
         </aside>
 
@@ -40030,6 +40035,13 @@ async function cpRenderMilestone(project) {
 }
 .kb-proj-item:hover { background:rgba(255,255,255,.03); }
 .kb-proj-item.kb-proj-active { background:transparent; }
+.kb-proj-item.kb-proj-archived { opacity:.7; transition:opacity .15s; }
+.kb-proj-item.kb-proj-archived:hover { opacity:1; }
+.kb-proj-section-archived {
+  display:flex; align-items:center; gap:6px;
+  color:rgba(255,255,255,.2) !important;
+  font-size:9px !important;
+}
 .kb-proj-item.kb-proj-active::before {
   content:''; position:absolute; left:0; top:8px; bottom:8px;
   width:2px; background:#b8923a; border-radius:0 2px 2px 0;
@@ -40567,41 +40579,58 @@ window.loadKB = async function() {
 
 /* ══ RENDER PROJECTS SIDEBAR ══ */
 function kbRenderProjectSidebar() {
-  var list = document.getElementById('kb-proj-list');
+  var list         = document.getElementById('kb-proj-list');
+  var listArchived = document.getElementById('kb-proj-list-archived');
+  var archLbl      = document.getElementById('kb-archived-lbl');
   if (!list) return;
 
-  var projects = (typeof _allProjects !== 'undefined' && _allProjects)
-    ? _allProjects.filter(function(p){ return p.status !== 'archived'; })
-    : [];
+  var all = (typeof _allProjects !== 'undefined' && _allProjects) ? _allProjects : [];
+  var projects  = all.filter(function(p){ return p.status !== 'archived'; });
+  var archived  = all.filter(function(p){ return p.status === 'archived'; });
 
   var projStat  = document.getElementById('kb-proj-stat-proj');
   var itemsStat = document.getElementById('kb-proj-stat-items');
-  if (projStat)  projStat.textContent  = projects.length;
+  if (projStat)  projStat.textContent = projects.length + (archived.length ? '+'+archived.length : '');
   if (itemsStat) itemsStat.textContent = '—';
 
-  if (!projects.length) {
-    list.innerHTML = '<div style="padding:24px 12px;text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--txt3);letter-spacing:.08em;line-height:1.7;">Нет активных<br>проектов</div>';
-    return;
-  }
-
-  var divider = '<div class="kb-proj-divider"><div class="kb-proj-divider-line"></div><div class="kb-proj-divider-dot"></div><div class="kb-proj-divider-line"></div></div>';
-  list.innerHTML = projects.map(function(p, i) {
+  function buildItem(p, i, arr) {
     var letter = (p.name||'?')[0].toUpperCase();
-    var col    = p.color || '#b8923a';
+    var col    = p.brand_color || p.color || '#b8923a';
     var avatarInner = p.photo_url
       ? '<img src="'+p.photo_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:8px;display:block;">'
       : '<span style="color:'+col+';">'+letter+'</span>';
-    var item = '<div class="kb-proj-item" id="kb-proj-row-'+p.id+'" onclick="kbSelectProject(\''+p.id+'\',\''+esc(p.name)+'\')">'+
-      '<div class="kb-proj-avatar" style="background:'+col+'22;border-color:'+col+'44;overflow:hidden;padding:0;">'+
+    var divider = '<div class="kb-proj-divider"><div class="kb-proj-divider-line"></div><div class="kb-proj-divider-dot"></div><div class="kb-proj-divider-line"></div></div>';
+    var isArch = p.status === 'archived';
+    var item = '<div class="kb-proj-item'+(isArch?' kb-proj-archived':'')+'" id="kb-proj-row-'+p.id+'" onclick="kbSelectProject(\''+p.id+'\',\''+esc(p.name)+'\')">'+
+      '<div class="kb-proj-avatar" style="background:'+col+'22;border-color:'+col+'44;overflow:hidden;padding:0;'+(isArch?'opacity:.6;filter:grayscale(.4);':'')+'">'+
         avatarInner+
       '</div>'+
       '<div class="kb-proj-info">'+
-        '<div class="kb-proj-name">'+esc(p.name)+'</div>'+
+        '<div class="kb-proj-name" style="'+(isArch?'color:rgba(255,255,255,.4);':'')+'">'+esc(p.name)+'</div>'+
+        (isArch?'<div style="font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.06em;">АРХИВ</div>':'')+
       '</div>'+
       '<div class="kb-proj-cnt" id="kb-proj-cnt-'+p.id+'">—</div>'+
     '</div>';
     return (i > 0 ? divider : '') + item;
-  }).join('');
+  }
+
+  if (!projects.length) {
+    list.innerHTML = '<div style="padding:24px 12px;text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--txt3);letter-spacing:.08em;line-height:1.7;">Нет активных<br>проектов</div>';
+  } else {
+    list.innerHTML = projects.map(buildItem).join('');
+  }
+
+  // Archived section
+  if (listArchived && archLbl) {
+    if (archived.length) {
+      listArchived.style.display = '';
+      archLbl.style.display = '';
+      listArchived.innerHTML = archived.map(buildItem).join('');
+    } else {
+      listArchived.style.display = 'none';
+      archLbl.style.display = 'none';
+    }
+  }
 }
 
 function kbShowNoProject() {
