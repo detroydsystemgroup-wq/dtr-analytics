@@ -8740,7 +8740,7 @@ function exportReportPDF() {
 
   var fullHTML = '<!DOCTYPE html><html><head><meta charset="utf-8">'
     + styles
-    + '</head><body>'
+    + '<body>'
     + headerHTML
     + clone.outerHTML
     + '</body></html>';
@@ -24890,7 +24890,10 @@ select option:checked {
 #tl-deadlines-wrap .deadline-panel { padding-top: 16px; }
 /* ══════════════════════════════════════════════
    FILTER BAR — smooth interactions
-   (перенесено из <body> для валидного HTML5)
+   (перенесено из 
+
+
+<body> для валидного HTML5)
 ══════════════════════════════════════════════ */
 .dl-pill {
   transition:
@@ -31076,7 +31079,7 @@ async function loadReports() {
     }
     function fmtRev(v) {
       if (v == null) return '—';
-      return Math.round(v).toLocaleString('ru-RU') + ' ₽';
+      return Math.round(v).toLocaleString('ru-RU') + ' сум';
     }
     function mCol(v) {
       if (v == null) return 'rgba(184,146,58,.3)';
@@ -31094,7 +31097,7 @@ async function loadReports() {
     var metricsStrip = '<div class="rp-metrics-strip">'
       + rpMetricFull('Рост выручки', fmtPct(growthPct), mCol(growthPct), mBg(growthPct), mArrow(growthPct), growthPct != null)
       + rpMetricFull('Трафик Δ', growthPct != null ? fmtNum(trafficD) + '&nbsp;гост.' : '—', mCol(trafficD), mBg(trafficD), mArrow(trafficD), trafficD != null)
-      + rpMetricFull('Ср. чек Δ', avgChkD != null ? fmtNum(avgChkD) + '&nbsp;₽' : '—', mCol(avgChkD), mBg(avgChkD), mArrow(avgChkD), avgChkD != null)
+      + rpMetricFull('Ср. чек Δ', avgChkD != null ? fmtNum(avgChkD) + '&nbsp;сум' : '—', mCol(avgChkD), mBg(avgChkD), mArrow(avgChkD), avgChkD != null)
       + rpMetricFull('Выручка факт', fmtRev(dRev), 'var(--a2)', 'rgba(184,146,58,.07)', '', dRev != null)
       + rpMetricFull('База', fmtRev(bRev), 'rgba(184,146,58,.45)', 'rgba(184,146,58,.05)', '', bRev != null)
       + (!hasAnyData ? '<div class="rp-no-analysis">Запустите анализ в отчёте чтобы увидеть метрики</div>' : '')
@@ -41667,6 +41670,24 @@ async function cpRenderMilestone(project) {
 #page-smm .kpi-group-label { display: none !important; }
 #page-smm * { box-shadow: none !important; }
 #page-smm *:hover { transform: none !important; }
+</style>
+
+
+
+<style id="smm-nuclear-v2">
+#page-smm .kpi-group,#page-smm .kpi-group-content,#page-smm .kpi-group-digital,#page-smm .kpi-group-audience,#page-smm .smm-block{background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.06)!important;border-radius:4px!important;overflow:hidden!important;box-shadow:none!important;margin-bottom:8px!important;padding:0!important}
+#page-smm .kpi-group::before,#page-smm .kpi-group-content::before,#page-smm .kpi-group-digital::before,#page-smm .kpi-group-audience::before,#page-smm .smm-block::before,#page-smm .kpi-group::after,#page-smm .kpi-group-content::after,#page-smm .kpi-group-digital::after,#page-smm .kpi-group-audience::after,#page-smm .smm-block::after{display:none!important;content:none!important}
+#page-smm .kpi-card,#page-smm .kpi-card-large,#page-smm .kpi-card-audience{background:#0d0d0f!important;border:none!important;border-right:1px solid rgba(255,255,255,.05)!important;border-radius:0!important;padding:24px 26px!important;box-shadow:none!important;transform:none!important}
+#page-smm .kpi-card:last-child{border-right:none!important}
+#page-smm .kpi-card:hover{background:#101012!important;transform:none!important}
+#page-smm .kpi-card-val{font-family:DM Sans,sans-serif!important;font-size:44px!important;font-weight:800!important;letter-spacing:-.05em!important;line-height:1!important;color:#e8e4de!important;margin-bottom:8px!important;font-variant-numeric:tabular-nums!important;animation:none!important}
+#page-smm .kpi-group-digital .kpi-card:nth-child(3) .kpi-card-val{color:#6b6760!important;font-size:34px!important}
+#page-smm .kpi-card-icon{display:none!important}
+#page-smm .smm-metrics-grid{display:grid!important;grid-template-columns:repeat(5,1fr)!important;gap:1px!important;background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.06)!important;border-radius:4px!important;overflow:hidden!important;margin-bottom:8px!important}
+#page-smm .smm-metric-card{background:#0d0d0f!important;border:none!important;border-radius:0!important;box-shadow:none!important;transform:none!important;padding:18px 16px!important;position:relative!important}
+#page-smm .smm-metric-val{font-family:DM Sans,sans-serif!important;font-size:30px!important;font-weight:800!important;letter-spacing:-.03em!important;font-variant-numeric:tabular-nums!important}
+#page-smm .smm-reels-grid{display:grid!important;grid-template-columns:repeat(5,1fr)!important;gap:1px!important;background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.06)!important;border-radius:4px!important;overflow:hidden!important}
+#page-smm .smm-reel-card{border-radius:0!important;border:none!important;box-shadow:none!important;transform:none!important}
 </style>
 
 <!-- ── KB JAVASCRIPT ── -->
