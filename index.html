@@ -27688,36 +27688,110 @@ button, a, [role="button"],
 }
 
 /* Поиск */
-.mck-search-wrap{padding:0 32px 16px}
+.mck-search-wrap{padding:0 32px 16px;position:relative}
 .mck-search-box{
   display:flex;align-items:center;gap:10px;
-  background:rgba(255,255,255,.04);
+  background:rgba(255,255,255,.03);
   border:1px solid rgba(255,255,255,.08);
-  border-radius:10px;
-  padding:10px 14px;
-  transition:border-color .2s;
+  border-radius:10px;padding:11px 14px;
+  transition:border-color .2s,background .2s;
 }
-.mck-search-box:focus-within{
-  border-color:rgba(255,255,255,.18);
-  background:rgba(255,255,255,.06);
+.mck-search-box.active{
+  border-color:rgba(201,168,76,.35);
+  background:rgba(201,168,76,.03);
 }
 .mck-search-input{
   flex:1;background:none;border:none;outline:none;
   font-family:var(--font-mono);font-size:12px;
-  color:rgba(255,255,255,.8);letter-spacing:.02em;
+  color:rgba(255,255,255,.85);letter-spacing:.02em;
 }
 .mck-search-input::placeholder{color:rgba(255,255,255,.22)}
+.mck-search-kbd{
+  font-family:var(--font-mono);font-size:9px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);
+  border-radius:4px;padding:2px 6px;color:rgba(255,255,255,.25);
+  white-space:nowrap;
+}
 .mck-search-clear{
-  background:none;border:none;cursor:pointer;
-  padding:2px;display:flex;align-items:center;
-  opacity:.6;transition:opacity .15s;
+  background:none;border:none;cursor:pointer;padding:2px;
+  display:flex;align-items:center;opacity:.5;transition:opacity .15s;
 }
 .mck-search-clear:hover{opacity:1}
-.mck-search-hint{
-  font-family:var(--font-mono);font-size:10px;
-  color:rgba(255,255,255,.25);letter-spacing:.04em;
-  margin-top:6px;min-height:14px;
-  padding:0 2px;
+
+/* Дропдаун */
+.mck-dropdown{
+  position:absolute;left:32px;right:32px;top:calc(100% - 10px);
+  background:#0d0d12;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:12px;
+  z-index:200;
+  overflow:hidden;
+  opacity:0;transform:translateY(-6px);pointer-events:none;
+  transition:opacity .18s,transform .18s;
+}
+.mck-dropdown.visible{
+  opacity:1;transform:translateY(0);pointer-events:auto;
+}
+.mck-dd-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px 8px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.mck-dd-count{
+  font-family:var(--font-mono);font-size:9px;
+  letter-spacing:.1em;color:rgba(255,255,255,.3);
+}
+.mck-dd-hint{
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.18);
+}
+.mck-dd-hint span{
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);
+  border-radius:3px;padding:1px 5px;
+}
+.mck-dd-group-label{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 14px 4px;
+  font-family:var(--font-mono);font-size:9px;
+  letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.2);
+}
+.mck-dd-bar{width:3px;height:12px;border-radius:2px;flex-shrink:0}
+.mck-dd-bar.perf{background:#38b2ac}
+.mck-dd-bar.smm{background:#c9a84c}
+.mck-dd-item{
+  display:flex;align-items:center;gap:12px;
+  padding:9px 14px;cursor:pointer;
+  border-left:2px solid transparent;
+  transition:background .1s,border-color .1s;
+}
+.mck-dd-item:hover,.mck-dd-item.mck-selected{
+  background:rgba(255,255,255,.04);
+  border-left-color:rgba(201,168,76,.45);
+}
+.mck-dd-item.mck-selected .mck-dd-name{color:rgba(255,255,255,.95)}
+.mck-dd-num{font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.15);width:18px;flex-shrink:0;text-align:right}
+.mck-dd-name{flex:1;font-size:13px;color:rgba(255,255,255,.72);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .1s}
+.mck-dd-name mark{background:rgba(201,168,76,.2);color:#dec17a;border-radius:2px;padding:0 2px;font-style:normal}
+.mck-dd-date{font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.2);flex-shrink:0}
+.mck-dd-date mark{background:rgba(201,168,76,.2);color:#dec17a;border-radius:2px;padding:0 2px;font-style:normal}
+.mck-dd-type{font-family:var(--font-mono);font-size:9px;font-weight:600;padding:2px 7px;border-radius:4px;flex-shrink:0;letter-spacing:.04em}
+.mck-dd-type.perf{background:rgba(56,178,172,.1);color:#38b2ac;border:1px solid rgba(56,178,172,.18)}
+.mck-dd-type.smm{background:rgba(184,146,58,.1);color:#c9a84c;border:1px solid rgba(184,146,58,.18)}
+.mck-dd-divider{height:1px;background:rgba(255,255,255,.05);margin:2px 0}
+.mck-dd-empty{
+  padding:28px 14px;text-align:center;
+  font-family:var(--font-mono);font-size:11px;
+  color:rgba(255,255,255,.2);letter-spacing:.06em;
+}
+.mck-dd-footer{
+  display:flex;align-items:center;gap:14px;
+  padding:8px 14px;border-top:1px solid rgba(255,255,255,.05);
+  font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.18);
+}
+.mck-dd-footer-item{display:flex;align-items:center;gap:5px}
+.mck-dd-footer span{
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);
+  border-radius:3px;padding:1px 5px;
 }
 .mck-hr{
   height:1px;background:rgba(255,255,255,.06);
@@ -27888,21 +27962,38 @@ button, a, [role="button"],
 
   <!-- Поиск -->
   <div class="mck-search-wrap">
-    <div class="mck-search-box">
+    <div class="mck-search-box" id="mck-search-box">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input
         class="mck-search-input"
         id="cp2-reports-search"
         type="text"
-        placeholder="Поиск по отчётам — например, «май» или «SMM»"
+        placeholder="Поиск — «май», «SMM», «апрель 2026»..."
         autocomplete="off"
-        oninput="cp2FilterReports(this.value)"
       />
-      <button class="mck-search-clear" id="cp2-search-clear" onclick="cp2ClearSearch()" style="display:none;">
+      <span class="mck-search-kbd" id="mck-kbd-hint">↑↓ выбрать · ↵ открыть · Esc закрыть</span>
+      <button class="mck-search-clear" id="cp2-search-clear" style="display:none;" aria-label="Очистить поиск">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
-    <div class="mck-search-hint" id="cp2-search-hint"></div>
+
+    <!-- Дропдаун результатов -->
+    <div class="mck-dropdown" id="mck-dropdown" role="listbox">
+      <div class="mck-dd-header">
+        <div class="mck-dd-count" id="mck-dd-count">—</div>
+        <div class="mck-dd-hint">
+          <span>↑↓</span> навигация
+          <span>↵</span> открыть
+          <span>Esc</span> закрыть
+        </div>
+      </div>
+      <div id="mck-dd-body"></div>
+      <div class="mck-dd-footer">
+        <div class="mck-dd-footer-item"><span>↑↓</span> перейти</div>
+        <div class="mck-dd-footer-item"><span>↵</span> открыть отчёт</div>
+        <div class="mck-dd-footer-item"><span>Esc</span> сбросить</div>
+      </div>
+    </div>
   </div>
 
   <!-- Разделитель с датой -->
@@ -40588,110 +40679,192 @@ window.kbDeleteCat = async function(id) {
 </script>
 
 <script>
-/* ── Поиск отчётов ── */
-function cp2FilterReports(query) {
-  var q = (query || '').trim().toLowerCase();
-  var clearBtn = document.getElementById('cp2-search-clear');
-  var hint     = document.getElementById('cp2-search-hint');
-  if (clearBtn) clearBtn.style.display = q ? 'flex' : 'none';
+/* ── Поиск отчётов — дропдаун с клавиатурной навигацией ── */
+(function() {
+  var inp       = document.getElementById('cp2-reports-search');
+  var box       = document.getElementById('mck-search-box');
+  var dropdown  = document.getElementById('mck-dropdown');
+  var ddBody    = document.getElementById('mck-dd-body');
+  var ddCount   = document.getElementById('mck-dd-count');
+  var clearBtn  = document.getElementById('cp2-search-clear');
+  var kbdHint   = document.getElementById('mck-kbd-hint');
 
-  var all = window._cp2AllReports;
-  if (!all) return;
+  if (!inp) return;
 
-  // Словарь месяцев для поиска по-русски
+  var selectedIdx = -1;
+  var flatItems   = []; // [{r, onclick}, ...]
+
   var MONTHS = {
-    'янв':'01','фев':'02','мар':'03','апр':'04','май':'05','июн':'06',
-    'июл':'07','авг':'08','сен':'09','окт':'10','ноя':'11','дек':'12',
-    'январ':'01','феврал':'02','март':'03','апрел':'04','июнь':'06',
-    'июль':'07','август':'08','сентябр':'09','октябр':'10','ноябр':'11','декабр':'12',
-    'january':'01','february':'02','march':'03','april':'04','may':'05','june':'06',
-    'july':'07','august':'08','september':'09','october':'10','november':'11','december':'12'
+    'янв':'01','февр':'02','фев':'02','мар':'03','апр':'04','май':'05',
+    'июн':'06','июл':'07','авг':'08','сент':'09','сен':'09',
+    'окт':'10','ноябр':'11','ноя':'11','дек':'12',
+    'январ':'01','феврал':'02','март':'03','апрел':'04',
+    'июнь':'06','июль':'07','август':'08','сентябр':'09',
+    'октябр':'10','декабр':'12',
+    'jan':'01','feb':'02','mar':'03','apr':'04','may':'05','jun':'06',
+    'jul':'07','aug':'08','sep':'09','oct':'10','nov':'11','dec':'12'
   };
 
-  function matches(r) {
-    if (!q) return true;
-    var title = (r.title || '').toLowerCase();
-    var dateStr = r.date ? new Date(r.date).toLocaleDateString('ru-RU', {month:'long',year:'numeric',day:'numeric'}).toLowerCase() : '';
-    var dateEn  = r.date ? new Date(r.date).toLocaleDateString('en-US', {month:'long',year:'numeric'}).toLowerCase() : '';
-    var type    = r.type === 'smm' ? 'smm социальные медиа' : 'performance эффективность perf';
+  function escRe(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-    // Проверяем прямое совпадение
-    if (title.includes(q) || dateStr.includes(q) || dateEn.includes(q) || type.includes(q)) return true;
+  function highlight(text, q) {
+    if (!q) return esc(text);
+    var re = new RegExp('(' + escRe(q) + ')', 'gi');
+    return esc(text).replace(re, '<mark>$1</mark>');
+  }
 
-    // Проверяем месяц через словарь
-    for (var key in MONTHS) {
-      if (q.startsWith(key)) {
-        var mon = MONTHS[key];
-        if (r.date) {
-          var d = new Date(r.date);
-          var m = ('0' + (d.getMonth() + 1)).slice(-2);
-          if (m === mon) return true;
-        }
-      }
+  function matchMonth(q, dateStr) {
+    if (!dateStr) return false;
+    var d = new Date(dateStr);
+    var m = ('0' + (d.getMonth() + 1)).slice(-2);
+    for (var k in MONTHS) {
+      if (q.toLowerCase().startsWith(k) && MONTHS[k] === m) return true;
     }
     return false;
   }
 
-  var perfFiltered = (all.perf || []).filter(matches);
-  var smmFiltered  = (all.smm  || []).filter(matches);
-  var total = perfFiltered.length + smmFiltered.length;
-
-  // Ре-рендер с подсветкой
-  renderReportListFiltered(perfFiltered, 'cp2-perf-list', q);
-  renderReportListFiltered(smmFiltered,  'cp2-smm-list',  q);
-
-  // Счётчики
-  var perfCnt = document.getElementById('cp2-perf-cnt');
-  var smmCnt  = document.getElementById('cp2-smm-cnt');
-  if (perfCnt) perfCnt.textContent = perfFiltered.length;
-  if (smmCnt)  smmCnt.textContent  = smmFiltered.length;
-
-  // Подсказка
-  if (hint) {
-    if (!q) { hint.textContent = ''; return; }
-    hint.textContent = total > 0
-      ? 'Найдено: ' + total + ' ' + (total === 1 ? 'отчёт' : total < 5 ? 'отчёта' : 'отчётов')
-      : 'По запросу «' + query + '» ничего не найдено';
-  }
-}
-
-function renderReportListFiltered(items, containerId, q) {
-  var el = document.getElementById(containerId);
-  if (!el) return;
-  if (!items.length) {
-    el.innerHTML = '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.12);padding:16px 0;letter-spacing:.06em;">Нет совпадений</div>';
-    return;
+  function matches(r, q) {
+    if (!q) return true;
+    var ql = q.toLowerCase();
+    var title   = (r.title || '').toLowerCase();
+    var dateRu  = r.date ? new Date(r.date).toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'}).toLowerCase() : '';
+    var type    = r.type === 'smm' ? 'smm социальные медиа' : 'performance эффективность perf';
+    return title.includes(ql) || dateRu.includes(ql) || type.includes(ql) || matchMonth(ql, r.date);
   }
 
-  function highlight(text, query) {
-    if (!query) return esc(text);
-    var re = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi');
-    return esc(text).replace(re, '<mark style="background:rgba(201,168,76,.25);color:#dec17a;border-radius:2px;padding:0 1px;">$1</mark>');
+  function formatDate(dateStr) {
+    if (!dateStr) return '—';
+    try { return new Date(dateStr).toLocaleDateString('ru-RU',{day:'numeric',month:'short',year:'numeric'}); } catch(e){ return '—'; }
   }
 
-  el.innerHTML = items.map(function(r, idx) {
-    var isSmm   = r.type === 'smm';
-    var typeCls = isSmm ? 'smm' : 'perf';
-    var typeLbl = isSmm ? 'SMM' : 'PERF';
-    var onclick = isSmm ? "loadAndOpenSMM('" + r.id + "')" : "openReport('" + r.id + "')";
-    var dateStr = '—';
-    if (r.date) {
-      try { dateStr = new Date(r.date).toLocaleDateString('ru-RU', {day:'numeric',month:'short',year:'numeric'}); } catch(e){}
+  function render(q) {
+    var all = window._cp2AllReports;
+    if (!all) return;
+
+    var perf = (all.perf || []).filter(function(r){ return matches(r, q); });
+    var smm  = (all.smm  || []).filter(function(r){ return matches(r, q); });
+    var total = perf.length + smm.length;
+
+    flatItems = [];
+    var html = '';
+
+    if (!total) {
+      html = '<div class="mck-dd-empty">По запросу «' + esc(q) + '» ничего не найдено</div>';
+      ddCount.textContent = '0 РЕЗУЛЬТАТОВ';
+    } else {
+      ddCount.textContent = total + ' ' + (total===1?'РЕЗУЛЬТАТ':total<5?'РЕЗУЛЬТАТА':'РЕЗУЛЬТАТОВ') + ' — «' + q.toUpperCase() + '»';
+
+      if (perf.length) {
+        html += '<div class="mck-dd-group-label"><div class="mck-dd-bar perf"></div>Performance</div>';
+        perf.forEach(function(r, i) {
+          var onclick = "openReport('" + r.id + "')";
+          flatItems.push({r:r, onclick:onclick});
+          var idx = flatItems.length - 1;
+          html += '<div class="mck-dd-item" data-idx="' + idx + '" onclick="' + onclick + '; cp2CloseDropdown();">' +
+            '<div class="mck-dd-num">0' + (i+1) + '</div>' +
+            '<div class="mck-dd-name">' + highlight(r.title, q) + '</div>' +
+            '<div class="mck-dd-date">' + highlight(formatDate(r.date), q) + '</div>' +
+            '<div class="mck-dd-type perf">PERF</div>' +
+          '</div>';
+        });
+      }
+
+      if (perf.length && smm.length) html += '<div class="mck-dd-divider"></div>';
+
+      if (smm.length) {
+        html += '<div class="mck-dd-group-label"><div class="mck-dd-bar smm"></div>SMM</div>';
+        smm.forEach(function(r, i) {
+          var onclick = "loadAndOpenSMM('" + r.id + "')";
+          flatItems.push({r:r, onclick:onclick});
+          var idx = flatItems.length - 1;
+          html += '<div class="mck-dd-item" data-idx="' + idx + '" onclick="' + onclick + '; cp2CloseDropdown();">' +
+            '<div class="mck-dd-num">0' + (i+1) + '</div>' +
+            '<div class="mck-dd-name">' + highlight(r.title, q) + '</div>' +
+            '<div class="mck-dd-date">' + highlight(formatDate(r.date), q) + '</div>' +
+            '<div class="mck-dd-type smm">SMM</div>' +
+          '</div>';
+        });
+      }
     }
-    return '<div class="mck-report-row" onclick="' + onclick + '">' +
-      '<div class="mck-report-index">0' + (idx + 1) + '</div>' +
-      '<div class="mck-report-name">' + highlight(r.title, q) + '</div>' +
-      '<div class="mck-report-date">' + highlight(dateStr, q) + '</div>' +
-      '<div class="mck-report-type ' + typeCls + '">' + typeLbl + '</div>' +
-      '<svg class="mck-report-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>' +
-    '</div>';
-  }).join('');
-}
 
-function cp2ClearSearch() {
-  var inp = document.getElementById('cp2-reports-search');
-  if (inp) { inp.value = ''; inp.focus(); }
-  cp2FilterReports('');
-}
+    ddBody.innerHTML = html;
+    selectedIdx = total > 0 ? 0 : -1;
+    updateSelection();
+  }
+
+  function updateSelection() {
+    var items = ddBody.querySelectorAll('.mck-dd-item');
+    items.forEach(function(el, i) {
+      el.classList.toggle('mck-selected', i === selectedIdx);
+      if (i === selectedIdx) el.scrollIntoView({block:'nearest'});
+    });
+  }
+
+  function openSelected() {
+    var item = flatItems[selectedIdx];
+    if (!item) return;
+    eval(item.onclick);
+    cp2CloseDropdown();
+  }
+
+  window.cp2CloseDropdown = function() {
+    dropdown.classList.remove('visible');
+    box.classList.remove('active');
+    inp.value = '';
+    clearBtn.style.display = 'none';
+    kbdHint.style.display = '';
+    selectedIdx = -1;
+    flatItems = [];
+  };
+
+  function openDropdown(q) {
+    render(q);
+    dropdown.classList.add('visible');
+    box.classList.add('active');
+    clearBtn.style.display = 'flex';
+    kbdHint.style.display = 'none';
+  }
+
+  // Input handler
+  var debounceTimer;
+  inp.addEventListener('input', function() {
+    var q = inp.value.trim();
+    clearTimeout(debounceTimer);
+    if (!q) { cp2CloseDropdown(); return; }
+    debounceTimer = setTimeout(function(){ openDropdown(q); }, 120);
+  });
+
+  // Keyboard navigation
+  inp.addEventListener('keydown', function(e) {
+    var items = ddBody ? ddBody.querySelectorAll('.mck-dd-item') : [];
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (selectedIdx < flatItems.length - 1) { selectedIdx++; updateSelection(); }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (selectedIdx > 0) { selectedIdx--; updateSelection(); }
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      openSelected();
+    } else if (e.key === 'Escape') {
+      cp2CloseDropdown();
+      inp.blur();
+    }
+  });
+
+  // Clear button
+  if (clearBtn) clearBtn.addEventListener('click', function() { cp2CloseDropdown(); inp.focus(); });
+
+  // Click outside
+  document.addEventListener('mousedown', function(e) {
+    if (!dropdown.contains(e.target) && !inp.contains(e.target) && !clearBtn.contains(e.target)) {
+      if (dropdown.classList.contains('visible')) cp2CloseDropdown();
+    }
+  });
+})();
+
+function cp2FilterReports(){}  // legacy stub — больше не используется
+function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
 </script>
 </html>
