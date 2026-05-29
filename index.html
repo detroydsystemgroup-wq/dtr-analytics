@@ -34627,6 +34627,12 @@ async function saveStage() {
   closeModal('modal-stage')
   await loadTracker()
 
+  // Обновляем сводку если открыта (чтобы rework rate пересчитался)
+  if (typeof loadOverview === 'function') {
+    const overviewPanel = document.getElementById('dtab-overview-panel')
+    if (overviewPanel && overviewPanel.style.display !== 'none') loadOverview()
+  }
+
   // Проверяем — все 9 этапов завершены?
   if (selectedStageStatus === 'completed' && !_isClientCache) {
     const allDone = trackerData.filter(r => r.status === 'completed').length === 9
@@ -37627,10 +37633,9 @@ async function loadOverview() {
     return h.event === 'Возвращён в ожидание';
   });
   // Задачи возвращённые из done в waiting
-  var reworkTasks = allTasks.filter(function(t){
-    return !t.done && t.kanban_status === 'waiting' && t.time_logged > 0;
-  });
-  var reworkCount = reworkStages.length + reworkTasks.length;
+  // reworkTasks убран — ненадёжная эвристика (задача в waiting с time_logged не = откат)
+
+  var reworkCount = reworkStages.length;
 
   // ─────────────────────────────
   // RENDER: Hero strip
