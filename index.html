@@ -27819,18 +27819,7 @@ button, a, [role="button"],
 .cp-stage-num.cp-sn-done{background:rgba(62,207,142,.12);color:var(--green)}
 .cp-stage-num.cp-sn-active{background:rgba(232,153,58,.12);color:var(--amber);animation:pulse 2.5s ease infinite}
 .cp-stage-num.cp-sn-pending{background:rgba(255,255,255,.04);color:rgba(255,255,255,.15)}
-.cp-stage-date{
-  display:flex;flex-direction:column;align-items:flex-start;gap:4px;
-  margin-left:auto;margin-right:8px;flex-shrink:0;
-}
-.cp-stage-date-lbl{
-  font-family:var(--font-mono);font-size:8px;letter-spacing:.12em;
-  text-transform:uppercase;color:rgba(255,255,255,.2);
-}
-.cp-stage-date-val{
-  font-family:var(--font-mono);font-size:13px;font-weight:600;
-  color:rgba(255,255,255,.6);letter-spacing:.01em;
-}
+/* .cp-stage-date styles moved inline */
 .cp-stage-status-tag{font-family:var(--font-mono);font-size:9px;font-weight:600;padding:3px 10px;border-radius:8px;letter-spacing:.04em}
 @media(max-width:900px){.cp-sidebar{width:180px}.cp-content{padding:20px 24px 32px}.cp-hero-strip{grid-template-columns:1fr auto 1fr}.cp-cols{grid-template-columns:1fr}}
 @media(max-width:640px){#page-client.active{flex-direction:column!important}.cp-sidebar{width:100%!important;height:auto!important;position:relative!important;border-right:none!important;border-bottom:1px solid rgba(255,255,255,.06)!important}.cp-sb-nav{display:flex;gap:4px;overflow-x:auto;padding:8px}.cp-sb-kpi{display:none}.cp-hero-strip{grid-template-columns:1fr}.cp-hero-divider{display:none}}
@@ -35020,8 +35009,17 @@ async function cp2LoadTracker(project) {
         }
       }
 
+      var clockIcon = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
       var datePart = dateStr
-        ? '<div class="cp-stage-date"><span class="cp-stage-date-lbl">' + dateLabel + '</span><span class="cp-stage-date-val">' + dateStr + '</span></div>'
+        ? '<div style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;flex-shrink:0;margin-left:auto;margin-right:8px;">' +
+            '<span style="font-family:var(--font-mono);font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.2);">' + dateLabel + '</span>' +
+            '<span style="display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:12px;font-weight:600;' +
+              'padding:5px 12px;border-radius:8px;letter-spacing:.01em;' +
+              'background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);">' +
+              '<span style="color:rgba(255,255,255,.3);display:flex;align-items:center;">' + clockIcon + '</span>' +
+              dateStr +
+            '</span>' +
+          '</div>'
         : '';
 
       return '<div class="cp-stage-row">' +
