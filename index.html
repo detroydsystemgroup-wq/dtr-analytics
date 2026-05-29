@@ -2348,7 +2348,7 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
   --smm-muted: #4a4743;
   --smm-muted2: #7a7672;
   --smm-glow: rgba(184,146,58,0.15);
-  --bebas: 'Bebas Neue', sans-serif;
+  --bebas: 'DM Sans', sans-serif;
 }
 
 #page-smm {
@@ -2411,7 +2411,7 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
 .smm-back-btn {
   width:30px; height:30px; display:flex; align-items:center; justify-content:center;
   background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.09);
-  border-radius:8px; color:rgba(255,255,255,.5); cursor:pointer; transition:all .15s; flex-shrink:0;
+  border-radius:4px; color:rgba(255,255,255,.5); cursor:pointer; transition:all .15s; flex-shrink:0;
 }
 .smm-back-btn:hover { background:rgba(255,255,255,.1); color:#fff; border-color:rgba(255,255,255,.18); }
 .smm-topbar-divider { width:1px; height:18px; background:rgba(255,255,255,.08); }
@@ -2433,7 +2433,7 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
   display:flex; align-items:center; gap:6px;
   font-family:var(--font-mono); font-size:9px; letter-spacing:.1em; text-transform:uppercase;
   color:rgba(74,222,128,.65); padding:3px 9px;
-  background:rgba(74,222,128,.07); border:1px solid rgba(74,222,128,.12); border-radius:20px;
+  background:rgba(74,222,128,.07); border:1px solid rgba(74,222,128,.12); border-radius:4px;
 }
 .smm-status-pulse {
   width:5px; height:5px; border-radius:50%;
@@ -2444,7 +2444,7 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
 /* ── Unified action buttons — same height, same padding ── */
 .smm-topbar-btn {
   display:inline-flex; align-items:center; gap:6px;
-  height:30px; padding:0 12px; border-radius:8px;
+  height:30px; padding:0 12px; border-radius:4px;
   font-family:Manrope,sans-serif; font-size:11px; font-weight:600;
   letter-spacing:-.01em; cursor:pointer; transition:all .15s;
   white-space:nowrap; border:1px solid transparent;
@@ -2580,7 +2580,7 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
 .smm-stat-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:40px; }
 .smm-stat-card {
   background:var(--smm-bg3); border:1px solid var(--smm-brd);
-  border-radius:12px; padding:22px; position:relative; overflow:hidden;
+  border-radius:4px; padding:22px; position:relative; overflow:hidden;
   transition:transform .3s, border-color .3s, box-shadow .3s;
 }
 .smm-stat-card:hover {
@@ -2612,7 +2612,7 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
 /* ── Block ── */
 .smm-block {
   background:var(--smm-bg3); border:1px solid var(--smm-brd);
-  border-radius:12px; padding:26px; margin-bottom:20px; position:relative; overflow:hidden;
+  border-radius:4px; padding:26px; margin-bottom:20px; position:relative; overflow:hidden;
 }
 .smm-block-title {
   font-family:var(--font-mono); font-size:12px; font-weight:500;
@@ -3201,7 +3201,7 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
 .smm-run-ai-btn {
   display:flex; align-items:center; gap:8px;
   background:linear-gradient(135deg,rgba(184,146,58,.25),rgba(34,211,238,.15));
-  border:1px solid rgba(184,146,58,.4); border-radius:8px; padding:10px 20px;
+  border:1px solid rgba(184,146,58,.4); border-radius:4px; padding:10px 20px;
   font-family:var(--font-mono); font-size:11px; letter-spacing:.08em;
   text-transform:uppercase; color:var(--smm-accent2); cursor:pointer; transition:all .2s;
 }
@@ -5452,16 +5452,16 @@ input, select, textarea {
 
 /* ── Command bar ── */
 .act-command-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:16px 0 18px;border-bottom:1px solid rgba(184,146,58,.08);margin-bottom:18px;animation:actIn .4s cubic-bezier(.16,1,.3,1) both}
-.act-search-wrap{display:flex;align-items:center;gap:9px;background:rgba(11,11,11,.95);border:1px solid rgba(184,146,58,.12);border-radius:12px;padding:10px 14px;flex:1;min-width:180px;max-width:280px;transition:border-color .2s,box-shadow .2s;color:rgba(184,146,58,.4)}
+.act-search-wrap{display:flex;align-items:center;gap:9px;background:rgba(11,11,11,.95);border:1px solid rgba(184,146,58,.12);border-radius:4px;padding:10px 14px;flex:1;min-width:180px;max-width:280px;transition:border-color .2s,box-shadow .2s;color:rgba(184,146,58,.4)}
 .act-search-wrap:focus-within{border-color:rgba(184,146,58,.35);box-shadow:0 0 0 3px rgba(184,146,58,.08)}
 .act-search-inp{background:transparent;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--txt);flex:1;min-width:0}
 .act-search-inp::placeholder{color:rgba(184,146,58,.3)}
-.act-proj-wrap{display:flex;align-items:center;gap:8px;background:rgba(11,11,11,.95);border:1px solid rgba(184,146,58,.12);border-radius:12px;padding:10px 14px;color:rgba(184,146,58,.4);transition:border-color .2s}
+.act-proj-wrap{display:flex;align-items:center;gap:8px;background:rgba(11,11,11,.95);border:1px solid rgba(184,146,58,.12);border-radius:4px;padding:10px 14px;color:rgba(184,146,58,.4);transition:border-color .2s}
 .act-proj-wrap:focus-within{border-color:rgba(184,146,58,.35)}
 .act-proj-sel{background:transparent;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(240,236,230,.72);cursor:pointer;min-width:120px}
 .act-proj-sel option{background:#111111;color:var(--txt)}
-.act-event-pills{display:flex;align-items:center;gap:4px;background:rgba(11,11,11,.9);border:1px solid rgba(184,146,58,.1);border-radius:12px;padding:5px}
-.act-epill{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;background:transparent;border:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:rgba(184,146,58,.45);cursor:pointer;transition:all .18s;white-space:nowrap}
+.act-event-pills{display:flex;align-items:center;gap:4px;background:rgba(11,11,11,.9);border:1px solid rgba(184,146,58,.1);border-radius:4px;padding:5px}
+.act-epill{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:4px;background:transparent;border:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:rgba(184,146,58,.45);cursor:pointer;transition:all .18s;white-space:nowrap}
 .act-epill:hover{color:rgba(240,236,230,.72);background:rgba(184,146,58,.08)}
 .act-epill.act-epill-active{background:rgba(184,146,58,.15);color:var(--txt);box-shadow:inset 0 0 0 1px rgba(184,146,58,.25)}
 .act-epill-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
@@ -5489,7 +5489,7 @@ input, select, textarea {
 .act-day-group{margin-bottom:36px;animation:actSlide .4s cubic-bezier(.16,1,.3,1) both}
 .act-day-group:nth-child(1){animation-delay:.03s}.act-day-group:nth-child(2){animation-delay:.07s}.act-day-group:nth-child(3){animation-delay:.11s}.act-day-group:nth-child(4){animation-delay:.15s}
 .act-day-label{display:flex;align-items:center;gap:12px;font-family:var(--font-mono);font-size:10px;color:rgba(184,146,58,.45);letter-spacing:.18em;text-transform:uppercase;padding-bottom:14px;margin-bottom:4px;border-bottom:1px solid rgba(184,146,58,.08)}
-.act-day-count{background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.18);border-radius:20px;padding:2px 8px;font-size:9px;color:rgba(184,146,58,.6);letter-spacing:.06em}
+.act-day-count{background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.18);border-radius:4px;padding:2px 8px;font-size:9px;color:rgba(184,146,58,.6);letter-spacing:.06em}
 .act-day-date{margin-left:auto;font-size:9px;color:rgba(184,146,58,.3)}
 
 /* ── Timeline item ── */
@@ -5504,7 +5504,7 @@ input, select, textarea {
 .act-item:last-child .act-connector{display:none}
 
 /* Card */
-.act-card{flex:1;min-width:0;background:rgba(11,11,11,.9);border:1px solid rgba(184,146,58,.07);border-radius:14px;padding:14px 20px;transition:all .22s cubic-bezier(.16,1,.3,1);cursor:pointer;position:relative;overflow:hidden}
+.act-card{flex:1;min-width:0;background:rgba(11,11,11,.9);border:1px solid rgba(184,146,58,.07);border-radius:4px;padding:14px 20px;transition:all .22s cubic-bezier(.16,1,.3,1);cursor:pointer;position:relative;overflow:hidden}
 .act-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(184,146,58,.2),transparent);opacity:0;transition:opacity .2s}
 .act-card:hover{border-color:rgba(184,146,58,.22);transform:translateX(6px);box-shadow:0 8px 32px rgba(0,0,0,.3),0 0 20px rgba(184,146,58,.05)}
 .act-card:hover::before{opacity:1}
@@ -5512,27 +5512,27 @@ input, select, textarea {
 .act-card-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
 .act-stage-icon{font-size:16px;flex-shrink:0}
 .act-stage-name{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--txt);letter-spacing:-.01em}
-.act-event-badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;padding:4px 10px;border-radius:20px;flex-shrink:0}
+.act-event-badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;padding:4px 10px;border-radius:4px;flex-shrink:0}
 .aeb-done{background:rgba(52,211,153,.1);color:#34d399}
 .aeb-start{background:rgba(184,146,58,.1);color:var(--a2)}
 .aeb-pending{background:rgba(251,191,36,.1);color:#fbbf24}
 .act-card-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.act-proj-chip{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:10px;padding:3px 10px;border-radius:20px;letter-spacing:.04em;flex-shrink:0}
+.act-proj-chip{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:10px;padding:3px 10px;border-radius:4px;letter-spacing:.04em;flex-shrink:0}
 .act-proj-chip-dot{width:5px;height:5px;border-radius:50%}
 .act-time-chip{font-family:var(--font-mono);font-size:10px;color:rgba(184,146,58,.35);display:flex;align-items:center;gap:4px}
-.act-note-row{display:flex;align-items:flex-start;gap:6px;margin-top:6px;padding:8px 10px;background:rgba(184,146,58,.04);border-radius:8px;border-left:2px solid rgba(184,146,58,.2)}
+.act-note-row{display:flex;align-items:flex-start;gap:6px;margin-top:6px;padding:8px 10px;background:rgba(184,146,58,.04);border-radius:4px;border-left:2px solid rgba(184,146,58,.2)}
 .act-note-text{font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(240,236,230,.6);line-height:1.5}
-.act-goto{display:flex;align-items:center;gap:5px;padding:7px 14px;background:rgba(184,146,58,.08);border:1px solid rgba(184,146,58,.15);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:rgba(184,146,58,.7);cursor:pointer;transition:all .18s;white-space:nowrap;flex-shrink:0}
+.act-goto{display:flex;align-items:center;gap:5px;padding:7px 14px;background:rgba(184,146,58,.08);border:1px solid rgba(184,146,58,.15);border-radius:4px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:rgba(184,146,58,.7);cursor:pointer;transition:all .18s;white-space:nowrap;flex-shrink:0}
 .act-goto:hover{background:rgba(184,146,58,.16);color:var(--a2);transform:translateX(2px)}
 
 /* ── PROJECT VIEW ── */
 .act-proj-group{margin-bottom:24px;animation:actIn .4s cubic-bezier(.16,1,.3,1) both}
-.act-proj-header{display:flex;align-items:center;gap:12px;padding:14px 18px;background:rgba(11,11,11,.95);border:1px solid rgba(184,146,58,.1);border-radius:14px 14px 0 0;border-bottom:none;cursor:pointer;transition:background .18s}
+.act-proj-header{display:flex;align-items:center;gap:12px;padding:14px 18px;background:rgba(11,11,11,.95);border:1px solid rgba(184,146,58,.1);border-radius:4px 14px 0 0;border-bottom:none;cursor:pointer;transition:background .18s}
 .act-proj-header:hover{background:rgba(184,146,58,.05)}
 .act-proj-avatar{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:16px;font-weight:800;flex-shrink:0}
 .act-proj-title{font-family:var(--font-display);font-size:15px;font-weight:700;letter-spacing:-.02em;flex:1}
-.act-proj-badge{font-family:var(--font-mono);font-size:10px;color:rgba(184,146,58,.5);background:rgba(184,146,58,.08);border:1px solid rgba(184,146,58,.15);padding:3px 10px;border-radius:20px}
-.act-proj-done-count{font-family:var(--font-mono);font-size:10px;color:#34d399;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);padding:3px 10px;border-radius:20px}
+.act-proj-badge{font-family:var(--font-mono);font-size:10px;color:rgba(184,146,58,.5);background:rgba(184,146,58,.08);border:1px solid rgba(184,146,58,.15);padding:3px 10px;border-radius:4px}
+.act-proj-done-count{font-family:var(--font-mono);font-size:10px;color:#34d399;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);padding:3px 10px;border-radius:4px}
 .act-proj-body{border:1px solid rgba(184,146,58,.08);border-top:none;border-radius:0 0 14px 14px;overflow:hidden}
 .act-proj-row{display:flex;align-items:center;gap:14px;padding:12px 18px;border-bottom:1px solid rgba(184,146,58,.06);background:rgba(9,9,9,.6);transition:background .18s;cursor:pointer}
 .act-proj-row:last-child{border-bottom:none}
@@ -5540,23 +5540,23 @@ input, select, textarea {
 .act-proj-row-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .act-proj-row-icon{font-size:14px;flex-shrink:0}
 .act-proj-row-name{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:rgba(240,236,230,.85);flex:1}
-.act-proj-row-badge{font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;padding:3px 9px;border-radius:20px;flex-shrink:0}
+.act-proj-row-badge{font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;padding:3px 9px;border-radius:4px;flex-shrink:0}
 .act-proj-row-time{font-family:var(--font-mono);font-size:10px;color:rgba(184,146,58,.35);flex-shrink:0}
-.act-proj-row-open{width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:rgba(184,146,58,.08);border:1px solid rgba(184,146,58,.15);border-radius:8px;color:rgba(184,146,58,.5);cursor:pointer;transition:all .18s;font-size:12px;flex-shrink:0}
+.act-proj-row-open{width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:rgba(184,146,58,.08);border:1px solid rgba(184,146,58,.15);border-radius:4px;color:rgba(184,146,58,.5);cursor:pointer;transition:all .18s;font-size:12px;flex-shrink:0}
 .act-proj-row-open:hover{background:rgba(184,146,58,.18);color:var(--a2)}
 
 /* ── STAGE VIEW ── */
 .act-stage-group{margin-bottom:20px;animation:actIn .4s cubic-bezier(.16,1,.3,1) both}
-.act-stage-header{display:flex;align-items:center;gap:12px;padding:12px 18px;background:rgba(11,11,11,.95);border:1px solid rgba(184,146,58,.1);border-radius:12px 12px 0 0;border-bottom:none}
+.act-stage-header{display:flex;align-items:center;gap:12px;padding:12px 18px;background:rgba(11,11,11,.95);border:1px solid rgba(184,146,58,.1);border-radius:4px 12px 0 0;border-bottom:none}
 .act-stage-header-icon{font-size:18px;flex-shrink:0}
 .act-stage-header-name{font-family:var(--font-display);font-size:14px;font-weight:700;letter-spacing:-.02em;flex:1}
-.act-stage-header-count{font-family:var(--font-mono);font-size:9px;color:rgba(184,146,58,.5);background:rgba(184,146,58,.08);border:1px solid rgba(184,146,58,.15);padding:2px 8px;border-radius:20px}
+.act-stage-header-count{font-family:var(--font-mono);font-size:9px;color:rgba(184,146,58,.5);background:rgba(184,146,58,.08);border:1px solid rgba(184,146,58,.15);padding:2px 8px;border-radius:4px}
 .act-stage-body{border:1px solid rgba(184,146,58,.08);border-top:none;border-radius:0 0 12px 12px;overflow:hidden}
 .act-stage-row{display:flex;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px solid rgba(184,146,58,.05);background:rgba(9,9,9,.6);transition:background .18s;cursor:pointer}
 .act-stage-row:last-child{border-bottom:none}
 .act-stage-row:hover{background:rgba(184,146,58,.04)}
-.act-stage-row-ev{font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;padding:2px 8px;border-radius:20px;flex-shrink:0}
-.act-stage-row-proj{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:10px;padding:2px 8px;border-radius:20px;flex:1;min-width:0}
+.act-stage-row-ev{font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;padding:2px 8px;border-radius:4px;flex-shrink:0}
+.act-stage-row-proj{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:10px;padding:2px 8px;border-radius:4px;flex:1;min-width:0}
 .act-stage-row-note{font-family:'DM Sans',sans-serif;font-size:11px;color:rgba(240,236,230,.5);flex:2;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .act-stage-row-time{font-family:var(--font-mono);font-size:10px;color:rgba(184,146,58,.3);flex-shrink:0}
 .act-stage-row-open{width:26px;height:26px;display:flex;align-items:center;justify-content:center;background:rgba(184,146,58,.08);border:1px solid rgba(184,146,58,.14);border-radius:7px;color:rgba(184,146,58,.5);cursor:pointer;transition:all .18s;font-size:11px;flex-shrink:0}
@@ -5597,7 +5597,7 @@ input, select, textarea {
 .dl-reset-btn:hover{background:rgba(248,113,113,.14)!important;border-color:rgba(248,113,113,.35)!important}
 
 /* ── STATS STRIP ── */
-.dl-stats-strip{display:flex!important;align-items:stretch!important;background:rgba(10,10,10,.9)!important;border:1px solid rgba(184,146,58,.09)!important;border-radius:14px!important;margin-bottom:20px!important;overflow:hidden!important;animation:dvIn .4s .04s cubic-bezier(.16,1,.3,1) both!important}
+.dl-stats-strip{display:flex!important;align-items:stretch!important;background:rgba(10,10,10,.9)!important;border:1px solid rgba(184,146,58,.09)!important;border-radius:4px!important;margin-bottom:20px!important;overflow:hidden!important;animation:dvIn .4s .04s cubic-bezier(.16,1,.3,1) both!important}
 .dl-stat-item{flex:1!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;padding:18px 12px!important;text-align:center!important;transition:background .18s!important;gap:4px!important}
 .dl-stat-item:hover{background:rgba(184,146,58,.04)!important}
 .dl-stat-val{font-family:var(--font-display)!important;font-size:26px!important;font-weight:700!important;letter-spacing:-.04em!important;line-height:1!important;font-variant-numeric:tabular-nums!important}
@@ -5608,7 +5608,7 @@ input, select, textarea {
 #deadline-panel,.deadline-panel{width:100%!important;max-width:100%!important;display:flex!important;flex-direction:column!important}
 .dl-week-group{width:100%!important;margin-bottom:28px!important;animation:dvIn .35s cubic-bezier(.16,1,.3,1) both!important}
 .dl-week-title{display:flex!important;align-items:center!important;gap:10px!important;font-family:var(--font-mono)!important;font-size:10px!important;color:rgba(184,146,58,.4)!important;letter-spacing:.18em!important;text-transform:uppercase!important;padding-bottom:12px!important;margin-bottom:8px!important;border-bottom:1px solid rgba(184,146,58,.07)!important}
-.dl-week-count{background:rgba(184,146,58,.1)!important;border:1px solid rgba(184,146,58,.18)!important;border-radius:20px!important;padding:1px 8px!important;font-size:9px!important;color:rgba(184,146,58,.55)!important}
+.dl-week-count{background:rgba(184,146,58,.1)!important;border:1px solid rgba(184,146,58,.18)!important;border-radius:4px!important;padding:1px 8px!important;font-size:9px!important;color:rgba(184,146,58,.55)!important}
 
 /* ════════════════════════════════
    CARD — финальная версия
@@ -5620,7 +5620,7 @@ input, select, textarea {
   width:100%!important;box-sizing:border-box!important;
   background:rgba(10,10,10,.96)!important;
   border:1px solid rgba(184,146,58,.1)!important;
-  border-radius:14px!important;margin-bottom:10px!important;
+  border-radius:4px!important;margin-bottom:10px!important;
   overflow:hidden!important;cursor:pointer!important;
   transition:border-color .22s,box-shadow .22s,transform .22s cubic-bezier(.16,1,.3,1)!important;
   animation:dvIn .35s cubic-bezier(.16,1,.3,1) both!important;
@@ -5647,7 +5647,7 @@ input, select, textarea {
 .dv-stage-icon{font-size:17px!important;flex-shrink:0!important}
 .dv-stage-name{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
 .dv-meta{display:flex!important;align-items:center!important;gap:8px!important;overflow:hidden!important}
-.dv-proj-pill{display:inline-flex!important;align-items:center!important;gap:5px!important;font-family:var(--font-mono)!important;font-size:10px!important;letter-spacing:.04em!important;padding:4px 10px!important;border-radius:8px!important;flex-shrink:0!important;white-space:nowrap!important}
+.dv-proj-pill{display:inline-flex!important;align-items:center!important;gap:5px!important;font-family:var(--font-mono)!important;font-size:10px!important;letter-spacing:.04em!important;padding:4px 10px!important;border-radius:4px!important;flex-shrink:0!important;white-space:nowrap!important}
 .dv-proj-dot{width:6px!important;height:6px!important;border-radius:50%!important;flex-shrink:0!important}
 .dv-note{font-family:'DM Sans',sans-serif!important;font-size:11px!important;color:rgba(240,236,230,.35)!important;display:flex!important;align-items:center!important;gap:4px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;min-width:0!important}
 
@@ -5679,7 +5679,7 @@ input, select, textarea {
 .dv-status-pill{
   display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;
   font-family:var(--font-mono)!important;font-size:11px!important;font-weight:500!important;letter-spacing:.04em!important;
-  padding:9px 12px!important;border-radius:9px!important;
+  padding:9px 12px!important;border-radius:4px!important;
   white-space:nowrap!important;width:100%!important;box-sizing:border-box!important;
 }
 .dv-status-dot{width:8px!important;height:8px!important;border-radius:50%!important;flex-shrink:0!important}
@@ -5696,7 +5696,7 @@ input, select, textarea {
   width:100%!important;height:40px!important;
   background:rgba(184,146,58,.12)!important;
   border:1px solid rgba(184,146,58,.28)!important;
-  border-radius:9px!important;
+  border-radius:4px!important;
   font-family:'DM Sans',sans-serif!important;font-size:13px!important;font-weight:600!important;
   color:rgba(184,146,58,.95)!important;
   cursor:pointer!important;transition:all .2s!important;
@@ -8132,7 +8132,7 @@ input, select, textarea {
         +   'color:#eeedf8;'
         +   'font-family:"DM Mono",monospace;'
         +   'font-size:10px;line-height:1.65;font-weight:400;'
-        +   'padding:10px 14px;border-radius:9px;'
+        +   'padding:10px 14px;border-radius:4px;'
         +   'max-width:300px;min-width:160px;white-space:pre-wrap;'
         +   'box-shadow:0 8px 28px rgba(0,0,0,.7),0 0 0 1px rgba(184,146,58,.08);'
         +   'opacity:0;transition:opacity .12s ease;'
@@ -8712,7 +8712,7 @@ function exportReportPDF() {
     if (!snap || !snap.src) return;
     var img = document.createElement('img');
     img.src = snap.src;
-    img.style.cssText = 'width:100%;height:auto;display:block;border-radius:8px;';
+    img.style.cssText = 'width:100%;height:auto;display:block;border-radius:4px;';
     cv.parentNode.replaceChild(img, cv);
   });
 
@@ -8847,15 +8847,15 @@ function renderFoodCostBlock(dRD, dA, d3) {
   var fc = _foodCostPct;
   if (!fc) {
     // Показываем приглашение ввести food cost
-    el.innerHTML = '<div style="background:rgba(184,146,58,.06);border:1px solid rgba(184,146,58,.2);border-radius:14px;padding:18px 20px;display:flex;align-items:center;gap:16px;">'
+    el.innerHTML = '<div style="background:rgba(184,146,58,.06);border:1px solid rgba(184,146,58,.2);border-radius:4px;padding:18px 20px;display:flex;align-items:center;gap:16px;">'
       + '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(184,146,58,.6)" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v2m0 8v2M9.5 9.5a2.5 2.5 0 015 0c0 1.5-1.5 2-2.5 2.5S9.5 13 9.5 14.5a2.5 2.5 0 005 0"/></svg>'
       + '<div style="flex:1;">'
       + '<div style="font-size:13px;font-weight:600;margin-bottom:4px;">Укажите food cost для расчёта маржи</div>'
       + '<div style="font-size:11px;color:var(--txt2);font-family:var(--font-mono);margin-bottom:10px;">Food cost — доля себестоимости продуктов в выручке. Обычно 25–40% для фастфуда.</div>'
       + '<div style="display:flex;align-items:center;gap:8px;">'
-      + '<input id="food-cost-inp" type="number" min="1" max="99" placeholder="30" style="width:70px;background:var(--bg3);border:1px solid var(--brd2);border-radius:8px;padding:6px 10px;color:var(--txt);font-family:var(--font-mono);font-size:13px;outline:none;">'
+      + '<input id="food-cost-inp" type="number" min="1" max="99" placeholder="30" style="width:70px;background:var(--bg3);border:1px solid var(--brd2);border-radius:4px;padding:6px 10px;color:var(--txt);font-family:var(--font-mono);font-size:13px;outline:none;">'
       + '<span style="font-size:13px;color:var(--txt2);">%</span>'
-      + '<button onclick="applyFoodCost()" style="padding:6px 14px;border-radius:8px;background:var(--a2);border:none;color:#000;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font-mono);">Применить</button>'
+      + '<button onclick="applyFoodCost()" style="padding:6px 14px;border-radius:4px;background:var(--a2);border:none;color:#000;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font-mono);">Применить</button>'
       + '</div></div></div>';
     el.style.display = 'block';
     return;
@@ -8868,21 +8868,21 @@ function renderFoodCostBlock(dRD, dA, d3) {
 
   var html = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;">'
     // Food cost
-    + '<div style="background:var(--bg3);border:1px solid rgba(248,113,113,.2);border-top:3px solid #f87171;border-radius:12px;padding:16px;">'
+    + '<div style="background:var(--bg3);border:1px solid rgba(248,113,113,.2);border-top:3px solid #f87171;border-radius:4px;padding:16px;">'
     + '<div style="font-size:9px;color:var(--txt3);font-family:var(--font-mono);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">Food Cost</div>'
-    + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:42px;line-height:1;color:#f87171;">' + fc + '<span style="font-size:18px;">%</span></div>'
+    + '<div style="font-family:\'DM Sans\',sans-serif;font-size:42px;line-height:1;color:#f87171;">' + fc + '<span style="font-size:18px;">%</span></div>'
     + '<div style="font-size:11px;color:var(--txt2);margin-top:6px;">' + fmtM2(dRD * fc / 100) + ' сум/день — себестоимость</div>'
     + '</div>'
     // Валовая маржа
-    + '<div style="background:var(--bg3);border:1px solid rgba(0,229,163,.2);border-top:3px solid var(--green);border-radius:12px;padding:16px;">'
+    + '<div style="background:var(--bg3);border:1px solid rgba(0,229,163,.2);border-top:3px solid var(--green);border-radius:4px;padding:16px;">'
     + '<div style="font-size:9px;color:var(--txt3);font-family:var(--font-mono);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">Валовая маржа</div>'
-    + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:42px;line-height:1;color:var(--green);">' + grossMarginPct + '<span style="font-size:18px;">%</span></div>'
+    + '<div style="font-family:\'DM Sans\',sans-serif;font-size:42px;line-height:1;color:var(--green);">' + grossMarginPct + '<span style="font-size:18px;">%</span></div>'
     + '<div style="font-size:11px;color:var(--txt2);margin-top:6px;">' + fmtM2(grossMargin) + ' сум/день — маржа</div>'
     + '</div>'
     // Маржа / чек
-    + '<div style="background:var(--bg3);border:1px solid rgba(184,146,58,.2);border-top:3px solid var(--a2);border-radius:12px;padding:16px;">'
+    + '<div style="background:var(--bg3);border:1px solid rgba(184,146,58,.2);border-top:3px solid var(--a2);border-radius:4px;padding:16px;">'
     + '<div style="font-size:9px;color:var(--txt3);font-family:var(--font-mono);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">Маржа / чек</div>'
-    + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:32px;line-height:1;color:var(--a2);">' + fmtM2(dA * grossMarginPct / 100) + '</div>'
+    + '<div style="font-family:\'DM Sans\',sans-serif;font-size:32px;line-height:1;color:var(--a2);">' + fmtM2(dA * grossMarginPct / 100) + '</div>'
     + '<div style="font-size:11px;color:var(--txt2);margin-top:6px;">сум чистой маржи с каждого чека</div>'
     + '</div>'
     + '</div>';
@@ -19205,7 +19205,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 }
 
 /* Inline data cards in restaurant section */
-[style*="border-radius:14px;padding:16px"] {
+[style*="border-radius:4px;padding:16px"] {
   border-radius: 16px !important;
   background: var(--bg3) !important;
 }
@@ -25515,7 +25515,7 @@ button, a, [role="button"],
       <div id="reg-err" class="err-box" style="display:none"></div>
       <div class="field"><label>Логин агентства</label><input type="text" id="reg-login" placeholder="detroyd" autocomplete="username"></div>
       <div class="field"><label>Пароль</label><input type="password" id="reg-pass" placeholder="Минимум 8 символов" autocomplete="new-password"></div>
-      <div style="background:rgba(184,146,58,.08);border:1px solid rgba(184,146,58,.2);border-radius:9px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--txt2);font-family:var(--font-display);">
+      <div style="background:rgba(184,146,58,.08);border:1px solid rgba(184,146,58,.2);border-radius:4px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--txt2);font-family:var(--font-display);">
         Логин станет email: <span style="color:var(--a2);" id="reg-preview">detroyd@dtr.agency</span>
       </div>
       <button class="btn-primary" onclick="doRegister()" id="btn-register">
@@ -26464,14 +26464,14 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 <div class="modal-overlay" id="modal-telegram">
   <div class="modal" style="max-width:500px;">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
-      <div style="width:40px;height:40px;border-radius:12px;background:rgba(0,136,204,.12);border:1px solid rgba(0,136,204,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+      <div style="width:40px;height:40px;border-radius:4px;background:rgba(0,136,204,.12);border:1px solid rgba(0,136,204,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="#2AABEE" stroke="none"><path d="M21.198 2.433a2.242 2.242 0 00-1.022.215l-16.5 7.5a2.25 2.25 0 00.126 4.073l3.9 1.205 2.306 6.58a.75.75 0 001.397.105l2.474-4.32 4.682 3.26a2.25 2.25 0 003.396-1.39l2.926-14.25a2.25 2.25 0 00-3.685-2.078z"/></svg>
       </div>
       <div class="modal-title" style="margin-bottom:0;">Telegram — уведомления и алерты</div>
     </div>
 
     <!-- Tabs -->
-    <div style="display:flex;gap:3px;background:var(--bg4);border-radius:8px;padding:3px;margin-bottom:18px;">
+    <div style="display:flex;gap:3px;background:var(--bg4);border-radius:4px;padding:3px;margin-bottom:18px;">
       <button id="tg-tab-connect" onclick="tgSwitchTab('connect')" style="flex:1;padding:6px 10px;border:none;border-radius:6px;background:var(--bg5);color:var(--txt);font-family:var(--font-display);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;">🔗 Подключение</button>
       <button id="tg-tab-alerts" onclick="tgSwitchTab('alerts')" style="flex:1;padding:6px 10px;border:none;border-radius:6px;background:transparent;color:var(--txt2);font-family:var(--font-display);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;">🔔 Алерты</button>
       <button id="tg-tab-log" onclick="tgSwitchTab('log')" style="flex:1;padding:6px 10px;border:none;border-radius:6px;background:transparent;color:var(--txt2);font-family:var(--font-display);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;">📋 Лог</button>
@@ -26525,7 +26525,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 
       <div id="alert-rules-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;"></div>
 
-      <div style="padding:10px 12px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.15);border-radius:8px;font-size:10px;font-family:var(--font-mono);color:rgba(245,158,11,.65);margin-bottom:14px;">
+      <div style="padding:10px 12px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.15);border-radius:4px;font-size:10px;font-family:var(--font-mono);color:rgba(245,158,11,.65);margin-bottom:14px;">
         SQL: ALTER TABLE projects ADD COLUMN IF NOT EXISTS alert_rules jsonb DEFAULT '[]';
         <button onclick="navigator.clipboard.writeText(`ALTER TABLE projects ADD COLUMN IF NOT EXISTS alert_rules jsonb DEFAULT '[]';`).then(()=>{this.textContent='✓';setTimeout(()=>this.textContent='SQL',1500)})" style="margin-left:8px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);border-radius:4px;padding:2px 8px;font-family:var(--font-mono);font-size:9px;color:rgba(245,158,11,.7);cursor:pointer;">SQL</button>
       </div>
@@ -26675,7 +26675,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
             <div class="tracker-bar-fill" id="tracker-bar" style="width:0%"></div>
           </div>
           <!-- Stage mini stats -->
-          <div style="display:flex;gap:0;background:rgba(184,146,58,.04);border:1px solid rgba(184,146,58,.08);border-radius:12px;overflow:hidden;">
+          <div style="display:flex;gap:0;background:rgba(184,146,58,.04);border:1px solid rgba(184,146,58,.08);border-radius:4px;overflow:hidden;">
             <div class="pp-stage-mini-stat" style="flex:1;padding:12px;border-right:1px solid rgba(184,146,58,.07);">
               <div class="pp-stage-mini-val" id="pp-mini-done" style="color:#34d399;">0</div>
               <div class="pp-stage-mini-lbl">Завершено</div>
@@ -26859,7 +26859,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 .cp-sb-brand-name{font-family:var(--font-display);font-size:13px;font-weight:800;letter-spacing:.06em;color:#c9a84c;text-transform:uppercase;line-height:1}
 .cp-sb-brand-sub{font-family:var(--font-display);font-size:10px;font-weight:500;letter-spacing:.04em;color:rgba(240,236,230,.4);text-transform:uppercase;line-height:1;margin-top:3px}
 .cp-sb-client{display:flex;align-items:center;gap:14px}
-.cp-sb-avatar{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:22px;font-weight:800;flex-shrink:0;overflow:hidden;}
+.cp-sb-avatar{width:52px;height:52px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:22px;font-weight:800;flex-shrink:0;overflow:hidden;}
 .cp-sb-client-name{font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--txt);letter-spacing:-.01em;line-height:1.2;}
 .cp-sb-online-wrap{display:flex;flex-direction:row;align-items:center;gap:6px;margin-top:6px;line-height:1;}
 .cp-sb-online-dot{position:relative;width:7px;height:7px;flex-shrink:0;display:block;}
@@ -26873,7 +26873,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 .cp-sb-nav-item:hover{color:rgba(255,255,255,.7);background:rgba(255,255,255,.03)}
 .cp-sb-nav-item.cp-nav-active{background:rgba(184,146,58,.08);border-color:rgba(184,146,58,.15);color:#c9a84c;font-weight:600}
 .cp-sb-nav-item svg{flex-shrink:0;opacity:.5}.cp-sb-nav-item.cp-nav-active svg{opacity:.9}
-.cp-sb-nav-badge{margin-left:auto;font-family:var(--font-mono);font-size:9px;font-weight:600;padding:1px 7px;border-radius:8px}
+.cp-sb-nav-badge{margin-left:auto;font-family:var(--font-mono);font-size:9px;font-weight:600;padding:1px 7px;border-radius:4px}
 .cp-sb-kpi{padding:14px 18px;border-top:1px solid rgba(255,255,255,.05)}
 .cp-sb-kpi-label{font-family:var(--font-mono);font-size:8px;letter-spacing:.14em;color:rgba(255,255,255,.2);text-transform:uppercase;margin-bottom:10px}
 .cp-sb-kpi-val{font-family:var(--font-display);font-size:32px;font-weight:800;letter-spacing:-.05em;line-height:1;margin-bottom:3px}
@@ -26909,7 +26909,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 .cp-progress-card{
   background:#0b0b0b;
   border:1px solid rgba(240,236,230,.12);
-  border-radius:14px;
+  border-radius:4px;
   padding:22px 26px 18px;
   margin-bottom:14px;
   position:relative;
@@ -27068,7 +27068,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 /* Квадрат — непрозрачный фон чтобы перекрывать линию */
 .cp-stage-dot-inner{
   width:32px;height:32px;
-  border-radius:9px;
+  border-radius:4px;
   display:flex;align-items:center;justify-content:center;
   position:relative;z-index:10;
   background:#0b0b0b; /* solid — маскирует линию */
@@ -27121,7 +27121,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 .cp-pf-text strong{color:#c9a84c;font-weight:600}
 .cp-pf-pill{
   font-family:var(--font-mono);font-size:9px;
-  padding:2px 10px;border-radius:20px;
+  padding:2px 10px;border-radius:4px;
   background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.22);
   color:rgba(201,168,76,.85);letter-spacing:.04em;
 }
@@ -27143,7 +27143,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
   padding:13px 18px;
   background:rgba(62,207,142,.03);
   border:1px solid rgba(62,207,142,.12);
-  border-radius:12px;
+  border-radius:4px;
   margin-top:12px;
   overflow:hidden;
 }
@@ -27207,7 +27207,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
   padding:12px 14px;
   background:rgba(255,255,255,.03);
   border:1px solid rgba(255,255,255,.06);
-  border-radius:12px;
+  border-radius:4px;
   margin-bottom:6px;
   cursor:pointer;
   transition:background .18s, border-color .18s, transform .18s;
@@ -27215,7 +27215,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 .cp-report-row:last-child{margin-bottom:0}
 .cp-report-row:hover{background:rgba(255,255,255,.055);border-color:rgba(255,255,255,.1);transform:translateY(-1px)}
 .cp-report-icon{
-  width:36px;height:36px;border-radius:9px;
+  width:36px;height:36px;border-radius:4px;
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
 .cp-report-info{flex:1;min-width:0}
@@ -27230,7 +27230,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 }
 .cp-report-badge{
   font-family:var(--font-mono);font-size:9px;font-weight:500;
-  padding:3px 9px;border-radius:20px;
+  padding:3px 9px;border-radius:4px;
   flex-shrink:0;letter-spacing:.04em;
   white-space:nowrap;
 }
@@ -27266,7 +27266,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 /* ── Activity Feed: блочная группировка по этапам ── */
 .cp-act-group{
   margin-bottom:10px;
-  border-radius:14px;
+  border-radius:4px;
   overflow:hidden;
   border:1px solid rgba(255,255,255,.06);
   background:rgba(255,255,255,.015);
@@ -27278,7 +27278,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
   border-bottom:1px solid rgba(255,255,255,.05);
 }
 .cp-act-group-icon{
-  width:28px;height:28px;border-radius:8px;
+  width:28px;height:28px;border-radius:4px;
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
 .cp-act-group-icon.done {background:rgba(62,207,142,.12);border:1px solid rgba(62,207,142,.18);}
@@ -27292,7 +27292,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 .cp-act-group-title b{font-weight:700;color:#fff;}
 .cp-act-group-stage{
   font-family:var(--font-mono);font-size:9px;font-weight:600;
-  padding:3px 10px;border-radius:20px;letter-spacing:.04em;
+  padding:3px 10px;border-radius:4px;letter-spacing:.04em;
   background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);
   color:rgba(255,255,255,.4);flex-shrink:0;
 }
@@ -27313,7 +27313,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 .cp-act-task-row:hover{background:rgba(255,255,255,.025)}
 .cp-act-task-row:not(:last-child){border-bottom:1px solid rgba(255,255,255,.04);}
 .cp-act-task-icon{
-  width:20px;height:20px;border-radius:5px;
+  width:20px;height:20px;border-radius:2px;
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
   background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
 }
@@ -27347,7 +27347,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 .cp-act-tag{
   display:inline-block;margin-top:4px;
   font-family:var(--font-mono);font-size:10px;
-  padding:2px 8px;border-radius:20px;
+  padding:2px 8px;border-radius:4px;
   background:rgba(255,255,255,.05);
   border:1px solid rgba(255,255,255,.08);
   color:rgba(255,255,255,.4);
@@ -27519,7 +27519,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
   position:absolute;left:32px;right:32px;top:calc(100% - 10px);
   background:#0d0d12;
   border:1px solid rgba(255,255,255,.1);
-  border-radius:12px;
+  border-radius:4px;
   z-index:200;
   overflow:hidden;
   opacity:0;transform:translateY(-6px);pointer-events:none;
@@ -27614,7 +27614,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 .cp-footer-copy{font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.1)}
 .cp-tab-content{display:none}.cp-tab-content.cp-tab-visible{display:block;animation:fadeUp .35s cubic-bezier(.16,1,.3,1) both}
 .cp-stages-list{display:flex;flex-direction:column;gap:6px}
-.cp-stage-row{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:12px;transition:all .15s;flex-wrap:nowrap;}
+.cp-stage-row{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:4px;transition:all .15s;flex-wrap:nowrap;}
 .cp-stage-row:hover{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.1)}
 .cp-stage-num{font-family:var(--font-mono);font-size:10px;font-weight:600;width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .cp-stage-num.cp-sn-done{background:rgba(62,207,142,.12);color:var(--green)}
@@ -28143,7 +28143,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
       <div class="smm-metrics-grid" id="smm-metrics-grid"></div>
 
       <!-- vs Market block -->
-      <div style="margin-top:20px;background:var(--smm-bg2);border:1px solid var(--smm-brd);border-radius:14px;padding:20px 24px;">
+      <div style="margin-top:20px;background:var(--smm-bg2);border:1px solid var(--smm-brd);border-radius:4px;padding:20px 24px;">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
           <div style="width:6px;height:6px;border-radius:50%;background:var(--smm-accent2);"></div>
           <div style="font-family:var(--font-mono);font-size:10px;color:var(--smm-accent2);letter-spacing:.14em;text-transform:uppercase;">Позиция относительно рынка</div>
@@ -28321,7 +28321,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
       </div>
       <div style="font-family:var(--font-mono);font-size:11px;color:var(--smm-muted);margin-bottom:20px;" id="smm-ai-status">Готов к анализу</div>
       <div id="smm-ai-output">
-        <div style="background:var(--smm-bg3);border:1px solid var(--smm-brd);border-radius:12px;padding:48px;text-align:center;">
+        <div style="background:var(--smm-bg3);border:1px solid var(--smm-brd);border-radius:4px;padding:48px;text-align:center;">
           <div style="font-family:var(--bebas);font-size:48px;color:var(--smm-muted);letter-spacing:.05em;margin-bottom:12px;">AI READY</div>
           <div style="font-family:var(--font-mono);font-size:12px;color:var(--smm-muted);letter-spacing:.1em;">Заполните данные и нажмите «Запустить анализ»</div>
         </div>
@@ -28471,7 +28471,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
           Скачать PDF
         </button>
         <button id="ob-toggle" onclick="toggleObOnboarding()" class="btn-ghost" style="display:none;gap:8px;">
-          <div id="ob-switch-track" style="width:32px;height:18px;border-radius:9px;background:#c9a84c;position:relative;flex-shrink:0;transition:background .22s ease;">
+          <div id="ob-switch-track" style="width:32px;height:18px;border-radius:4px;background:#c9a84c;position:relative;flex-shrink:0;transition:background .22s ease;">
             <div id="ob-switch-knob" style="position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:7px;background:#fff;transition:transform .22s cubic-bezier(.34,1.4,.64,1);box-shadow:0 1px 3px rgba(0,0,0,.4);"></div>
           </div>
           <span id="ob-toggle-label" style="font-size:11px;font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.6);">Подсказки</span>
@@ -29083,7 +29083,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
     <div class="rp-block-body">
       <div id="sec-branch" style="display:none;">
         <div class="sh"><div class="sh-num" id="sn4">04</div><div class="sh-title">Аналитика по филиалам</div><div class="sh-line"></div></div>
-        <div style="background:var(--bg3);border:1px solid var(--brd);border-radius:14px;padding:20px;margin-bottom:16px;">
+        <div style="background:var(--bg3);border:1px solid var(--brd);border-radius:4px;padding:20px;margin-bottom:16px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
             <div><div style="font-size:13px;font-weight:600;margin-bottom:3px;">Выбери филиалы</div><div style="font-size:11px;color:var(--txt2);font-family:var(--font-display);">Включай/выключай — данные пересчитываются</div></div>
             <div style="display:flex;gap:8px;">
@@ -29235,7 +29235,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
       <label>Фото / логотип проекта</label>
       <div id="proj-photo-upload"
         onclick="document.getElementById('proj-photo-file').click()"
-        style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.03);border:1.5px dashed rgba(255,255,255,.12);border-radius:12px;padding:12px 16px;cursor:pointer;transition:border-color .2s;min-height:0 !important;height:auto !important;"
+        style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.03);border:1.5px dashed rgba(255,255,255,.12);border-radius:4px;padding:12px 16px;cursor:pointer;transition:border-color .2s;min-height:0 !important;height:auto !important;"
         onmouseenter="this.style.borderColor='rgba(184,146,58,.5)'"
         onmouseleave="this.style.borderColor='rgba(255,255,255,.12)'">
         <div id="proj-photo-preview"
@@ -29249,7 +29249,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
         <div style="font-family:var(--font-mono);font-size:10px;color:rgba(184,146,58,.7);background:rgba(184,146,58,.08);border:1px solid rgba(184,146,58,.2);border-radius:6px;padding:5px 12px;flex-shrink:0;letter-spacing:.06em;">Выбрать</div>
       </div>
       <input type="file" id="proj-photo-file" accept="image/*" style="display:none" onchange="previewProjectPhoto(this)">
-      <div style="margin-top:6px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.18);border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:10px;">
+      <div style="margin-top:6px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.18);border-radius:4px;padding:9px 12px;display:flex;align-items:center;gap:10px;">
         <span style="font-size:13px;flex-shrink:0;">⚡</span>
         <span style="font-family:var(--font-mono);font-size:9.5px;color:rgba(245,158,11,.65);flex:1;">SQL (один раз): ALTER TABLE projects ADD COLUMN IF NOT EXISTS photo_url text;</span>
         <button onclick="navigator.clipboard.writeText('ALTER TABLE projects ADD COLUMN IF NOT EXISTS photo_url text;').then(()=>{this.textContent='✓';setTimeout(()=>this.textContent='SQL',1500)})" style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);border-radius:6px;padding:4px 10px;font-family:var(--font-mono);font-size:9px;color:rgba(245,158,11,.7);cursor:pointer;flex-shrink:0;letter-spacing:.04em;transition:all .15s;">SQL</button>
@@ -29259,7 +29259,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
       <div style="font-size:9px;font-family:var(--font-display);color:var(--a2);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;">Доступ клиента</div>
       <div class="field"><label>Логин клиента</label><input type="text" id="proj-client-login" placeholder="uzbek_doner" oninput="updateClientLoginPreview()"></div>
       <div class="field"><label>Пароль клиента</label><input type="password" id="proj-client-pass" placeholder="Минимум 8 символов"></div>
-      <div style="background:rgba(184,146,58,.08);border:1px solid rgba(184,146,58,.2);border-radius:9px;padding:10px 14px;margin-bottom:4px;font-size:12px;color:var(--txt2);font-family:var(--font-display);">
+      <div style="background:rgba(184,146,58,.08);border:1px solid rgba(184,146,58,.2);border-radius:4px;padding:10px 14px;margin-bottom:4px;font-size:12px;color:var(--txt2);font-family:var(--font-display);">
         Логин клиента: <span style="color:var(--a2);" id="client-login-preview">uzbek_doner@dtr.agency</span>
       </div>
     </div>
@@ -29353,7 +29353,7 @@ ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS kanban_status text DEFAULT 'wai
 ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS timer_started_at timestamptz;</pre>
     </div>
 
-    <div style="display:flex;gap:8px;padding:10px 14px;background:rgba(74,222,128,.05);border:1px solid rgba(74,222,128,.15);border-radius:8px;margin-bottom:14px;font-family:var(--font-display);font-size:11px;color:var(--txt2);">
+    <div style="display:flex;gap:8px;padding:10px 14px;background:rgba(74,222,128,.05);border:1px solid rgba(74,222,128,.15);border-radius:4px;margin-bottom:14px;font-family:var(--font-display);font-size:11px;color:var(--txt2);">
       <span style="font-size:16px;flex-shrink:0;">💡</span>
       <span>Перейди в <b style="color:var(--green);">Supabase Dashboard → SQL Editor → New Query</b>, вставь всё выше и нажми <b>Run</b>. Займёт 10 секунд. После этого перезагрузи страницу.</span>
     </div>
@@ -29391,7 +29391,7 @@ ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS timer_started_at timestamptz;</
       <input type="date" id="kb-task-deadline-inp">
     </div>
     <!-- Active stage hint -->
-    <div id="kb-stage-hint" style="margin-top:8px;padding:8px 12px;background:rgba(184,146,58,.07);border:1px solid rgba(184,146,58,.18);border-radius:8px;font-size:11px;color:var(--a2);font-family:var(--font-display);"></div>
+    <div id="kb-stage-hint" style="margin-top:8px;padding:8px 12px;background:rgba(184,146,58,.07);border:1px solid rgba(184,146,58,.18);border-radius:4px;font-size:11px;color:var(--a2);font-family:var(--font-display);"></div>
     <div class="modal-footer">
       <button class="btn-ghost" onclick="closeModal('modal-kanban-task')">Отмена</button>
       <button class="btn-primary" style="flex:1;" onclick="saveKanbanTask()">
@@ -29470,13 +29470,13 @@ ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS timer_started_at timestamptz;</
     <div style="font-size:13px;color:var(--txt2);margin-bottom:28px;line-height:1.6;">Проект достиг 100%. Выберите дальнейшее действие:</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
       <!-- Продолжить -->
-      <div onclick="projectCompleteContinue()" style="cursor:pointer;padding:20px 16px;border-radius:14px;border:1px solid rgba(184,146,58,.25);background:rgba(184,146,58,.06);transition:all .2s;text-align:left;" onmouseover="this.style.background='rgba(184,146,58,.12)'" onmouseout="this.style.background='rgba(184,146,58,.06)'">
+      <div onclick="projectCompleteContinue()" style="cursor:pointer;padding:20px 16px;border-radius:4px;border:1px solid rgba(184,146,58,.25);background:rgba(184,146,58,.06);transition:all .2s;text-align:left;" onmouseover="this.style.background='rgba(184,146,58,.12)'" onmouseout="this.style.background='rgba(184,146,58,.06)'">
         <div style="font-size:24px;margin-bottom:10px;">🔄</div>
         <div style="font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--a2);margin-bottom:6px;">Продолжить работу</div>
         <div style="font-size:11px;color:var(--txt3);line-height:1.5;">Новый цикл — сброс этапов для следующего месяца. Отчёты и история сохранятся.</div>
       </div>
       <!-- Завершить -->
-      <div onclick="projectCompleteArchive()" style="cursor:pointer;padding:20px 16px;border-radius:14px;border:1px solid rgba(62,207,142,.2);background:rgba(62,207,142,.05);transition:all .2s;text-align:left;" onmouseover="this.style.background='rgba(62,207,142,.1)'" onmouseout="this.style.background='rgba(62,207,142,.05)'">
+      <div onclick="projectCompleteArchive()" style="cursor:pointer;padding:20px 16px;border-radius:4px;border:1px solid rgba(62,207,142,.2);background:rgba(62,207,142,.05);transition:all .2s;text-align:left;" onmouseover="this.style.background='rgba(62,207,142,.1)'" onmouseout="this.style.background='rgba(62,207,142,.05)'">
         <div style="font-size:24px;margin-bottom:10px;">✅</div>
         <div style="font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--green);margin-bottom:6px;">Завершить контракт</div>
         <div style="font-size:11px;color:var(--txt3);line-height:1.5;">Архивировать проект. Клиент получит финальный статус, доступ сохранится.</div>
@@ -31060,10 +31060,10 @@ async function openProject(id) {
   if (!p) { console.warn('Project not found:', id); return }
   currentProject = p
   if (p.photo_url) {
-    g('proj-icon').style.cssText = `width:34px;height:34px;border-radius:9px;flex-shrink:0;overflow:hidden;padding:0;border:1px solid ${p.brand_color}44;background:transparent;display:block;`
-    g('proj-icon').innerHTML = `<img src="${p.photo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;display:block;">`
+    g('proj-icon').style.cssText = `width:34px;height:34px;border-radius:4px;flex-shrink:0;overflow:hidden;padding:0;border:1px solid ${p.brand_color}44;background:transparent;display:block;`
+    g('proj-icon').innerHTML = `<img src="${p.photo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:4px;display:block;">`
   } else {
-    g('proj-icon').style.cssText = `background:${p.brand_color}22;border:1px solid ${p.brand_color}44;color:${p.brand_color};width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:15px;font-weight:800;flex-shrink:0;`
+    g('proj-icon').style.cssText = `background:${p.brand_color}22;border:1px solid ${p.brand_color}44;color:${p.brand_color};width:34px;height:34px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:15px;font-weight:800;flex-shrink:0;`
     g('proj-icon').textContent = p.name[0]
   }
   set('proj-name', p.name)
@@ -31668,13 +31668,13 @@ function renderWaterfallBlock(bRD,dRD,bCD,dCD,bA,dA,gr,grP,ex,bD,dD) {
     var isM=s.base||s.result
     var dv=isM?new Intl.NumberFormat('ru-RU').format(Math.round(s.v))+' сум/день':(s.v>=0?'+':'-')+fmt2(s.v)+' сум/день'
     var ps=s.pct!=null?' ('+(s.pct>=0?'+':'')+s.pct.toFixed(1)+'%)':''
-    var ico=s.base?'[·]':s.result?'[=]':(s.v>=0?'↑':'↓')
-    return '<div style="display:flex;align-items:center;gap:12px;padding:'+(isM?'13px 16px':'9px 16px')+';background:'+(isM?'var(--bg3)':'var(--bg4)')+';border:'+(isM?'1px solid var(--brd2)':'1px solid var(--brd)')+';border-left:3px solid '+s.col+';border-radius:12px;margin-bottom:6px;">'
-      +'<div style="width:26px;height:26px;border-radius:7px;background:'+s.col+'22;display:flex;align-items:center;justify-content:center;font-size:11px;color:'+s.col+';flex-shrink:0;">'+ico+'</div>'
-      +'<div style="flex:1;min-width:0;"><div style="font-size:11px;color:var(--txt2);font-family:var(--font-mono);margin-bottom:4px;">'+s.lb+'</div>'
-      +'<div style="height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;"><div style="height:100%;width:'+bw+'%;background:'+s.col+';border-radius:2px;transition:width 1s ease;"></div></div></div>'
-      +'<div style="text-align:right;flex-shrink:0;"><div style="font-family:\"Bebas Neue\",sans-serif;font-size:'+(isM?'21':'17')+'px;color:'+s.col+';">'+dv+'</div>'
-      +(ps?'<div style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);">'+ps+'</div>':'')
+    var ico=s.base?'BASE':s.result?'TOTAL':(s.v>=0?'+':'−')
+    return '<div style="display:flex;align-items:center;gap:12px;padding:'+(isM?'14px 16px':'10px 16px')+';background:'+(isM?'#161618':'#101012')+';border:1px solid rgba(255,255,255,'+(isM?'.1':'.06')+');border-left:3px solid '+s.col+';border-radius:4px;margin-bottom:4px;">'
+      +'<div style="width:40px;height:22px;border-radius:2px;background:'+s.col+'18;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;letter-spacing:.1em;font-family:\"DM Mono\",monospace;color:'+s.col+';flex-shrink:0;">'+ico+'</div>'
+      +'<div style="flex:1;min-width:0;"><div style="font-size:10px;color:#6b6760;font-family:\"DM Mono\",monospace;letter-spacing:.04em;margin-bottom:5px;">'+s.lb+'</div>'
+      +'<div style="height:3px;background:rgba(255,255,255,.05);overflow:hidden;"><div style="height:100%;width:'+bw+'%;background:'+s.col+';transition:width 1s ease;"></div></div></div>'
+      +'<div style="text-align:right;flex-shrink:0;min-width:180px;"><div style="font-family:\"DM Sans\",sans-serif;font-size:'+(isM?'18':'15')+'px;font-weight:800;letter-spacing:-.02em;color:'+s.col+';font-variant-numeric:tabular-nums;">'+dv+'</div>'
+      +(ps?'<div style="font-size:9px;color:#6b6760;font-family:\"DM Mono\",monospace;letter-spacing:.04em;margin-top:2px;">'+ps+'</div>':'')
       +'</div></div>'
   }).join('')
   block.style.display='block'
@@ -31709,25 +31709,25 @@ function renderHealthScore(bRD,dRD,bCD,dCD,bA,dA,grP,bD,dD,b1,d1) {
   var hl=hp>=80?'🟢 Отличное':hp>=65?'🟡 Хорошее':hp>=45?'🟠 Среднее':'🔴 Требует внимания'
   var fHTML=f.map(function(x){
     var p=Math.round(x.sc/x.mx*100)
-    return '<div style="background:var(--bg4);border:1px solid var(--brd);border-radius:12px;padding:14px;">'
-      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
-      +'<div style="font-size:11px;color:var(--txt2);font-family:var(--font-mono);">'+x.lb+'</div>'
-      +'<div style="font-size:10px;font-family:var(--font-mono);color:'+x.cl+';">'+x.vl+'</div></div>'
-      +'<div style="height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;margin-bottom:6px;">'
-      +'<div style="height:100%;width:'+p+'%;background:'+x.cl+';border-radius:2px;transition:width 1s ease;"></div></div>'
-      +'<div style="font-family:\"Bebas Neue\",sans-serif;font-size:20px;color:'+x.cl+';">'+x.sc
-      +'<span style="font-size:11px;color:var(--txt3);font-family:var(--font-mono);">/' + x.mx + '</span></div></div>'
+    return '<div style="background:#101012;border:1px solid rgba(255,255,255,.07);border-top:2px solid '+x.cl+';border-radius:4px;padding:14px;">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
+      +'<div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#e8e4de;font-family:\"DM Sans\",sans-serif;">'+x.lb+'</div>'
+      +'<div style="font-size:9px;font-family:\"DM Mono\",monospace;font-weight:600;padding:2px 8px;border-radius:2px;background:'+x.cl+'18;color:'+x.cl+';">'+x.vl+'</div></div>'
+      +'<div style="height:3px;background:rgba(255,255,255,.06);overflow:hidden;margin-bottom:8px;">'
+      +'<div style="height:100%;width:'+p+'%;background:'+x.cl+';transition:width 1s ease;"></div></div>'
+      +'<div style="font-family:\"DM Sans\",sans-serif;font-size:22px;font-weight:800;letter-spacing:-.03em;color:'+x.cl+';font-variant-numeric:tabular-nums;">'+x.sc
+      +'<span style="font-size:10px;color:#3a3835;font-family:\"DM Mono\",monospace;font-weight:400;">/' + x.mx + '</span></div></div>'
   }).join('')
-  inner.innerHTML='<div style="display:flex;align-items:center;gap:20px;padding:18px;background:var(--bg3);border:1px solid var(--brd2);border-radius:14px;margin-bottom:14px;">'
-    +'<div style="text-align:center;flex-shrink:0;">'
-    +'<div style="font-family:\"Bebas Neue\",sans-serif;font-size:60px;line-height:1;color:'+hc+';">'+hp+'</div>'
-    +'<div style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);">/ 100</div></div>'
+  inner.innerHTML='<div style="display:flex;align-items:center;gap:24px;padding:20px;background:#161618;border:1px solid rgba(255,255,255,.1);border-left:4px solid '+hc+';border-radius:4px;margin-bottom:12px;">'
+    +'<div style="text-align:center;flex-shrink:0;min-width:72px;">'
+    +'<div style="font-family:\"DM Sans\",sans-serif;font-size:56px;font-weight:800;letter-spacing:-.04em;line-height:1;color:'+hc+';font-variant-numeric:tabular-nums;">'+hp+'</div>'
+    +'<div style="font-size:9px;color:#6b6760;font-family:\"DM Mono\",monospace;letter-spacing:.1em;text-transform:uppercase;margin-top:2px;">из 100</div></div>'
     +'<div style="flex:1;">'
-    +'<div style="font-size:15px;font-weight:700;margin-bottom:4px;">'+hl+'</div>'
-    +'<div style="font-size:11px;color:var(--txt2);margin-bottom:10px;">Оценка за ' + LABEL_D + '</div>'
-    +'<div style="height:7px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;">'
-    +'<div style="height:100%;width:'+hp+'%;background:'+hc+';border-radius:4px;transition:width 1.2s ease;"></div></div></div></div>'
-    +'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">'+fHTML+'</div>'
+    +'<div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#e8e4de;margin-bottom:4px;">'+hl.replace(/[🟢🟡🟠🔴]/g,'').trim()+'</div>'
+    +'<div style="font-size:10px;color:#6b6760;font-family:\"DM Mono\",monospace;margin-bottom:10px;">Оценка за ' + LABEL_D + '</div>'
+    +'<div style="height:4px;background:rgba(255,255,255,.06);overflow:hidden;">'
+    +'<div style="height:100%;width:'+hp+'%;background:'+hc+';transition:width 1.2s ease;"></div></div></div></div>'
+    +'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;">'+fHTML+'</div>'
   block.style.display='block'
 }
 
@@ -31768,11 +31768,11 @@ function renderMenuEfficiency(b3,d3) {
     html+='<div style="margin-bottom:14px;"><div style="font-size:11px;color:var(--amber);font-family:var(--font-mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Высокий объём — низкая цена (кандидаты на переоценку)</div>'
     anomalies.forEach(function(r){
       var sh=Math.round(r.rev/totalRev*100),gap=Math.round((avgRPU-r.rpu)/avgRPU*100)
-      html+='<div style="display:flex;align-items:center;gap:12px;padding:9px 13px;background:rgba(232,153,58,.06);border:1px solid rgba(232,153,58,.2);border-left:3px solid var(--amber);border-radius:9px;margin-bottom:7px;">'
-        +'<div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'+r.lb+'">'+r.lb+'</div>'
-        +'<div style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);margin-top:2px;">'+fmt2(r.qty)+' шт · '+sh+'% выручки</div></div>'
-        +'<div style="text-align:right;flex-shrink:0;"><div style="font-family:\"Bebas Neue\",sans-serif;font-size:17px;color:var(--amber);">'+fmt2(r.rpu)+' сум</div>'
-        +'<div style="font-size:9px;color:var(--amber);font-family:var(--font-mono);">-'+gap+'% к avg</div></div></div>'
+      html+='<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:#101012;border:1px solid rgba(184,146,58,.15);border-left:3px solid #c9a84c;border-radius:4px;margin-bottom:6px;">'
+        +'<div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#e8e4de;" title="'+r.lb+'">'+r.lb+'</div>'
+        +'<div style="font-size:9px;color:#6b6760;font-family:\"DM Mono\",monospace;letter-spacing:.04em;margin-top:3px;">'+fmt2(r.qty)+' шт · '+sh+'% выручки</div></div>'
+        +'<div style="text-align:right;flex-shrink:0;"><div style="font-family:\"DM Sans\",sans-serif;font-size:16px;font-weight:800;letter-spacing:-.02em;color:#c9a84c;font-variant-numeric:tabular-nums;">'+fmt2(r.rpu)+' сум</div>'
+        +'<div style="font-size:9px;color:#6b6760;font-family:\"DM Mono\",monospace;margin-top:2px;">−'+gap+'% к среднему</div></div></div>'
     })
     html+='</div>'
   }
@@ -31780,11 +31780,11 @@ function renderMenuEfficiency(b3,d3) {
     html+='<div><div style="font-size:11px;color:var(--green);font-family:var(--font-mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Звёзды меню — высокая цена + высокий объём</div>'
     stars.forEach(function(r){
       var sh=Math.round(r.rev/totalRev*100),pr=Math.round((r.rpu-avgRPU)/avgRPU*100)
-      html+='<div style="display:flex;align-items:center;gap:12px;padding:9px 13px;background:rgba(0,229,163,.06);border:1px solid rgba(0,229,163,.2);border-left:3px solid var(--green);border-radius:9px;margin-bottom:7px;">'
-        +'<div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'+r.lb+'">'+r.lb+'</div>'
-        +'<div style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);margin-top:2px;">#'+qtyRank[r.lb]+' по объёму · '+sh+'% выручки</div></div>'
-        +'<div style="text-align:right;flex-shrink:0;"><div style="font-family:\"Bebas Neue\",sans-serif;font-size:17px;color:var(--green);">'+fmt2(r.rpu)+' сум</div>'
-        +'<div style="font-size:9px;color:var(--green);font-family:var(--font-mono);">+'+pr+'% к avg</div></div></div>'
+      html+='<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:#101012;border:1px solid rgba(22,163,74,.15);border-left:3px solid #22c55e;border-radius:4px;margin-bottom:6px;">'
+        +'<div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#e8e4de;" title="'+r.lb+'">'+r.lb+'</div>'
+        +'<div style="font-size:9px;color:#6b6760;font-family:\"DM Mono\",monospace;letter-spacing:.04em;margin-top:3px;">#'+qtyRank[r.lb]+' по объёму · '+sh+'% выручки</div></div>'
+        +'<div style="text-align:right;flex-shrink:0;"><div style="font-family:\"DM Sans\",sans-serif;font-size:16px;font-weight:800;letter-spacing:-.02em;color:#22c55e;font-variant-numeric:tabular-nums;">'+fmt2(r.rpu)+' сум</div>'
+        +'<div style="font-size:9px;color:#6b6760;font-family:\"DM Mono\",monospace;margin-top:2px;">+'+pr+'% к среднему</div></div></div>'
     })
     html+='</div>'
   }
@@ -31842,7 +31842,7 @@ function runAnalysis() {
   set('hba',fmtM(Math.round(bA))+' сум'); set('hda',fmtM(Math.round(dA))+' сум')
   set('hbt',fmtM(bR)); set('hdt',fmtM(dR))
   set('hbtc',fmt(Math.round(bC))); set('hdtc',fmt(Math.round(dC)))
-  g('growth-badge').innerHTML = `<span style="padding:4px 12px;border-radius:12px;font-family:var(--font-display);font-size:12px;font-weight:700;background:${grP>=0?'rgba(0,229,163,.12)':'rgba(255,61,107,.12)'};color:${grP>=0?'var(--green)':'var(--red)'};">${grP>=0?'▲':'▼'} ${Math.abs(grP).toFixed(1)}% к базовому периоду</span>`
+  g('growth-badge').innerHTML = `<span style="padding:4px 12px;border-radius:4px;font-family:var(--font-display);font-size:12px;font-weight:700;background:${grP>=0?'rgba(0,229,163,.12)':'rgba(255,61,107,.12)'};color:${grP>=0?'var(--green)':'var(--red)'};">${grP>=0?'▲':'▼'} ${Math.abs(grP).toFixed(1)}% к базовому периоду</span>`
 
   // KPIs
   const kv=(id,v,c)=>{const e=g(id);if(e){e.textContent=v;e.style.color=c;e.style.animation='countUp .7s cubic-bezier(.34,1.56,.64,1) both';}}
@@ -31896,7 +31896,7 @@ function runAnalysis() {
     const aggPeak = aggH(peakSrc)
     const top3 = Object.entries(aggPeak).sort((a,b2)=>b2[1].chk-a[1].chk).slice(0,3)
     const medals = ['🥇','🥈','🥉']
-    g('peaks-block').innerHTML = `<div class="cb"><div class="cb-title">⭐ Топ часов по трафику</div>${top3.map(([h,v],i)=>`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--brd);"><span style="font-size:18px;">${medals[i]}</span><span style="font-family:var(--font-display);font-size:18px;flex:1;">${h}:00</span><span style="font-size:12px;color:var(--a2);font-family:var(--font-display);">${fmt(Math.round(v.chk))} чеков</span></div>`).join('')}</div>`
+    g('peaks-block').innerHTML = `<div class="cb"><div class="cb-title">ТОП ЧАСОВ ПО ТРАФИКУ</div>${top3.map(([h,v],i)=>`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05);"><div style="width:24px;height:24px;border-radius:2px;background:rgba(37,99,235,.15);border:1px solid rgba(37,99,235,.25);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;font-family:'DM Mono',monospace;color:#3b82f6;flex-shrink:0;">${'0'+(i+1)}</div><span style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:800;letter-spacing:-.02em;flex:1;color:#e8e4de;">${h}:00</span><span style="font-size:11px;font-weight:600;font-family:'DM Mono',monospace;color:#6b6760;font-variant-numeric:tabular-nums;">${fmt(Math.round(v.chk))} чеков</span></div>`).join('')}</div>`
   }
 
   // Items
@@ -31907,7 +31907,7 @@ function runAnalysis() {
       if (!src) { g(elId).innerHTML = `<div style="color:var(--txt2);font-size:12px;padding:16px;font-family:var(--font-display);">Файл не загружен</div>`; return }
       const items = [...src.rows].filter(r=>vFn(r)>0).sort((a,b2)=>vFn(b2)-vFn(a)).slice(0,10)
       const mx = items[0] ? vFn(items[0]) : 1
-      g(elId).innerHTML = items.map((r,i)=>`<div style="display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--brd);"><span style="font-size:16px;width:24px;">${i<3?medals[i]:'#'+(i+1)}</span><span style="flex:1;font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${r.label}">${r.label}</span><div style="width:70px;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;"><div style="height:100%;width:${vFn(r)/mx*100}%;background:${color};border-radius:2px;"></div></div><span style="font-size:10px;color:var(--txt2);font-family:var(--font-display);width:72px;text-align:right;">${fmtM(vFn(r))}</span></div>`).join('')
+      g(elId).innerHTML = items.map((r,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05);"><div style="width:28px;flex-shrink:0;font-size:9px;font-weight:700;letter-spacing:.06em;font-family:'DM Mono',monospace;color:${i<3?'#c9a84c':'#3a3835'};text-align:right;">${i<3?'0'+(i+1):i+1}</div><span style="flex:1;font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#e8e4de;" title="${r.label}">${r.label}</span><div style="width:60px;height:2px;background:rgba(255,255,255,.06);overflow:hidden;flex-shrink:0;"><div style="height:100%;width:${vFn(r)/mx*100}%;background:${color};"></div></div><span style="font-size:11px;font-weight:600;font-family:'DM Mono',monospace;color:#6b6760;width:80px;text-align:right;font-variant-numeric:tabular-nums;">${fmtM(vFn(r))}</span></div>`).join('')
     }
     const revColor = 'linear-gradient(90deg,#c9a84c,#8b6fff)'
     const qtyColor = 'linear-gradient(90deg,#00e5a3,#0dcfff)'
@@ -31924,7 +31924,7 @@ function runAnalysis() {
     tog.innerHTML = allBranches.map((name,i)=>{
       const col = BCOLS[i%BCOLS.length]
       const safeName = name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
-      return `<div id="bt_${i}" data-bname="${safeName.replace(/`/g,'&#96;')}" data-bidx="${i}" style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:20px;border:1.5px solid ${col};background:rgba(0,0,0,.2);cursor:pointer;user-select:none;transition:all .2s;"><span style="width:8px;height:8px;border-radius:50%;background:${col};flex-shrink:0;"></span><span style="font-size:12px;font-weight:600;">${safeName}</span><span style="font-size:10px;font-family:var(--font-display);color:${col};" id="btl_${i}">вкл</span></div>`
+      return `<div id="bt_${i}" data-bname="${safeName.replace(/`/g,'&#96;')}" data-bidx="${i}" style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:4px;border:1.5px solid ${col};background:rgba(0,0,0,.2);cursor:pointer;user-select:none;transition:all .2s;"><span style="width:8px;height:8px;border-radius:50%;background:${col};flex-shrink:0;"></span><span style="font-size:12px;font-weight:600;">${safeName}</span><span style="font-size:10px;font-family:var(--font-display);color:${col};" id="btl_${i}">вкл</span></div>`
     }).join('')
     // Safe event delegation — no inline onclick with user data
     tog.onclick = function(e) {
@@ -31953,33 +31953,34 @@ function runAnalysis() {
       const sb = segData(aB, s.hours), sd = segData(aD, s.hours)
       const avgDelta = sd.avg - sb.avg
       const chkDelta = sd.chk - sb.chk
-      return `<div style="background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:22px;position:relative;overflow:hidden;">
-        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${s.col};"></div>
-        <div style="position:absolute;bottom:-20px;right:-20px;width:100px;height:100px;border-radius:50%;background:${s.col};opacity:.06;filter:blur(24px);pointer-events:none;"></div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
-          <span style="font-size:22px;">${s.icon}</span>
-          <div><div style="font-size:15px;font-weight:700;">${s.name}</div><div style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);">${s.sub}</div></div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
-          <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:14px;">
-            <div style="font-size:9px;color:var(--txt2);font-family:var(--font-mono);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">${LABEL_B}</div>
-            <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;line-height:1;color:var(--txt2);margin-bottom:5px;">${fmt2(sb.avg)}</div>
-            <div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);">сум · ${fmt2(sb.chk)} чеков</div>
-          </div>
-          <div style="background:rgba(255,255,255,.04);border:1.5px solid ${s.col}44;border-radius:12px;padding:14px;">
-            <div style="font-size:9px;color:${s.col};font-family:var(--font-mono);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">${LABEL_D}</div>
-            <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;line-height:1;color:${s.col};margin-bottom:5px;">${fmt2(sd.avg)}</div>
-            <div style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);">сум · ${fmt2(sd.chk)} чеков</div>
+      return `<div style="background:#101012;border:1px solid rgba(255,255,255,.07);border-left:3px solid ${s.col};border-radius:4px;padding:20px;position:relative;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.06);">
+          <span style="font-size:18px;line-height:1;">${s.icon}</span>
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#e8e4de;">${s.name}</div>
+            <div style="font-size:10px;color:#6b6760;font-family:'DM Mono',monospace;margin-top:2px;">${s.sub}</div>
           </div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:9px;">
-            <span style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);">Ср. чек Δ</span>
-            <span style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:${avgDelta>=0?'var(--green)':'var(--red)'};">${avgDelta>=0?'+':''}${fmt2(avgDelta)}</span>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+          <div style="background:#161618;border:1px solid rgba(255,255,255,.06);border-radius:4px;padding:12px;">
+            <div style="font-size:9px;color:#6b6760;font-family:'DM Mono',monospace;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;">${LABEL_B}</div>
+            <div style="font-family:'DM Sans',sans-serif;font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1;color:#6b6760;margin-bottom:4px;font-variant-numeric:tabular-nums;">${fmt2(sb.avg)}</div>
+            <div style="font-size:10px;color:#3a3835;font-family:'DM Mono',monospace;">сум · ${fmt2(sb.chk)} чеков</div>
           </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:9px;">
-            <span style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);">Чеков Δ</span>
-            <span style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:${chkDelta>=0?'var(--cyan)':'var(--red)'};">${chkDelta>=0?'+':''}${fmt2(chkDelta)}</span>
+          <div style="background:#161618;border:1px solid ${s.col}33;border-radius:4px;padding:12px;">
+            <div style="font-size:9px;color:${s.col};font-family:'DM Mono',monospace;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;">${LABEL_D}</div>
+            <div style="font-family:'DM Sans',sans-serif;font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1;color:${s.col};margin-bottom:4px;font-variant-numeric:tabular-nums;">${fmt2(sd.avg)}</div>
+            <div style="font-size:10px;color:#6b6760;font-family:'DM Mono',monospace;">сум · ${fmt2(sd.chk)} чеков</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#161618;border:1px solid rgba(255,255,255,.05);border-radius:4px;">
+            <span style="font-size:9px;color:#6b6760;font-family:'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;">Ср. чек Δ</span>
+            <span style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:800;letter-spacing:-.02em;color:${avgDelta>=0?'#22c55e':'#ef4444'};font-variant-numeric:tabular-nums;">${avgDelta>=0?'+':''}${fmt2(avgDelta)}</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#161618;border:1px solid rgba(255,255,255,.05);border-radius:4px;">
+            <span style="font-size:9px;color:#6b6760;font-family:'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;">Чеков Δ</span>
+            <span style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:800;letter-spacing:-.02em;color:${chkDelta>=0?'#3b82f6':'#ef4444'};font-variant-numeric:tabular-nums;">${chkDelta>=0?'+':''}${fmt2(chkDelta)}</span>
           </div>
         </div>
       </div>`
@@ -32014,21 +32015,21 @@ function runAnalysis() {
         const v=tot[k]; if(!v)return ''
         const c=cmp[k], avg=v.chk?Math.round(v.rev/v.chk):0, cAvg=c&&c.chk?Math.round(c.rev/c.chk):0
         const chkDelta=c?v.chk-c.chk:null, avgDelta=cAvg?avg-cAvg:null, col=colors[k]||'#c9a84c'
-        return `<div style="background:var(--bg3);border:1px solid var(--brd);border-left:3px solid ${col};border-radius:12px;padding:16px;margin-bottom:10px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-            <div style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;">${icons[k]||'📦'} ${k}</div>
-            ${chkDelta!==null?`<span style="font-size:11px;padding:2px 8px;border-radius:5px;font-family:var(--font-mono);background:${chkDelta>=0?'rgba(0,229,163,.12)':'rgba(255,61,107,.12)'};color:${chkDelta>=0?'var(--green)':'var(--red)'};">${chkDelta>=0?'▲':'▼'} ${fmt2(Math.abs(chkDelta))} чеков</span>`:''}
+        return `<div style="background:#101012;border:1px solid rgba(255,255,255,.07);border-left:3px solid ${col};border-radius:4px;padding:16px;margin-bottom:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;color:#e8e4de;">${icons[k]||'📦'} ${k}</div>
+            ${chkDelta!==null?`<span style="font-size:9px;padding:3px 8px;border-radius:2px;font-family:'DM Mono',monospace;font-weight:600;letter-spacing:.06em;background:${chkDelta>=0?'rgba(22,163,74,.12)':'rgba(220,38,38,.12)'};color:${chkDelta>=0?'#22c55e':'#ef4444'};">${chkDelta>=0?'▲':'▼'} ${fmt2(Math.abs(chkDelta))}</span>`:''}
           </div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:${col};">${fmt2(v.chk)}</div>
-          <div style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);margin-bottom:10px;">${(v.chk/total*100).toFixed(1)}% трафика · ${fmt2(Math.round(v.rev/1e6))} млн сум</div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:8px;">
-            <span style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);">Средний чек</span>
+          <div style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:800;letter-spacing:-.03em;color:${col};font-variant-numeric:tabular-nums;line-height:1;margin-bottom:4px;">${fmt2(v.chk)}</div>
+          <div style="font-size:10px;color:#6b6760;font-family:'DM Mono',monospace;margin-bottom:12px;">${(v.chk/total*100).toFixed(1)}% трафика · ${fmt2(Math.round(v.rev/1e6))} млн сум</div>
+          <div style="height:2px;background:rgba(255,255,255,.05);border-radius:0;overflow:hidden;margin-bottom:12px;"><div style="height:100%;width:${v.chk/total*100}%;background:${col};"></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#161618;border:1px solid rgba(255,255,255,.05);border-radius:4px;">
+            <span style="font-size:9px;color:#6b6760;font-family:'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;">Средний чек</span>
             <div style="display:flex;align-items:center;gap:8px;">
-              <span style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:${col};">${fmt2(avg)} сум</span>
-              ${avgDelta!==null?`<span style="font-size:10px;padding:2px 7px;border-radius:4px;font-family:var(--font-mono);background:${avgDelta>=0?'rgba(0,229,163,.1)':'rgba(255,61,107,.1)'};color:${avgDelta>=0?'var(--green)':'var(--red)'};">${avgDelta>=0?'+':''}${fmt2(avgDelta)}</span>`:''}
+              <span style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;color:${col};font-variant-numeric:tabular-nums;">${fmt2(avg)} сум</span>
+              ${avgDelta!==null?`<span style="font-size:9px;padding:2px 7px;border-radius:2px;font-family:'DM Mono',monospace;font-weight:600;background:${avgDelta>=0?'rgba(22,163,74,.1)':'rgba(220,38,38,.1)'};color:${avgDelta>=0?'#22c55e':'#ef4444'};">${avgDelta>=0?'+':''}${fmt2(avgDelta)}</span>`:''}
             </div>
           </div>
-          <div style="height:4px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-top:10px;"><div style="height:100%;width:${v.chk/total*100}%;background:${col};opacity:.7;border-radius:3px;"></div></div>
         </div>`
       }).join('')
     }
@@ -32058,28 +32059,27 @@ function runAnalysis() {
         const b2=tb[k]||{chk:0,rev:0}, d2=td2[k]||{chk:0,rev:0}
         const bAvg=b2.chk?Math.round(b2.rev/b2.chk):0, dAvg=d2.chk?Math.round(d2.rev/d2.chk):0
         const delta=dAvg-bAvg, col=colors[k]||'#c9a84c'
-        return `<div style="background:var(--bg4);border:1px solid var(--brd);border-radius:14px;padding:20px;position:relative;overflow:hidden;">
-          <div style="position:absolute;top:0;left:0;right:0;height:2px;background:${col};"></div>
-          <div style="font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:7px;">${icons[k]||'📦'} ${k}</div>
+        return `<div style="background:#101012;border:1px solid rgba(255,255,255,.07);border-top:2px solid ${col};border-radius:4px;padding:20px;position:relative;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:7px;color:#e8e4de;">${icons[k]||'📦'} ${k}</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
-            <div>
-              <div style="font-size:9px;color:var(--txt2);font-family:var(--font-mono);letter-spacing:.1em;margin-bottom:4px;">${LABEL_B}</div>
-              <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--txt2);">${fmt2(bAvg)}</div>
-              <div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);">${fmt2(b2.chk)} чеков</div>
+            <div style="background:#161618;border:1px solid rgba(255,255,255,.06);border-radius:4px;padding:12px;">
+              <div style="font-size:9px;color:#6b6760;font-family:'DM Mono',monospace;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;">${LABEL_B}</div>
+              <div style="font-family:'DM Sans',sans-serif;font-size:26px;font-weight:800;letter-spacing:-.03em;color:#6b6760;font-variant-numeric:tabular-nums;line-height:1;margin-bottom:3px;">${fmt2(bAvg)}</div>
+              <div style="font-size:10px;color:#3a3835;font-family:'DM Mono',monospace;">${fmt2(b2.chk)} чеков</div>
             </div>
-            <div>
-              <div style="font-size:9px;color:var(--txt2);font-family:var(--font-mono);letter-spacing:.1em;margin-bottom:4px;">${LABEL_D}</div>
-              <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;color:${col};">${fmt2(dAvg)}</div>
-              <div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);">${fmt2(d2.chk)} чеков</div>
+            <div style="background:#161618;border:1px solid ${col}33;border-radius:4px;padding:12px;">
+              <div style="font-size:9px;color:${col};font-family:'DM Mono',monospace;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;">${LABEL_D}</div>
+              <div style="font-family:'DM Sans',sans-serif;font-size:26px;font-weight:800;letter-spacing:-.03em;color:${col};font-variant-numeric:tabular-nums;line-height:1;margin-bottom:3px;">${fmt2(dAvg)}</div>
+              <div style="font-size:10px;color:#6b6760;font-family:'DM Mono',monospace;">${fmt2(d2.chk)} чеков</div>
             </div>
           </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-top:1px solid rgba(255,255,255,.06);">
-            <span style="font-size:11px;color:var(--txt2);font-family:var(--font-mono);">Изменение ср. чека</span>
-            <span style="font-size:13px;font-weight:600;font-family:var(--font-mono);padding:3px 10px;border-radius:5px;background:${delta>=0?'rgba(0,229,163,.12)':'rgba(255,61,107,.12)'};color:${delta>=0?'var(--green)':'var(--red)'};">${delta>=0?'+':''}${fmt2(delta)} сум</span>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-top:1px solid rgba(255,255,255,.06);">
+            <span style="font-size:9px;color:#6b6760;font-family:'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;">Изменение ср. чека</span>
+            <span style="font-size:12px;font-weight:700;font-family:'DM Mono',monospace;padding:3px 10px;border-radius:2px;letter-spacing:.04em;background:${delta>=0?'rgba(22,163,74,.12)':'rgba(220,38,38,.12)'};color:${delta>=0?'#22c55e':'#ef4444'};">${delta>=0?'+':''}${fmt2(delta)} сум</span>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:10px;">
-            <div><div style="font-size:9px;color:var(--txt3);font-family:var(--font-mono);margin-bottom:3px;">До</div><div style="height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;"><div style="height:100%;width:${maxAvg?bAvg/maxAvg*100:0}%;background:rgba(240,236,230,.8);border-radius:3px;"></div></div></div>
-            <div><div style="font-size:9px;color:var(--txt3);font-family:var(--font-mono);margin-bottom:3px;">Таргет</div><div style="height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;"><div style="height:100%;width:${maxAvg?dAvg/maxAvg*100:0}%;background:${col};border-radius:3px;"></div></div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px;">
+            <div><div style="font-size:9px;color:#3a3835;font-family:'DM Mono',monospace;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">До</div><div style="height:3px;background:rgba(255,255,255,.06);overflow:hidden;"><div style="height:100%;width:${maxAvg?bAvg/maxAvg*100:0}%;background:rgba(240,236,230,.5);"></div></div></div>
+            <div><div style="font-size:9px;color:#3a3835;font-family:'DM Mono',monospace;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">Период</div><div style="height:3px;background:rgba(255,255,255,.06);overflow:hidden;"><div style="height:100%;width:${maxAvg?dAvg/maxAvg*100:0}%;background:${col};"></div></div></div>
           </div>
         </div>`
       }).join('')
@@ -32424,7 +32424,7 @@ function renderBranch() {
   ]
   ratingItems.forEach(c => {
     if(!c.s) return
-    rEl.innerHTML+=`<div style="background:var(--bg4);border:1px solid var(--brd);border-radius:14px;padding:18px;position:relative;overflow:hidden;transition:transform .2s;" onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform=''"><div style="position:absolute;top:0;left:0;right:0;height:2px;background:${c.s.col};"></div><div style="font-size:24px;margin-bottom:8px;">${c.icon}</div><div style="font-size:9px;color:var(--txt2);font-family:var(--font-display);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;">${c.label}</div><div style="font-family:var(--font-display);font-size:22px;color:${c.s.col};margin-bottom:4px;">${c.s.name}</div><div style="font-size:11px;color:var(--txt2);font-family:var(--font-display);">${c.extra}</div></div>`
+    rEl.innerHTML+=`<div style="background:var(--bg4);border:1px solid var(--brd);border-radius:4px;padding:18px;position:relative;overflow:hidden;transition:transform .2s;" onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform=''"><div style="position:absolute;top:0;left:0;right:0;height:2px;background:${c.s.col};"></div><div style="font-size:24px;margin-bottom:8px;">${c.icon}</div><div style="font-size:9px;color:var(--txt2);font-family:var(--font-display);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;">${c.label}</div><div style="font-family:var(--font-display);font-size:22px;color:${c.s.col};margin-bottom:4px;">${c.s.name}</div><div style="font-size:11px;color:var(--txt2);font-family:var(--font-display);">${c.extra}</div></div>`
   })
 }
 
@@ -33107,7 +33107,7 @@ function biRenderTable() {
 
       <!-- Верхняя строка: логотип + название + категория + маржа% + кнопка -->
       <div class="bi-proj-info">
-        <div style="width:48px;height:48px;border-radius:12px;background:${col}18;border:1.5px solid ${col}44;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:20px;font-weight:800;color:${col};flex-shrink:0;${p.photo_url?'overflow:hidden;padding:0;':''}">${p.photo_url?`<img src="${p.photo_url}" style="width:100%;height:100%;object-fit:cover;">`:p.name[0]}</div>
+        <div style="width:48px;height:48px;border-radius:4px;background:${col}18;border:1.5px solid ${col}44;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:20px;font-weight:800;color:${col};flex-shrink:0;${p.photo_url?'overflow:hidden;padding:0;':''}">${p.photo_url?`<img src="${p.photo_url}" style="width:100%;height:100%;object-fit:cover;">`:p.name[0]}</div>
         <div style="min-width:0;">
           <div style="font-family:var(--font-display);font-size:16px;font-weight:800;color:#f0ece6;letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:5px;">${esc(p.name)}</div>
           <div style="display:flex;align-items:center;gap:6px;">
@@ -33540,7 +33540,7 @@ async function openFinanceModal(projId, projName) {
     const col = p.brand_color || '#b8923a'
     if (p.photo_url) {
       iconEl.style.cssText = 'width:38px;height:38px;border-radius:10px;overflow:hidden;flex-shrink:0;border:1px solid '+col+'44;background:transparent;padding:0;'
-      iconEl.innerHTML = '<img src="'+p.photo_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:9px;display:block;">'
+      iconEl.innerHTML = '<img src="'+p.photo_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:4px;display:block;">'
     } else {
       iconEl.style.cssText = 'width:38px;height:38px;border-radius:10px;background:'+col+'22;border:1px solid '+col+'44;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--font-display);font-size:16px;font-weight:700;color:'+col+';overflow:hidden;'
       iconEl.textContent = (projName||'?')[0].toUpperCase()
@@ -34892,7 +34892,7 @@ async function showClientPortal(project) {
       av.style.background = 'transparent';
       av.style.border = '1.5px solid ' + col + '44';
       av.style.padding = '0';
-      av.innerHTML = '<img src="' + project.photo_url + '" style="width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;">';
+      av.innerHTML = '<img src="' + project.photo_url + '" style="width:100%;height:100%;object-fit:cover;border-radius:4px;display:block;">';
     } else {
       av.innerHTML = '';
       av.textContent = name.charAt(0).toUpperCase();
@@ -35086,7 +35086,7 @@ async function cp2LoadTracker(project) {
       var s = rec.status || 'pending';
       var numCls = s==='completed' ? 'cp-sn-done' : s==='active' ? 'cp-sn-active' : 'cp-sn-pending';
       var tagStyle = '', tagText = '', tagIcon = '';
-      var _tagBase = 'display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:11px;font-weight:600;padding:5px 12px;border-radius:8px;letter-spacing:.03em;flex-shrink:0;';
+      var _tagBase = 'display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:11px;font-weight:600;padding:5px 12px;border-radius:4px;letter-spacing:.03em;flex-shrink:0;';
       if (s==='completed') {
         tagStyle = _tagBase + 'background:rgba(62,207,142,.08);border:1px solid rgba(62,207,142,.18);color:#3ecf8e;';
         tagIcon  = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>';
@@ -35108,7 +35108,7 @@ async function cp2LoadTracker(project) {
       var dateStr = '';
       var dateLabel = '';
       var deadlinePart = '';
-      var _btnBase = 'display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:11px;font-weight:600;padding:5px 12px;border-radius:8px;letter-spacing:.03em;flex-shrink:0;white-space:nowrap;';
+      var _btnBase = 'display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:11px;font-weight:600;padding:5px 12px;border-radius:4px;letter-spacing:.03em;flex-shrink:0;white-space:nowrap;';
       if (s === 'completed') {
         var doneEv = hist.find(function(h){ return h.stage_index === i && h.event === 'Завершён'; });
         if (doneEv) {
@@ -35151,7 +35151,7 @@ async function cp2LoadTracker(project) {
 
       return '<div class="cp-stage-row">' +
         '<div class="cp-stage-num ' + numCls + '">' + (i+1) + '</div>' +
-        '<div style="width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;' + iconBg + ';">' + svgIcon + '</div>' +
+        '<div style="width:30px;height:30px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;' + iconBg + ';">' + svgIcon + '</div>' +
         '<div style="flex:1;min-width:0;font-family:var(--font-display);font-size:14px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;' + (s==='completed' ? 'color:rgba(255,255,255,.3);' : 'color:rgba(255,255,255,.85);') + '">' + esc(st.name) + '</div>' +
         ((datePart || deadlinePart) ? '<div style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin-left:auto;flex-shrink:0;">' + datePart + deadlinePart + '</div>' : '') +
         '<div style="' + tagStyle + '">' + tagIcon + tagText + '</div>' +
@@ -35970,7 +35970,7 @@ function renderVsMarket(bench, m, p) {
         const zCol = getSMMZoneColor(z.zone)
         const pd = (z.val && z.prev) ? ((z.val-z.prev)/z.prev*100).toFixed(1) : null
         const normRange = z.b ? z.b.y[0]+'% – '+z.b.g+'%+' : '—'
-        return `<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--smm-bg4);border-radius:8px;border-left:3px solid ${zCol};">
+        return `<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--smm-bg4);border-radius:4px;border-left:3px solid ${zCol};">
           <div style="font-size:16px;">${getSMMZoneEmoji(z.zone)}</div>
           <div style="flex:1;">
             <div style="display:flex;align-items:baseline;gap:8px;">
@@ -36154,7 +36154,7 @@ function renderReelsInputList() {
   const list = g('smm-reels-input-list'); if (!list) return
   if (!smmData.reels.length) { list.innerHTML = '<div style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--smm-muted);padding:16px;text-align:center;">Нет Reels · нажмите «+ Добавить Reel»</div>'; return }
   list.innerHTML = smmData.reels.map((r,i) => `
-    <div style="background:var(--smm-bg3);border:1px solid var(--smm-brd);border-radius:8px;padding:14px;display:flex;align-items:center;gap:12px;">
+    <div style="background:var(--smm-bg3);border:1px solid var(--smm-brd);border-radius:4px;padding:14px;display:flex;align-items:center;gap:12px;">
       <div style="font-family:var(--bebas);font-size:20px;color:var(--smm-accent2);width:28px;text-align:center;">${i+1}</div>
       <div style="flex:1;font-size:12px;color:var(--smm-text);">${r.title||r.link||('Reel #'+(i+1))}</div>
       <div style="font-family:var(--font-mono);font-size:10px;color:var(--smm-muted);">ER ${(+r.er||0).toFixed(2)}%</div>
@@ -36166,7 +36166,7 @@ function renderRubricsInputList() {
   const list = g('smm-rubrics-input-list'); if (!list) return
   if (!smmData.rubrics.length) { list.innerHTML = '<div style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--smm-muted);padding:16px;text-align:center;">Нет рубрик · нажмите «+ Добавить рубрику»</div>'; return }
   list.innerHTML = smmData.rubrics.map((r,i) => `
-    <div style="background:var(--smm-bg3);border:1px solid var(--smm-brd);border-radius:8px;padding:14px;display:flex;align-items:center;gap:12px;">
+    <div style="background:var(--smm-bg3);border:1px solid var(--smm-brd);border-radius:4px;padding:14px;display:flex;align-items:center;gap:12px;">
       <div style="font-family:var(--bebas);font-size:20px;color:var(--smm-accent2);width:28px;text-align:center;">${i+1}</div>
       <div style="flex:1;font-size:12px;color:var(--smm-text);">${r.name}</div>
       <div style="font-family:var(--font-mono);font-size:10px;color:var(--smm-muted);">${r.posts||0} постов · ER ${(+r.er||0).toFixed(2)}%</div>
@@ -36865,8 +36865,8 @@ function showSQLHint() {
         <div style="font-size:13px;font-weight:700;color:rgba(245,158,11,.9);margin-bottom:6px;">Нужна одна SQL команда</div>
         <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:10px;">Фото сохранится после добавления колонки в Supabase</div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <code style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 12px;font-family:var(--font-mono);font-size:11px;color:var(--a3);word-break:break-all;">${sql}</code>
-          <button onclick="navigator.clipboard.writeText('${sql}').then(()=>{this.textContent='✓';setTimeout(()=>this.textContent='Копировать',1500)})" style="background:rgba(184,146,58,.15);border:1px solid rgba(184,146,58,.3);border-radius:8px;padding:8px 12px;color:var(--a3);font-family:var(--font-mono);font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .18s;" onmouseover="this.style.background='rgba(184,146,58,.25)'" onmouseout="this.style.background='rgba(184,146,58,.15)'">Копировать</button>
+          <code style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:8px 12px;font-family:var(--font-mono);font-size:11px;color:var(--a3);word-break:break-all;">${sql}</code>
+          <button onclick="navigator.clipboard.writeText('${sql}').then(()=>{this.textContent='✓';setTimeout(()=>this.textContent='Копировать',1500)})" style="background:rgba(184,146,58,.15);border:1px solid rgba(184,146,58,.3);border-radius:4px;padding:8px 12px;color:var(--a3);font-family:var(--font-mono);font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .18s;" onmouseover="this.style.background='rgba(184,146,58,.25)'" onmouseout="this.style.background='rgba(184,146,58,.15)'">Копировать</button>
         </div>
         <div style="font-size:10px;color:rgba(255,255,255,.25);margin-top:8px;">Supabase Dashboard → SQL Editor → вставь и нажми Run</div>
       </div>
@@ -36885,17 +36885,17 @@ function showSQLHint() {
 
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
       <div class="modal-title" style="margin-bottom:0;">Настройки проекта</div>
-      <button onclick="closeModal('modal-proj-settings')" style="background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:8px;width:32px;height:32px;color:rgba(255,255,255,.4);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .18s;" onmouseover="this.style.borderColor='rgba(248,113,113,.3)';this.style.color='#f87171'" onmouseout="this.style.borderColor='rgba(255,255,255,.1)';this.style.color='rgba(255,255,255,.4)'">✕</button>
+      <button onclick="closeModal('modal-proj-settings')" style="background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:4px;width:32px;height:32px;color:rgba(255,255,255,.4);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .18s;" onmouseover="this.style.borderColor='rgba(248,113,113,.3)';this.style.color='#f87171'" onmouseout="this.style.borderColor='rgba(255,255,255,.1)';this.style.color='rgba(255,255,255,.4)'">✕</button>
     </div>
 
     <!-- Avatar row -->
-    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;">
-      <div id="ps-avatar-preview" style="width:56px;height:56px;border-radius:14px;background:rgba(184,146,58,.15);border:2px solid rgba(184,146,58,.3);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:var(--a2);flex-shrink:0;overflow:hidden;cursor:pointer;transition:all .2s;" onclick="document.getElementById('ps-photo-file').click()" title="Изменить фото">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:4px;">
+      <div id="ps-avatar-preview" style="width:56px;height:56px;border-radius:4px;background:rgba(184,146,58,.15);border:2px solid rgba(184,146,58,.3);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:var(--a2);flex-shrink:0;overflow:hidden;cursor:pointer;transition:all .2s;" onclick="document.getElementById('ps-photo-file').click()" title="Изменить фото">
         <span id="ps-avatar-letter">?</span>
       </div>
       <div style="flex:1;">
         <div style="font-size:13px;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:4px;" id="ps-project-name-display">—</div>
-        <button onclick="document.getElementById('ps-photo-file').click()" style="background:rgba(184,146,58,.08);border:1px solid rgba(184,146,58,.2);border-radius:8px;padding:6px 14px;font-family:var(--font-mono);font-size:10px;color:var(--a3);cursor:pointer;letter-spacing:.06em;transition:all .18s;" onmouseover="this.style.background='rgba(184,146,58,.16)'" onmouseout="this.style.background='rgba(184,146,58,.08)'">
+        <button onclick="document.getElementById('ps-photo-file').click()" style="background:rgba(184,146,58,.08);border:1px solid rgba(184,146,58,.2);border-radius:4px;padding:6px 14px;font-family:var(--font-mono);font-size:10px;color:var(--a3);cursor:pointer;letter-spacing:.06em;transition:all .18s;" onmouseover="this.style.background='rgba(184,146,58,.16)'" onmouseout="this.style.background='rgba(184,146,58,.08)'">
           📷 Загрузить фото
         </button>
         <div style="font-size:10px;color:rgba(255,255,255,.2);margin-top:4px;font-family:var(--font-mono);">PNG, JPG · до 2MB · требует колонку <b style="color:rgba(245,158,11,.5)">photo_url</b></div>
@@ -36966,7 +36966,7 @@ function showSQLHint() {
     <div style="height:1px;background:rgba(255,255,255,.06);margin:20px 0;"></div>
 
     <!-- Danger zone -->
-    <div style="background:rgba(248,113,113,.05);border:1px solid rgba(248,113,113,.15);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+    <div style="background:rgba(248,113,113,.05);border:1px solid rgba(248,113,113,.15);border-radius:4px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
       <div>
         <div style="font-size:13px;font-weight:600;color:rgba(248,113,113,.8);margin-bottom:2px;">Удалить проект</div>
         <div style="font-size:11px;color:rgba(255,255,255,.3);">Безвозвратно. Все этапы и отчёты тоже.</div>
@@ -38050,10 +38050,10 @@ function renderDishesPerCheck(b2, d2) {
   var insEl = document.getElementById('dishes-per-check-insights');
   if (insEl) insEl.innerHTML = insights.map(function(x){
     var w = Math.round(+x.val / maxDPC * 100);
-    return '<div style="background:var(--bg3);border:1px solid var(--brd);border-radius:12px;padding:16px;">'
+    return '<div style="background:var(--bg3);border:1px solid var(--brd);border-radius:4px;padding:16px;">'
       +'<div style="font-size:18px;margin-bottom:8px;">'+x.icon+'</div>'
       +'<div style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);margin-bottom:4px;">'+x.label+'</div>'
-      +'<div style="font-family:\"Bebas Neue\",sans-serif;font-size:32px;color:'+x.col+';">'+x.val+'</div>'
+      +'<div style="font-family:\"DM Sans\",sans-serif;font-size:32px;color:'+x.col+';">'+x.val+'</div>'
       +'<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);margin-bottom:8px;">'+x.sub+'</div>'
       +'<div style="height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;">'
       +'<div style="height:100%;width:'+w+'%;background:'+x.col+';border-radius:2px;"></div></div></div>'
@@ -38108,8 +38108,8 @@ function renderChannelShare(b4, d4, b1, d1) {
       +'</div>'
       +'<div style="font-size:13px;font-weight:700;color:'+col+';">'+shareD+'%'
       +'<span style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);margin-left:6px;">'+Math.round(vD.rev/1e6)+' млн</span></div></div>'
-      +'<div style="position:relative;height:10px;background:rgba(255,255,255,.06);border-radius:5px;overflow:hidden;">'
-      +'<div style="position:absolute;top:0;left:0;height:100%;width:'+shareD+'%;background:'+col+';border-radius:5px;transition:width 1s ease;"></div>'
+      +'<div style="position:relative;height:10px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;">'
+      +'<div style="position:absolute;top:0;left:0;height:100%;width:'+shareD+'%;background:'+col+';border-radius:2px;transition:width 1s ease;"></div>'
       +(shareB>0?'<div style="position:absolute;top:2px;left:'+shareB+'%;width:2px;height:6px;background:rgba(255,255,255,.4);border-radius:1px;" title="База"></div>':'')
       +'</div>'
       +'<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);margin-top:3px;">avg чек: '+fmt2(vD.chk?vD.rev/vD.chk:0)+' сум</div></div>'
@@ -38133,8 +38133,8 @@ function renderChannelShare(b4, d4, b1, d1) {
       +'</div>'
       +'<div style="font-size:13px;font-weight:700;color:'+col+';">'+shareD+'%'
       +'<span style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);margin-left:6px;">'+fmt2(vD.chk)+' чек</span></div></div>'
-      +'<div style="position:relative;height:10px;background:rgba(255,255,255,.06);border-radius:5px;overflow:hidden;">'
-      +'<div style="position:absolute;top:0;left:0;height:100%;width:'+shareD+'%;background:'+col+';border-radius:5px;transition:width 1s ease;"></div>'
+      +'<div style="position:relative;height:10px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;">'
+      +'<div style="position:absolute;top:0;left:0;height:100%;width:'+shareD+'%;background:'+col+';border-radius:2px;transition:width 1s ease;"></div>'
       +(shareB>0?'<div style="position:absolute;top:2px;left:'+shareB+'%;width:2px;height:6px;background:rgba(255,255,255,.4);border-radius:1px;"></div>':'')
       +'</div>'
       +'<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);margin-top:3px;">ср. чек: '+fmt2(avgRev)+' сум</div></div>'
@@ -38195,14 +38195,14 @@ function renderChannelShare(b4, d4, b1, d1) {
           var totalRev = hours.reduce(function(s,h){return s+(hourData[h][t]?hourData[h][t].rev:0)},0);
           var avgChk = totalChk ? Math.round(totalRev/totalChk) : 0;
           var ph = peakHour[t];
-          return '<div style="background:rgba('+r+','+g+','+b+',.07);border:1px solid rgba('+r+','+g+','+b+',.2);border-top:3px solid '+col+';border-radius:12px;padding:14px 16px;">'
+          return '<div style="background:rgba('+r+','+g+','+b+',.07);border:1px solid rgba('+r+','+g+','+b+',.2);border-top:3px solid '+col+';border-radius:4px;padding:14px 16px;">'
             +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
             +'<span style="font-size:18px;">'+icon+'</span>'
             +'<span style="font-size:12px;font-weight:600;color:'+col+';">'+t+'</span>'
             +'</div>'
             +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">'
             +'<div><div style="font-size:9px;color:rgba(255,255,255,.35);font-family:var(--font-mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;">Пик часа</div>'
-            +'<div style="font-family:\"Bebas Neue\",sans-serif;font-size:24px;color:'+col+';">'+ph+'<span style="font-size:12px;color:rgba(255,255,255,.4);margin-left:1px;">:00</span></div></div>'
+            +'<div style="font-family:\"DM Sans\",sans-serif;font-size:24px;color:'+col+';">'+ph+'<span style="font-size:12px;color:rgba(255,255,255,.4);margin-left:1px;">:00</span></div></div>'
             +'<div><div style="font-size:9px;color:rgba(255,255,255,.35);font-family:var(--font-mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;">Ср. чек</div>'
             +'<div style="font-size:14px;font-weight:600;color:rgba(255,255,255,.8);">'+fmt3(Math.round(avgChk/1000))+'K</div></div>'
             +'</div>'
@@ -38258,8 +38258,8 @@ function renderChannelShare(b4, d4, b1, d1) {
           +'</div></div>'
 
           // Stacked bar
-          +'<div style="flex:1;height:26px;background:rgba(255,255,255,.04);border-radius:5px;overflow:hidden;display:flex;">'
-          +'<div style="width:'+rowW+'%;height:100%;display:flex;border-radius:5px 0 0 5px;overflow:hidden;">'
+          +'<div style="flex:1;height:26px;background:rgba(255,255,255,.04);border-radius:2px;overflow:hidden;display:flex;">'
+          +'<div style="width:'+rowW+'%;height:100%;display:flex;border-radius:2px 0 0 5px;overflow:hidden;">'
           + segs
           +'</div></div>'
 
@@ -38338,7 +38338,7 @@ function renderMenuPareto(b3, d3) {
     +'<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;">Лидер продаж</div>'
     +'<div style="font-size:22px;font-weight:800;color:var(--a2);line-height:1.2;margin-bottom:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'+items[0].label+'">'+items[0].label+'</div>'
     +'<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:10px;">'
-    +'<span style="font-family:\"Bebas Neue\",sans-serif;font-size:48px;line-height:1;color:var(--a2);">'+top1Share+'%</span>'
+    +'<span style="font-family:\"DM Sans\",sans-serif;font-size:48px;line-height:1;color:var(--a2);">'+top1Share+'%</span>'
     +'<span style="font-size:12px;color:var(--txt2);">выручки</span></div>'
     +'<div style="font-size:12px;color:var(--txt2);">'+fmtFull(items[0].qty)+' шт · '+fmtM(items[0].rev)+'</div>'
     +'<div style="height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;margin-top:12px;">'
@@ -38350,7 +38350,7 @@ function renderMenuPareto(b3, d3) {
     +'<div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--cyan);"></div>'
     +'<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;">Правило 80 / 20</div>'
     +'<div style="display:flex;align-items:baseline;gap:6px;margin-bottom:6px;">'
-    +'<span style="font-family:\"Bebas Neue\",sans-serif;font-size:64px;line-height:1;color:var(--cyan);">'+cnt80+'</span>'
+    +'<span style="font-family:\"DM Sans\",sans-serif;font-size:64px;line-height:1;color:var(--cyan);">'+cnt80+'</span>'
     +'<span style="font-size:14px;color:var(--txt2);">позиций</span></div>'
     +'<div style="font-size:13px;color:var(--txt2);margin-bottom:10px;">генерируют <b style="color:var(--cyan);">80%</b> выручки</div>'
     +'<div style="font-size:11px;color:var(--txt3);font-family:var(--font-mono);">'+Math.round(cnt80/items.length*100)+'% ассортимента из '+items.length+' позиций</div>'
@@ -38365,7 +38365,7 @@ function renderMenuPareto(b3, d3) {
     +'<div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--green);"></div>'
     +'<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;">Топ-5 позиций</div>'
     +'<div style="display:flex;align-items:baseline;gap:6px;margin-bottom:6px;">'
-    +'<span style="font-family:\"Bebas Neue\",sans-serif;font-size:64px;line-height:1;color:var(--green);">'+top5Share+'%</span>'
+    +'<span style="font-family:\"DM Sans\",sans-serif;font-size:64px;line-height:1;color:var(--green);">'+top5Share+'%</span>'
     +'<span style="font-size:14px;color:var(--txt2);">выручки</span></div>'
     +'<div style="font-size:13px;color:var(--txt2);margin-bottom:8px;">пять блюд закрывают больше половины</div>'
     +'<div style="font-size:11px;color:var(--txt3);font-family:var(--font-mono);">для 50% нужно '+cnt50+' поз.</div>'
@@ -38427,7 +38427,7 @@ function renderMenuPareto(b3, d3) {
 
           // Номер
           +'<div style="width:28px;text-align:center;flex-shrink:0;">'
-          +'<span style="font-family:\"Bebas Neue\",sans-serif;font-size:'+(i===0?'22':'16')+'px;color:'+zone+';">'+(i+1)+'</span>'
+          +'<span style="font-family:\"DM Sans\",sans-serif;font-size:'+(i===0?'22':'16')+'px;color:'+zone+';">'+(i+1)+'</span>'
           +'</div>'
 
           // Название + бар
@@ -38502,14 +38502,14 @@ function renderMenuCategories(b3, d3) {
     var revShare = Math.round(c.rev/totalRev*100);
     var qtyShare = Math.round(c.qty/totalQty*100);
     var avgP = c.qty ? Math.round(c.rev/c.qty) : 0;
-    return '<div style="background:var(--bg3);border:1px solid var(--brd);border-left:3px solid '+c.col+';border-radius:12px;padding:16px;margin-bottom:10px;">'
+    return '<div style="background:var(--bg3);border:1px solid var(--brd);border-left:3px solid '+c.col+';border-radius:4px;padding:16px;margin-bottom:10px;">'
       +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">'
       +'<div style="display:flex;align-items:center;gap:9px;">'
       +'<span style="font-size:22px;">'+c.icon+'</span>'
       +'<div><div style="font-size:13px;font-weight:700;">'+c.lb+'</div>'
       +'<div style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);">'+c.cnt+' позиций · ср. цена '+fmt2(avgP)+' сум</div></div>'
       +'</div>'
-      +'<div style="font-family:\"Bebas Neue\",sans-serif;font-size:28px;color:'+c.col+';">'+revShare+'%</div>'
+      +'<div style="font-family:\"DM Sans\",sans-serif;font-size:28px;color:'+c.col+';">'+revShare+'%</div>'
       +'</div>'
       +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
       +'<div>'
@@ -38564,19 +38564,19 @@ function renderMenuCombos(b3, d3) {
   var html = '';
   mains.forEach(function(main){
     var mainShare = main.qty / totalChk; // доля основного в чеках
-    html += '<div style="background:var(--bg3);border:1px solid var(--brd);border-radius:14px;padding:18px;margin-bottom:12px;">'
+    html += '<div style="background:var(--bg3);border:1px solid var(--brd);border-radius:4px;padding:18px;margin-bottom:12px;">'
       +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">'
       +'<div style="font-size:22px;">🥙</div>'
       +'<div><div style="font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'+main.label+'">'+main.label+'</div>'
       +'<div style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);">'+fmt2(main.qty)+' шт · '+fmt2(main.rev/1e6)+'M сум</div></div>'
-      +'<div style="margin-left:auto;font-family:\"Bebas Neue\",sans-serif;font-size:22px;color:var(--a2);">'+Math.round(mainShare*100)+'% чеков</div></div>'
+      +'<div style="margin-left:auto;font-family:\"DM Sans\",sans-serif;font-size:22px;color:var(--a2);">'+Math.round(mainShare*100)+'% чеков</div></div>'
       +'<div style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Часто берут вместе:</div>'
       +'<div style="display:flex;flex-wrap:wrap;gap:6px;">';
 
     // Top drinks
     drinks.slice(0,3).forEach(function(d){
       var coScore = Math.round(Math.sqrt(main.qty * d.qty) / totalChk * 100);
-      html += '<div style="display:flex;align-items:center;gap:6px;padding:6px 10px;background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.2);border-radius:8px;">'
+      html += '<div style="display:flex;align-items:center;gap:6px;padding:6px 10px;background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.2);border-radius:4px;">'
         +'<span style="font-size:13px;">🥤</span>'
         +'<div><div style="font-size:11px;font-weight:600;white-space:nowrap;">'+d.label.slice(0,20)+'</div>'
         +'<div style="font-size:9px;color:#38bdf8;font-family:var(--font-mono);">~'+coScore+'% чеков</div></div></div>';
@@ -38585,7 +38585,7 @@ function renderMenuCombos(b3, d3) {
     // Top sauces
     sauces.slice(0,2).forEach(function(s){
       var coScore = Math.round(Math.sqrt(main.qty * s.qty) / totalChk * 100);
-      html += '<div style="display:flex;align-items:center;gap:6px;padding:6px 10px;background:rgba(232,153,58,.08);border:1px solid rgba(232,153,58,.2);border-radius:8px;">'
+      html += '<div style="display:flex;align-items:center;gap:6px;padding:6px 10px;background:rgba(232,153,58,.08);border:1px solid rgba(232,153,58,.2);border-radius:4px;">'
         +'<span style="font-size:13px;">🧂</span>'
         +'<div><div style="font-size:11px;font-weight:600;white-space:nowrap;">'+s.label.slice(0,20)+'</div>'
         +'<div style="font-size:9px;color:var(--amber);font-family:var(--font-mono);">~'+coScore+'% чеков</div></div></div>';
@@ -38650,12 +38650,12 @@ function runNewBlocks() {
       {ico:'📉',lbl:'Худший день — '+LABEL_B,date:worstB.label,val:worstB.rev,col:'#f87171'},
       {ico:'🏆',lbl:'Лучший день — '+LABEL_D,date:bestD.label,val:bestD.rev,col:'#c9a84c'},
       {ico:'📉',lbl:'Худший день — '+LABEL_D,date:worstD.label,val:worstD.rev,col:'#f040c0'},
-    ].map(function(x){ return '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg3);border:1px solid var(--brd);border-radius:12px;border-left:3px solid '+x.col+';">'
+    ].map(function(x){ return '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg3);border:1px solid var(--brd);border-radius:4px;border-left:3px solid '+x.col+';">'
       +'<span style="font-size:20px;">'+x.ico+'</span>'
       +'<div style="flex:1;min-width:0;">'
       +'<div style="font-size:10px;color:var(--txt2);font-family:\'DM Mono\',monospace;margin-bottom:3px;">'+x.lbl+'</div>'
       +'<div style="font-size:11px;color:var(--txt3);font-family:\'DM Mono\',monospace;margin-bottom:4px;">'+x.date+'</div>'
-      +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:'+x.col+';">'+fmtM(x.val)+' сум</div>'
+      +'<div style="font-family:\'DM Sans\',sans-serif;font-size:22px;color:'+x.col+';">'+fmtM(x.val)+' сум</div>'
       +'</div></div>';
     }).join('');
 
@@ -38670,11 +38670,11 @@ function runNewBlocks() {
     if (abEl) abEl.innerHTML = [
       {lbl:LABEL_B, above:bAbove, total:b1.rows.length, pct:bPctAbove, col:'rgba(240,236,230,.28)'},
       {lbl:LABEL_D, above:dAbove, total:d1.rows.length, pct:dPctAbove, col:'#c9a84c'},
-    ].map(function(x){ return '<div style="background:var(--bg3);border:1px solid var(--brd);border-radius:14px;padding:20px;position:relative;overflow:hidden;">'
+    ].map(function(x){ return '<div style="background:var(--bg3);border:1px solid var(--brd);border-radius:4px;padding:20px;position:relative;overflow:hidden;">'
       +'<div style="position:absolute;top:0;left:0;right:0;height:2px;background:'+x.col+';"></div>'
       +'<div style="font-size:10px;color:var(--txt2);font-family:\'DM Mono\',monospace;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">'+x.lbl+'</div>'
       +'<div style="display:flex;align-items:baseline;gap:6px;margin-bottom:6px;">'
-      +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:52px;line-height:1;color:'+x.col+';">'+x.pct+'%</div>'
+      +'<div style="font-family:\'DM Sans\',sans-serif;font-size:52px;line-height:1;color:'+x.col+';">'+x.pct+'%</div>'
       +'<div style="font-size:11px;color:var(--txt2);font-family:\'DM Mono\',monospace;">дней выше базы</div>'
       +'</div>'
       +'<div style="font-size:11px;color:var(--txt3);font-family:\'DM Mono\',monospace;margin-bottom:10px;">'+x.above+' из '+x.total+' дней &gt; '+fmtM(bAvgDay)+' сум/день</div>'
@@ -38716,11 +38716,11 @@ function runNewBlocks() {
       .sort(function(a,b){ return b.avg-a.avg; }).slice(0,3);
     var topEl = document.getElementById('hour-kpd-top');
     var medals = ['🥇','🥈','🥉'];
-    if (topEl) topEl.innerHTML = topHours.map(function(x,i){ return '<div style="background:var(--bg3);border:1px solid var(--brd);border-radius:14px;padding:18px;text-align:center;">'
+    if (topEl) topEl.innerHTML = topHours.map(function(x,i){ return '<div style="background:var(--bg3);border:1px solid var(--brd);border-radius:4px;padding:18px;text-align:center;">'
       +'<div style="font-size:24px;margin-bottom:8px;">'+medals[i]+'</div>'
-      +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:36px;color:var(--amber);">'+x.h+':00</div>'
+      +'<div style="font-family:\'DM Sans\',sans-serif;font-size:36px;color:var(--amber);">'+x.h+':00</div>'
       +'<div style="font-size:10px;color:var(--txt2);font-family:\'DM Mono\',monospace;margin-top:4px;margin-bottom:10px;">самый дорогой час</div>'
-      +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:var(--txt);">'+fmt(x.avg)+' сум</div>'
+      +'<div style="font-family:\'DM Sans\',sans-serif;font-size:22px;color:var(--txt);">'+fmt(x.avg)+' сум</div>'
       +'<div style="font-size:10px;color:var(--txt3);font-family:\'DM Mono\',monospace;margin-top:3px;">средний чек · '+fmt(x.chk)+' чеков</div>'
       +'</div>';
     }).join('');
@@ -38762,21 +38762,21 @@ function runNewBlocks() {
           : 'Пик трафика сдвинулся на '+(shiftChk>0?'+':'')+shiftChk+' ч, пик выручки на '+(shiftRev>0?'+':'')+shiftRev+' ч'
       },
     ].map(function(x){
-      if (x.custom !== undefined) return '<div style="background:var(--bg3);border:1px solid var(--brd);border-left:3px solid '+x.col+';border-radius:14px;padding:18px;display:flex;align-items:center;gap:12px;">'
+      if (x.custom !== undefined) return '<div style="background:var(--bg3);border:1px solid var(--brd);border-left:3px solid '+x.col+';border-radius:4px;padding:18px;display:flex;align-items:center;gap:12px;">'
         +'<span style="font-size:28px;">'+x.icon+'</span>'
         +'<div><div style="font-size:11px;font-weight:600;margin-bottom:6px;">'+x.title+'</div><div style="font-size:12px;color:var(--txt2);font-family:\'DM Mono\',monospace;">'+x.custom+'</div></div></div>';
       var shiftTxt = x.shift===0?'Без сдвига':(x.shift>0?'Сдвиг +'+x.shift+' ч вперёд':'Сдвиг '+x.shift+' ч назад');
       var shiftCol = x.shift===0?'var(--txt2)':Math.abs(x.shift)<=1?'var(--amber)':'var(--red)';
-      return '<div style="background:var(--bg3);border:1px solid var(--brd);border-left:3px solid '+x.col+';border-radius:14px;padding:18px;">'
+      return '<div style="background:var(--bg3);border:1px solid var(--brd);border-left:3px solid '+x.col+';border-radius:4px;padding:18px;">'
         +'<div style="font-size:11px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:7px;"><span>'+x.icon+'</span>'+x.title+'</div>'
         +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'
-        +'<div style="background:rgba(255,255,255,.03);border-radius:8px;padding:10px;">'
+        +'<div style="background:rgba(255,255,255,.03);border-radius:4px;padding:10px;">'
         +'<div style="font-size:9px;color:var(--txt2);font-family:\'DM Mono\',monospace;margin-bottom:4px;">'+LABEL_B+'</div>'
-        +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:26px;color:var(--txt2);">'+x.bHour+'</div>'
+        +'<div style="font-family:\'DM Sans\',sans-serif;font-size:26px;color:var(--txt2);">'+x.bHour+'</div>'
         +'<div style="font-size:10px;color:var(--txt3);font-family:\'DM Mono\',monospace;">'+x.bVal+'</div></div>'
-        +'<div style="background:rgba(255,255,255,.04);border:1.5px solid '+x.col+'44;border-radius:8px;padding:10px;">'
+        +'<div style="background:rgba(255,255,255,.04);border:1.5px solid '+x.col+'44;border-radius:4px;padding:10px;">'
         +'<div style="font-size:9px;color:'+x.col+';font-family:\'DM Mono\',monospace;margin-bottom:4px;">'+LABEL_D+'</div>'
-        +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:26px;color:'+x.col+';">'+x.dHour+'</div>'
+        +'<div style="font-family:\'DM Sans\',sans-serif;font-size:26px;color:'+x.col+';">'+x.dHour+'</div>'
         +'<div style="font-size:10px;color:var(--txt2);font-family:\'DM Mono\',monospace;">'+x.dVal+'</div></div>'
         +'</div>'
         +'<div style="font-size:11px;font-family:\'DM Mono\',monospace;color:'+shiftCol+';padding:6px 10px;background:rgba(255,255,255,.03);border-radius:7px;">'+shiftTxt+'</div></div>';
@@ -38823,11 +38823,11 @@ function runNewBlocks() {
       var delta = bRank ? bRank - dRank : null; // положительный = вырос в рейтинге
       var deltaStr = delta===null?'🆕 Новинка':delta>0?'▲ +'+delta:delta<0?'▼ '+delta:'→ без изм.';
       var deltaCol = delta===null?'#ffb627':delta>0?'#00e5a3':delta<0?'#f87171':'var(--txt2)';
-      return '<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg3);border:1px solid var(--brd);border-radius:9px;">'
-        +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:var(--a2);width:28px;text-align:center;">'+dRank+'</div>'
+      return '<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg3);border:1px solid var(--brd);border-radius:4px;">'
+        +'<div style="font-family:\'DM Sans\',sans-serif;font-size:22px;color:var(--a2);width:28px;text-align:center;">'+dRank+'</div>'
         +'<div style="flex:1;font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'+r.label+'">'+r.label+'</div>'
         +'<div style="font-size:10px;color:var(--txt3);font-family:\'DM Mono\',monospace;white-space:nowrap;margin-right:8px;">'+fmtM(r.rev)+' сум</div>'
-        +'<div style="font-size:11px;font-family:\'DM Mono\',monospace;font-weight:600;padding:3px 9px;border-radius:5px;background:'+(delta===null?'rgba(255,182,39,.12)':delta>0?'rgba(0,229,163,.12)':delta<0?'rgba(248,113,113,.12)':'rgba(255,255,255,.05)')+';color:'+deltaCol+';white-space:nowrap;">'+deltaStr+'</div>'
+        +'<div style="font-size:11px;font-family:\'DM Mono\',monospace;font-weight:600;padding:3px 9px;border-radius:2px;background:'+(delta===null?'rgba(255,182,39,.12)':delta>0?'rgba(0,229,163,.12)':delta<0?'rgba(248,113,113,.12)':'rgba(255,255,255,.05)')+';color:'+deltaCol+';white-space:nowrap;">'+deltaStr+'</div>'
         +'</div>';
     }).join('');
     // Menu efficiency
@@ -38876,18 +38876,18 @@ function runNewBlocks() {
       var avgDelta = dAvg - bAvg;
       var col = colsCh[k]||'#c9a84c';
       var share = totalDRev?Math.round(d2c.rev/totalDRev*100):0;
-      return '<div style="background:var(--bg3);border:1px solid var(--brd);border-radius:14px;padding:18px;position:relative;overflow:hidden;">'
+      return '<div style="background:var(--bg3);border:1px solid var(--brd);border-radius:4px;padding:18px;position:relative;overflow:hidden;">'
         +'<div style="position:absolute;top:0;left:0;right:0;height:2px;background:'+col+';"></div>'
         +'<div style="font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:7px;">'+(iconsCh[k]||'📦')+' '+k+'<span style="margin-left:auto;font-size:10px;font-family:\'DM Mono\',monospace;color:var(--txt2);">'+share+'% выручки</span></div>'
         +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'
-        +'<div style="background:rgba(255,255,255,.03);border-radius:8px;padding:12px;">'
+        +'<div style="background:rgba(255,255,255,.03);border-radius:4px;padding:12px;">'
         +'<div style="font-size:9px;color:var(--txt2);font-family:\'DM Mono\',monospace;margin-bottom:4px;">Выручка/день '+LABEL_B+'</div>'
-        +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:var(--txt2);">'+fmtM(bRPD)+' сум</div>'
+        +'<div style="font-family:\'DM Sans\',sans-serif;font-size:22px;color:var(--txt2);">'+fmtM(bRPD)+' сум</div>'
         +'<div style="font-size:10px;color:var(--txt3);font-family:\'DM Mono\',monospace;margin-top:2px;">ср. чек: '+fmt(bAvg)+' сум</div>'
         +'</div>'
-        +'<div style="background:rgba(255,255,255,.04);border:1.5px solid '+col+'44;border-radius:8px;padding:12px;">'
+        +'<div style="background:rgba(255,255,255,.04);border:1.5px solid '+col+'44;border-radius:4px;padding:12px;">'
         +'<div style="font-size:9px;color:'+col+';font-family:\'DM Mono\',monospace;margin-bottom:4px;">Выручка/день '+LABEL_D+'</div>'
-        +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:'+col+';">'+fmtM(dRPD)+' сум</div>'
+        +'<div style="font-family:\'DM Sans\',sans-serif;font-size:22px;color:'+col+';">'+fmtM(dRPD)+' сум</div>'
         +'<div style="font-size:10px;color:var(--txt2);font-family:\'DM Mono\',monospace;margin-top:2px;">ср. чек: '+fmt(dAvg)+' сум</div>'
         +'</div></div>'
         +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
@@ -38936,7 +38936,7 @@ function runNewBlocks() {
         return {type:t, chk:chk, col:colsDT[t]||'#c9a84c'};
       }).filter(function(x){ return x.chk>0; }).sort(function(a,b){ return b.chk-a.chk; });
       var totalSeg = typeData.reduce(function(s,x){ return s+x.chk; }, 0) || 1;
-      return '<div style="background:var(--bg3);border:1px solid var(--brd);border-left:3px solid '+seg.col+';border-radius:14px;padding:16px;">'
+      return '<div style="background:var(--bg3);border:1px solid var(--brd);border-left:3px solid '+seg.col+';border-radius:4px;padding:16px;">'
         +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">'
         +'<span style="font-size:18px;">'+seg.icon+'</span>'
         +'<div style="font-size:14px;font-weight:700;">'+seg.name+'</div>'
@@ -38989,25 +38989,25 @@ function runNewBlocks() {
       var barW = Math.round(Math.abs(x.extraRev) / maxAbs * 100);
       var isPos = x.extraRev >= 0;
       var rpdGrowth = x.bRPD ? ((x.dRPD-x.bRPD)/x.bRPD*100) : null;
-      return '<div style="background:var(--bg3);border:1px solid var(--brd);border-radius:14px;padding:16px 20px;">'
+      return '<div style="background:var(--bg3);border:1px solid var(--brd);border-radius:4px;padding:16px 20px;">'
         +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">'
-        +'<div style="width:34px;height:34px;border-radius:9px;background:'+col+'18;border:1.5px solid '+col+'44;display:flex;align-items:center;justify-content:center;font-family:\'Bebas Neue\',sans-serif;font-size:15px;color:'+col+';flex-shrink:0;">'+(i+1)+'</div>'
+        +'<div style="width:34px;height:34px;border-radius:4px;background:'+col+'18;border:1.5px solid '+col+'44;display:flex;align-items:center;justify-content:center;font-family:\'DM Sans\',sans-serif;font-size:15px;color:'+col+';flex-shrink:0;">'+(i+1)+'</div>'
         +'<div style="font-size:14px;font-weight:600;flex:1;">'+x.name+'</div>'
         +'<div style="font-size:11px;font-family:\'DM Mono\',monospace;font-weight:600;padding:4px 10px;border-radius:6px;background:'+(isPos?'rgba(0,229,163,.1)':'rgba(248,113,113,.1)')+';color:'+(isPos?'var(--green)':'var(--red)')+';">'+(isPos?'+':'')+pctOfTotal+'% вклада</div>'
         +'</div>'
         +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;">'
-        +'<div style="background:rgba(255,255,255,.03);border-radius:8px;padding:10px;">'
+        +'<div style="background:rgba(255,255,255,.03);border-radius:4px;padding:10px;">'
         +'<div style="font-size:9px;color:var(--txt2);font-family:\'DM Mono\',monospace;margin-bottom:3px;">Доп. выручка</div>'
-        +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:20px;color:'+(isPos?'var(--green)':'var(--red)')+';">'+(isPos?'+':'')+fmtM(x.extraRev)+' сум</div>'
+        +'<div style="font-family:\'DM Sans\',sans-serif;font-size:20px;color:'+(isPos?'var(--green)':'var(--red)')+';">'+(isPos?'+':'')+fmtM(x.extraRev)+' сум</div>'
         +'</div>'
-        +'<div style="background:rgba(255,255,255,.03);border-radius:8px;padding:10px;">'
+        +'<div style="background:rgba(255,255,255,.03);border-radius:4px;padding:10px;">'
         +'<div style="font-size:9px;color:var(--txt2);font-family:\'DM Mono\',monospace;margin-bottom:3px;">Выручка/день '+LABEL_D+'</div>'
-        +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:20px;color:'+col+';">'+fmtM(x.dRPD)+' сум</div>'
+        +'<div style="font-family:\'DM Sans\',sans-serif;font-size:20px;color:'+col+';">'+fmtM(x.dRPD)+' сум</div>'
         +(rpdGrowth!==null?'<div style="font-size:9px;font-family:\'DM Mono\',monospace;color:'+(rpdGrowth>=0?'var(--green)':'var(--red)')+';">'+(rpdGrowth>=0?'+':'')+rpdGrowth.toFixed(1)+'% к базе</div>':'')
         +'</div>'
-        +'<div style="background:rgba(255,255,255,.03);border-radius:8px;padding:10px;">'
+        +'<div style="background:rgba(255,255,255,.03);border-radius:4px;padding:10px;">'
         +'<div style="font-size:9px;color:var(--txt2);font-family:\'DM Mono\',monospace;margin-bottom:3px;">Ср. чек '+LABEL_D+'</div>'
-        +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:20px;color:'+col+';">'+fmt(x.dAvg)+' сум</div>'
+        +'<div style="font-family:\'DM Sans\',sans-serif;font-size:20px;color:'+col+';">'+fmt(x.dAvg)+' сум</div>'
         +(x.bAvg?'<div style="font-size:9px;font-family:\'DM Mono\',monospace;color:'+(x.dAvg-x.bAvg>=0?'var(--green)':'var(--red)')+';">'+(x.dAvg-x.bAvg>=0?'+':'')+fmt(x.dAvg-x.bAvg)+' к базе</div>':'')
         +'</div></div>'
         +'<div style="display:flex;align-items:center;gap:8px;">'
@@ -39408,9 +39408,9 @@ async function cpRenderMilestone(project) {
   // ── Status badge ──
   function statusBadge(status) {
     if (status === 'archived') {
-      return '<span style="font-size:10px;font-family:\'DM Mono\',monospace;padding:3px 8px;border-radius:5px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.3);">Архив</span>';
+      return '<span style="font-size:10px;font-family:\'DM Mono\',monospace;padding:3px 8px;border-radius:2px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.3);">Архив</span>';
     }
-    return '<span style="font-size:10px;font-family:\'DM Mono\',monospace;padding:3px 8px;border-radius:5px;background:rgba(62,207,142,.1);color:#3ecf8e;">● Активный</span>';
+    return '<span style="font-size:10px;font-family:\'DM Mono\',monospace;padding:3px 8px;border-radius:2px;background:rgba(62,207,142,.1);color:#3ecf8e;">● Активный</span>';
   }
 
   // ── Hero card builder ──
@@ -39444,7 +39444,7 @@ async function cpRenderMilestone(project) {
         '</div>'
       : '<div style="background:linear-gradient(145deg,#13110a 0%,#0c0a06 100%);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;">' +
           '<div style="position:absolute;width:120px;height:120px;background:radial-gradient(circle,rgba(184,146,58,.18) 0%,transparent 70%);border-radius:50%;pointer-events:none;"></div>' +
-          '<div style="width:64px;height:64px;border-radius:14px;background:' + safeCol + '22;border:1px solid ' + safeCol + '44;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:' + safeCol + ';position:relative;z-index:1;font-family:\'DM Sans\',sans-serif;">' +
+          '<div style="width:64px;height:64px;border-radius:4px;background:' + safeCol + '22;border:1px solid ' + safeCol + '44;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:' + safeCol + ';position:relative;z-index:1;font-family:\'DM Sans\',sans-serif;">' +
             (p.name ? p.name[0].toUpperCase() : '?') +
           '</div>' +
           '<div style="position:absolute;top:0;right:0;bottom:0;width:56px;background:linear-gradient(90deg,transparent,#0f0f12);z-index:3;pointer-events:none;"></div>' +
@@ -39460,7 +39460,7 @@ async function cpRenderMilestone(project) {
 
     return '<div class="pcard' + (isOverdue ? ' pc-overdue' : '') + (isArchived ? ' pc-archived' : '') + '" onclick="openProject(\'' + p.id + '\')">' +
 
-      (isArchived ? '<div style="position:absolute;top:10px;right:10px;z-index:10;font-family:var(--font-mono);font-size:9px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(62,207,142,.1);border:1px solid rgba(62,207,142,.2);color:var(--green);letter-spacing:.06em;">ЗАВЕРШЁН</div>' : '') +
+      (isArchived ? '<div style="position:absolute;top:10px;right:10px;z-index:10;font-family:var(--font-mono);font-size:9px;font-weight:600;padding:3px 10px;border-radius:4px;background:rgba(62,207,142,.1);border:1px solid rgba(62,207,142,.2);color:var(--green);letter-spacing:.06em;">ЗАВЕРШЁН</div>' : '') +
 
       photoBlock +
 
@@ -39481,8 +39481,8 @@ async function cpRenderMilestone(project) {
               '<div style="font-size:11px;color:rgba(255,255,255,.5);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (activeStage || 'В работе') + '</div>' +
               '<div style="font-size:10px;font-family:\'DM Mono\',monospace;color:rgba(255,255,255,.3);flex-shrink:0;margin-left:8px;">' + progress.completed + ' / ' + progress.total + '</div>' +
             '</div>' +
-            '<div style="height:5px;background:rgba(255,255,255,.07);border-radius:5px;overflow:hidden;">' +
-              '<div style="height:100%;width:' + pct + '%;border-radius:5px;background:linear-gradient(90deg,#b8923a,#dec17a);position:relative;">' +
+            '<div style="height:5px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;">' +
+              '<div style="height:100%;width:' + pct + '%;border-radius:2px;background:linear-gradient(90deg,#b8923a,#dec17a);position:relative;">' +
                 '<div style="position:absolute;right:0;top:0;bottom:0;width:14px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35));border-radius:0 5px 5px 0;"></div>' +
               '</div>' +
             '</div>' +
@@ -39508,7 +39508,7 @@ async function cpRenderMilestone(project) {
         '<div style="display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(255,255,255,.05);margin-top:auto;" onclick="event.stopPropagation()">' +
           '<div style="display:flex;gap:6px;">' +
             statusBadge(p.status) +
-            (p.category ? '<span style="font-size:10px;font-family:\'DM Mono\',monospace;padding:3px 8px;border-radius:5px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.4);">' + p.category + '</span>' : '') +
+            (p.category ? '<span style="font-size:10px;font-family:\'DM Mono\',monospace;padding:3px 8px;border-radius:2px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.4);">' + p.category + '</span>' : '') +
           '</div>' +
           '<div style="display:flex;align-items:center;gap:6px;">' +
             '<button class="pcard-action-btn" title="Статус / заметка" onclick="openQuickNote(\'' + p.id + '\',\'' + (p.name||'').replace(/'/g,"\\'") + '\',\'' + (p.quick_note||'').replace(/'/g,"\\'") + '\')">💬</button>' +
@@ -39918,7 +39918,7 @@ async function cpRenderMilestone(project) {
   animation:kbSlideIn .38s .04s cubic-bezier(.16,1,.3,1) both;
 }
 .kb-proj-statbox {
-  margin:0 8px 12px; padding:12px; border-radius:12px;
+  margin:0 8px 12px; padding:12px; border-radius:4px;
   background:rgba(184,146,58,.06); border:1px solid rgba(184,146,58,.12);
   display:flex; gap:0; overflow:hidden;
 }
@@ -39961,7 +39961,7 @@ async function cpRenderMilestone(project) {
 .kb-proj-divider-line { flex:1; height:1px; background:rgba(240,236,230,.07); }
 .kb-proj-divider-dot { width:3px; height:3px; border-radius:50%; background:rgba(240,236,230,.13); flex-shrink:0; }
 .kb-proj-avatar {
-  width:34px; height:34px; border-radius:9px; flex-shrink:0;
+  width:34px; height:34px; border-radius:4px; flex-shrink:0;
   display:flex; align-items:center; justify-content:center;
   font-family:var(--font-display); font-size:14px; font-weight:800;
   border:1px solid rgba(255,255,255,.07); color:#fff;
@@ -39991,7 +39991,7 @@ async function cpRenderMilestone(project) {
 .kb-empty {
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   padding:80px 40px; text-align:center;
-  border:1.5px dashed rgba(255,255,255,.07); border-radius:18px;
+  border:1.5px dashed rgba(255,255,255,.07); border-radius:4px;
 }
 .kb-empty-title { font-family:var(--font-display); font-size:17px; font-weight:600; letter-spacing:-.02em; color:var(--txt2); margin-bottom:8px; }
 .kb-empty-sub   { font-family:var(--font-mono); font-size:11px; color:var(--txt3); line-height:1.7; letter-spacing:.04em; }
@@ -40221,7 +40221,7 @@ async function cpRenderMilestone(project) {
 /* Empty category row */
 .kb-cat-empty {
   grid-column:1/-1; display:flex; align-items:center; gap:10px;
-  padding:10px 12px; border-radius:8px;
+  padding:10px 12px; border-radius:4px;
   border:1px dashed rgba(240,236,230,.06); background:var(--bg2);
 }
 .kb-cat-empty-txt { font-size:11px; color:var(--txt3); font-family:var(--font-mono); flex:1; }
@@ -40388,14 +40388,14 @@ async function cpRenderMilestone(project) {
   flex: unset;
 }
 .kb-type-pill {
-  padding:7px 13px; border:1px solid var(--brd); border-radius:8px;
+  padding:7px 13px; border:1px solid var(--brd); border-radius:4px;
   background:transparent; color:var(--txt3); font-family:var(--font-display);
   font-size:12px; font-weight:500; cursor:pointer; transition:all .16s;
 }
 .kb-type-pill:hover { border-color: var(--brd2); color: var(--txt2); }
 .kb-type-pill.active { background:rgba(184,146,58,.14); border-color:rgba(184,146,58,.3); color:var(--a2); }
 .kb-color-swatch {
-  width:26px; height:26px; border-radius:8px; cursor:pointer;
+  width:26px; height:26px; border-radius:4px; cursor:pointer;
   border:2.5px solid transparent; transition:all .18s; flex-shrink:0;
 }
 .kb-color-swatch.selected { border-color:#fff; transform:scale(1.2); }
@@ -41011,7 +41011,7 @@ function kbRenderProjectSidebar() {
     var letter = (p.name||'?')[0].toUpperCase();
     var col    = p.brand_color || p.color || '#b8923a';
     var avatarInner = p.photo_url
-      ? '<img src="'+p.photo_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:8px;display:block;">'
+      ? '<img src="'+p.photo_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:4px;display:block;">'
       : '<span style="color:'+col+';">'+letter+'</span>';
     var divider = '<div class="kb-proj-divider"><div class="kb-proj-divider-line"></div><div class="kb-proj-divider-dot"></div><div class="kb-proj-divider-line"></div></div>';
     var isArch = p.status === 'archived';
