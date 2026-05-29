@@ -37838,7 +37838,9 @@ function svRenderProjTable(projData, overdueMap, today, MONTHS) {
 
     return '<div class="sv-proj-row" style="border-left-color:' + col + ';" onclick="openProject(\'' + p.id + '\')">' +
       '<div class="sv-pr-name-cell">' +
-        '<div class="sv-pr-avatar" style="background:' + col + '18;color:' + col + ';border:1.5px solid ' + col + '44;">' + p.name[0] + '</div>' +
+        (p.photo_url
+          ? '<div class="sv-pr-avatar" style="background:transparent;border:1.5px solid ' + col + '44;padding:0;overflow:hidden;"><img src="' + p.photo_url + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+          : '<div class="sv-pr-avatar" style="background:' + col + '18;color:' + col + ';border:1.5px solid ' + col + '44;">' + p.name[0] + '</div>') +
         '<div>' +
           '<div class="sv-pr-name">' + p.name + '</div>' +
           '<div class="sv-pr-meta">' + (p.description||'').substring(0,22) + '</div>' +
