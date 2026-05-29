@@ -31941,9 +31941,11 @@ function runAnalysis() {
   const bA = bC?bR/bC:0, dA = dC?dR/dC:0
   const gr = dRD-bRD, grP = bRD?(gr/bRD*100):0, ex = gr*dD, tr = dCD-bCD, ad = dA-bA
 
-  // Save summary to DB
+  // Save summary to DB — с await чтобы гарантировать сохранение
   if (currentReport) {
     sb.from('reports').update({ summary: { b_days:bD, d_days:dD, b_total_rev:bR, d_total_rev:dR, b_total_chk:bC, d_total_chk:dC, b_rev_per_day:bRD, d_rev_per_day:dRD, b_avg_check:bA, d_avg_check:dA, growth_pct:grP, growth_abs:gr, extra_revenue:ex, traffic_delta:tr, avg_check_delta:ad } }).eq('id', currentReport.id)
+      .then(function(res){ if(res.error) console.error('[runAnalysis] summary save error:', res.error); else console.log('[runAnalysis] summary saved OK, growth_pct:', grP, 'traffic_delta:', tr, 'avg_check_delta:', ad); })
+      .catch(function(e){ console.error('[runAnalysis] summary save failed:', e); });
   }
 
   // ── KPI Plan vs Fact: sync passport KPIs with actual report metrics ──
@@ -35178,15 +35180,16 @@ async function cp2LoadSMM(project) {
 }
 
 async function cp2LoadROI(project) {
-  // Берём последний отчёт с заполненным summary — без фильтра по статусу
+  // Берём последние 10 отчётов и на стороне JS ищем тот где есть summary с данными
   var res = await sb.from('reports')
     .select('id,title,summary,period_b_label,period_d_label,created_at,status')
     .eq('project_id', project.id)
-    .not('summary', 'is', null)
     .order('created_at', {ascending: false})
-    .limit(5);
+    .limit(10);
 
   var reports = res.data || [];
+  console.log('[cp2LoadROI] отчётов найдено:', reports.length, reports.map(function(r){ return {id:r.id, status:r.status, hasSummary:!!r.summary, keys:r.summary?Object.keys(r.summary):[]}; }));
+
   // Ищем первый отчёт где summary содержит нужные поля
   var sm = null;
   for (var i = 0; i < reports.length; i++) {
@@ -35199,7 +35202,7 @@ async function cp2LoadROI(project) {
   if (!sm) return;
 
   var sign = function(v) { return v > 0 ? '+' : v < 0 ? '−' : ''; };
-  var f = function(v) { return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(Math.round(Math.abs(v))); };
+  var f = function(v) { return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:1}).format(Math.abs(v)); };
 
   if (sm.growth_pct != null && g('cp2-kpi-rev')) {
     g('cp2-kpi-rev').textContent = sign(sm.growth_pct) + f(sm.growth_pct) + '%';
