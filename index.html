@@ -27105,11 +27105,11 @@ button, a, [role="button"],
 .cp-sb-logo div:nth-child(4){background:rgba(56,178,172,.5);border-radius:3px}
 .cp-sb-brand-name{font-family:var(--font-display);font-size:13px;font-weight:800;letter-spacing:.06em;color:#c9a84c;text-transform:uppercase;line-height:1}
 .cp-sb-brand-sub{font-family:var(--font-display);font-size:10px;font-weight:500;letter-spacing:.04em;color:rgba(240,236,230,.4);text-transform:uppercase;line-height:1;margin-top:3px}
-.cp-sb-client{display:flex;align-items:center;gap:10px}
-.cp-sb-avatar{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:15px;font-weight:800;flex-shrink:0}
-.cp-sb-client-name{font-family:var(--font-display);font-size:13px;font-weight:600;color:var(--txt)}
-.cp-sb-online-dot{width:5px;height:5px;border-radius:50%;background:#3ecf8e;box-shadow:0 0 6px rgba(62,207,142,.5)}
-.cp-sb-online-txt{font-family:var(--font-mono);font-size:8px;letter-spacing:.12em;color:#3ecf8e}
+.cp-sb-client{display:flex;align-items:center;gap:14px}
+.cp-sb-avatar{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:22px;font-weight:800;flex-shrink:0;overflow:hidden;}
+.cp-sb-client-name{font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--txt);letter-spacing:-.01em;line-height:1.2;}
+.cp-sb-online-dot{width:6px;height:6px;border-radius:50%;background:#3ecf8e;box-shadow:0 0 8px rgba(62,207,142,.6)}
+.cp-sb-online-txt{font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;color:#3ecf8e}
 .cp-sb-nav{padding:14px 10px;flex:1}
 .cp-sb-nav-label{font-family:var(--font-mono);font-size:8px;letter-spacing:.18em;color:rgba(255,255,255,.2);text-transform:uppercase;padding:0 8px;margin-bottom:8px}
 .cp-sb-nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;margin-bottom:2px;cursor:pointer;transition:all .18s;border:1px solid transparent;background:transparent;width:100%;text-align:left;font-family:var(--font-display);font-size:12px;font-weight:500;color:rgba(255,255,255,.4)}
@@ -34816,7 +34816,21 @@ async function showClientPortal(project) {
   var name = project.name || '—';
   if (g('cp2-client-name')) g('cp2-client-name').textContent = name;
   var av = g('cp2-avatar');
-  if (av) { av.textContent = name.charAt(0).toUpperCase(); var col = project.brand_color || '#b8923a'; av.style.background = col + '22'; av.style.color = col; }
+  if (av) {
+    var col = project.brand_color || '#b8923a';
+    if (project.photo_url) {
+      av.style.background = 'transparent';
+      av.style.border = '1.5px solid ' + col + '44';
+      av.style.padding = '0';
+      av.innerHTML = '<img src="' + project.photo_url + '" style="width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;">';
+    } else {
+      av.innerHTML = '';
+      av.textContent = name.charAt(0).toUpperCase();
+      av.style.background = col + '22';
+      av.style.border = '1.5px solid ' + col + '33';
+      av.style.color = col;
+    }
+  }
 
   var hour = new Date().getHours();
   var greet = hour < 12 ? 'ДОБРОЕ УТРО' : hour < 18 ? 'ДОБРЫЙ ДЕНЬ' : 'ДОБРЫЙ ВЕЧЕР';
