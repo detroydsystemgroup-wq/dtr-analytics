@@ -25933,12 +25933,16 @@ button, a, [role="button"],
         <div class="cc-nav-label">Метрики</div>
         <div class="cc-kpi-grid">
           <div class="cc-kpi-item">
-            <div><div class="cc-kpi-val" id="stat-total">0</div><div class="cc-kpi-lbl">Проектов</div></div>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+            <div><div class="cc-kpi-val cc-kv-green" id="stat-active">0</div><div class="cc-kpi-lbl">Активные</div></div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(62,207,142,.35)" stroke-width="1.8" stroke-linecap="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           </div>
           <div class="cc-kpi-item">
-            <div><div class="cc-kpi-val cc-kv-green" id="stat-active">0</div><div class="cc-kpi-lbl">Активных</div></div>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(62,207,142,.35)" stroke-width="1.8" stroke-linecap="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <div><div class="cc-kpi-val" id="stat-done">0</div><div class="cc-kpi-lbl">Завершённые</div></div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(184,146,58,.35)" stroke-width="1.8" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="cc-kpi-item">
+            <div><div class="cc-kpi-val" id="stat-total">0</div><div class="cc-kpi-lbl">Всего было</div></div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
           </div>
           <div class="cc-kpi-item">
             <div><div class="cc-kpi-val cc-kv-pink" id="stat-avg-ltv">—</div><div class="cc-kpi-lbl">Средний LTV</div></div>
@@ -30946,42 +30950,34 @@ async function loadProjects() {
     deadlinesWeek += soon.length
   })
 
-  set('stat-total', _activeProjsOnly.length)
-  set('stat-active', _activeProjsOnly.filter(p => getProjectProgress(p.id).pct < 100).length)
+  // Счётчики
+  const _archivedP  = _allProjects.filter(p => p.status === 'archived')
+  const _activeOnly = _activeProjsOnly.filter(p => getProjectProgress(p.id).pct < 100)
+  const _doneAll    = _activeProjsOnly.filter(p => getProjectProgress(p.id).pct === 100).length + _archivedP.length
+
+  set('stat-total',  _allProjects.length)
+  set('stat-active', _activeOnly.length)
+  set('stat-done',   _doneAll)
   set('stat-overdue', overdueCount)
   set('stat-deadlines-week', deadlinesWeek)
-  // Средний LTV по активным проектам
-  const _activeP = _allProjects.filter(p => p.status !== 'archived')
-  if (_activeP.length > 0) {
+
+  // Средний LTV: для завершённых — от created_at до archived_at (или updated_at)
+  // для активных — от created_at до сегодня
+  const _ltvEl = document.getElementById('stat-avg-ltv')
+  const _allForLtv = _allProjects.filter(p => p.created_at)
+  if (_allForLtv.length > 0) {
     const _now = new Date()
-    const _totalM = _activeP.reduce((s, p) => {
-      if (!p.created_at) return s
-      const months = (_now - new Date(p.created_at)) / (1000*60*60*24*30.44)
+    const _totalM = _allForLtv.reduce((s, p) => {
+      const start = new Date(p.created_at)
+      // Для завершённых — используем updated_at как дату закрытия контракта
+      const end = (p.status === 'archived' && p.updated_at) ? new Date(p.updated_at) : _now
+      const months = (end - start) / (1000 * 60 * 60 * 24 * 30.44)
       return s + Math.max(0, months)
     }, 0)
-    const _avgM = Math.round(_totalM / _activeP.length)
-    const _ltvEl = document.getElementById('stat-avg-ltv')
+    const _avgM = Math.round(_totalM / _allForLtv.length)
     if (_ltvEl) _ltvEl.textContent = _avgM > 0 ? _avgM + ' мес' : '< 1 мес'
   } else {
-    const _ltvEl = document.getElementById('stat-avg-ltv')
     if (_ltvEl) _ltvEl.textContent = '—'
-  }
-  // Средний LTV — среднее кол-во месяцев от created_at каждого активного проекта
-  const activeProjs = _allProjects.filter(p => p.status !== 'archived')
-  if (activeProjs.length > 0) {
-    const now = new Date()
-    const totalMonths = activeProjs.reduce((sum, p) => {
-      if (!p.created_at) return sum
-      const start = new Date(p.created_at)
-      const months = (now - start) / (1000 * 60 * 60 * 24 * 30.44)
-      return sum + Math.max(0, months)
-    }, 0)
-    const avgMonths = Math.round(totalMonths / activeProjs.length)
-    const el = document.getElementById('stat-avg-ltv')
-    if (el) el.textContent = avgMonths > 0 ? avgMonths + ' мес' : '< 1 мес'
-  } else {
-    const el = document.getElementById('stat-avg-ltv')
-    if (el) el.textContent = '—'
   }
 
   // Badge on tab
