@@ -27408,7 +27408,21 @@ button, a, [role="button"],
   content:'';position:absolute;inset:0;border-radius:50%;background:#3ecf8e;
   animation:cp-next-pulse-ring 1.8s ease-out infinite;
 }
-.cp-next-body{flex:1;min-width:0}
+.cp-stages-bar2-wrap{margin:4px 0 8px}
+.cp-stages-bar2-track{
+  height:4px;background:rgba(255,255,255,.06);border-radius:4px;
+  overflow:hidden;margin-bottom:6px;
+}
+.cp-stages-bar2-fill{
+  height:100%;width:0;border-radius:4px;
+  background:linear-gradient(90deg,rgba(184,146,58,.5),#c9a84c);
+  transition:width 1s cubic-bezier(.4,0,.2,1);
+}
+.cp-stages-bar2-labels{
+  display:flex;justify-content:space-between;
+  font-family:var(--font-mono);font-size:8px;
+  color:rgba(255,255,255,.18);letter-spacing:.04em;
+}
 .cp-next-label{display:none}
 .cp-next-info-title{
   flex:1;
@@ -27808,7 +27822,23 @@ button, a, [role="button"],
 </div>
 </div>
 <div class="cp-tab-content" id="cp2-tab-stages">
-<div class="cp-progress-card" style="margin-bottom:18px;"><div class="cp-progress-header"><div class="cp-progress-title">Все этапы проекта</div><div class="cp-progress-pct" id="cp2-stages-pct2" style="color:var(--a2);">0%</div></div><div class="cp-dual-bars" id="cp2-dual-bars2"></div></div>
+<div class="cp-progress-card" style="margin-bottom:18px;">
+  <div class="cp-progress-header">
+    <div class="cp-progress-title">Все этапы проекта</div>
+    <div class="cp-progress-pct" id="cp2-stages-pct2" style="color:var(--a2);">0%</div>
+  </div>
+  <div class="cp-stages-bar2-wrap">
+    <div class="cp-stages-bar2-track">
+      <div class="cp-stages-bar2-fill" id="cp2-stages-bar2-fill"></div>
+    </div>
+    <div class="cp-stages-bar2-labels">
+      <span class="cp-stages-bar2-lbl">0%</span>
+      <span class="cp-stages-bar2-lbl">50%</span>
+      <span class="cp-stages-bar2-lbl">100%</span>
+    </div>
+  </div>
+  <div class="cp-dual-bars" id="cp2-dual-bars2"></div>
+</div>
 <div class="cp-stages-list" id="cp2-stages-detail"></div>
 </div>
 <div class="cp-tab-content" id="cp2-tab-reports">
@@ -34636,6 +34666,15 @@ async function cp2LoadTracker(project) {
   // Progress card
   if (g('cp2-progress-pct')) g('cp2-progress-pct').textContent = pct + '%';
   if (g('cp2-stages-pct2')) g('cp2-stages-pct2').textContent = pct + '%';
+  // Прогрессбар вкладки этапов
+  var bar2 = g('cp2-stages-bar2-fill');
+  if (bar2) {
+    bar2.style.transition = 'none'; bar2.style.width = '0%';
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){
+      bar2.style.transition = 'width 1s cubic-bezier(.4,0,.2,1)';
+      bar2.style.width = pct + '%';
+    }); });
+  }
 
   // KPI hero — прогресс проекта
   var totalSt = (typeof STAGES !== 'undefined' && STAGES.length) ? STAGES.length : 9;
@@ -34977,7 +35016,7 @@ async function cp2LoadSMM(project) {
   if (progressEl && progressEl.textContent === '—') {
     var stRes = await sb.from('project_stages').select('status').eq('project_id', project.id);
     var stArr = stRes.data || [];
-    var total = stArr.length || 9;
+    var total = (typeof STAGES !== 'undefined' && STAGES.length) ? STAGES.length : 9;
     var done  = stArr.filter(function(s){ return s.status === 'completed'; }).length;
     var pct   = total > 0 ? Math.round(done / total * 100) : 0;
     progressEl.textContent = pct + '%';
