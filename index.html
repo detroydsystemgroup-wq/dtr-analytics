@@ -37066,7 +37066,7 @@ function renderDeadlinePanel() {
 
   // Collect stage items (only active projects, not archived)
   var allItems = [];
-  var activeProjs = (typeof _allProjects !== 'undefined') ? _allProjects.filter(function(p){ return p.status !== 'archived' && (typeof getProjectProgress === 'undefined' || getProjectProgress(p.id).pct < 100); }) : [];
+  var activeProjs = (typeof _allProjects !== 'undefined') ? _allProjects.filter(function(p){ return p.status !== 'archived' && (typeof getProjectProgress !== 'undefined' && getProjectProgress(p.id).pct < 100); }) : [];
   var activeProjIds = activeProjs.map(function(p){ return p.id; });
 
   if (typeof _allStages !== 'undefined') {
@@ -37603,7 +37603,7 @@ async function loadOverview() {
   var MONTHS = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
 
   // ── Только активные проекты для всех метрик (не архивные и прогресс < 100%) ──
-  var activeProjects = _allProjects.filter(function(p){ return p.status !== 'archived' && (typeof getProjectProgress === 'undefined' || getProjectProgress(p.id).pct < 100); });
+  var activeProjects = _allProjects.filter(function(p){ return p.status !== 'archived' && (typeof getProjectProgress !== 'undefined' && getProjectProgress(p.id).pct < 100); });
   var activeProjectIds = activeProjects.map(function(p){ return p.id; });
   var activeStagesAll = _allStages.filter(function(s){ return activeProjectIds.indexOf(s.project_id) !== -1; });
 
@@ -41869,7 +41869,7 @@ function kbRenderProjectSidebar() {
   if (!list) return;
 
   var all = (typeof _allProjects !== 'undefined' && _allProjects) ? _allProjects : [];
-  var projects  = all.filter(function(p){ return p.status !== 'archived' && (typeof getProjectProgress === 'undefined' || getProjectProgress(p.id).pct < 100); });
+  var projects  = all.filter(function(p){ return p.status !== 'archived' && (typeof getProjectProgress !== 'undefined' && getProjectProgress(p.id).pct < 100); });
   var archived  = all.filter(function(p){ return p.status === 'archived' || (typeof getProjectProgress !== 'undefined' && getProjectProgress(p.id).pct === 100); });
 
   var projStat  = document.getElementById('kb-proj-stat-proj');
