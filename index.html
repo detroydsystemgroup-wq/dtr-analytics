@@ -27820,7 +27820,7 @@ button, a, [role="button"],
 .cp-stage-num.cp-sn-active{background:rgba(232,153,58,.12);color:var(--amber);animation:pulse 2.5s ease infinite}
 .cp-stage-num.cp-sn-pending{background:rgba(255,255,255,.04);color:rgba(255,255,255,.15)}
 /* .cp-stage-date styles moved inline */
-.cp-stage-status-tag{font-family:var(--font-mono);font-size:9px;font-weight:600;padding:3px 10px;border-radius:8px;letter-spacing:.04em}
+/* .cp-stage-status-tag moved inline */
 @media(max-width:900px){.cp-sidebar{width:180px}.cp-content{padding:20px 24px 32px}.cp-hero-strip{grid-template-columns:1fr auto 1fr}.cp-cols{grid-template-columns:1fr}}
 @media(max-width:640px){#page-client.active{flex-direction:column!important}.cp-sidebar{width:100%!important;height:auto!important;position:relative!important;border-right:none!important;border-bottom:1px solid rgba(255,255,255,.06)!important}.cp-sb-nav{display:flex;gap:4px;overflow-x:auto;padding:8px}.cp-sb-kpi{display:none}.cp-hero-strip{grid-template-columns:1fr}.cp-hero-divider{display:none}}
 </style>
@@ -34960,10 +34960,21 @@ async function cp2LoadTracker(project) {
       var rec = arr.find(function(r){ return r.stage_index === i; }) || { status: 'pending' };
       var s = rec.status || 'pending';
       var numCls = s==='completed' ? 'cp-sn-done' : s==='active' ? 'cp-sn-active' : 'cp-sn-pending';
-      var tagStyle = '', tagText = '';
-      if (s==='completed') { tagStyle = 'background:rgba(62,207,142,.08);color:var(--green);'; tagText = 'Завершён'; }
-      else if (s==='active') { tagStyle = 'background:rgba(232,153,58,.08);color:var(--amber);'; tagText = 'В работе'; }
-      else { tagStyle = 'background:rgba(255,255,255,.03);color:rgba(255,255,255,.15);'; tagText = 'Ожидает'; }
+      var tagStyle = '', tagText = '', tagIcon = '';
+      var _tagBase = 'display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:11px;font-weight:600;padding:5px 12px;border-radius:8px;letter-spacing:.03em;flex-shrink:0;';
+      if (s==='completed') {
+        tagStyle = _tagBase + 'background:rgba(62,207,142,.08);border:1px solid rgba(62,207,142,.18);color:#3ecf8e;';
+        tagIcon  = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>';
+        tagText  = 'Завершён';
+      } else if (s==='active') {
+        tagStyle = _tagBase + 'background:rgba(232,153,58,.08);border:1px solid rgba(232,153,58,.18);color:var(--amber);';
+        tagIcon  = '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="4" fill="currentColor"/></svg>';
+        tagText  = 'В работе';
+      } else {
+        tagStyle = _tagBase + 'background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.2);';
+        tagIcon  = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+        tagText  = 'Ожидает';
+      }
       var iconCol = s==='completed' ? '#c9a84c' : s==='active' ? '#3ecf8e' : 'rgba(255,255,255,.2)';
       var iconBg  = s==='completed' ? 'background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.2)' : s==='active' ? 'background:rgba(62,207,142,.1);border:1px solid rgba(62,207,142,.2)' : 'background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07)';
       var svgIcon = (STAGE_ICONS[i] || '').replace('stroke="currentColor"', 'stroke="' + iconCol + '"');
@@ -35028,7 +35039,7 @@ async function cp2LoadTracker(project) {
         '<div class="cp-stage-name" style="' + (s==='completed' ? 'color:rgba(255,255,255,.35);' : '') + '">' + esc(st.name) + '</div>' +
         datePart +
         deadlinePart +
-        '<div class="cp-stage-status-tag" style="' + tagStyle + '">' + tagText + '</div>' +
+        '<div style="' + tagStyle + '">' + tagIcon + tagText + '</div>' +
       '</div>';
     }).join('');
   }
