@@ -25599,9 +25599,9 @@ button, a, [role="button"],
       <!-- ① HERO STRIP -->
       <div class="apl-hero-strip proj-hero">
         <div class="apl-hero-card">
-          <div class="apl-hero-eyebrow">ВСЕГО ПРОЕКТОВ</div>
+          <div class="apl-hero-eyebrow">АКТИВНЫХ ПРОЕКТОВ</div>
           <div class="apl-hero-num" id="proj-hero-total" style="color:#c9a84c;">—</div>
-          <div class="apl-hero-sub">в портфеле</div>
+          <div class="apl-hero-sub">в работе</div>
           <div class="apl-hero-rule"></div>
           <div class="apl-hero-foot" id="proj-hero-active">— активных</div>
         </div>
@@ -30715,7 +30715,7 @@ function renderProjectGrid() {
   const totalStagesDone = _activeStgs.filter(s => s.status === 'completed').length
   const totalMRR = _activeProjs.reduce((s,p) => s + (p.monthly_budget||0), 0)
   const setH = (id, v) => { const e = g(id); if(e) e.textContent = v }
-  setH('proj-hero-total', _activeProjs.length)
+  setH('proj-hero-total', activeCount)
   setH('proj-hero-active', activeCount + ' активных · ' + doneCount + ' завершено')
   setH('proj-hero-avg', avgPct + '%')
   setH('proj-hero-stages', totalStagesDone + ' этапов завершено')
