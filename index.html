@@ -31325,9 +31325,18 @@ async function openReport(id) {
         const map = {daily_b:'b1',daily_d:'d1',hourly_b:'b2',hourly_d:'d2',items_b:'b3',items_d:'d3',types_b:'b4',types_d:'d4',branch_b:'b5',branch_d:'d5'}
         const k = map[f.template_type]
         if (k) {
-          S[k] = f.parsed_data
-          if (k === 'b1') { LABEL_B = f.parsed_data.meta?.period_label || buildLabel(f.parsed_data.meta) }
-          if (k === 'd1') { LABEL_D = f.parsed_data.meta?.period_label || buildLabel(f.parsed_data.meta) }
+          const pd = f.parsed_data
+          // Восстанавливаем days если сохранено с days=0 (старый баг)
+          if (pd.meta && !pd.meta.days && Array.isArray(pd.rows) && pd.rows.length > 0) {
+            if (pd.type === 'daily') {
+              // Считаем уникальные даты из rows
+              const uniqueDates = new Set(pd.rows.map(r => r.label).filter(Boolean))
+              pd.meta.days = uniqueDates.size || pd.rows.length
+            }
+          }
+          S[k] = pd
+          if (k === 'b1') { LABEL_B = pd.meta?.period_label || buildLabel(pd.meta) }
+          if (k === 'd1') { LABEL_D = pd.meta?.period_label || buildLabel(pd.meta) }
           const z = g('z-'+k); if (z) z.classList.add('done')
           const ok = g('ok-'+k); if (ok) { ok.textContent = '✓ '+f.file_name.slice(0,20); ok.style.display = 'block' }
         }
@@ -31830,10 +31839,15 @@ function runAnalysis() {
   // (данные из Supabase могли быть сохранены старым кодом с days=0)
   const bRows = Array.isArray(b.rows) ? b.rows : []
   const dRows = Array.isArray(d.rows) ? d.rows : []
-  const bD = b.meta?.days || bRows.length || 1
-  const dD = d.meta?.days || dRows.length || 1
-  if (bD === 1 && !b.meta?.days && !bRows.length) console.warn('[runAnalysis] b1: нет days и rows — используем 1')
-  if (dD === 1 && !d.meta?.days && !dRows.length) console.warn('[runAnalysis] d1: нет days и rows — используем 1')
+  console.log('[runAnalysis] b1 structure:', {type:b.type, days:b.meta?.days, rows:bRows.length, totalRev:b.meta?.totalRev, metaKeys:Object.keys(b.meta||{})})
+  console.log('[runAnalysis] d1 structure:', {type:d.type, days:d.meta?.days, rows:dRows.length, totalRev:d.meta?.totalRev, metaKeys:Object.keys(d.meta||{})})
+  // Если days=0 но totalRev есть — данные целые, восстанавливаем days
+  const bD_fromRows = bRows.filter(r => r && r.rev > 0).length
+  const dD_fromRows = dRows.filter(r => r && r.rev > 0).length
+  // Для старых данных без rows: пробуем вычислить из totalRev/avgRevPerDay (нет данных) → используем 1
+  const bD = b.meta?.days || bD_fromRows || bRows.length || 1
+  const dD = d.meta?.days || dD_fromRows || dRows.length || 1
+  console.log('[runAnalysis] resolved: bD='+bD+', dD='+dD)
   const bR = b.meta.totalRev, dR = d.meta.totalRev
   const bC = b.meta.totalChk, dC = d.meta.totalChk
   const bRD = bR/bD, dRD = dR/dD, bCD = bC/bD, dCD = dC/dD
