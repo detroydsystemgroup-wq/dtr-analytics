@@ -34678,6 +34678,8 @@ async function saveStage() {
       project_id: currentProject.id,
       stage_index: editingStageIndex,
       event: eventMap[selectedStageStatus] || selectedStageStatus,
+      old_status: prevStatus || null,
+      new_status: selectedStageStatus,
       note: note || null
     })
   }
@@ -37602,10 +37604,20 @@ async function loadOverview() {
   });
   var churnCount = churnRisk.length;
 
-  // Rework rate: stages that moved backward (e.g. completed → active/pending)
-  var reworkCount = stageHistory.filter(function(h){
-    return h.old_status === 'completed' && (h.new_status === 'active' || h.new_status === 'pending');
-  }).length;
+  // Rework rate: этапы откаченные назад (по event или old/new_status)
+  var reworkStages = stageHistory.filter(function(h){
+    // Новый формат: old_status/new_status
+    if (h.old_status && h.new_status) {
+      return h.old_status === 'completed' && (h.new_status === 'active' || h.new_status === 'pending');
+    }
+    // Старый формат: только event
+    return h.event === 'Возвращён в ожидание';
+  });
+  // Задачи возвращённые из done в waiting
+  var reworkTasks = allTasks.filter(function(t){
+    return !t.done && t.kanban_status === 'waiting' && t.time_logged > 0;
+  });
+  var reworkCount = reworkStages.length + reworkTasks.length;
 
   // ─────────────────────────────
   // RENDER: Hero strip
