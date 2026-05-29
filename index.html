@@ -34929,8 +34929,8 @@ async function cp2LoadTracker(project) {
 
 async function cp2LoadReports(project) {
   var pid = project.id;
-  // Performance reports
-  var r1 = await sb.from('reports').select('id,title,period_b_label,period_d_label,created_at,status').eq('project_id', pid).eq('status','published').order('created_at',{ascending:false});
+  // Performance reports — без фильтра по статусу, берём все доступные
+  var r1 = await sb.from('reports').select('id,title,period_b_label,period_d_label,created_at,status').eq('project_id', pid).order('created_at',{ascending:false});
   var perfReports = (r1.data || []).filter(function(r){ return !r.hidden_for_client; });
   cpPerfReports = perfReports;
 
