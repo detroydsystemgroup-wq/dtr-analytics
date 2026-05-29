@@ -35177,9 +35177,24 @@ async function cp2LoadSMM(project) {
 }
 
 async function cp2LoadROI(project) {
-  var res = await sb.from('reports').select('id,title,summary,period_b_label,period_d_label,created_at').eq('project_id', project.id).eq('status','published').order('created_at',{ascending:false}).limit(1);
-  var rep = res.data && res.data[0];
-  var sm = rep && rep.summary;
+  // Берём последний отчёт с заполненным summary — без фильтра по статусу
+  var res = await sb.from('reports')
+    .select('id,title,summary,period_b_label,period_d_label,created_at,status')
+    .eq('project_id', project.id)
+    .not('summary', 'is', null)
+    .order('created_at', {ascending: false})
+    .limit(5);
+
+  var reports = res.data || [];
+  // Ищем первый отчёт где summary содержит нужные поля
+  var sm = null;
+  for (var i = 0; i < reports.length; i++) {
+    var s = reports[i].summary;
+    if (s && (s.growth_pct != null || s.traffic_delta != null || s.avg_check_delta != null)) {
+      sm = s;
+      break;
+    }
+  }
   if (!sm) return;
 
   var sign = function(v) { return v > 0 ? '+' : v < 0 ? '−' : ''; };
