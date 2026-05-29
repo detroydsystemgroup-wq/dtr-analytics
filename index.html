@@ -37524,7 +37524,7 @@ async function loadOverview() {
     allTasks = tr.data || [];
   } catch(e) {}
   try {
-    var hr = await sb.from('stage_history').select('*').in('project_id', _allProjects.map(function(p){return p.id;})).order('changed_at', {ascending:false}).limit(500);
+    var hr = await sb.from('stage_history').select('*').in('project_id', _allProjects.map(function(p){return p.id;})).order('created_at', {ascending:false}).limit(500);
     stageHistory = hr.data || [];
   } catch(e) {}
 
@@ -37599,13 +37599,26 @@ async function loadOverview() {
   } catch(e) {}
   var revPerHour = (totalMRR > 0 && totalHours > 0) ? Math.round(totalMRR / totalHours) : null;
 
-  // Churn risk: projects with no stage_history activity in 21+ days
+  // Churn risk: проекты без активности 21+ дней
   var activeProjects = _allProjects.filter(function(p){ return p.status !== 'archived' && getProjectProgress(p.id).pct < 100; });
   var twentyOneAgo = new Date(today); twentyOneAgo.setDate(today.getDate() - 21);
   var churnRisk = activeProjects.filter(function(p) {
-    var lastActivity = stageHistory.find(function(h){ return h.project_id === p.id; });
-    if (!lastActivity) return true;
-    return new Date(lastActivity.changed_at) < twentyOneAgo;
+    // Последняя активность в истории этапов
+    var lastStage = stageHistory.find(function(h){ return h.project_id === p.id; });
+    var lastStageDate = lastStage ? new Date(lastStage.created_at || lastStage.changed_at) : null;
+    // Последняя активность в задачах
+    var projTasks = allTasks.filter(function(t){ return t.project_id === p.id; });
+    var lastTaskDate = null;
+    projTasks.forEach(function(t) {
+      var d = new Date(t.updated_at || t.created_at);
+      if (!lastTaskDate || d > lastTaskDate) lastTaskDate = d;
+    });
+    // Берём самую свежую активность из обоих источников
+    var lastActivity = null;
+    if (lastStageDate && lastTaskDate) lastActivity = lastStageDate > lastTaskDate ? lastStageDate : lastTaskDate;
+    else lastActivity = lastStageDate || lastTaskDate;
+    if (!lastActivity) return true; // нет активности вообще
+    return lastActivity < twentyOneAgo;
   });
   var churnCount = churnRisk.length;
 
@@ -37705,7 +37718,10 @@ async function loadOverview() {
     var next = getNextDeadline(p.id);
     var isChurn = churnRisk.some(function(c){ return c.id === p.id; });
     var lastAct = stageHistory.find(function(h){ return h.project_id === p.id; });
-    var daysSince = lastAct ? Math.round((today - new Date(lastAct.changed_at)) / 86400000) : 999;
+    var lastActDate = lastAct ? new Date(lastAct.created_at || lastAct.changed_at) : null;
+    var pTasks = allTasks.filter(function(t){ return t.project_id === p.id; });
+    pTasks.forEach(function(t){ var d=new Date(t.updated_at||t.created_at); if(!lastActDate||d>lastActDate) lastActDate=d; });
+    var daysSince = lastActDate ? Math.round((today - lastActDate) / 86400000) : 999;
     return { p:p, prog:prog, overdue:overdue, next:next, isChurn:isChurn, daysSince:daysSince };
   });
 
