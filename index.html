@@ -33366,7 +33366,7 @@ function renderFinance() {
     const runwayEl = g('bi-runway'); if(runwayEl) runwayEl.style.color = runway < 3 ? 'var(--red)' : 'var(--amber)'
     s('bi-runway-sub', 'при текущих убытках')
   } else if (totalProfit > 0) {
-    s('bi-runway', '∞')
+    s('bi-runway', 'Стабильно')
     const runwayEl = g('bi-runway'); if(runwayEl) runwayEl.style.color = 'var(--green)'
     s('bi-runway-sub', 'прибыльная операция')
   } else {
