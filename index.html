@@ -26624,15 +26624,10 @@ button, a, [role="button"],
         <!-- RIGHT: Donut + Unit Economics -->
         <div class="apl-side-col">
           <div class="apl-donut-card">
-            <div class="apl-chart-label">СТРУКТУРА РАСХОДОВ</div>
-            <div class="apl-donut-wrap">
-              <canvas id="cFinDonut"></canvas>
-              <div class="apl-donut-center" id="apl-donut-center">
-                <div class="apl-donut-center-val" id="apl-donut-cval">—</div>
-                <div class="apl-donut-center-lbl">расходы</div>
-              </div>
-            </div>
-            <div id="bi-donut-legend" class="apl-donut-legend"></div>
+            <div class="apl-chart-label">КУДА УХОДИТ ВЫРУЧКА</div>
+            <div id="bi-breakdown-chart" style="padding:4px 0;"></div>
+            <canvas id="cFinDonut" style="display:none;"></canvas>
+            <div id="bi-donut-legend" style="display:none;"></div>
           </div>
 
           <!-- Unit Economics card -->
@@ -33546,8 +33541,39 @@ function biRenderTable() {
         <button class="bi-action-btn${!hasBudget?' bi-action-primary':''}"
           onclick="openFinanceModal('${p.id}','${esc(p.name)}')">${!hasBudget?'+ Задать':'Изменить'}</button>
       </div>
+
+      ${isSelected && r.allExp && r.allExp.length ? biDetailExpand(r) : ''}
     </div>`
   }).join('')
+}
+
+function biDetailExpand(r) {
+  var catColors = { salary:'var(--a2)', opex:'#f59e0b', project:'#f87171' }
+  var catLabels = { salary:'Зарплаты', opex:'Операционные', project:'На проект' }
+  var html = '<div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.07);">'
+  html += '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;color:rgba(255,255,255,.25);text-transform:uppercase;margin-bottom:12px;">Детализация расходов</div>'
+  html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">'
+  ;['salary','opex','project'].forEach(function(cat) {
+    var rows = r.allExp.filter(function(e){ return e.cat===cat && e.name && (e.amount||0)>0; })
+    if (!rows.length) return
+    var col = catColors[cat]
+    var total = rows.reduce(function(s,e){ return s+(parseInt(e.amount)||0); },0)
+    html += '<div>'
+    html += '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:'+col+';opacity:.7;margin-bottom:8px;">'+catLabels[cat]+'</div>'
+    rows.forEach(function(e) {
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);">'
+      html += '<span style="font-family:var(--font-display);font-size:12px;color:rgba(255,255,255,.65);">'+esc(e.name)+'</span>'
+      html += '<span style="font-family:var(--font-mono);font-size:11px;color:'+col+';white-space:nowrap;margin-left:12px;">'+fmtM(e.amount)+' сум</span>'
+      html += '</div>'
+    })
+    html += '<div style="display:flex;justify-content:space-between;padding-top:6px;">'
+    html += '<span style="font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.25);">ИТОГО</span>'
+    html += '<span style="font-family:var(--font-mono);font-size:11px;font-weight:600;color:'+col+';">'+fmtM(total)+' сум</span>'
+    html += '</div>'
+    html += '</div>'
+  })
+  html += '</div></div>'
+  return html
 }
 
 function biSelectProject(projId) {
@@ -33569,6 +33595,7 @@ function biCloseDetail() {
 
 function biShowDetail(row) {
   const {p, budget, salaries, extras, opex, totalCost, profit, marginPct, hours} = row
+  const allExpDetail = row.allExp || []
   const panel = g('bi-detail-panel')
   if(!panel) return
   panel.style.display='block'
@@ -33591,7 +33618,6 @@ function biShowDetail(row) {
   // Детализация по категориям
   const catColors = { salary:'var(--a2)', opex:'#f59e0b', project:'#f87171' }
   const catLabels = { salary:'Зарплаты', opex:'Операционные', project:'На проект' }
-  const allExpDetail = row.allExp || []
 
   function _fmtH(h) {
     const totalMin = Math.round(h * 60)
@@ -33661,64 +33687,102 @@ function renderBIBarChart(rows) {
 }
 
 function renderBIDonut(rows) {
-  const canvas = g('cFinDonut'); if(!canvas) return
-  const totalSalaries = rows.reduce((s,r)=>s+r.salaries,0)
-  const totalExtras   = rows.reduce((s,r)=>s+r.extras,0)
-  const totalOpex     = rows.reduce((s,r)=>s+r.opex,0)
-  const totalProfit   = rows.reduce((s,r)=>s+(r.profit||0),0)
+  // ── Waterfall breakdown: приход → расходы по статьям → прибыль ──
+  var el = document.getElementById('bi-breakdown-chart')
+  if (!el) return
 
-  // Hardcoded gold-system colors — Chart.js cannot parse CSS vars
-  const items = [
-    {label:'Зарплаты',     val:totalSalaries,           color:'#c9a84c', fill:'rgba(201,168,76,.78)',  border:'rgba(201,168,76,.25)'},
-    {label:'Доп. расходы', val:totalExtras,             color:'#e8993a', fill:'rgba(232,153,58,.75)',  border:'rgba(232,153,58,.25)'},
-    {label:'Операционные', val:totalOpex,               color:'#e05252', fill:'rgba(224,82,82,.72)',   border:'rgba(224,82,82,.25)'},
-    {label:'Прибыль',      val:Math.max(0,totalProfit), color:'#3ecf8e', fill:'rgba(62,207,142,.72)',  border:'rgba(62,207,142,.25)'},
-  ].filter(i=>i.val>0)
+  var totalMRR      = rows.reduce(function(s,r){ return s+r.budget; }, 0)
+  var totalSalaries = rows.reduce(function(s,r){ return s+r.salaries; }, 0)
+  var totalOpex     = rows.reduce(function(s,r){ return s+r.opex; }, 0)
+  var totalProject  = rows.reduce(function(s,r){ return s+r.project; }, 0)
+  var totalProfit   = Math.max(0, rows.reduce(function(s,r){ return s+(r.profit||0); }, 0))
 
-  // Update center label
-  const totalCosts = totalSalaries+totalExtras+totalOpex
-  const cv = g('apl-donut-cval')
-  if(cv) cv.textContent = totalCosts>0 ? fmtM(totalCosts) : '—'
+  if (!totalMRR) { el.innerHTML = '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.2);padding:20px 0;text-align:center;">Задайте бюджеты проектов</div>'; return }
 
-  const legend = g('bi-donut-legend')
-  if(legend) legend.innerHTML = items.map(i=>`
-    <div class="apl-legend-item">
-      <span class="apl-legend-dot" style="background:${i.color};"></span>
-      <span class="apl-legend-name">${i.label}</span>
-      <span class="apl-legend-val">${fmtM(i.val)}</span>
-    </div>`).join('')
-
-  if(!items.length) { canvas.style.display='none'; return }
-  canvas.style.display='block'
-
-  if(_biChartDonut){_biChartDonut.destroy();_biChartDonut=null}
-  _biChartDonut = new Chart(canvas, {
-    type:'doughnut',
-    data:{ labels:items.map(i=>i.label), datasets:[{
-      data:items.map(i=>i.val),
-      backgroundColor:items.map(i=>i.fill),
-      borderColor:items.map(i=>i.border),
-      borderWidth:1.5,
-      hoverOffset:8,
-      hoverBorderColor:items.map(i=>i.color),
-      hoverBorderWidth:2,
-    }]},
-    options:{
-      responsive:true, maintainAspectRatio:false, cutout:'74%',
-      plugins:{
-        legend:{display:false},
-        tooltip:{
-          backgroundColor:'rgba(11,11,11,.92)',
-          borderColor:'rgba(184,146,58,.2)',
-          borderWidth:1,
-          titleColor:'rgba(240,236,230,.8)',
-          bodyColor:'rgba(240,236,230,.6)',
-          padding:10,
-          callbacks:{label:ctx=>ctx.label+': '+fmtM(ctx.raw)+' сум'}
-        }
-      }
-    }
+  // Все строки по именам из allExp
+  var allExpByName = []
+  rows.forEach(function(r) {
+    (r.allExp||[]).forEach(function(e) {
+      if (!e.name || !e.amount) return
+      var found = allExpByName.find(function(x){ return x.name===e.name && x.cat===e.cat })
+      if (found) found.amount += parseInt(e.amount)||0
+      else allExpByName.push({ name: e.name, amount: parseInt(e.amount)||0, cat: e.cat })
+    })
   })
+  allExpByName.sort(function(a,b){ return b.amount-a.amount })
+
+  var catColor = { salary:'#c9a84c', opex:'#e8993a', project:'#f87171' }
+  var catLabel = { salary:'Зарплаты', opex:'Операционные', project:'На проект' }
+
+  var html = ''
+
+  // ── Приход ──
+  html += '<div style="margin-bottom:18px;">'
+  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'
+  html += '<span style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);">ВЫРУЧКА (MRR)</span>'
+  html += '<span style="font-family:var(--font-mono);font-size:12px;color:#3ecf8e;">'+fmtM(totalMRR)+' сум</span>'
+  html += '</div>'
+  html += '<div style="height:8px;background:#3ecf8e22;border-radius:4px;overflow:hidden;border:1px solid #3ecf8e44;">'
+  html += '<div style="height:100%;width:100%;background:linear-gradient(90deg,#3ecf8e,#22d3ee);border-radius:4px;"></div>'
+  html += '</div></div>'
+
+  // ── Стек расходов ──
+  html += '<div style="margin-bottom:14px;">'
+  html += '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:10px;">РАСХОДЫ ПО СТАТЬЯМ</div>'
+
+  allExpByName.forEach(function(e) {
+    var pct = totalMRR > 0 ? Math.round(e.amount/totalMRR*100) : 0
+    var col = catColor[e.cat] || '#888'
+    html += '<div style="margin-bottom:8px;">'
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">'
+    html += '<div style="display:flex;align-items:center;gap:7px;">'
+    html += '<div style="width:6px;height:6px;border-radius:50%;background:'+col+';flex-shrink:0;"></div>'
+    html += '<span style="font-family:var(--font-display);font-size:12px;color:rgba(255,255,255,.7);">'+esc(e.name)+'</span>'
+    html += '<span style="font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.2);padding:1px 5px;border-radius:4px;background:'+col+'18;">'+catLabel[e.cat]+'</span>'
+    html += '</div>'
+    html += '<div style="display:flex;align-items:center;gap:8px;">'
+    html += '<span style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.3);">'+pct+'%</span>'
+    html += '<span style="font-family:var(--font-mono);font-size:11px;color:'+col+';white-space:nowrap;">'+fmtM(e.amount)+' сум</span>'
+    html += '</div></div>'
+    html += '<div style="height:4px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden;">'
+    html += '<div style="height:100%;width:'+pct+'%;background:'+col+';border-radius:3px;opacity:.8;transition:width .6s cubic-bezier(.4,0,.2,1);"></div>'
+    html += '</div></div>'
+  })
+
+  // Прочие сгруппированные если нет детализации
+  if (!allExpByName.length) {
+    ;[{label:'Зарплаты',val:totalSalaries,col:'#c9a84c'},{label:'Операционные',val:totalOpex,col:'#e8993a'},{label:'На проект',val:totalProject,col:'#f87171'}]
+    .filter(function(x){ return x.val>0 })
+    .forEach(function(x) {
+      var pct = Math.round(x.val/totalMRR*100)
+      html += '<div style="margin-bottom:8px;">'
+      html += '<div style="display:flex;justify-content:space-between;margin-bottom:3px;">'
+      html += '<span style="font-family:var(--font-display);font-size:12px;color:rgba(255,255,255,.6);">'+x.label+'</span>'
+      html += '<span style="font-family:var(--font-mono);font-size:11px;color:'+x.col+';">'+fmtM(x.val)+' сум ('+pct+'%)</span>'
+      html += '</div>'
+      html += '<div style="height:4px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden;">'
+      html += '<div style="height:100%;width:'+pct+'%;background:'+x.col+';border-radius:3px;opacity:.8;"></div>'
+      html += '</div></div>'
+    })
+  }
+
+  html += '</div>'
+
+  // ── Остаток / Прибыль ──
+  var profitPct = totalMRR > 0 ? Math.round(totalProfit/totalMRR*100) : 0
+  var profitCol = profitPct >= 30 ? '#3ecf8e' : profitPct >= 15 ? '#c9a84c' : '#f87171'
+  html += '<div style="padding-top:12px;border-top:1px solid rgba(255,255,255,.07);">'
+  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">'
+  html += '<span style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:'+profitCol+';opacity:.7;">ОСТАТОК (ПРИБЫЛЬ)</span>'
+  html += '<div style="display:flex;align-items:center;gap:8px;">'
+  html += '<span style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.3);">'+profitPct+'%</span>'
+  html += '<span style="font-family:var(--font-mono);font-size:12px;font-weight:600;color:'+profitCol+';">'+fmtM(totalProfit)+' сум</span>'
+  html += '</div></div>'
+  html += '<div style="height:6px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden;">'
+  html += '<div style="height:100%;width:'+profitPct+'%;background:'+profitCol+';border-radius:3px;transition:width .6s;"></div>'
+  html += '</div></div>'
+
+  el.innerHTML = html
 }
 
 // ── Open finance modal ──
