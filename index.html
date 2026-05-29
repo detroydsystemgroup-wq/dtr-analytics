@@ -34000,11 +34000,18 @@ async function kbMoveTask(taskId, fromStatus, toStatus) {
     updates.time_logged = (task.time_logged || 0) + elapsedMin
     updates.timer_started_at = null
     updates.done = true
+    updates.done_at = now
     // Update finance cache
     if (currentProject) {
       _finTaskHours[currentProject.id] = (_finTaskHours[currentProject.id] || 0) + elapsedMin
     }
     showAlertToast('✅', `Задача завершена`, `+${elapsedMin} мин записано`)
+  }
+
+  // Ожидание/любой → Завершённые: записываем done_at если ещё не было
+  if (toStatus === 'done' && !updates.done_at) {
+    updates.done = true
+    updates.done_at = now
   }
 
   if (toStatus === 'waiting') {
@@ -37515,8 +37522,17 @@ async function loadOverview() {
   // Velocity: tasks closed last 30 days
   var thirtyAgo = new Date(today); thirtyAgo.setDate(today.getDate() - 30);
   var sevenAgo  = new Date(today); sevenAgo.setDate(today.getDate() - 7);
-  var velocity30 = allTasks.filter(function(t){ return t.done && t.done_at && new Date(t.done_at) >= thirtyAgo; }).length;
-  var velocity7  = allTasks.filter(function(t){ return t.done && t.done_at && new Date(t.done_at) >= sevenAgo; }).length;
+  // Velocity: done_at если есть, иначе updated_at как приближение
+  var velocity30 = allTasks.filter(function(t){
+    if (!t.done) return false;
+    var d = t.done_at || t.updated_at;
+    return d && new Date(d) >= thirtyAgo;
+  }).length;
+  var velocity7 = allTasks.filter(function(t){
+    if (!t.done) return false;
+    var d = t.done_at || t.updated_at;
+    return d && new Date(d) >= sevenAgo;
+  }).length;
 
   // Overdue deadlines
   var allStageDL = _allStages.filter(function(s){ return s.deadline && s.status !== 'completed'; });
