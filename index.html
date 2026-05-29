@@ -37565,11 +37565,14 @@ async function loadOverview() {
     return new Date(d) >= sevenAgo;
   }).length;
 
-  // Overdue deadlines
+  // Overdue deadlines — этапы + задачи с истёкшим дедлайном
   var allStageDL = _allStages.filter(function(s){ return s.deadline && s.status !== 'completed'; });
-  var overdueDL = allStageDL.filter(function(s){ return new Date(s.deadline) < today; });
-  var weekDL    = allStageDL.filter(function(s){ var d=new Date(s.deadline); return d>=today && d<=weekEnd; });
-  var futureDL  = allStageDL.filter(function(s){ return new Date(s.deadline) > weekEnd; });
+  var overdueDL  = allStageDL.filter(function(s){ return new Date(s.deadline + 'T00:00:00') < today; });
+  var weekDL     = allStageDL.filter(function(s){ var d=new Date(s.deadline + 'T00:00:00'); return d>=today && d<=weekEnd; });
+  var futureDL   = allStageDL.filter(function(s){ return new Date(s.deadline + 'T00:00:00') > weekEnd; });
+  // Просроченные задачи (не выполненные с прошедшим дедлайном)
+  var overdueTasksDL = allTasks.filter(function(t){ return t.deadline && !t.done && new Date(t.deadline + 'T00:00:00') < today; });
+  var totalOverdue = overdueDL.length + overdueTasksDL.length;
 
   // Health score
   var healthScore = Math.max(0, Math.min(100, Math.round(
@@ -37636,10 +37639,12 @@ async function loadOverview() {
   sc('sv-ontime-num', onTimeRate !== null ? (onTimeRate >= 70 ? 'var(--green)' : onTimeRate >= 50 ? 'var(--amber)' : 'var(--red)') : 'var(--txt3)');
   s('sv-ontime-foot', tasksWithDeadline.length + ' задач с дедлайном · ' + tasksOnTime.length + ' в срок');
 
-  s('sv-overdue-num', overdueDL.length);
-  sc('sv-overdue-num', overdueDL.length === 0 ? 'var(--green)' : 'var(--red)');
-  s('sv-overdue-sub', overdueDL.length === 0 ? 'Всё в норме' : 'дедлайнов истекло');
-  s('sv-overdue-foot', overdueProjs.length + ' проектов просрочено');
+  s('sv-overdue-num', totalOverdue);
+  sc('sv-overdue-num', totalOverdue === 0 ? 'var(--green)' : 'var(--red)');
+  s('sv-overdue-sub', totalOverdue === 0 ? 'Всё в норме' :
+    (overdueDL.length && overdueTasksDL.length ? 'этапов и задач просрочено' :
+     overdueDL.length ? 'дедлайнов истекло' : 'задач просрочено'));
+  s('sv-overdue-foot', overdueProjs.length + ' проектов · ' + overdueTasksDL.length + ' задач просрочено');
 
   s('sv-velocity-num', velocity30);
   s('sv-velocity-foot', 'за 7 дней: ' + velocity7 + ' · завершено: ' + doneTasks.length + ' · всего: ' + allTasks.length);
