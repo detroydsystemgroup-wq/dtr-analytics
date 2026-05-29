@@ -23819,67 +23819,32 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 /* ══════════════════════════════════════════════════════
    SHARED CARD BASE — одна система для всех блоков
 ══════════════════════════════════════════════════════ */
+/* ══ McKINSEY: группы карточек — единые панели ══ */
 #page-smm .kpi-group,
 #page-smm .kpi-group-content,
 #page-smm .kpi-group-digital,
 #page-smm .kpi-group-audience,
 #page-smm .smm-block {
-  background: #0c0c10 !important;
-  border: 1px solid rgba(255,255,255,.07) !important;
-  border-radius: 14px !important;
+  background: rgba(255,255,255,.06) !important;
+  border: 1px solid rgba(255,255,255,.06) !important;
+  border-radius: 4px !important;
   position: relative !important;
   overflow: hidden !important;
   box-shadow: none !important;
-  margin-bottom: 0 !important;
+  margin-bottom: 8px !important;
   padding: 0 !important;
 }
-/* Gold top line */
+/* Убираем золотую полосу и glow */
 #page-smm .kpi-group::before,
 #page-smm .kpi-group-content::before,
 #page-smm .kpi-group-digital::before,
 #page-smm .kpi-group-audience::before,
-#page-smm .smm-block::before {
-  content: '' !important;
-  position: absolute !important;
-  top: 0 !important; left: 0 !important; right: 0 !important;
-  height: 2px !important;
-  background: var(--card-ac, rgba(184,146,58,.5)) !important;
-  opacity: .75 !important;
-  z-index: 2 !important;
-}
-/* Ambient glow */
+#page-smm .smm-block::before { display: none !important; }
 #page-smm .kpi-group::after,
 #page-smm .kpi-group-content::after,
 #page-smm .kpi-group-digital::after,
 #page-smm .kpi-group-audience::after,
-#page-smm .smm-block::after {
-  content: '' !important;
-  position: absolute !important;
-  top: -50px !important; left: -30px !important;
-  width: 220px !important; height: 140px !important;
-  background: radial-gradient(ellipse, var(--card-glow, rgba(184,146,58,.06)) 0%, transparent 70%) !important;
-  pointer-events: none !important;
-  z-index: 0 !important;
-}
-
-/* ══ HERO: Охват + Просмотры ══ */
-/* Скрываем цифровые показатели (отдельная группа) — заменяем на hero layout */
-#page-smm .kpi-group-content {
-  --card-ac: #3ecf8e;
-  --card-glow: rgba(62,207,142,.07);
-}
-#page-smm .kpi-group-digital {
-  --card-ac: #c9a84c;
-  --card-glow: rgba(184,146,58,.07);
-}
-#page-smm .kpi-group-audience {
-  --card-ac: rgba(255,255,255,.15);
-  --card-glow: rgba(255,255,255,.03);
-}
-#page-smm .smm-block {
-  --card-ac: #b8923a;
-  --card-glow: rgba(184,146,58,.05);
-}
+#page-smm .smm-block::after { display: none !important; }
 
 /* ── Контент: Reels / Stories / Kreatives grid ── */
 #page-smm .kpi-group-content,
@@ -23894,10 +23859,10 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   gap: 0 !important;
 }
 
-/* KPI card inside groups */
+/* KPI card inside groups — McKinsey flat cells */
 #page-smm .kpi-card {
   padding: 24px 26px !important;
-  background: transparent !important;
+  background: #0d0d0f !important;
   border: none !important;
   border-right: 1px solid rgba(255,255,255,.05) !important;
   border-radius: 0 !important;
@@ -23906,7 +23871,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   transition: background .15s !important;
 }
 #page-smm .kpi-card:last-child { border-right: none !important; }
-#page-smm .kpi-card:hover { background: rgba(255,255,255,.02) !important; transform: none !important; }
+#page-smm .kpi-card:hover { background: #101012 !important; transform: none !important; }
 
 /* Hide old icons */
 #page-smm .kpi-card-icon { display: none !important; }
@@ -23943,24 +23908,13 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 #page-smm .kpi-card-val.kpi-big {
   font-size: 34px !important;
 }
-/* Маленькие числа (Reels=12, Stories=60) */
-#page-smm .kpi-group-content .kpi-card-val {
-  font-size: 40px !important;
-  color: #c9a84c !important;
-}
-#page-smm .kpi-group-content .kpi-card:nth-child(2) .kpi-card-val {
-  color: #38b2ac !important;
-}
-#page-smm .kpi-group-content .kpi-card:nth-child(3) .kpi-card-val {
-  color: rgba(255,255,255,.35) !important;
-  font-size: 28px !important;
-  padding-top: 6px !important;
-}
-
-/* Цифровые — охват зелёный, просмотры золото */
-#page-smm .kpi-group-digital .kpi-card:nth-child(1) .kpi-card-val { color: #3ecf8e !important; }
-#page-smm .kpi-group-digital .kpi-card:nth-child(2) .kpi-card-val { color: #c9a84c !important; }
-#page-smm .kpi-group-digital .kpi-card:nth-child(3) .kpi-card-val { color: rgba(255,255,255,.35) !important; font-size:28px !important; padding-top:6px !important; }
+/* Числа — нейтральный белый, крупно */
+#page-smm .kpi-group-content .kpi-card-val { font-size: 44px !important; color: #e8e4de !important; }
+#page-smm .kpi-group-content .kpi-card:nth-child(2) .kpi-card-val { color: #e8e4de !important; }
+#page-smm .kpi-group-content .kpi-card:nth-child(3) .kpi-card-val { color: #6b6760 !important; font-size: 36px !important; padding-top: 0 !important; }
+#page-smm .kpi-group-digital .kpi-card:nth-child(1) .kpi-card-val { color: #e8e4de !important; }
+#page-smm .kpi-group-digital .kpi-card:nth-child(2) .kpi-card-val { color: #e8e4de !important; }
+#page-smm .kpi-group-digital .kpi-card:nth-child(3) .kpi-card-val { color: #6b6760 !important; font-size: 32px !important; padding-top: 0 !important; }
 
 /* Audience cards */
 #page-smm .kpi-card-audience {
