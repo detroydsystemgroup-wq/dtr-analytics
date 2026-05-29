@@ -37633,11 +37633,12 @@ async function loadOverview() {
   var archivedProjs = _allProjects.filter(function(p){ return p.status === 'archived'; });
   var doneProjs = activeProjects.filter(function(p){ return getProjectProgress(p.id).pct === 100; }).concat(archivedProjs);
 
-  // On-time delivery rate
+  // On-time delivery rate — только задачи активных проектов
   // БАГ 2 ИСПРАВЛЕН v2: done_at приоритет, updated_at как fallback.
   // Только done_at и updated_at — created_at не отражает момент закрытия.
   // Задачи без обеих дат не считаются выполненными в срок.
-  var tasksWithDeadline = allTasks.filter(function(t){ return t.deadline; });
+  var activeTasksOnly = allTasks.filter(function(t){ return activeProjectIds.indexOf(t.project_id) !== -1; });
+  var tasksWithDeadline = activeTasksOnly.filter(function(t){ return t.deadline; });
   var tasksOnTime = tasksWithDeadline.filter(function(t){
     if (!t.done) return false;
     var doneDate = t.done_at || t.updated_at;
@@ -37668,7 +37669,7 @@ async function loadOverview() {
   var overdueDL  = allStageDL.filter(function(s){ return new Date(s.deadline + 'T00:00:00') < today; });
   var weekDL     = allStageDL.filter(function(s){ var d=new Date(s.deadline + 'T00:00:00'); return d>=today && d<=weekEnd; });
   var futureDL   = allStageDL.filter(function(s){ return new Date(s.deadline + 'T00:00:00') > weekEnd; });
-  var overdueTasksDL = allTasks.filter(function(t){ return t.deadline && !t.done && new Date(t.deadline + 'T00:00:00') < today; });
+  var overdueTasksDL = activeTasksOnly.filter(function(t){ return t.deadline && !t.done && new Date(t.deadline + 'T00:00:00') < today; });
   var totalOverdue = overdueDL.length + overdueTasksDL.length;
 
   // ── CHURN RISK — считаем ДО healthScore, т.к. используется в формуле ──
