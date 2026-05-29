@@ -30914,9 +30914,10 @@ async function loadProjects() {
       .in('project_id', ids)
     _allStages = stages || []
 
+    const activeIds = _allProjects.filter(p => p.status !== 'archived').map(p => p.id)
     const { count: repCount } = await sb.from('reports')
       .select('*', { count: 'exact', head: true })
-      .in('project_id', ids)
+      .in('project_id', activeIds.length ? activeIds : ids)
     set('stat-reports', repCount || 0)
   } else {
     set('stat-reports', 0)
@@ -30926,8 +30927,9 @@ async function loadProjects() {
   const today = new Date(); today.setHours(0,0,0,0)
   const weekEnd = new Date(today); weekEnd.setDate(today.getDate() + 7)
 
+  const _activeProjsOnly = _allProjects.filter(p => p.status !== 'archived')
   let overdueCount = 0, deadlinesWeek = 0
-  _allProjects.forEach(p => {
+  _activeProjsOnly.forEach(p => {
     const pStages = _allStages.filter(s => s.project_id === p.id)
     const overdue = pStages.some(s => s.status !== 'completed' && s.deadline && new Date(s.deadline + 'T00:00:00') < today)
     if (overdue) overdueCount++
@@ -30935,8 +30937,8 @@ async function loadProjects() {
     deadlinesWeek += soon.length
   })
 
-  set('stat-total', _allProjects.length)
-  set('stat-active', _allProjects.filter(p => p.status !== 'archived').length)
+  set('stat-total', _activeProjsOnly.length)
+  set('stat-active', _activeProjsOnly.filter(p => getProjectProgress(p.id).pct < 100).length)
   set('stat-overdue', overdueCount)
   set('stat-deadlines-week', deadlinesWeek)
   // Средний LTV по активным проектам
@@ -36893,8 +36895,9 @@ async function deleteProject(id) {
     renderProjectGrid()
     renderCategoryTags()
     // Update stats
-    set('stat-total',  _allProjects.length)
-    set('stat-active', _allProjects.filter(p => p.status !== 'archived').length)
+    const _nonArch = _allProjects.filter(p => p.status !== 'archived')
+    set('stat-total',  _nonArch.length)
+    set('stat-active', _nonArch.filter(p => getProjectProgress(p.id).pct < 100).length)
   } else {
     showToast('Ошибка удаления: ' + error.message, 'error')
     if (btn) { btn.disabled = false; btn.textContent = 'Удалить' }
@@ -37140,7 +37143,7 @@ function renderDeadlinePanel() {
     _allStages.forEach(function(s) {
       if (!s.deadline) return;
       var proj = _allProjects.find(function(p){ return p.id === s.project_id; });
-      if (!proj) return;
+      if (!proj || proj.status === 'archived') return;
       var stageObj = (typeof STAGES !== 'undefined' && STAGES[s.stage_index]) || { name: 'Этап ' + s.stage_index, icon: '•' };
       var dl = new Date(s.deadline); dl.setHours(0,0,0,0);
       var diff = Math.round((dl - today) / 86400000);
