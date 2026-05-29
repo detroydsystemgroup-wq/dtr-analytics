@@ -41772,8 +41772,17 @@ function kbRenderProjectSidebar() {
   if (!list) return;
 
   var all = (typeof _allProjects !== 'undefined' && _allProjects) ? _allProjects : [];
-  var projects  = all.filter(function(p){ return p.status !== 'archived'; });
-  var archived  = all.filter(function(p){ return p.status === 'archived'; });
+  // Проект считается завершённым если status==='archived' ИЛИ прогресс 100%
+  function kbIsCompleted(p) {
+    if (p.status === 'archived') return true;
+    if (typeof getProjectProgress === 'function') {
+      var prog = getProjectProgress(p.id);
+      return prog && prog.pct === 100;
+    }
+    return false;
+  }
+  var projects  = all.filter(function(p){ return !kbIsCompleted(p); });
+  var archived  = all.filter(function(p){ return kbIsCompleted(p); });
 
   var projStat  = document.getElementById('kb-proj-stat-proj');
   var itemsStat = document.getElementById('kb-proj-stat-items');
