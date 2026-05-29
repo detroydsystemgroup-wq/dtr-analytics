@@ -33600,32 +33600,34 @@ function biShowDetail(row) {
   }
 
   // Строим HTML: сначала группы, внутри строки
-  let detailHTML = ''
-  ;['salary','opex','project'].forEach(cat => {
-    const rows = allExpDetail.filter(e=>e.cat===cat && (e.amount||0)>0)
-    if (!rows.length) return
-    const total = rows.reduce((s,e)=>s+(parseInt(e.amount)||0),0)
-    const col = catColors[cat]
-    detailHTML += `<div style="margin-bottom:12px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-        <span style="font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:${col};opacity:.7;">${catLabels[cat]}</span>
-        <span style="font-family:var(--font-mono);font-size:10px;color:${col};">${fmtM(total)} сум</span>
-      </div>`
-    rows.forEach(e => {
-      const pct = Math.round(e.amount/total*100)
-      detailHTML += `<div class="apl-cost-item" style="margin-bottom:3px;">
-        <span class="apl-cost-dot" style="background:${col};opacity:.6;"></span>
-        <span class="apl-cost-name" style="color:rgba(255,255,255,.6);">${esc(e.name||'—')}</span>
-        <div class="apl-cost-bar-wrap"><div class="apl-cost-track"><div class="apl-cost-fill" style="width:${pct}%;background:${col};opacity:.7;"></div></div></div>
-        <span class="apl-cost-val">${fmtM(e.amount)} сум</span>
-      </div>`
-    })
-    detailHTML += '</div>'
-  })
-  if (hours>0) detailHTML += `<div style="display:flex;justify-content:space-between;padding-top:6px;border-top:1px solid var(--brd);margin-top:4px;">
-    <span style="font-family:var(--font-display);font-size:11px;color:rgba(255,255,255,.4);">Отработано часов</span>
-    <span style="font-family:var(--font-mono);font-size:11px;color:#4ade80;">${_fmtH(hours)}</span>
-  </div>`
+  var detailHTML = '';
+  ['salary','opex','project'].forEach(function(cat) {
+    var rows = allExpDetail.filter(function(e){ return e.cat===cat && (e.amount||0)>0; });
+    if (!rows.length) return;
+    var total = rows.reduce(function(s,e){ return s+(parseInt(e.amount)||0); },0);
+    var col = catColors[cat];
+    detailHTML += '<div style="margin-bottom:12px;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
+        '<span style="font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:'+col+';opacity:.7;">'+catLabels[cat]+'</span>' +
+        '<span style="font-family:var(--font-mono);font-size:10px;color:'+col+';">'+fmtM(total)+' сум</span>' +
+      '</div>';
+    rows.forEach(function(e) {
+      var pct = Math.round(e.amount/total*100);
+      detailHTML +=
+        '<div class="apl-cost-item" style="margin-bottom:3px;">' +
+          '<span class="apl-cost-dot" style="background:'+col+';opacity:.6;"></span>' +
+          '<span class="apl-cost-name" style="color:rgba(255,255,255,.6);">'+esc(e.name||'—')+'</span>' +
+          '<div class="apl-cost-bar-wrap"><div class="apl-cost-track"><div class="apl-cost-fill" style="width:'+pct+'%;background:'+col+';opacity:.7;"></div></div></div>' +
+          '<span class="apl-cost-val">'+fmtM(e.amount)+' сум</span>' +
+        '</div>';
+    });
+    detailHTML += '</div>';
+  });
+  if (hours>0) detailHTML +=
+    '<div style="display:flex;justify-content:space-between;padding-top:6px;border-top:1px solid var(--brd);margin-top:4px;">' +
+      '<span style="font-family:var(--font-display);font-size:11px;color:rgba(255,255,255,.4);">Отработано часов</span>' +
+      '<span style="font-family:var(--font-mono);font-size:11px;color:#4ade80;">'+_fmtH(hours)+'</span>' +
+    '</div>';
 
   g('bi-detail-costs').innerHTML = detailHTML ||
     '<div style="font-family:var(--font-display);font-size:12px;color:rgba(255,255,255,.25);padding:8px 0;">Расходы не добавлены в P&L</div>'
@@ -33899,27 +33901,26 @@ async function openFinanceModal(projId, projName) {
 }
 
 function finRenderAll() {
-  ['salary','opex','project'].forEach(cat => {
-    const listId = 'fin-list-' + cat
-    const list = g(listId); if (!list) return
-    const rows = _finAllExpenses.filter(e => e.cat === cat)
+  var delIcon = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+  ['salary','opex','project'].forEach(function(cat) {
+    var listId = 'fin-list-' + cat;
+    var list = g(listId); if (!list) return;
+    var rows = _finAllExpenses.filter(function(e){ return e.cat === cat; });
     if (!rows.length) {
-      const hints = { salary:'Сотрудники и подрядчики не добавлены', opex:'Аренда, инструменты, реклама...', project:'Съёмка, реквизит, студия...' }
-      list.innerHTML = '<div style="font-size:11px;color:var(--txt3);font-family:var(--font-display);padding:6px 0;">'+hints[cat]+'</div>'
-      return
+      var hints = { salary:'Сотрудники и подрядчики не добавлены', opex:'Аренда, инструменты, реклама...', project:'Съёмка, реквизит, студия...' };
+      list.innerHTML = '<div style="font-size:11px;color:var(--txt3);font-family:var(--font-display);padding:6px 0;">'+hints[cat]+'</div>';
+      return;
     }
-    list.innerHTML = rows.map((e, localI) => {
-      const globalI = _finAllExpenses.indexOf(e)
-      const ph = cat==='salary' ? 'Имя, роль (Аслан — SMM)' : cat==='opex' ? 'Статья (Аренда офиса)' : 'Статья (Съёмка, студия)'
-      return `<div class="fin-row-item">
-        <input placeholder="\${ph}" value="\${esc(e.name||'')}" oninput="_finRowUpdate(\${globalI},'name',this.value)">
-        <input type="number" placeholder="Сумма" value="\${e.amount||''}" oninput="_finRowUpdate(\${globalI},'amount',+this.value)" style="-moz-appearance:textfield;">
-        <button class="fin-row-del" onclick="_finRowDel(\${globalI})">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>`
-    }).join('')
-  })
+    list.innerHTML = rows.map(function(e) {
+      var gi = _finAllExpenses.indexOf(e);
+      var ph = cat==='salary' ? 'Имя, роль (Аслан — SMM)' : cat==='opex' ? 'Статья (Аренда офиса)' : 'Статья (Съёмка, студия)';
+      return '<div class="fin-row-item">' +
+        '<input placeholder="' + ph + '" value="' + esc(e.name||'') + '" oninput="_finRowUpdate(' + gi + ',&quot;name&quot;,this.value)">' +
+        '<input type="number" placeholder="Сумма" value="' + (e.amount||'') + '" oninput="_finRowUpdate(' + gi + ',&quot;amount&quot;,+this.value)" style="-moz-appearance:textfield;">' +
+        '<button class="fin-row-del" onclick="_finRowDel(' + gi + ')">' + delIcon + '</button>' +
+      '</div>';
+    }).join('');
+  });
 }
 
 function finAddRow(cat) {
@@ -33955,13 +33956,13 @@ function finRecalc() {
 
   // Детальные строки в P&L
   function renderDetail(containerId, cat) {
-    const el = g(containerId); if(!el) return
-    const rows = _finAllExpenses.filter(e=>e.cat===cat && e.name && e.amount>0)
-    el.innerHTML = rows.map(e=>
-      `<div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.3);padding:1px 0;">
-        <span>\${esc(e.name)}</span><span>\${fmtM(e.amount)} сум</span>
-      </div>`
-    ).join('')
+    var el = g(containerId); if(!el) return;
+    var rows = _finAllExpenses.filter(function(e){ return e.cat===cat && e.name && e.amount>0; });
+    el.innerHTML = rows.map(function(e){
+      return '<div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.3);padding:1px 0;">' +
+        '<span>' + esc(e.name) + '</span><span>' + fmtM(e.amount) + ' сум</span>' +
+      '</div>';
+    }).join('');
   }
   renderDetail('fpv-salary-detail',  'salary')
   renderDetail('fpv-opex-detail',    'opex')
