@@ -31438,21 +31438,37 @@ function updateCounter() {
   updateFilesToggleCount()
 }
 
-// ── Конвертация Excel serial → DD.MM.YYYY ──────────────────
-// ИСПРАВЛЕНИЕ БАГ 2: строковые даты нормализуются (1.5.2025 → 01.05.2025)
+// ── Конвертация даты из Excel → DD.MM.YYYY ─────────────────
+// Поддерживает: datetime объект из xlsx, serial number, строку
 function excelDateToStr(v) {
+  if (v == null) return ''
+
+  // JS Date объект (SheetJS с cellDates:true или после JSON.parse из Supabase)
+  if (v instanceof Date) {
+    const dd = String(v.getUTCDate()).padStart(2,'0')
+    const mm = String(v.getUTCMonth()+1).padStart(2,'0')
+    return `${dd}.${mm}.${v.getUTCFullYear()}`
+  }
+
+  const s = String(v).trim()
+
+  // ISO-строка: "2026-03-01T00:00:00.000Z" или "2026-03-01 00:00:00"
+  const isoMatch = s.match(/^(\d{4})-(\d{2})-(\d{2})/)
+  if (isoMatch) {
+    return `${isoMatch[3]}.${isoMatch[2]}.${isoMatch[1]}`
+  }
+
+  // Excel serial number
   const n = +v
   if (!isNaN(n) && n >= 40000 && n <= 60000) {
-    // Excel serial → JS Date (UTC, без сдвига часового пояса)
     const ms = (n - 25569) * 86400 * 1000
     const d = new Date(ms)
     const dd = String(d.getUTCDate()).padStart(2,'0')
-    const mm = String(d.getUTCMonth() + 1).padStart(2,'0')
-    const yyyy = d.getUTCFullYear()
-    return `${dd}.${mm}.${yyyy}`
+    const mm = String(d.getUTCMonth()+1).padStart(2,'0')
+    return `${dd}.${mm}.${d.getUTCFullYear()}`
   }
-  // Строковая дата: нормализуем нули (1.5.2025 → 01.05.2025)
-  const s = String(v).trim()
+
+  // Строка DD.MM.YYYY или D.M.YYYY — нормализуем нули
   const parts = s.split('.')
   if (parts.length === 3) {
     const dd = parts[0].padStart(2,'0')
@@ -31460,6 +31476,7 @@ function excelDateToStr(v) {
     const yyyy = parts[2].length === 2 ? '20' + parts[2] : parts[2]
     return `${dd}.${mm}.${yyyy}`
   }
+
   return s
 }
 
@@ -31506,26 +31523,26 @@ function parseSheet(rows, key) {
   let hi = -1
   for (let i = 0; i < Math.min(rows.length, 10); i++) {
     const r = rows[i].map(c => String(c ?? '').toLowerCase())
-    if (r.some(c => c.includes('учёт') || c.includes('учет') || c.includes('час закрытия') || c.includes('блюдо'))) { hi = i; break }
+    if (r.some(c => c.includes('учёт') || c.includes('учет') || c.includes('час закрытия') || c.includes('блюдо') || c.includes('торговое предприятие') || c.includes('тип заказа'))) { hi = i; break }
   }
   if (hi < 0) hi = 4
 
   const H = rows[hi].map(c => String(c ?? '').toLowerCase().trim())
-  const ci = terms => H.findIndex(h => terms.some(t => h.includes(t)))
+  // Поиск колонок по заголовкам (регистронезависимый, частичное совпадение)
   const rc = H.findIndex(h => h.includes('сумма со скидкой'))
-  const cc = H.findIndex(h => h.includes('чеков'))
-  const qc = H.findIndex(h => h.includes('количество блюд'))
+  // Чеков — "чеков" или "кол-во чеков"
+  const cc = H.findIndex(h => h.includes('чеков') || h.includes('чек') && !h.includes('ср.'))
+  // Количество блюд — "количество блюд" или просто "количество"
+  const qc = H.findIndex(h => h.includes('количество блюд') || h.includes('кол-во блюд'))
   const tc = H.findIndex(h => h.includes('тип заказа'))
 
   const isBranch = key === 'b5' || key === 'd5'
-  // Improved type detection: check multiple header cells, not just H[0]
-  const headerStr = H.join(' ')
-  const isItems = H.some(h => h.includes('блюд') || h.includes('меню') || h.includes('блюда'))
-  const isTypes = tc >= 0
-  const isHourly = H.some(h => h.includes('час') || h.includes('time') || h.match(/\d{1,2}:\d{2}/))
-  // key-based override: b2/d2 = hourly, b3/d3 = items, b4/d4 = types
+  // Определение типа: сначала по ключу слота (надёжнее), потом по заголовкам
   const keyTypeMap = { b2:'hourly', d2:'hourly', b3:'items', d3:'items', b4:'types', d4:'types' }
   const keyType = keyTypeMap[key]
+  const isItems  = H.some(h => h.includes('блюдо') || h.includes('меню'))
+  const isTypes  = tc >= 0
+  const isHourly = H.some(h => h === 'час закрытия' || h.includes('time') || /^\d{1,2}$/.test(H[0]))
   const type = isBranch ? 'branch' : keyType || (isItems ? 'items' : isTypes ? 'types' : isHourly ? 'hourly' : 'daily')
 
   if (type === 'branch') return parseBranch(rows, hi, rc, cc)
@@ -31602,21 +31619,29 @@ function parseSheet(rows, key) {
 }
 
 function parseBranch(rows, hi, rc, cc) {
+  // Структура 888.xlsx: [Торговое предприятие | Учетный день | Сумма со скидкой | Чеков]
+  // r[0] = название филиала (или None для продолжения), r[1] = дата (datetime/string)
+  // rc = индекс колонки суммы, cc = индекс колонки чеков
   const branches = {}
   let cur = ''
+  const daySet = new Set()
+
   for (let i = hi + 1; i < rows.length; i++) {
     const r = rows[i]
     const v0 = String(r[0] ?? '').trim()
-    const v1 = r[1]
+    const v1 = excelDateToStr(String(r[1] ?? '').trim())  // дата строкой DD.MM.YYYY
     const rev = pn(r[rc]), chk = pn(r[cc])
     const lo = v0.toLowerCase()
     if (lo.includes('всего') || lo.includes('итого')) continue
-    if (v0 && v0 !== 'null') {
+    if (v0 && v0 !== 'null' && v0 !== 'None') {
       cur = v0
       if (!branches[cur]) branches[cur] = { rev:0, chk:0, n:0, rpd:0, cpd:0, avg:0 }
-      if (v1 && (rev > 0 || chk > 0)) { branches[cur].rev += rev; branches[cur].chk += chk; branches[cur].n++ }
-    } else if (cur && v1 && (rev > 0 || chk > 0)) {
-      branches[cur].rev += rev; branches[cur].chk += chk; branches[cur].n++
+    }
+    if (cur && (rev > 0 || chk > 0)) {
+      branches[cur].rev += rev
+      branches[cur].chk += chk
+      branches[cur].n++
+      if (v1) daySet.add(v1)
     }
   }
   Object.values(branches).forEach(b => {
@@ -31626,7 +31651,8 @@ function parseBranch(rows, hi, rc, cc) {
   })
   const totalRev = Object.values(branches).reduce((s,b) => s+b.rev, 0)
   const totalChk = Object.values(branches).reduce((s,b) => s+b.chk, 0)
-  return { type:'branch', rows:[], meta:{ totalRev, totalChk, days:0 }, branches }
+  const days = daySet.size || 1
+  return { type:'branch', rows:[], meta:{ totalRev, totalChk, days }, branches }
 }
 
 // ══════════════════════════════════════════════
@@ -31800,17 +31826,14 @@ function runAnalysis() {
 
   updateAllLabels()
 
-  // ИСПРАВЛЕНИЕ БАГ 3: если days=0 — пробуем восстановить из rows.length,
-  // только если rows пустые — предупреждаем (данные могли быть сохранены старым кодом)
-  const bD_raw = b.meta.days || b.rows?.length || 0
-  const dD_raw = d.meta.days || d.rows?.length || 0
-  if (!bD_raw || !dD_raw) {
-    const which = !bD_raw ? 'Базовый период (файл 1)' : 'Текущий период (файл 2)'
-    showToast('⚠️', which + ': не удалось определить количество дней. Загрузите ежедневный отчёт заново.', 'warn')
-    console.error('[runAnalysis] days=0 and no rows fallback, b.meta.days='+b.meta.days+', d.meta.days='+d.meta.days)
-    return
-  }
-  const bD = bD_raw, dD = dD_raw
+  // БАГ 3 FIX: days из meta, или из rows.length, или минимум 1
+  // (данные из Supabase могли быть сохранены старым кодом с days=0)
+  const bRows = Array.isArray(b.rows) ? b.rows : []
+  const dRows = Array.isArray(d.rows) ? d.rows : []
+  const bD = b.meta?.days || bRows.length || 1
+  const dD = d.meta?.days || dRows.length || 1
+  if (bD === 1 && !b.meta?.days && !bRows.length) console.warn('[runAnalysis] b1: нет days и rows — используем 1')
+  if (dD === 1 && !d.meta?.days && !dRows.length) console.warn('[runAnalysis] d1: нет days и rows — используем 1')
   const bR = b.meta.totalRev, dR = d.meta.totalRev
   const bC = b.meta.totalChk, dC = d.meta.totalChk
   const bRD = bR/bD, dRD = dR/dD, bCD = bC/bD, dCD = dC/dD
