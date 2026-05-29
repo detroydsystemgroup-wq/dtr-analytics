@@ -21931,72 +21931,74 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   gap: 10px;
 }
 
+/* ── НОВЫЙ ДИЗАЙН КАРТОЧКИ ПРОЕКТА (Вариант 2 — строка с прогресс-баром маржи) ── */
 .bi-proj-row {
   display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 20px 24px;
+  flex-direction: column;
+  padding: 0;
   cursor: pointer;
   transition: all .2s cubic-bezier(.16,1,.3,1);
   position: relative;
-  /* Каждая строка — самостоятельная карточка */
-  background: var(--bg3);
-  border: 1px solid rgba(255,255,255,.08);
+  background: #1a1a1a;
+  border: 1px solid rgba(255,255,255,.09);
   border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0,0,0,.25);
+  box-shadow: 0 2px 12px rgba(0,0,0,.3);
+  overflow: hidden;
 }
-.bi-proj-row::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 12px; bottom: 12px; width: 3px;
-  background: transparent;
-  border-radius: 0 3px 3px 0;
-  transition: background .2s;
-}
+.bi-proj-row::before { display: none; }
 .bi-proj-row:hover {
-  background: rgba(255,255,255,.035);
-  border-color: rgba(255,255,255,.13);
-  box-shadow: 0 4px 20px rgba(0,0,0,.35);
-  transform: translateY(-1px);
+  background: #1e1e1e;
+  border-color: rgba(255,255,255,.15);
+  box-shadow: 0 6px 24px rgba(0,0,0,.4);
 }
-.bi-proj-row:hover::before { background: rgba(184,146,58,.6); }
 .bi-row-selected {
   background: rgba(184,146,58,.07) !important;
   border-color: rgba(184,146,58,.25) !important;
 }
-.bi-row-selected::before { background: var(--a) !important; }
+.bi-row-selected::before { display: none; }
 
-/* Левая колонка — название */
+/* Верхняя полоса карточки: логотип + имя + маржа + кнопка */
 .bi-proj-info {
-  flex: 0 0 260px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px 0 20px;
+  flex: 1;
   min-width: 0;
 }
 
-/* Метрики — 5 блоков одинакового размера */
+/* Строка метрик */
 .bi-metrics-row {
   display: flex;
-  gap: 10px;
-  flex: 1;
-  align-items: stretch;
+  gap: 0;
+  padding: 12px 20px 0 20px;
 }
 .bi-mblock {
   flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  gap: 8px;
-  padding: 16px 14px;
-  min-height: 72px;
-  min-width: 110px;
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 12px;
-  transition: border-color .15s, background .15s;
+  gap: 4px;
+  padding: 0;
+  min-height: unset;
+  min-width: unset;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  transition: none;
+  border-right: 1px solid rgba(255,255,255,.07);
+  padding-right: 20px;
+  margin-right: 20px;
+}
+.bi-mblock:last-child {
+  border-right: none;
+  padding-right: 0;
+  margin-right: 0;
 }
 .bi-proj-row:hover .bi-mblock {
-  border-color: rgba(255,255,255,.12);
-  background: rgba(255,255,255,.06);
+  border-color: rgba(255,255,255,.07);
+  background: transparent;
 }
 .bi-mb-lbl {
   font-family: var(--font-mono);
@@ -22008,25 +22010,63 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 }
 .bi-mb-val {
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   letter-spacing: -.03em;
   font-variant-numeric: tabular-nums;
   line-height: 1;
   white-space: nowrap;
 }
-/* Маржа — особый стиль */
-.bi-mb-margin { border-width: 1.5px; }
+/* Маржа — скрываем в новом дизайне (показываем в хедере) */
+.bi-mb-margin { display: none; }
 
-/* Кнопка действия — с отступом от метрик */
-.bi-row-action { flex-shrink: 0; margin-left: 8px; }
+/* Прогресс-бар маржи — нижняя полоска */
+.bi-margin-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px 14px 20px;
+}
+.bi-margin-bar-track {
+  flex: 1;
+  height: 4px;
+  background: rgba(255,255,255,.08);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.bi-margin-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: #4ade80;
+  transition: width .5s cubic-bezier(.16,1,.3,1);
+}
+.bi-margin-bar-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(255,255,255,.3);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Маржа-бейдж в хедере карточки */
+.bi-header-margin {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* Кнопка действия */
+.bi-row-action { flex-shrink: 0; margin-left: 12px; }
 .bi-action-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 100px;
-  height: 40px;
-  padding: 0 20px;
+  min-width: 96px;
+  height: 36px;
+  padding: 0 18px;
   border-radius: 10px;
   font-family: var(--font-display);
   font-size: 12px;
@@ -22034,16 +22074,15 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   cursor: pointer;
   transition: all .18s cubic-bezier(.16,1,.3,1);
   white-space: nowrap;
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.12);
-  color: rgba(255,255,255,.55);
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.13);
+  color: rgba(255,255,255,.65);
   letter-spacing: -.01em;
 }
 .bi-action-btn:hover {
-  background: rgba(255,255,255,.1);
+  background: rgba(255,255,255,.12);
   border-color: rgba(255,255,255,.22);
-  color: rgba(255,255,255,.9);
-  transform: translateY(-1px);
+  color: rgba(255,255,255,.95);
 }
 .bi-action-btn.bi-action-primary {
   background: rgba(184,146,58,.14);
@@ -22054,7 +22093,6 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   background: rgba(184,146,58,.24);
   border-color: rgba(184,146,58,.6);
   color: #dec17a;
-  transform: translateY(-1px);
 }
 /* Статус-бейдж внутри строки */
 .bi-status-badge {
@@ -33474,53 +33512,55 @@ function biRenderTable() {
     const profitColor = profit===null?'rgba(255,255,255,.4)':profit>=0?'#4ade80':'#f87171'
     const profitVal   = profit===null?'—':(profit>=0?'+':'')+fmtM(profit)
 
+    // Прогресс-бар цвет: зелёный ≥60%, жёлтый ≥20%, красный <20%
+    const barColor = marginPct===null ? 'rgba(255,255,255,.15)' : marginPct>=60 ? '#4ade80' : marginPct>=20 ? '#4ade80' : '#f87171'
+    const barWidth = marginPct!==null ? Math.max(0, Math.min(100, marginPct)) : 0
+
     return `<div class="bi-proj-row${isSelected?' bi-row-selected':''}" onclick="biSelectProject('${p.id}')">
 
+      <!-- Верхняя строка: логотип + название + категория + маржа% + кнопка -->
       <div class="bi-proj-info">
-        <div style="display:flex;align-items:center;gap:16px;">
-          <div style="width:62px;height:62px;border-radius:14px;background:${col}18;border:1.5px solid ${col}44;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:26px;font-weight:800;color:${col};flex-shrink:0;${p.photo_url?'overflow:hidden;padding:0;':''}">${p.photo_url?`<img src="${p.photo_url}" style="width:100%;height:100%;object-fit:cover;">`:p.name[0]}</div>
-          <div style="min-width:0;">
-            <div style="font-family:var(--font-display);font-size:18px;font-weight:800;color:#f0ece6;letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:6px;">${esc(p.name)}</div>
-            <div style="display:flex;align-items:center;gap:6px;">
-              <span style="font-family:var(--font-mono);font-size:10px;color:${col};background:${col}15;border:1px solid ${col}35;border-radius:6px;padding:3px 10px;letter-spacing:.04em;white-space:nowrap;">${esc(p.category||'—')}</span>
-              ${statusHtml}
-            </div>
+        <div style="width:48px;height:48px;border-radius:12px;background:${col}18;border:1.5px solid ${col}44;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:20px;font-weight:800;color:${col};flex-shrink:0;${p.photo_url?'overflow:hidden;padding:0;':''}">${p.photo_url?`<img src="${p.photo_url}" style="width:100%;height:100%;object-fit:cover;">`:p.name[0]}</div>
+        <div style="min-width:0;">
+          <div style="font-family:var(--font-display);font-size:16px;font-weight:800;color:#f0ece6;letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:5px;">${esc(p.name)}</div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-family:var(--font-mono);font-size:10px;color:${col};background:${col}15;border:1px solid ${col}35;border-radius:6px;padding:2px 9px;letter-spacing:.04em;white-space:nowrap;">${esc(p.category||'—')}</span>
+            ${statusHtml}
           </div>
+        </div>
+        <div class="bi-header-margin" style="color:${mColor};">${marginPct!==null?marginPct+'%':'—'}</div>
+        <div class="bi-row-action" onclick="event.stopPropagation()">
+          <button class="bi-action-btn${!hasBudget?' bi-action-primary':''}"
+            onclick="openFinanceModal('${p.id}','${esc(p.name)}')">${!hasBudget?'+ Задать':'Изменить'}</button>
         </div>
       </div>
 
+      <!-- Средняя строка: метрики -->
       <div class="bi-metrics-row">
-
         <div class="bi-mblock bi-mb-budget">
           <div class="bi-mb-lbl">Бюджет</div>
-          <div class="bi-mb-val" style="color:${hasBudget?'rgba(255,255,255,.9)':'rgba(255,255,255,.2)'};">${hasBudget?fmtM(budget):'—'}</div>
+          <div class="bi-mb-val" style="color:${hasBudget?'rgba(255,255,255,.9)':'rgba(255,255,255,.2)'};">${hasBudget?fmtM(budget)+' сум':'—'}</div>
         </div>
-
         <div class="bi-mblock bi-mb-cost">
           <div class="bi-mb-lbl">Расходы</div>
-          <div class="bi-mb-val" style="color:${totalCost>0?'#f87171':'rgba(255,255,255,.2)'};">${totalCost>0?fmtM(totalCost):'—'}</div>
+          <div class="bi-mb-val" style="color:${totalCost>0?'#f87171':'rgba(255,255,255,.2)'};">${totalCost>0?fmtM(totalCost)+' сум':'—'}</div>
         </div>
-
         <div class="bi-mblock bi-mb-profit">
           <div class="bi-mb-lbl">Прибыль</div>
-          <div class="bi-mb-val" style="color:${profitColor};">${profitVal}</div>
+          <div class="bi-mb-val" style="color:${profitColor};">${profitVal !== '—' ? profitVal+' сум' : '—'}</div>
         </div>
-
-        <div class="bi-mblock bi-mb-margin" style="background:${mBg};border-color:${mBdr};">
-          <div class="bi-mb-lbl" style="color:${mColor};opacity:.7;">Маржа</div>
-          <div class="bi-mb-val" style="color:${mColor};font-size:18px;font-weight:800;">${marginPct!==null?marginPct+'%':'—'}</div>
-        </div>
-
         <div class="bi-mblock bi-mb-hours">
           <div class="bi-mb-lbl">Часы</div>
           <div class="bi-mb-val" style="color:${hours>0?'rgba(34,211,238,.9)':'rgba(255,255,255,.2)'};">${hours>0?hours+'h':'—'}</div>
         </div>
-
       </div>
 
-      <div class="bi-row-action" onclick="event.stopPropagation()">
-        <button class="bi-action-btn${!hasBudget?' bi-action-primary':''}"
-          onclick="openFinanceModal('${p.id}','${esc(p.name)}')">${!hasBudget?'+ Задать':'Изменить'}</button>
+      <!-- Нижняя строка: прогресс-бар маржи -->
+      <div class="bi-margin-bar-wrap">
+        <div class="bi-margin-bar-track">
+          <div class="bi-margin-bar-fill" style="width:${barWidth}%;background:${barColor};"></div>
+        </div>
+        <div class="bi-margin-bar-label">${marginPct!==null?marginPct+'% маржа':'нет данных'}</div>
       </div>
 
       ${isSelected && r.allExp && r.allExp.length ? biDetailExpand(r) : ''}
