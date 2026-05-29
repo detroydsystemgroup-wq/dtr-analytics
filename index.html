@@ -34318,10 +34318,12 @@ function renderTasksForStage(stageIndex) {
 
 async function _toggleTask(taskId, stageIndex, newDone) {
   try {
-    await sb.from('stage_tasks').update({ done: newDone }).eq('id', taskId)
+    var taskUpdate = { done: newDone };
+    if (newDone) taskUpdate.done_at = new Date().toISOString();
+    await sb.from('stage_tasks').update(taskUpdate).eq('id', taskId)
     const arr = tasksData[stageIndex] || []
     const t = arr.find(x => x.id === taskId)
-    if (t) t.done = newDone
+    if (t) { t.done = newDone; if (newDone) t.done_at = taskUpdate.done_at; }
     renderTasksForStage(stageIndex)
   } catch(e) { console.warn('Toggle task failed:', e) }
 }
@@ -37522,16 +37524,18 @@ async function loadOverview() {
   // Velocity: tasks closed last 30 days
   var thirtyAgo = new Date(today); thirtyAgo.setDate(today.getDate() - 30);
   var sevenAgo  = new Date(today); sevenAgo.setDate(today.getDate() - 7);
-  // Velocity: done_at если есть, иначе updated_at как приближение
-  var velocity30 = allTasks.filter(function(t){
-    if (!t.done) return false;
-    var d = t.done_at || t.updated_at;
-    return d && new Date(d) >= thirtyAgo;
+  // Velocity: done_at → updated_at → created_at как fallback
+  // Если ни одна дата не найдена — считаем задачу в 30-дневное окно
+  var doneTasks = allTasks.filter(function(t){ return t.done; });
+  var velocity30 = doneTasks.filter(function(t){
+    var d = t.done_at || t.updated_at || t.created_at;
+    if (!d) return true; // нет дат — считаем как recent
+    return new Date(d) >= thirtyAgo;
   }).length;
-  var velocity7 = allTasks.filter(function(t){
-    if (!t.done) return false;
-    var d = t.done_at || t.updated_at;
-    return d && new Date(d) >= sevenAgo;
+  var velocity7 = doneTasks.filter(function(t){
+    var d = t.done_at || t.updated_at || t.created_at;
+    if (!d) return false;
+    return new Date(d) >= sevenAgo;
   }).length;
 
   // Overdue deadlines
@@ -37601,7 +37605,7 @@ async function loadOverview() {
   s('sv-overdue-foot', overdueProjs.length + ' проектов просрочено');
 
   s('sv-velocity-num', velocity30);
-  s('sv-velocity-foot', 'за 7 дней: ' + velocity7 + ' · всего задач: ' + allTasks.length);
+  s('sv-velocity-foot', 'за 7 дней: ' + velocity7 + ' · завершено: ' + doneTasks.length + ' · всего: ' + allTasks.length);
 
   // ─────────────────────────────
   // RENDER: Risk row
