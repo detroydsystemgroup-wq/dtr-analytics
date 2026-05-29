@@ -37537,7 +37537,9 @@ async function loadOverview() {
   } catch(e) {}
 
   // ── Core computations (только активные проекты) ──
-  var totalStages = activeProjects.length * 9;
+  // БАГ 1 ИСПРАВЛЕН: считаем реальное количество этапов из БД,
+  // а не activeProjects.length * 9 (захардкоженное значение).
+  var totalStages = activeStagesAll.length;
   var completedStages = activeStagesAll.filter(function(s){ return s.status === 'completed'; }).length;
   var activeStages = activeStagesAll.filter(function(s){ return s.status === 'active'; }).length;
   var globalPct = totalStages ? Math.round(completedStages / totalStages * 100) : 0;
@@ -37546,30 +37548,36 @@ async function loadOverview() {
   var doneProjs = activeProjects.filter(function(p){ return getProjectProgress(p.id).pct === 100; }).concat(archivedProjs);
 
   // On-time delivery rate
+  // БАГ 2 ИСПРАВЛЕН: используем только done_at как дату выполнения.
+  // updated_at и created_at НЕ используем — они меняются при любом редактировании
+  // задачи и не отражают момент фактического закрытия.
+  // Если done_at отсутствует и задача помечена done — считаем просроченной
+  // (benefit of doubt убран: нет даты закрытия = нет доказательства своевременности).
   var tasksWithDeadline = allTasks.filter(function(t){ return t.deadline; });
   var tasksOnTime = tasksWithDeadline.filter(function(t){
     if (!t.done) return false;
+    if (!t.done_at) return false; // нет точной даты закрытия — не считаем в срок
     var dl = new Date(t.deadline); dl.setHours(23,59,59,0);
-    // done_at → updated_at → created_at → считаем в срок (нет данных = benefit of doubt)
-    var doneDate = t.done_at || t.updated_at || t.created_at;
-    if (!doneDate) return true;
-    return new Date(doneDate) <= dl;
+    return new Date(t.done_at) <= dl;
   });
   var onTimeRate = tasksWithDeadline.length ? Math.round(tasksOnTime.length / tasksWithDeadline.length * 100) : null;
 
   // Velocity: tasks closed last 30 days
   var thirtyAgo = new Date(today); thirtyAgo.setDate(today.getDate() - 30);
   var sevenAgo  = new Date(today); sevenAgo.setDate(today.getDate() - 7);
-  // Velocity: done_at → updated_at → created_at как fallback
-  // Если ни одна дата не найдена — считаем задачу в 30-дневное окно
   var doneTasks = allTasks.filter(function(t){ return t.done; });
+  // БАГ 3 ИСПРАВЛЕН: задачи без какой-либо даты НЕ попадают в velocity.
+  // Раньше: if (!d) return true — это искусственно завышало показатель,
+  // добавляя в счётчик старые задачи без дат.
+  // Теперь: если нет done_at — пробуем updated_at, но только если задача помечена done.
+  // Если нет вообще никакой даты — задача из velocity исключается.
   var velocity30 = doneTasks.filter(function(t){
-    var d = t.done_at || t.updated_at || t.created_at;
-    if (!d) return true; // нет дат — считаем как recent
+    var d = t.done_at || t.updated_at;
+    if (!d) return false; // нет даты — не включаем в velocity
     return new Date(d) >= thirtyAgo;
   }).length;
   var velocity7 = doneTasks.filter(function(t){
-    var d = t.done_at || t.updated_at || t.created_at;
+    var d = t.done_at || t.updated_at;
     if (!d) return false;
     return new Date(d) >= sevenAgo;
   }).length;
@@ -37584,11 +37592,15 @@ async function loadOverview() {
   var totalOverdue = overdueDL.length + overdueTasksDL.length;
 
   // Health score
+  // БАГ 7 ИСПРАВЛЕН: добавлен штраф за churn risk проекты (просрочка теперь тоже
+  // влияет на health через churn). Формула сохраняет 4 компонента по 100 баллов,
+  // но churnCount уменьшает компонент "нет просроченных проектов".
   var healthScore = Math.max(0, Math.min(100, Math.round(
     globalPct * 0.35 +
     (overdueProjs.length === 0 ? 25 : Math.max(0, 25 - overdueProjs.length * 8)) +
     (onTimeRate !== null ? onTimeRate * 0.25 : 15) +
-    (overdueDL.length === 0 ? 15 : Math.max(0, 15 - overdueDL.length * 3))
+    (overdueDL.length === 0 ? 15 : Math.max(0, 15 - overdueDL.length * 3)) -
+    churnCount * 5  // каждый churn risk проект снимает 5 баллов
   )));
   var healthColor = healthScore >= 75 ? 'var(--green)' : healthScore >= 45 ? 'var(--amber)' : 'var(--red)';
   var healthLabel = healthScore >= 75 ? 'Отличное' : healthScore >= 45 ? 'Требует внимания' : 'Критическое';
@@ -37609,24 +37621,26 @@ async function loadOverview() {
   var revPerHour = (totalMRR > 0 && totalHours > 0) ? Math.round(totalMRR / totalHours) : null;
 
   // Churn risk: проекты без активности 21+ дней (только не завершённые из активных)
+  // БАГ 5 ИСПРАВЛЕН: добавлен второй критерий — просроченный проект тоже
+  // попадает в churn risk, потому что срыв дедлайна = прямой риск потери клиента.
   var twentyOneAgo = new Date(today); twentyOneAgo.setDate(today.getDate() - 21);
   var churnOnlyActive = activeProjects.filter(function(p){ return getProjectProgress(p.id).pct < 100; });
   var churnRisk = churnOnlyActive.filter(function(p) {
-    // Последняя активность в истории этапов
+    // Критерий 1: просроченный проект — всегда churn risk
+    if (isProjectOverdue(p.id)) return true;
+    // Критерий 2: нет активности 21+ дней
     var lastStage = stageHistory.find(function(h){ return h.project_id === p.id; });
     var lastStageDate = lastStage ? new Date(lastStage.created_at || lastStage.changed_at) : null;
-    // Последняя активность в задачах
     var projTasks = allTasks.filter(function(t){ return t.project_id === p.id; });
     var lastTaskDate = null;
     projTasks.forEach(function(t) {
       var d = new Date(t.updated_at || t.created_at);
       if (!lastTaskDate || d > lastTaskDate) lastTaskDate = d;
     });
-    // Берём самую свежую активность из обоих источников
     var lastActivity = null;
     if (lastStageDate && lastTaskDate) lastActivity = lastStageDate > lastTaskDate ? lastStageDate : lastTaskDate;
     else lastActivity = lastStageDate || lastTaskDate;
-    if (!lastActivity) return true; // нет активности вообще
+    if (!lastActivity) return true;
     return lastActivity < twentyOneAgo;
   });
   var churnCount = churnRisk.length;
@@ -37662,10 +37676,14 @@ async function loadOverview() {
 
   s('sv-overdue-num', totalOverdue);
   sc('sv-overdue-num', totalOverdue === 0 ? 'var(--green)' : 'var(--red)');
-  s('sv-overdue-sub', totalOverdue === 0 ? 'Всё в норме' :
-    (overdueDL.length && overdueTasksDL.length ? 'этапов и задач просрочено' :
-     overdueDL.length ? 'дедлайнов истекло' : 'задач просрочено'));
-  s('sv-overdue-foot', overdueProjs.length + ' проектов · ' + overdueTasksDL.length + ' задач просрочено');
+  // БАГ 4 ИСПРАВЛЕН: подпись теперь точно отражает состав числа —
+  // раздельно показывает этапы и задачи, чтобы не было противоречия
+  // между главным числом и подписью "0 задач просрочено".
+  var overdueSubParts = [];
+  if (overdueDL.length) overdueSubParts.push(overdueDL.length + ' ' + (overdueDL.length === 1 ? 'этап' : 'этапов'));
+  if (overdueTasksDL.length) overdueSubParts.push(overdueTasksDL.length + ' ' + (overdueTasksDL.length === 1 ? 'задача' : 'задач'));
+  s('sv-overdue-sub', totalOverdue === 0 ? 'Всё в норме' : overdueSubParts.join(' + ') + ' просрочено');
+  s('sv-overdue-foot', overdueProjs.length + ' ' + (overdueProjs.length === 1 ? 'проект' : 'проектов') + ' · ' + overdueTasksDL.length + ' ' + (overdueTasksDL.length === 1 ? 'задача' : 'задач') + ' просрочено');
 
   s('sv-velocity-num', velocity30);
   s('sv-velocity-foot', 'за 7 дней: ' + velocity7 + ' · завершено: ' + doneTasks.length + ' · всего: ' + allTasks.length);
@@ -37695,7 +37713,13 @@ async function loadOverview() {
   }
 
   s('sv-revh-val', revPerHour !== null ? fmtM(revPerHour) : '—');
-  s('sv-revh-sub', totalHours > 0 ? totalHours + ' часов · MRR ' + fmtM(totalMRR) : 'Задайте бюджеты и часы');
+  // БАГ 6 ИСПРАВЛЕН: добавляем предупреждение если залогировано мало часов
+  // (< 10% от ожидаемых при 8ч/день × кол-во проектов).
+  // Это защищает от ситуации когда показатель выглядит "Высокая" из-за
+  // неполного логирования, а не реальной эффективности.
+  var expectedMinHours = activeProjects.length * 8;
+  var hoursWarning = (totalHours > 0 && totalHours < expectedMinHours) ? ' ⚠ мало часов' : '';
+  s('sv-revh-sub', totalHours > 0 ? totalHours + ' часов · MRR ' + fmtM(totalMRR) + hoursWarning : 'Задайте бюджеты и часы');
   if (revPerHour !== null) {
     svBadge('sv-revh-badge', revPerHour >= 100000 ? 'Высокая' : revPerHour >= 50000 ? 'Средняя' : 'Низкая',
       revPerHour >= 100000 ? 'rgba(62,207,142,.1)' : revPerHour >= 50000 ? 'rgba(232,153,58,.1)' : 'rgba(224,82,82,.1)',
