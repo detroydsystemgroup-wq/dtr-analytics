@@ -33962,6 +33962,20 @@ async function kbMoveTask(taskId, fromStatus, toStatus) {
       updates.timer_started_at = null
     }
     updates.done = false
+    // ИСПРАВЛЕНИЕ REWORK RATE: если задача была done и возвращается в waiting —
+    // пишем запись в stage_history чтобы rework rate это зафиксировал
+    if (fromStatus === 'done' && currentProject) {
+      try {
+        await sb.from('stage_history').insert({
+          project_id: currentProject.id,
+          stage_index: task.stage_index,
+          event: 'Возвращён в ожидание',
+          old_status: 'completed',
+          new_status: 'pending',
+          note: 'Задача "' + (task.title || task.name || 'без названия') + '" возвращена из выполненных'
+        })
+      } catch(e) { console.warn('rework history write failed:', e) }
+    }
   }
 
   // Save to DB — разбиваем на безопасные поля и опциональные (done_at может не существовать)
@@ -37524,11 +37538,14 @@ async function loadOverview() {
   var activeProjectIds = activeProjects.map(function(p){ return p.id; });
   var activeStagesAll = _allStages.filter(function(s){ return activeProjectIds.indexOf(s.project_id) !== -1; });
 
-  // ── Load additional data (только по активным) ──
+  // ── Load additional data ──
   var allTasks = [];
   var stageHistory = [];
   try {
-    var tr = await sb.from('stage_tasks').select('*').in('project_id', activeProjectIds);
+    // ИСПРАВЛЕНИЕ VELOCITY: грузим задачи по ВСЕМ проектам (включая завершённые),
+    // иначе задачи из завершённого проекта не попадают в velocity
+    var allProjectIds = _allProjects.map(function(p){ return p.id; });
+    var tr = await sb.from('stage_tasks').select('*').in('project_id', allProjectIds);
     allTasks = tr.data || [];
   } catch(e) {}
   try {
@@ -37821,7 +37838,9 @@ function svRenderProjTable(projData, overdueMap, today, MONTHS) {
     if (f === 'active')  return !item.overdue && item.prog.pct < 100;
     if (f === 'overdue') return item.overdue;
     if (f === 'done')    return item.prog.pct === 100;
-    return true;
+    // ИСПРАВЛЕНИЕ ПРОБЛЕМЫ 3: в режиме "Все" завершённые проекты (100%) не показываем —
+    // они засоряют оперативную таблицу. Завершённые видны только во вкладке "Завершены".
+    return item.prog.pct < 100;
   });
   var tbody = document.getElementById('sv-proj-tbody');
   if (!tbody) return;
