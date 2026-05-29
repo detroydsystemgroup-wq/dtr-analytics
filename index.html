@@ -30688,8 +30688,8 @@ function renderProjectGrid() {
     if (_projectFilter === 'archived') return p.status === 'archived' || getProjectProgress(p.id).pct === 100
     if (_projectFilter === 'done') return p.status === 'archived' || getProjectProgress(p.id).pct === 100
     if (_projectFilter === 'overdue') return isProjectOverdue(p.id)
-    // 'all' — скрываем архивные
-    return p.status !== 'archived'
+    // 'all' — показываем все проекты
+    return true
   })
 
   list = list.sort((a,b) => {
