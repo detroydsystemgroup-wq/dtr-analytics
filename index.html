@@ -34022,11 +34022,31 @@ async function kbMoveTask(taskId, fromStatus, toStatus) {
     updates.done = false
   }
 
-  // Save to DB
+  // Save to DB — разбиваем на безопасные поля и опциональные (done_at может не существовать)
+  const safeUpdates = {}
+  const optionalFields = ['done_at', 'timer_started_at', 'time_logged']
+  Object.keys(updates).forEach(k => {
+    if (!optionalFields.includes(k)) safeUpdates[k] = updates[k]
+  })
+
   try {
-    await sb.from('stage_tasks').update(updates).eq('id', taskId)
-    Object.assign(task, updates)
-    // Also sync tasksData for tracker view
+    // Сначала обновляем основные поля (kanban_status, done, stage_index)
+    await sb.from('stage_tasks').update(safeUpdates).eq('id', taskId)
+    Object.assign(task, safeUpdates)
+
+    // Потом опциональные поля — игнорируем если колонки нет
+    const optUpdates = {}
+    optionalFields.forEach(k => { if (k in updates) optUpdates[k] = updates[k] })
+    if (Object.keys(optUpdates).length) {
+      try {
+        await sb.from('stage_tasks').update(optUpdates).eq('id', taskId)
+        Object.assign(task, optUpdates)
+      } catch(e2) {
+        console.warn('Optional fields update failed (columns may not exist):', e2.message)
+      }
+    }
+
+    // Sync tasksData for tracker view
     const arr = tasksData[task.stage_index] || []
     const trackerTask = arr.find(x => x.id === taskId)
     if (trackerTask) Object.assign(trackerTask, updates)
@@ -34035,6 +34055,9 @@ async function kbMoveTask(taskId, fromStatus, toStatus) {
   } catch(e) {
     console.warn('Move task failed:', e)
     if (e.message?.includes('column')) { g('kb-sql-note').style.display='flex'; openSQLSetup() }
+    // Обновляем локальный стейт даже если БД упала
+    Object.assign(task, updates)
+    renderKanban()
   }
 }
 
@@ -34119,7 +34142,7 @@ function openKanbanAddTask(defaultStatus = 'waiting') {
 
   // Stage hint
   const hint = g('kb-stage-hint')
-  if (hint) hint.textContent = `Задача будет привязана к активному этапу: ${STAGES[activeIdx]?.icon||''} ${stageName}`
+  if (hint) hint.innerHTML = `Задача будет привязана к активному этапу: ${STAGES[activeIdx]?.emoji||''} <b>${stageName}</b>`
 
   // Modal title
   const labels = { waiting:'В ожидании', active:'Активные', done:'Завершённые' }
