@@ -27108,12 +27108,12 @@ button, a, [role="button"],
 .cp-sb-client{display:flex;align-items:center;gap:14px}
 .cp-sb-avatar{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:22px;font-weight:800;flex-shrink:0;overflow:hidden;}
 .cp-sb-client-name{font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--txt);letter-spacing:-.01em;line-height:1.2;}
-.cp-sb-online-wrap{display:flex;align-items:center;gap:6px;margin-top:6px;}
-.cp-sb-online-dot{position:relative;width:7px;height:7px;flex-shrink:0;}
-.cp-sb-online-dot::before{content:'';position:absolute;inset:0;border-radius:50%;background:#3ecf8e;z-index:1;}
-.cp-sb-online-dot::after{content:'';position:absolute;inset:0;border-radius:50%;background:#3ecf8e;animation:cp-online-pulse 2s ease-out infinite;}
+.cp-sb-online-wrap{display:flex;flex-direction:row;align-items:center;gap:6px;margin-top:6px;line-height:1;}
+.cp-sb-online-dot{position:relative;width:7px;height:7px;flex-shrink:0;display:block;}
+.cp-sb-online-dot::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;border-radius:50%;background:#3ecf8e;z-index:1;}
+.cp-sb-online-dot::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;border-radius:50%;background:#3ecf8e;animation:cp-online-pulse 2s ease-out infinite;}
 @keyframes cp-online-pulse{0%{transform:scale(1);opacity:.8}70%{transform:scale(2.8);opacity:0}100%{transform:scale(2.8);opacity:0}}
-.cp-sb-online-txt{font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;color:#3ecf8e;line-height:1;}
+.cp-sb-online-txt{font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;color:#3ecf8e;line-height:1;position:relative;top:0;}
 .cp-sb-nav{padding:14px 10px;flex:1}
 .cp-sb-nav-label{font-family:var(--font-mono);font-size:8px;letter-spacing:.18em;color:rgba(255,255,255,.2);text-transform:uppercase;padding:0 8px;margin-bottom:8px}
 .cp-sb-nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;margin-bottom:2px;cursor:pointer;transition:all .18s;border:1px solid transparent;background:transparent;width:100%;text-align:left;font-family:var(--font-display);font-size:12px;font-weight:500;color:rgba(255,255,255,.4)}
