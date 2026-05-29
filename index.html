@@ -30885,9 +30885,9 @@ async function loadProjects() {
   let overdueCount = 0, deadlinesWeek = 0
   _allProjects.forEach(p => {
     const pStages = _allStages.filter(s => s.project_id === p.id)
-    const overdue = pStages.some(s => s.status !== 'completed' && s.deadline && new Date(s.deadline) < today)
+    const overdue = pStages.some(s => s.status !== 'completed' && s.deadline && new Date(s.deadline + 'T00:00:00') < today)
     if (overdue) overdueCount++
-    const soon = pStages.filter(s => s.status !== 'completed' && s.deadline && new Date(s.deadline) >= today && new Date(s.deadline) <= weekEnd)
+    const soon = pStages.filter(s => s.status !== 'completed' && s.deadline && new Date(s.deadline + 'T00:00:00') >= today && new Date(s.deadline + 'T00:00:00') <= weekEnd)
     deadlinesWeek += soon.length
   })
 
@@ -30949,14 +30949,14 @@ function getProjectProgress(projectId) {
 
 function isProjectOverdue(projectId) {
   const today = new Date(); today.setHours(0,0,0,0)
-  return _allStages.some(s => s.project_id === projectId && s.status !== 'completed' && s.deadline && new Date(s.deadline) < today)
+  return _allStages.some(s => s.project_id === projectId && s.status !== 'completed' && s.deadline && new Date(s.deadline + 'T00:00:00') < today)
 }
 
 function getNextDeadline(projectId) {
   const today = new Date(); today.setHours(0,0,0,0)
   const upcoming = _allStages
     .filter(s => s.project_id === projectId && s.status !== 'completed' && s.deadline)
-    .sort((a,b) => new Date(a.deadline) - new Date(b.deadline))
+    .sort((a,b) => new Date(a.deadline + 'T00:00:00') - new Date(b.deadline + 'T00:00:00'))
   return upcoming[0] || null
 }
 
@@ -31064,11 +31064,11 @@ function renderProjectGrid() {
     // Deadline
     let dlTxt = '—', dlColor = 'var(--txt3)'
     if (next) {
-      const diff = Math.ceil((new Date(next.deadline) - today) / 86400000)
+      const diff = Math.ceil((new Date(next.deadline + 'T00:00:00') - today) / 86400000)
       if (diff < 0)       { dlTxt = Math.abs(diff)+'д назад'; dlColor = 'var(--red)' }
       else if (diff === 0){ dlTxt = 'Сегодня';                dlColor = 'var(--amber)' }
       else if (diff <= 3) { dlTxt = 'Через '+diff+'д';        dlColor = 'var(--amber)' }
-      else                { const d=new Date(next.deadline); dlTxt=d.getDate()+' '+MONTHS[d.getMonth()]; dlColor='var(--a2)' }
+      else                { const d=new Date(next.deadline + 'T00:00:00'); dlTxt=d.getDate()+' '+MONTHS[d.getMonth()]; dlColor='var(--a2)' }
     }
 
     const statusTxt = overdue ? 'Просрочен' : pct === 100 ? 'Завершён' : 'Активен'
@@ -37745,7 +37745,7 @@ async function loadOverview() {
       var out = '<div class="sv-dl-zone-label" style="color:' + color + ';">' + label + ' (' + items.length + ')</div>';
       out += items.slice(0, 5).map(function(s) {
         var proj = _allProjects.find(function(p){ return p.id === s.project_id; });
-        var dl = new Date(s.deadline);
+        var dl = new Date(s.deadline + 'T00:00:00');
         var diff = Math.ceil((dl - today) / 86400000);
         var diffTxt = diff < 0 ? Math.abs(diff) + 'д назад' : diff === 0 ? 'Сегодня' : 'через ' + diff + 'д';
         var STAGE_NAMES = ['Анализ','Конкуренты','Контент-стр.','Таргет','Контент-план','Сценарии','Съёмки #1','Съёмки #2','Отчётность'];
@@ -37825,7 +37825,7 @@ function svRenderProjTable(projData, overdueMap, today, MONTHS) {
 
     var dlTxt = '—'; var dlColor = 'var(--txt3)';
     if (item.next) {
-      var dl = new Date(item.next.deadline);
+      var dl = new Date(item.next.deadline + 'T00:00:00');
       var diff = Math.ceil((dl - today) / 86400000);
       if (diff < 0)     { dlTxt = Math.abs(diff)+'д назад'; dlColor = 'var(--red)'; }
       else if (diff===0){ dlTxt = 'Сегодня'; dlColor = 'var(--amber)'; }
