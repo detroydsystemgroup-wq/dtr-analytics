@@ -36550,32 +36550,28 @@ function renderSMMReelsGrid() {
 
     return `<div class="smm-reel-card ${rankCls}">
 
-      <!-- Full-bleed cover — everything inside -->
+      <!-- Full-bleed cover -->
       <div class="smm-reel-cover" style="${coverStyle}">
-
-        <!-- Deep overlay for readability -->
         <div class="smm-reel-cover-overlay"></div>
-
-        <!-- Rank — top left -->
         <div class="smm-reel-rank-pill">${rankLabel}</div>
-
-        <!-- Play btn — center, on hover -->
         <a class="smm-reel-play-btn" ${linkAttrs}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         </a>
-
-        <!-- Bottom info block — fully inside cover -->
+        <!-- Title inside cover -->
         <div class="smm-reel-overlay-footer">
           <div class="smm-reel-overlay-title">${esc(title)}</div>
-          <div class="smm-reel-overlay-row">
-            <div class="smm-reel-overlay-views">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".7"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              ${fmtFull(r.views)}
-            </div>
-            <span class="smm-reel-er-pill ${erCls}">${erLabel}</span>
-          </div>
         </div>
+      </div>
 
+      <!-- Stats below cover -->
+      <div style="display:flex;gap:6px;padding:10px 12px;background:#111;border-top:0.5px solid rgba(255,255,255,.07);">
+        <div style="flex:1;display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.06);border-radius:8px;padding:6px 10px;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(240,236,230,.5)" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(240,236,230,.7);">${fmtFull(r.views)}</span>
+        </div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;border-radius:8px;padding:6px 10px;" class="${erCls}">
+          <span style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;">${erFmt}</span>
+        </div>
       </div>
 
     </div>`
