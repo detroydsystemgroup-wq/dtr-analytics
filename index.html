@@ -30837,8 +30837,11 @@ function globalSearch(q) {
     html += projects.map(p => {
       const prog = getProjectProgress(p.id)
       const col = p.brand_color || '#b8923a'
+      const avatar = p.photo_url
+        ? `<div class="gsr-icon" style="padding:0;overflow:hidden;border:1px solid ${col}44;"><img src="${p.photo_url}" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:inherit;"></div>`
+        : `<div class="gsr-icon" style="background:${col}22;border:1px solid ${col}44;color:${col};">${p.name[0]}</div>`
       return `<div class="gsr-item" onclick="closeGlobalSearch();openProject('${p.id}')">
-        <div class="gsr-icon" style="background:${col}22;border:1px solid ${col}44;color:${col};">${p.name[0]}</div>
+        ${avatar}
         <div>
           <div class="gsr-title">${esc(p.name)}</div>
           <div class="gsr-sub">${esc(p.description || 'Нет описания')} · ${prog.pct}% выполнено</div>
