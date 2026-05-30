@@ -38616,11 +38616,10 @@ function svRenderProjTable(projData, overdueMap, today, MONTHS) {
           '<div class="sv-pr-meta">' + (p.description||'').substring(0,22) + '</div>' +
         '</div>' +
       '</div>' +
-      '<div class="sv-pipe">' + segs + '</div>' +
-      '<div style="text-align:right;font-family:var(--font-display);font-size:13px;font-weight:700;color:' + progColor + ';">' + prog.pct + '%</div>' +
+      '<div style="text-align:right;font-family:var(--font-display);font-size:13px;color:' + progColor + ';">' + prog.pct + '%<div style="font-family:var(--font-mono);font-size:9px;color:var(--txt3);margin-top:2px;">' + prog.completed + '/' + prog.total + ' эт.</div></div>' +
       '<div style="text-align:right;"><span class="sv-status" style="background:' + statusBg + ';color:' + statusCol + ';">' + statusTxt + '</span></div>' +
-      '<div style="text-align:right;font-family:var(--font-mono);font-size:11px;font-weight:600;color:' + dlColor + ';">' + dlTxt + '</div>' +
-      '<div style="text-align:right;font-family:var(--font-mono);font-size:11px;font-weight:600;color:' + churnColor + ';">' +
+      '<div style="text-align:right;font-family:var(--font-mono);font-size:11px;color:' + dlColor + ';">' + dlTxt + '</div>' +
+      '<div style="text-align:right;font-family:var(--font-mono);font-size:11px;color:' + churnColor + ';">' +
         '<span class="sv-risk-dot" style="background:' + churnColor + ';"></span>' + churnTxt +
       '</div>' +
       '<div style="text-align:right;"><button class="sv-proj-btn" onclick="event.stopPropagation();openProject(\'' + p.id + '\')">Открыть</button></div>' +
