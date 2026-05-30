@@ -36563,14 +36563,14 @@ function renderSMMReelsGrid() {
         </div>
       </div>
 
-      <!-- Stats below cover -->
-      <div style="display:flex;gap:6px;padding:10px 12px;background:#111;border-top:0.5px solid rgba(255,255,255,.07);">
-        <div style="flex:1;display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.06);border-radius:8px;padding:6px 10px;">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(240,236,230,.5)" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          <span style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(240,236,230,.7);">${fmtFull(r.views)}</span>
+      <!-- Stats below cover — glassmorphism -->
+      <div style="display:flex;gap:6px;padding:10px 12px;background:rgba(10,10,10,.95);border-top:0.5px solid rgba(255,255,255,.08);">
+        <div style="flex:1;display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.08);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:0.5px solid rgba(255,255,255,.12);border-radius:10px;padding:7px 10px;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(240,236,230,.6)" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(240,236,230,.85);letter-spacing:.02em;">${fmtFull(r.views)}</span>
         </div>
-        <div style="flex:1;display:flex;align-items:center;justify-content:center;border-radius:8px;padding:6px 10px;" class="${erCls}">
-          <span style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;">${erFmt}</span>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:0.5px solid rgba(255,255,255,.15);border-radius:10px;padding:7px 10px;" class="${erCls}">
+          <span style="font-family:'DM Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.03em;">${erFmt}</span>
         </div>
       </div>
 
