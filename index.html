@@ -26571,6 +26571,16 @@ button, a, [role="button"],
         </div>
       </div>
 
+      <!-- ② LEVEL 2.5: Revenue by Service -->
+      <div id="fin-svc-chart-wrap" style="display:none;margin-bottom:4px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:20px 24px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:rgba(255,255,255,.3);">ДОХОД ПО УСЛУГАМ</div>
+          <div id="fin-svc-total" style="font-family:var(--font-mono);font-size:11px;color:rgba(255,255,255,.35);"></div>
+        </div>
+        <div id="fin-svc-bars"></div>
+        <div id="fin-svc-legend" style="display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:16px;"></div>
+      </div>
+
       <!-- ③ FILTER + SORT -->
       <div class="apl-filter-row">
         <div class="apl-pill-bar" id="apl-pill-bar">
@@ -43164,6 +43174,136 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
 
   function init() { patchGrid(); patchCatFilter(); setTimeout(function(){ renderCatDd(); renderSvcDd(); }, 600); }
   if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { setTimeout(init, 150); }
+})();
+</script>
+
+<style>
+.fin-svc-bar-row {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+}
+.fin-svc-bar-label {
+  font-family: var(--font-body); font-size: 11px; color: rgba(255,255,255,.5);
+  width: 160px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.fin-svc-bar-track {
+  flex: 1; height: 8px; background: rgba(255,255,255,.06); border-radius: 4px; overflow: hidden;
+}
+.fin-svc-bar-fill {
+  height: 100%; border-radius: 4px; transition: width .5s cubic-bezier(.16,1,.3,1);
+}
+.fin-svc-bar-val {
+  font-family: var(--font-mono); font-size: 11px; color: rgba(255,255,255,.5);
+  width: 120px; text-align: right; flex-shrink: 0;
+}
+.fin-svc-bar-pct {
+  font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,.25);
+  width: 38px; text-align: right; flex-shrink: 0;
+}
+</style>
+
+<script>
+(function(){
+  var SVC_META = {
+    smm:          { label: 'SMM',                    color: '#38b2ac' },
+    production:   { label: 'Продакшн под ключ',      color: '#b06fc0' },
+    target:       { label: 'Таргетированная реклама', color: '#e8993a' },
+    design:       { label: 'Дизайн и брендинг',      color: '#e05252' },
+    subscription: { label: 'Подписка DETROYD',        color: '#b8923a' },
+  };
+
+  function fmtM(v) {
+    if (v >= 1e9) return (v/1e9).toFixed(1).replace(/\.0$/,'') + ' млрд';
+    if (v >= 1e6) return (v/1e6).toFixed(1).replace(/\.0$/,'') + ' млн';
+    if (v >= 1e3) return (v/1e3).toFixed(0) + ' тыс';
+    return v.toString();
+  }
+
+  function renderSvcRevenueChart() {
+    var wrap = document.getElementById('fin-svc-chart-wrap');
+    var barsEl = document.getElementById('fin-svc-bars');
+    var legendEl = document.getElementById('fin-svc-legend');
+    var totalEl = document.getElementById('fin-svc-total');
+    if (!wrap || !barsEl) return;
+
+    if (typeof _allProjects === 'undefined' || !_allProjects.length) { wrap.style.display = 'none'; return; }
+
+    // Считаем доход по каждой услуге
+    var svcRevenue = {};
+    var svcProjects = {};
+    var hasAny = false;
+
+    _allProjects.forEach(function(p) {
+      var budget = p.monthly_budget || 0;
+      if (!budget || !p.services) return;
+      var svcs = [];
+      try { svcs = JSON.parse(p.services); } catch(e) { return; }
+      if (!svcs.length) return;
+      hasAny = true;
+      // Равномерно делим бюджет между всеми услугами проекта
+      var share = budget / svcs.length;
+      svcs.forEach(function(id) {
+        svcRevenue[id] = (svcRevenue[id] || 0) + share;
+        if (!svcProjects[id]) svcProjects[id] = [];
+        svcProjects[id].push(p.name);
+      });
+    });
+
+    if (!hasAny) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+
+    // Сортируем по убыванию дохода
+    var entries = Object.keys(svcRevenue).map(function(id) {
+      return { id: id, revenue: svcRevenue[id], projects: svcProjects[id] || [] };
+    }).sort(function(a,b){ return b.revenue - a.revenue; });
+
+    var maxRev = entries[0] ? entries[0].revenue : 1;
+    var totalRev = entries.reduce(function(s,e){ return s + e.revenue; }, 0);
+
+    // Bars
+    barsEl.innerHTML = entries.map(function(e) {
+      var meta = SVC_META[e.id] || { label: e.id, color: '#888' };
+      var pct = maxRev > 0 ? Math.round((e.revenue / maxRev) * 100) : 0;
+      var sharePct = totalRev > 0 ? Math.round((e.revenue / totalRev) * 100) : 0;
+      var projTip = e.projects.slice(0,3).join(', ') + (e.projects.length > 3 ? '...' : '');
+      return '<div class="fin-svc-bar-row" title="' + projTip + '">'
+        + '<div class="fin-svc-bar-label">' + meta.label + '</div>'
+        + '<div class="fin-svc-bar-track">'
+        +   '<div class="fin-svc-bar-fill" style="width:' + pct + '%;background:' + meta.color + ';box-shadow:0 0 8px ' + meta.color + '44;"></div>'
+        + '</div>'
+        + '<div class="fin-svc-bar-val">' + fmtM(Math.round(e.revenue)) + ' сум</div>'
+        + '<div class="fin-svc-bar-pct">' + sharePct + '%</div>'
+        + '</div>';
+    }).join('');
+
+    // Legend
+    legendEl.innerHTML = entries.map(function(e) {
+      var meta = SVC_META[e.id] || { label: e.id, color: '#888' };
+      return '<div style="display:inline-flex;align-items:center;gap:5px;">'
+        + '<span style="width:8px;height:8px;border-radius:2px;background:' + meta.color + ';display:inline-block;flex-shrink:0;"></span>'
+        + '<span style="font-family:var(--font-body);font-size:11px;color:rgba(255,255,255,.4);">'
+        + meta.label + ' · ' + e.projects.length + ' пр.</span>'
+        + '</div>';
+    }).join('');
+
+    // Total
+    if (totalEl) totalEl.textContent = fmtM(Math.round(totalRev)) + ' сум / мес';
+  }
+
+  // Патчим renderFinance чтобы график обновлялся вместе с финансами
+  function patchRenderFinance() {
+    if (typeof renderFinance !== 'function') { setTimeout(patchRenderFinance, 400); return; }
+    var orig = renderFinance;
+    window.renderFinance = function() {
+      orig();
+      renderSvcRevenueChart();
+    };
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', patchRenderFinance);
+  } else {
+    setTimeout(patchRenderFinance, 200);
+  }
 })();
 </script>
 </html>
