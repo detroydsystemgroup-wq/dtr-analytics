@@ -31308,8 +31308,10 @@ function renderProjectGrid() {
 
   grid.innerHTML = list.map(p => {
     try {
-    const { pct, completed } = getProjectProgress(p.id)
-    const progTotal = getProjectProgress(p.id).total
+    const _prog = getProjectProgress(p.id)
+    const pct = _prog.pct
+    const completed = _prog.completed
+    const progTotal = _prog.total
     const overdue = isProjectOverdue(p.id)
     const next = getNextDeadline(p.id)
     const col = p.brand_color || '#b8923a'
