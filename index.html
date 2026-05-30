@@ -26121,9 +26121,26 @@ button, a, [role="button"],
             <button class="sv-pill" data-filter="overdue" onclick="setProjectFilter('overdue',this)"><span class="dl-dot" style="background:var(--red);"></span>Просрочены</button>
             <button class="sv-pill" data-filter="archived" onclick="setProjectFilter('archived',this)"><span class="dl-dot" style="background:var(--green);"></span>Завершены</button>
           </div>
-          <!-- Category tags -->
-          <div class="proj-tags-row" id="dash-tags-row"></div>
-          <!-- Service filter chips -->
+          <!-- Category dropdown -->
+          <div class="dtr-dd-wrap" id="dd-cat-wrap" style="display:none;position:relative;">
+            <button class="dtr-dd-btn" id="dd-cat-btn" onclick="dtrToggleDd('cat')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h8M4 18h5"/></svg>
+              <span id="dd-cat-label">Категория</span>
+              <svg class="dtr-dd-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="dtr-dd-menu" id="dd-cat-menu"></div>
+          </div>
+          <!-- Service dropdown -->
+          <div class="dtr-dd-wrap" id="dd-svc-wrap" style="display:none;position:relative;">
+            <button class="dtr-dd-btn" id="dd-svc-btn" onclick="dtrToggleDd('svc')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="6" height="6" rx="1"/><rect x="9" y="3" width="13" height="6" rx="1"/><rect x="2" y="13" width="6" height="6" rx="1"/><rect x="9" y="13" width="13" height="6" rx="1"/></svg>
+              <span id="dd-svc-label">Услуга</span>
+              <svg class="dtr-dd-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="dtr-dd-menu" id="dd-svc-menu"></div>
+          </div>
+          <!-- legacy rows (hidden, kept for JS compat) -->
+          <div class="proj-tags-row" id="dash-tags-row" style="display:none;"></div>
           <div class="proj-tags-row" id="dash-svc-row" style="display:none;"></div>
         </div>
         <div class="proj-cmd-right">
@@ -42984,6 +43001,167 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
     setTimeout(init, 250);
   }
 
+})();
+</script>
+
+<style>
+/* ── DTR Filter Dropdowns ── */
+.dtr-dd-wrap { display: inline-block; }
+.dtr-dd-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 30px; padding: 0 12px; border-radius: 7px;
+  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+  color: rgba(255,255,255,.5); font-family: var(--font-body); font-size: 11px;
+  font-weight: 500; cursor: pointer; transition: all .15s; white-space: nowrap;
+}
+.dtr-dd-btn:hover,
+.dtr-dd-btn.active { background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.18); color: rgba(255,255,255,.85); }
+.dtr-dd-btn.has-value { border-color: rgba(184,146,58,.4); color: var(--a2); background: rgba(184,146,58,.08); }
+.dtr-dd-arrow { transition: transform .15s; flex-shrink: 0; }
+.dtr-dd-btn.active .dtr-dd-arrow { transform: rotate(180deg); }
+.dtr-dd-menu {
+  display: none; position: absolute; top: calc(100% + 6px); left: 0;
+  min-width: 200px; background: #141414; border: 1px solid rgba(255,255,255,.1);
+  border-radius: 10px; padding: 6px; z-index: 500;
+  box-shadow: 0 16px 48px rgba(0,0,0,.7);
+  animation: dtrDdIn .15s ease both;
+}
+.dtr-dd-menu.open { display: block; }
+@keyframes dtrDdIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:none; } }
+.dtr-dd-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px; border-radius: 6px; cursor: pointer;
+  font-family: var(--font-body); font-size: 12px; color: rgba(255,255,255,.55);
+  transition: all .12s; white-space: nowrap;
+}
+.dtr-dd-item:hover { background: rgba(255,255,255,.07); color: rgba(255,255,255,.9); }
+.dtr-dd-item.active { color: #fff; background: rgba(255,255,255,.07); }
+.dtr-dd-item.active::after { content: '✓'; margin-left: auto; font-size: 11px; color: var(--a2); }
+.dtr-dd-divider { height: 1px; background: rgba(255,255,255,.07); margin: 4px 0; }
+.dtr-dd-reset {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px; border-radius: 6px; cursor: pointer;
+  font-family: var(--font-body); font-size: 11px; color: rgba(255,255,255,.3);
+  transition: all .12s;
+}
+.dtr-dd-reset:hover { background: rgba(255,255,255,.05); color: rgba(255,255,255,.6); }
+</style>
+
+<script>
+(function(){
+  window.dtrToggleDd = function(type) {
+    var menu = document.getElementById('dd-' + type + '-menu');
+    var btn  = document.getElementById('dd-' + type + '-btn');
+    if (!menu) return;
+    var isOpen = menu.classList.contains('open');
+    document.querySelectorAll('.dtr-dd-menu').forEach(function(m){ m.classList.remove('open'); });
+    document.querySelectorAll('.dtr-dd-btn').forEach(function(b){ b.classList.remove('active'); });
+    if (!isOpen) { menu.classList.add('open'); btn.classList.add('active'); }
+  };
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.dtr-dd-wrap')) {
+      document.querySelectorAll('.dtr-dd-menu').forEach(function(m){ m.classList.remove('open'); });
+      document.querySelectorAll('.dtr-dd-btn').forEach(function(b){ b.classList.remove('active'); });
+    }
+  });
+
+  function closeDds() {
+    document.querySelectorAll('.dtr-dd-menu').forEach(function(m){ m.classList.remove('open'); });
+    document.querySelectorAll('.dtr-dd-btn').forEach(function(b){ b.classList.remove('active'); });
+  }
+
+  /* ── Category dropdown ── */
+  function renderCatDd() {
+    var wrap = document.getElementById('dd-cat-wrap');
+    var menu = document.getElementById('dd-cat-menu');
+    var label = document.getElementById('dd-cat-label');
+    var btn = document.getElementById('dd-cat-btn');
+    if (!wrap || !menu) return;
+    var tags = new Set();
+    if (typeof _allProjects !== 'undefined') {
+      _allProjects.forEach(function(p){ if (p.category) p.category.split(',').forEach(function(t){ if (t.trim()) tags.add(t.trim()); }); });
+    }
+    if (!tags.size) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'inline-block';
+    var html = '';
+    if (window._activeCatTag) html += '<div class="dtr-dd-reset" onclick="dtrCatReset()">✕ Сбросить</div><div class="dtr-dd-divider"></div>';
+    [...tags].forEach(function(t) {
+      html += '<div class="dtr-dd-item' + (window._activeCatTag===t?' active':'') + '" onclick="dtrSetCat(\'' + t.replace(/'/g,"\\'") + '\')">' + t + '</div>';
+    });
+    menu.innerHTML = html;
+    if (window._activeCatTag) { label.textContent = window._activeCatTag; btn.classList.add('has-value'); }
+    else { label.textContent = 'Категория'; btn.classList.remove('has-value'); }
+  }
+
+  window.dtrSetCat = function(tag) {
+    window._activeCatTag = (window._activeCatTag === tag ? null : tag);
+    closeDds(); renderCatDd();
+    if (typeof renderProjectGrid === 'function') renderProjectGrid();
+  };
+  window.dtrCatReset = function() { window._activeCatTag = null; closeDds(); renderCatDd(); if (typeof renderProjectGrid === 'function') renderProjectGrid(); };
+
+  /* ── Service dropdown ── */
+  var SVC_LABELS = { smm:'SMM', production:'Продакшн под ключ', target:'Таргетированная реклама', design:'Дизайн и брендинг', subscription:'Подписка DETROYD' };
+  var SVC_COLORS = { smm:'#38b2ac', production:'#b06fc0', target:'#e8993a', design:'#e05252', subscription:'#b8923a' };
+
+  function renderSvcDd() {
+    var wrap = document.getElementById('dd-svc-wrap');
+    var menu = document.getElementById('dd-svc-menu');
+    var label = document.getElementById('dd-svc-label');
+    var btn = document.getElementById('dd-svc-btn');
+    if (!wrap || !menu) return;
+    var used = new Set();
+    if (typeof _allProjects !== 'undefined') {
+      _allProjects.forEach(function(p){
+        if (!p.services) return;
+        try { JSON.parse(p.services).forEach(function(id){ used.add(id); }); } catch(e) {}
+      });
+    }
+    if (!used.size) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'inline-block';
+    var html = '';
+    if (window._activeSvcFilter) html += '<div class="dtr-dd-reset" onclick="dtrSvcReset()">✕ Сбросить</div><div class="dtr-dd-divider"></div>';
+    [...used].forEach(function(id) {
+      var active = window._activeSvcFilter === id;
+      var color = SVC_COLORS[id] || '#aaa';
+      html += '<div class="dtr-dd-item' + (active?' active':'') + '" onclick="dtrSetSvcFilter(\'' + id + '\')">'
+            + '<span style="width:7px;height:7px;border-radius:50%;background:' + color + ';display:inline-block;flex-shrink:0;"></span>'
+            + (SVC_LABELS[id]||id) + '</div>';
+    });
+    menu.innerHTML = html;
+    if (window._activeSvcFilter) { label.textContent = SVC_LABELS[window._activeSvcFilter]||window._activeSvcFilter; btn.classList.add('has-value'); }
+    else { label.textContent = 'Услуга'; btn.classList.remove('has-value'); }
+  }
+
+  window.dtrSvcReset = function() { window._activeSvcFilter = null; closeDds(); renderSvcDd(); if (typeof renderProjectGrid === 'function') renderProjectGrid(); };
+
+  /* Переопределяем dtrSetSvcFilter чтобы обновлял дропдаун */
+  window.dtrSetSvcFilter = function(id) {
+    window._activeSvcFilter = (window._activeSvcFilter === id ? null : id);
+    closeDds(); renderSvcDd();
+    if (typeof renderProjectGrid === 'function') renderProjectGrid();
+  };
+
+  /* Переопределяем setCatFilter чтобы синхронизировал дропдаун */
+  function patchCatFilter() {
+    if (typeof setCatFilter !== 'function') { setTimeout(patchCatFilter, 300); return; }
+    window.setCatFilter = function(tag) {
+      window._activeCatTag = (window._activeCatTag === tag ? null : tag);
+      renderCatDd();
+      if (typeof renderProjectGrid === 'function') renderProjectGrid();
+    };
+  }
+
+  /* Патчим renderProjectGrid — обновляем дропдауны после каждого рендера */
+  function patchGrid() {
+    if (typeof renderProjectGrid !== 'function') { setTimeout(patchGrid, 300); return; }
+    var orig = renderProjectGrid;
+    window.renderProjectGrid = function() { orig(); renderCatDd(); renderSvcDd(); };
+  }
+
+  function init() { patchGrid(); patchCatFilter(); setTimeout(function(){ renderCatDd(); renderSvcDd(); }, 600); }
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { setTimeout(init, 150); }
 })();
 </script>
 </html>
