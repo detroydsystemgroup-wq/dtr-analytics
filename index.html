@@ -31804,6 +31804,9 @@ async function openReport(id) {
       }
     })
     updateCounter()
+    // Обновляем кнопку периода после загрузки файлов
+    const _pb2 = g('btn-period-b'); if (_pb2 && LABEL_B !== 'Период 1') _pb2.textContent = LABEL_B
+    const _pd2 = g('btn-period-d'); if (_pd2 && LABEL_D !== 'Период 2') _pd2.textContent = LABEL_D
     if (S['b1'] && S['d1']) {
       g('go-btn').disabled = false
       // Run analysis immediately — files already hidden
@@ -41809,6 +41812,25 @@ async function cpRenderMilestone(project) {
   letter-spacing: .07em !important;
   color: rgba(240,236,230,.35) !important;
   text-transform: uppercase !important;
+}
+
+/* ── REPORT TOPBAR BUTTONS — unified size ── */
+#btn-period-wrap,
+#ob-toggle {
+  height: 36px !important;
+  box-sizing: border-box !important;
+  font-family: 'DM Mono', monospace !important;
+  font-size: 11px !important;
+  border-radius: 6px !important;
+  background: var(--bg4) !important;
+  border: 1px solid var(--brd) !important;
+}
+#btn-period-wrap {
+  display: none;
+}
+#ob-toggle {
+  padding: 0 14px !important;
+  gap: 8px !important;
 }
 </style>
 
