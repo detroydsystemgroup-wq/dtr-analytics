@@ -33475,34 +33475,42 @@ function startTaskTimer(taskId, stageIndex, taskTitle) {
 async function stopActiveTimer() {
   if (!_activeTimer) return
   clearInterval(_timerInterval); _timerInterval = null
-  const elapsedMin = Math.round((Date.now() - _activeTimer.startMs) / 60000)
+  const elapsedSec = Math.floor((Date.now() - _activeTimer.startMs) / 1000)
+  const elapsedMin = Math.max(1, Math.ceil(elapsedSec / 60)) // минимум 1 минута
   const { taskId, stageIndex } = _activeTimer
   _activeTimer = null
 
+  console.log('[Timer] stopped, elapsedSec:', elapsedSec, 'elapsedMin:', elapsedMin, 'taskId:', taskId)
+
   document.querySelectorAll('.task-timer-btn.running').forEach(b => b.classList.remove('running'))
 
-  if (elapsedMin < 1) {
-    // Меньше минуты — просто возвращаем статичный режим
+  if (elapsedSec < 5) {
+    // Меньше 5 секунд — случайное нажатие, не сохраняем
     updateProjectTimeDisplay()
     return
   }
 
   // Save to DB
   try {
-    const { data: t } = await sb.from('stage_tasks').select('time_logged').eq('id', taskId).single()
+    const { data: t, error: fetchErr } = await sb.from('stage_tasks').select('time_logged').eq('id', taskId).single()
+    if (fetchErr) { console.warn('[Timer] fetch error:', fetchErr); }
     const current = t?.time_logged || 0
-    await sb.from('stage_tasks').update({ time_logged: current + elapsedMin }).eq('id', taskId)
-    // Update local tasksData
-    const arr = tasksData[stageIndex] || []
-    const task = arr.find(x => x.id === taskId)
-    if (task) task.time_logged = (task.time_logged || 0) + elapsedMin
-    renderTasksForStage(stageIndex)
-    // Update finance hours cache
-    if (currentProject) {
-      _finTaskHours[currentProject.id] = (_finTaskHours[currentProject.id] || 0) + elapsedMin
+    const { error: saveErr } = await sb.from('stage_tasks').update({ time_logged: current + elapsedMin }).eq('id', taskId)
+    if (saveErr) { console.warn('[Timer] save error:', saveErr); }
+    else {
+      console.log('[Timer] saved OK, total now:', current + elapsedMin, 'min')
+      // Update local tasksData
+      const arr = tasksData[stageIndex] || []
+      const task = arr.find(x => x.id === taskId)
+      if (task) task.time_logged = (task.time_logged || 0) + elapsedMin
+      renderTasksForStage(stageIndex)
+      // Update finance hours cache
+      if (currentProject) {
+        _finTaskHours[currentProject.id] = (_finTaskHours[currentProject.id] || 0) + elapsedMin
+      }
+      showAlertToast('⏱', `+${elapsedMin} мин записано`, 'Время добавлено к задаче')
     }
-    showAlertToast('⏱', `+${elapsedMin} мин записано`, 'Время добавлено к задаче')
-  } catch(e) { console.warn('Timer save failed:', e) }
+  } catch(e) { console.warn('[Timer] save failed:', e) }
 
   // Возвращаем бейдж в режим суммарного времени
   updateProjectTimeDisplay()
