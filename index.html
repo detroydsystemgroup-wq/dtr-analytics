@@ -31315,7 +31315,8 @@ function renderProjectGrid() {
 
     // Pipeline segs
     const projStages = _allStages.filter(s => s.project_id === p.id)
-    const stageStatuses = Array.from({length:9}, (_,i) => {
+    const segCount = projStages.length || 9
+    const stageStatuses = Array.from({length:segCount}, (_,i) => {
       const st = projStages.find(s => s.stage_index === i)
       return st ? st.status : 'pending'
     })
