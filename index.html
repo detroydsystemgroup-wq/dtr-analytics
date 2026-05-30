@@ -31163,7 +31163,16 @@ async function loadProjects() {
 function getProjectProgress(projectId) {
   const stages = _allStages.filter(s => s.project_id === projectId)
   const completed = stages.filter(s => s.status === 'completed').length
-  const total = stages.length || 9
+  // Используем stage_templates для total если есть
+  const proj = typeof _allProjects !== 'undefined' ? _allProjects.find(p => p.id === projectId) : null
+  let total = stages.length || 9
+  if (proj && proj.stage_templates) {
+    try {
+      const tpl = JSON.parse(proj.stage_templates)
+      const active = tpl.filter(function(s){ return s.enabled !== false && s.name && s.name.trim() })
+      if (active.length) total = active.length
+    } catch(e) {}
+  }
   return { completed, total, pct: total > 0 ? Math.round((completed / total) * 100) : 0 }
 }
 
@@ -31308,9 +31317,17 @@ function renderProjectGrid() {
     const col = p.brand_color || '#b8923a'
     const progColor = pct >= 80 ? 'var(--green)' : pct >= 40 ? col : 'var(--amber)'
 
-    // Pipeline segs
+    // Pipeline segs — используем stage_templates если есть, иначе реальные этапы из БД
     const projStages = _allStages.filter(s => s.project_id === p.id)
-    const segCount = projStages.length || 9
+    let segCount = projStages.length || 9
+    // Если у проекта есть кастомные шаблоны — берём количество активных из них
+    if (p.stage_templates) {
+      try {
+        const tpl = JSON.parse(p.stage_templates)
+        const activeTpl = tpl.filter(function(s){ return s.enabled !== false && s.name && s.name.trim() })
+        if (activeTpl.length) segCount = activeTpl.length
+      } catch(e) {}
+    }
     const stageStatuses = Array.from({length:segCount}, (_,i) => {
       const st = projStages.find(s => s.stage_index === i)
       return st ? st.status : 'pending'
