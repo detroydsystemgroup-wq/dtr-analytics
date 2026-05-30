@@ -35788,35 +35788,62 @@ async function cp2LoadReports(project) {
 async function cp2LoadActivity(project, limit, containerId) {
   var el = g(containerId);
   if (!el) return;
-  var res = await sb.from('stage_history').select('*').eq('project_id', project.id).order('created_at',{ascending:false}).limit(limit||5);
-  var hist = res.data || [];
-  if (!hist.length) { el.innerHTML = '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.15);text-align:center;padding:16px 0;">Пока нет активности</div>'; return; }
-  if (hist.length > 0 && g('cp2-updates-dot')) g('cp2-updates-dot').style.display = 'block';
 
-  var evCol  = { 'Начат':'start', 'Завершён':'done', 'Возвращён в ожидание':'back' };
-  var evText = { 'Начат':'начала работу над этапом', 'Завершён':'завершила этап', 'Возвращён в ожидание':'вернула в ожидание' };
-  var evIcon = {
-    'Начат':   '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>',
-    'Завершён':'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3ecf8e" stroke-width="2.2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>',
-    'Возвращён в ожидание':'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.21"/></svg>'
-  };
-  el.innerHTML = hist.map(function(h) {
-    var stName = (typeof STAGES !== 'undefined' && STAGES[h.stage_index] && STAGES[h.stage_index].name) || ('Этап ' + (h.stage_index+1));
-    var cls    = evCol[h.event]  || 'start';
-    var verb   = evText[h.event] || h.event;
-    var icon   = evIcon[h.event] || evIcon['Начат'];
-    var d      = new Date(h.created_at);
-    var today  = new Date(); today.setHours(0,0,0,0);
-    var dd     = new Date(h.created_at); dd.setHours(0,0,0,0);
-    var diff   = Math.floor((today - dd) / 86400000);
-    var timeStr = diff === 0
+  // Берём этапы проекта для имён и fallback по stage_index
+  var stageNamesRes = await sb.from('project_stages').select('stage_index,name').eq('project_id', project.id);
+  var stageNames = {};
+  var stageIdxList = [];
+  (stageNamesRes.data || []).forEach(function(s) {
+    stageNames[s.stage_index] = s.name;
+    stageIdxList.push(s.stage_index);
+  });
+
+  // Задачи: с project_id проекта ИЛИ NULL + нужный stage_index
+  var tasksRes = stageIdxList.length
+    ? await sb.from('stage_tasks').select('id,title,done,priority,stage_index,created_at,updated_at')
+        .or('project_id.eq.' + project.id + ',project_id.is.null')
+        .in('stage_index', stageIdxList)
+        .order('updated_at', {ascending:false})
+        .limit(limit || 5)
+    : await sb.from('stage_tasks').select('id,title,done,priority,stage_index,created_at,updated_at')
+        .eq('project_id', project.id)
+        .order('updated_at', {ascending:false})
+        .limit(limit || 5);
+
+  var tasks = tasksRes.data || [];
+
+  if (!tasks.length) {
+    el.innerHTML = '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.15);text-align:center;padding:16px 0;">Пока нет активности</div>';
+    return;
+  }
+
+  if (g('cp2-updates-dot')) g('cp2-updates-dot').style.display = 'block';
+
+  var doneIcon = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3ecf8e" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  var openIcon = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/></svg>';
+
+  function fmtTime(dateStr) {
+    var d = new Date(dateStr);
+    var today = new Date(); today.setHours(0,0,0,0);
+    var dd = new Date(dateStr); dd.setHours(0,0,0,0);
+    var diff = Math.floor((today - dd) / 86400000);
+    return diff === 0
       ? 'Сегодня, ' + d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})
       : diff === 1 ? 'Вчера' : diff + ' дн. назад';
+  }
+
+  el.innerHTML = tasks.map(function(t) {
+    var isDone   = t.done;
+    var icon     = isDone ? doneIcon : openIcon;
+    var cls      = isDone ? 'done' : 'task-open';
+    var stName   = stageNames[t.stage_index] || ('Этап ' + (t.stage_index + 1));
+    var hiPri    = t.priority === 'high' ? '<span style="font-family:var(--font-mono);font-size:9px;background:rgba(224,82,82,.12);color:#e05252;border:1px solid rgba(224,82,82,.2);padding:1px 6px;border-radius:4px;margin-left:6px;">срочно</span>' : '';
+    var timeStr  = fmtTime(t.updated_at || t.created_at);
     return '<div class="cp-act-row">' +
       '<div class="cp-act-icon ' + cls + '">' + icon + '</div>' +
       '<div class="cp-act-body">' +
-        '<div class="cp-act-text">Команда <b>' + verb + '</b></div>' +
-        '<div class="cp-act-tag">' + esc(stName) + (h.note ? ' — ' + esc(h.note) : '') + '</div>' +
+        '<div class="cp-act-text">' + esc(t.title) + hiPri + '</div>' +
+        '<div class="cp-act-tag">' + esc(stName) + '</div>' +
       '</div>' +
       '<div class="cp-act-time">' + timeStr + '</div>' +
     '</div>';
