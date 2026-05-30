@@ -31307,7 +31307,9 @@ function renderProjectGrid() {
   }
 
   grid.innerHTML = list.map(p => {
+    try {
     const { pct, completed } = getProjectProgress(p.id)
+    const progTotal = getProjectProgress(p.id).total
     const overdue = isProjectOverdue(p.id)
     const next = getNextDeadline(p.id)
     const col = p.brand_color || '#b8923a'
@@ -31315,7 +31317,8 @@ function renderProjectGrid() {
 
     // Pipeline segs
     const projStages = _allStages.filter(s => s.project_id === p.id)
-    const stageStatuses = Array.from({length:9}, (_,i) => {
+    const segCount = projStages.length || 9
+    const stageStatuses = Array.from({length:segCount}, (_,i) => {
       const st = projStages.find(s => s.stage_index === i)
       return st ? st.status : 'pending'
     })
@@ -31372,7 +31375,7 @@ function renderProjectGrid() {
           <div style="flex:1;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;">
             <div style="width:${pct}%;height:100%;background:${progColor};border-radius:2px;"></div>
           </div>
-          <div style="font-family:var(--font-mono);font-size:9px;color:var(--txt3);min-width:44px;text-align:right;">${completed}/9</div>
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--txt3);min-width:44px;text-align:right;">${completed}/${progTotal}</div>
         </div>
       </div>
 
@@ -31406,6 +31409,7 @@ function renderProjectGrid() {
 
       </div>
     </div>`
+    } catch(e) { console.error('[DTR card]', e); return ''; }
   }).join('')
 }
 function switchDashTab(tab, btn) {
@@ -35613,12 +35617,14 @@ async function cp2LoadTracker(project) {
   var nextStage = arr.find(function(s){ return s.status==='active'; }) || arr.find(function(s){ return s.status==='pending'; });
   var nsEl = g('cp2-next-step');
   if (nextStage && nsEl) {
-    var stObj   = STAGES[nextStage.stage_index] || { name:'Этап' };
+    var nextName = nextStage.name || (STAGES[nextStage.stage_index] && STAGES[nextStage.stage_index].name) || ('Этап ' + (nextStage.stage_index+1));
+    var nextIdx  = arr.indexOf(nextStage);
+    var numStr   = String(nextIdx + 1).padStart(2, '0');
     var isActive = nextStage.status === 'active';
     var labelEl  = g('cp2-next-label');
     if (labelEl) labelEl.textContent = isActive ? 'В работе' : 'Следующий этап';
-    if (g('cp2-next-title')) g('cp2-next-title').textContent = stObj.name;
-    if (g('cp2-next-count')) g('cp2-next-count').textContent = done + ' / ' + totalSt;
+    if (g('cp2-next-title')) g('cp2-next-title').textContent = numStr + ' — ' + nextName;
+    if (g('cp2-next-count')) g('cp2-next-count').textContent = done + ' / ' + total;
     nsEl.style.display = 'flex';
 
     // Дедлайн этапа из агентской части
@@ -43557,6 +43563,16 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
     });
 
     try { await sb.from('project_stages').insert(rows); } catch(e){ console.warn(e); }
+
+    // Обновляем _allStages локально чтобы счётчики обновились сразу
+    if (typeof _allStages !== 'undefined') {
+      _allStages = _allStages.filter(function(s){ return s.project_id !== projId; });
+      rows.forEach(function(r){ _allStages.push(r); });
+    }
+
+    // Перерисовываем грид проектов чтобы обновить прогресс
+    if (typeof renderProjectGrid === 'function') renderProjectGrid();
+
     if (typeof currentProject !== 'undefined' && currentProject && currentProject.id===projId) {
       if (typeof loadTracker === 'function') loadTracker();
     }
