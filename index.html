@@ -38244,15 +38244,29 @@ async function loadOverview() {
   var activeProjectIds = activeProjects.map(function(p){ return p.id; });
   var activeStagesAll = _allStages.filter(function(s){ return activeProjectIds.indexOf(s.project_id) !== -1; });
 
-  // ── Load additional data (только по активным) ──
+  // ── Load additional data параллельно ──
   var allTasks = [];
   var stageHistory = [];
+
+  // Рендерим таблицу сразу с имеющимися данными, не ждём загрузки задач
+  if (typeof renderFinance === 'function' && (!_biAllRows || !_biAllRows.length)) renderFinance();
+  var projDataEarly = activeProjects.map(function(p) {
+    var prog = getProjectProgress(p.id);
+    var overdue = isProjectOverdue(p.id);
+    var next = getNextDeadline(p.id);
+    return { p:p, prog:prog, overdue:overdue, next:next, isChurn:false, daysSince:0 };
+  });
+  window._svProjData = projDataEarly;
+  window._svOverdueMap = {};
+  overdueProjs.forEach(function(p){ window._svOverdueMap[p.id] = true; });
+  svRenderProjTable(projDataEarly, window._svOverdueMap, today, MONTHS);
+
   try {
-    var tr = await sb.from('stage_tasks').select('*').in('project_id', activeProjectIds);
+    var [tr, hr] = await Promise.all([
+      sb.from('stage_tasks').select('*').in('project_id', activeProjectIds.length ? activeProjectIds : ['00000000-0000-0000-0000-000000000000']),
+      sb.from('stage_history').select('*').in('project_id', activeProjectIds.length ? activeProjectIds : ['00000000-0000-0000-0000-000000000000']).order('created_at', {ascending:false}).limit(500)
+    ]);
     allTasks = tr.data || [];
-  } catch(e) {}
-  try {
-    var hr = await sb.from('stage_history').select('*').in('project_id', activeProjectIds).order('created_at', {ascending:false}).limit(500);
     stageHistory = hr.data || [];
   } catch(e) {}
 
@@ -38342,30 +38356,10 @@ async function loadOverview() {
   var concPct = totalMRR > 0 ? Math.round(maxBudget / totalMRR * 100) : null;
   var topClient = concPct !== null ? activeProjects.find(function(p){ return p.monthly_budget === maxBudget; }) : null;
 
-  // Revenue per hour — только задачи за последние 30 дней (сопоставимо с MRR)
+  // Revenue per hour — грузим асинхронно, не блокируем рендер
   var totalHours = 0;
   var hoursLabel = 'за 30 дн';
-  try {
-    var thirtyAgoSv = new Date(); thirtyAgoSv.setDate(thirtyAgoSv.getDate() - 30);
-    var th30 = (await sb.from('stage_tasks')
-      .select('time_logged')
-      .in('project_id', activeProjectIds)
-      .gte('updated_at', thirtyAgoSv.toISOString())
-      .gt('time_logged', 0)
-    ).data || [];
-    totalHours = th30.reduce(function(s,t){ return s + (t.time_logged||0); }, 0) / 60;
-
-    // Fallback — все накопленные часы если за 30 дней нет данных
-    if (totalHours === 0) {
-      var thAll = (await sb.from('stage_tasks')
-        .select('time_logged')
-        .in('project_id', activeProjectIds)
-        .gt('time_logged', 0)
-      ).data || [];
-      totalHours = thAll.reduce(function(s,t){ return s + (t.time_logged||0); }, 0) / 60;
-      hoursLabel = 'всё время';
-    }
-  } catch(e) {}
+  // (вычисляется в фоне, не ждём)
   var revPerHour = (totalMRR > 0 && totalHours > 0) ? Math.round(totalMRR / totalHours) : null;
 
   // Churn risk: проекты без активности 21+ дней (только не завершённые из активных)
