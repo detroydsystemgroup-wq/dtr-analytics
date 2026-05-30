@@ -43401,6 +43401,8 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
     if (!list) return;
 
     list.innerHTML = '';
+    var inputs = [];
+
     selected.forEach(function(s, i) {
       var row = document.createElement('div');
       row.className = 'dtr-stage-row';
@@ -43421,8 +43423,8 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
       nameInp.type = 'text';
       nameInp.className = 'dtr-stage-name';
       nameInp.placeholder = 'Название этапа';
-      nameInp.value = s.name || '';
       nameInp.oninput = function() { updateStageCount(listId, countId); };
+      inputs.push({ el: nameInp, val: s.name || '' });
 
       var del = document.createElement('button');
       del.className = 'dtr-stage-del';
@@ -43437,7 +43439,14 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
       list.appendChild(row);
     });
 
-    updateStageCount(listId, countId);
+    // Устанавливаем value ПОСЛЕ вставки в DOM через rAF
+    requestAnimationFrame(function() {
+      inputs.forEach(function(item) {
+        item.el.value = item.val;
+      });
+      updateStageCount(listId, countId);
+    });
+
     setupStageDrag(listId, countId);
   }
 
