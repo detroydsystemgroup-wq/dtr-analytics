@@ -31172,7 +31172,8 @@ async function loadProjects() {
 function getProjectProgress(projectId) {
   const stages = _allStages.filter(s => s.project_id === projectId)
   const completed = stages.filter(s => s.status === 'completed').length
-  return { completed, total: 9, pct: Math.round((completed / 9) * 100) }
+  const total = stages.length || 9
+  return { completed, total, pct: total > 0 ? Math.round((completed / total) * 100) : 0 }
 }
 
 function isProjectOverdue(projectId) {
@@ -34974,17 +34975,18 @@ function renderTracker() {
   const tl = g('tracker-timeline')
   if (!tl) return
 
+  const totalStages = trackerData.length || 9
   const completed = trackerData.filter(s => s.status === 'completed').length
-  const pct = Math.round((completed / 9) * 100)
+  const pct = totalStages > 0 ? Math.round((completed / totalStages) * 100) : 0
   if (g('tracker-pct')) g('tracker-pct').textContent = pct + '%'
   if (g('tracker-bar')) g('tracker-bar').style.width = pct + '%'
   updateProjMiniProgress(pct)
   // ── McKinsey mini stats ──
-  ppUpdateMiniStats(completed, 9 - completed - trackerData.filter(s => s.status === 'active').length, trackerData)
+  ppUpdateMiniStats(completed, totalStages - completed - trackerData.filter(s => s.status === 'active').length, trackerData)
   if (g('tracker-stages-label')) g('tracker-stages-label').textContent =
     completed === 0 ? 'Проект ещё не начат' :
-    completed === 9 ? '🎉 Все этапы завершены' :
-    `${completed} из 9 этапов завершено`
+    completed === totalStages ? '🎉 Все этапы завершены' :
+    `${completed} из ${totalStages} этапов завершено`
 
   // Determine if client (use cache to avoid async in render)
   const hideEdit = _isClientCache === true
@@ -35500,16 +35502,17 @@ async function cp2LoadTracker(project) {
   var pid = project.id;
   var res = await sb.from('project_stages').select('*').eq('project_id', pid).order('stage_index');
   var arr = res.data || [];
+  var total = arr.length || 9;
   var done = arr.filter(function(s){ return s.status==='completed'; }).length;
   var active = arr.filter(function(s){ return s.status==='active'; }).length;
-  var pending = 9 - done - active;
-  var pct = Math.round(done / 9 * 100);
+  var pending = total - done - active;
+  var pct = total > 0 ? Math.round(done / total * 100) : 0;
 
   // Sidebar
   if (g('cp2-sb-pct')) g('cp2-sb-pct').textContent = pct + '%';
-  if (g('cp2-sb-steps')) g('cp2-sb-steps').textContent = done + ' из 9 этапов';
+  if (g('cp2-sb-steps')) g('cp2-sb-steps').textContent = done + ' из ' + total + ' этапов';
   if (g('cp2-sb-bar')) g('cp2-sb-bar').style.width = pct + '%';
-  if (g('cp2-stages-badge')) g('cp2-stages-badge').textContent = done + '/9';
+  if (g('cp2-stages-badge')) g('cp2-stages-badge').textContent = done + '/' + total;
 
   // Progress card
   if (g('cp2-progress-pct')) g('cp2-progress-pct').textContent = pct + '%';
@@ -35525,9 +35528,8 @@ async function cp2LoadTracker(project) {
   }
 
   // KPI hero — прогресс проекта
-  var totalSt = (typeof STAGES !== 'undefined' && STAGES.length) ? STAGES.length : 9;
   if (g('cp2-kpi-progress')) g('cp2-kpi-progress').textContent = pct + '%';
-  if (g('cp2-kpi-progress-sub')) g('cp2-kpi-progress-sub').textContent = done + ' из ' + totalSt + ' этапов';
+  if (g('cp2-kpi-progress-sub')) g('cp2-kpi-progress-sub').textContent = done + ' из ' + total + ' этапов';
 
   // ── Прогрессбар: fill + lead dot ──
   var barFill = g('cp2-bar-fill');
@@ -36066,7 +36068,7 @@ async function cp2LoadFocus(project) {
   }
   // Подсказка: прогресс
   if (g('cp2-focus-tip')) {
-    g('cp2-focus-tip').textContent = completedCount + ' из 9 этапов завершено · этап ' + (target.stage_index + 1) + ' в очереди';
+    g('cp2-focus-tip').textContent = completedCount + ' из ' + (arr ? arr.length : 9) + ' этапов завершено · этап ' + (target.stage_index + 1) + ' в очереди';
   }
 
   el.style.display = 'block';
