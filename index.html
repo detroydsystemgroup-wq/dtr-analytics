@@ -25,12 +25,14 @@
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
   script-src  'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
-  style-src   'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;
-  font-src    https://fonts.gstatic.com https://cdn.jsdelivr.net;
-  img-src     'self' data: blob:;
+  style-src   'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
+  font-src    https://fonts.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com data:;
+  img-src     'self' data: blob: https:;
   connect-src https://ygxfvmpfhrfxqzoylddo.supabase.co
               wss://ygxfvmpfhrfxqzoylddo.supabase.co
-              https://api.anthropic.com;
+              https://api.anthropic.com
+              https://cdnjs.cloudflare.com
+              https://cdn.jsdelivr.net;
   frame-ancestors 'none';
   base-uri    'self';
   form-action 'self';
@@ -31217,7 +31219,7 @@ function renderProjectGrid() {
     new Date(s.deadline + 'T00:00:00') < todayHero
   )
   // Просроченные задачи — подгружаем каждый раз асинхронно (лёгкий запрос)
-  const todayStr = todayHero.toISOString().slice(0,10)
+  const todayStr = todayHero.getFullYear() + '-' + String(todayHero.getMonth()+1).padStart(2,'0') + '-' + String(todayHero.getDate()).padStart(2,'0')
   ;(async () => {
     try {
       if (!trulyActiveIds.length) return
@@ -31226,11 +31228,9 @@ function renderProjectGrid() {
         .select('project_id,deadline,done')
         .in('project_id', trulyActiveIds)
         .not('deadline', 'is', null)
-      console.log('[OverdueTasks] raw:', data, 'error:', error, 'todayStr:', todayStr)
       const overdueTasksCount = (data || []).filter(t =>
         !t.done && t.deadline && t.deadline.slice(0,10) < todayStr
       ).length
-      console.log('[OverdueTasks] overdueCount:', overdueTasksCount)
       const totalOverdue = overdueStages.length + overdueTasksCount
       const e1 = g('proj-hero-overdue')
       if (e1) { e1.textContent = totalOverdue; e1.style.color = totalOverdue > 0 ? 'var(--red)' : 'var(--green)' }
@@ -31607,7 +31607,7 @@ async function loadReports() {
     }
     function fmtRev(v) {
       if (v == null) return '—';
-      return Math.round(v).toLocaleString('ru-RU') + ' ₽';
+      return Math.round(v).toLocaleString('ru-RU') + ' сум';
     }
     function mCol(v) {
       if (v == null) return 'rgba(184,146,58,.3)';
@@ -31625,7 +31625,7 @@ async function loadReports() {
     var metricsStrip = '<div class="rp-metrics-strip">'
       + rpMetricFull('Рост выручки', fmtPct(growthPct), mCol(growthPct), mBg(growthPct), mArrow(growthPct), growthPct != null)
       + rpMetricFull('Трафик Δ', growthPct != null ? fmtNum(trafficD) + '&nbsp;гост.' : '—', mCol(trafficD), mBg(trafficD), mArrow(trafficD), trafficD != null)
-      + rpMetricFull('Ср. чек Δ', avgChkD != null ? fmtNum(avgChkD) + '&nbsp;₽' : '—', mCol(avgChkD), mBg(avgChkD), mArrow(avgChkD), avgChkD != null)
+      + rpMetricFull('Ср. чек Δ', avgChkD != null ? fmtNum(avgChkD) + '&nbsp;сум' : '—', mCol(avgChkD), mBg(avgChkD), mArrow(avgChkD), avgChkD != null)
       + rpMetricFull('Выручка факт', fmtRev(dRev), 'var(--a2)', 'rgba(184,146,58,.07)', '', dRev != null)
       + rpMetricFull('База', fmtRev(bRev), 'rgba(184,146,58,.45)', 'rgba(184,146,58,.05)', '', bRev != null)
       + (!hasAnyData ? '<div class="rp-no-analysis">Запустите анализ в отчёте чтобы увидеть метрики</div>' : '')
@@ -31742,6 +31742,10 @@ async function openReport(id) {
   set('report-title-display', r.title)
   LABEL_B = r.period_b_label || 'Период 1'
   LABEL_D = r.period_d_label || 'Период 2'
+  // Сразу обновляем кнопку периода
+  const _bEl = g('btn-period-b'), _dEl = g('btn-period-d')
+  if (_bEl) _bEl.textContent = LABEL_B
+  if (_dEl) _dEl.textContent = LABEL_D
   g('btn-publish').style.display = r.status === 'draft' ? 'flex' : 'none'
   g('back-to-project').onclick = () => goBackToProject()
 
@@ -31815,6 +31819,22 @@ async function openReport(id) {
     } else {
       restoreFilesCollapseState()
     }
+  }
+}
+
+function showPdfComingSoon(btn) {
+  // Показываем тост "в разработке"
+  if (typeof showToast === 'function') {
+    showToast('🚧', 'PDF экспорт в разработке', 'Скоро будет доступен')
+  } else {
+    // Fallback — inline tooltip на кнопке
+    var orig = btn.textContent
+    btn.textContent = '🚧 В разработке'
+    btn.style.opacity = '.6'
+    setTimeout(function() {
+      btn.textContent = orig
+      btn.style.opacity = ''
+    }, 2000)
   }
 }
 
@@ -34321,9 +34341,6 @@ function renderKanban() {
 
 function renderKanbanCol(containerId, tasks, status) {
   const container = g(containerId); if (!container) return
-  if (status === 'done' && tasks.length) {
-    console.log('[Kanban done]', tasks.length, 'tasks, isClient:', _isClientCache, 'sample:', {id:tasks[0].id, time_logged:tasks[0].time_logged, kanban_status:tasks[0].kanban_status, done:tasks[0].done})
-  }
 
   if (!tasks.length) {
     const empties = {
@@ -37595,7 +37612,7 @@ function renderDeadlinePanel() {
   if (activeProjIds.length) {
     (async function() {
       try {
-        var todayStr = today.toISOString().slice(0,10);
+        var todayStr = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
         var weekEnd = new Date(today); weekEnd.setDate(today.getDate()+7);
         var weekStr = weekEnd.toISOString().slice(0,10);
         var { data: tasks } = await sb.from('stage_tasks')
