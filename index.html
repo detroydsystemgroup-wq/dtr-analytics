@@ -33331,7 +33331,7 @@ function biSetSegment(seg, btn) {
 async function loadFinance() {
   if (!_allProjects.length) await loadProjects()
   // Только активные проекты — как в сводке
-  const activeIds = _allProjects.filter(p=>p.status!=='archived').map(p=>p.id)
+  const activeIds = _allProjects.filter(p=>p.status!=='archived' && getProjectProgress(p.id).pct<100).map(p=>p.id)
   _finTaskHours = {}
   try {
     const {data:tasks} = await sb.from('stage_tasks').select('project_id,time_logged').in('project_id',activeIds)
@@ -33341,7 +33341,7 @@ async function loadFinance() {
 }
 
 function renderFinance() {
-  const projects = _allProjects.filter(p=>p.status!=='archived')
+  const projects = _allProjects.filter(p=>p.status!=='archived' && getProjectProgress(p.id).pct<100)
   _biAllRows = projects.map(_biComputeRow)
 
   // ── Agency KPI strip ──
@@ -40970,7 +40970,7 @@ function kbRenderProjectSidebar() {
   if (!list) return;
 
   var all = (typeof _allProjects !== 'undefined' && _allProjects) ? _allProjects : [];
-  var projects  = all.filter(function(p){ return p.status !== 'archived'; });
+  var projects  = all.filter(function(p){ return p.status !== 'archived' && (typeof getProjectProgress !== 'undefined' && getProjectProgress(p.id).pct < 100); });
   var archived  = all.filter(function(p){ return p.status === 'archived'; });
 
   var projStat  = document.getElementById('kb-proj-stat-proj');
