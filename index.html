@@ -33843,8 +33843,20 @@ function updateProjectTimeDisplay() {
   if (totalMin === 0 && typeof _finTaskHours === 'object') {
     totalMin = _finTaskHours[currentProject.id] || 0
   }
+  // Если всё ещё 0 — запросить напрямую из БД (после перезагрузки)
   const el = g('global-timer-display')
-  if (el) el.textContent = _fmtProjectTime(totalMin)
+  if (totalMin > 0) {
+    if (el) el.textContent = _fmtProjectTime(totalMin)
+  } else {
+    sb.from('stage_tasks').select('time_logged').eq('project_id', currentProject.id)
+      .then(function(res) {
+        var dbMin = (res.data || []).reduce(function(s,t){ return s + (t.time_logged||0) }, 0)
+        _finTaskHours[currentProject.id] = dbMin
+        if (el) el.textContent = dbMin > 0 ? _fmtProjectTime(dbMin) : '--'
+      }).catch(function(){})
+    if (el) el.textContent = '...'
+    return
+  }
   // Убираем running-режим, показываем static
   const badge = g('global-timer-badge')
   if (badge) {
@@ -33896,14 +33908,15 @@ function startTaskTimer(taskId, stageIndex, taskTitle) {
 async function stopActiveTimer() {
   if (!_activeTimer) return
   clearInterval(_timerInterval); _timerInterval = null
-  const elapsedMin = Math.round((Date.now() - _activeTimer.startMs) / 60000)
+  const elapsedSec = Math.floor((Date.now() - _activeTimer.startMs) / 1000)
+  const elapsedMin = Math.max(1, Math.ceil(elapsedSec / 60))
   const { taskId, stageIndex } = _activeTimer
   _activeTimer = null
 
   document.querySelectorAll('.task-timer-btn.running').forEach(b => b.classList.remove('running'))
 
-  if (elapsedMin < 1) {
-    // Меньше минуты — просто возвращаем статичный режим
+  if (elapsedSec < 5) {
+    // Меньше 5 секунд — случайное нажатие
     updateProjectTimeDisplay()
     return
   }
