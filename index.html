@@ -36619,37 +36619,49 @@ function renderSMMRubricGrid() {
       { name: 'Просмотры',       val: fmtFull(r.views),                   pct: viPct, color: 'rgba(255,255,255,.4)' },
     ]
 
-    return `<div class="rb-card${isWin ? ' rb-card-winner' : ''}">
-      <div class="rb-card-stripe" style="background:${pal.a};"></div>
-      <div class="rb-card-blob" style="background:${pal.a};"></div>
+    return `<div style="
+      background:#111111;
+      border:0.5px solid rgba(255,255,255,.1);
+      border-top:2px solid ${isWin ? '#5DCAA5' : pal.a};
+      border-radius:12px;
+      overflow:hidden;
+      padding:18px 20px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      transition:background .15s;
+    " onmouseover="this.style.background='#171717'" onmouseout="this.style.background='#111111'">
 
-      <div class="rb-card-head">
+      <!-- Header -->
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
         <div>
-          <div class="rb-card-label">Рубрика</div>
-          <div class="rb-card-name">${esc(r.name)}</div>
-          ${isWin ? `<div class="rb-card-winner-badge">👑 Лучшая</div>` : ''}
+          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;color:rgba(240,236,230,.3);text-transform:uppercase;margin-bottom:5px;">
+            ${isWin ? '👑 ЛУЧШАЯ РУБРИКА' : 'РУБРИКА'}
+          </div>
+          <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;color:#f0ece6;letter-spacing:-.01em;text-transform:uppercase;">
+            ${esc(r.name)}
+          </div>
         </div>
-        <div class="rb-card-posts-block">
-          <div class="rb-card-posts-val" style="color:${pal.a};">${r.posts || 0}</div>
-          <div class="rb-card-posts-lbl">постов</div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-family:'DM Sans',sans-serif;font-size:22px;font-weight:500;color:${isWin ? '#5DCAA5' : pal.a};line-height:1;">${r.posts || 0}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(240,236,230,.3);letter-spacing:.06em;margin-top:2px;">ПОСТОВ</div>
         </div>
       </div>
 
-      <div class="rb-card-divider"></div>
+      <!-- Divider -->
+      <div style="height:0.5px;background:rgba(255,255,255,.08);"></div>
 
-      <div>
+      <!-- Metrics -->
+      <div style="display:flex;flex-direction:column;gap:10px;">
         ${metrics.map(m => `
-          <div class="rb-metric">
-            <div class="rb-metric-left">
-              <div class="rb-metric-dot" style="background:${m.color};"></div>
-              <div class="rb-metric-name">${m.name}</div>
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
+              <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.07em;color:rgba(240,236,230,.35);text-transform:uppercase;">${m.name}</span>
+              <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:${m.color === 'rgba(255,255,255,.4)' ? 'rgba(240,236,230,.6)' : m.color};">${m.val}</span>
             </div>
-            <div class="rb-metric-bar-wrap">
-              <div class="rb-metric-bar-track">
-                <div class="rb-metric-bar-fill" style="width:${m.pct}%;background:${m.color};"></div>
-              </div>
+            <div style="height:3px;background:rgba(255,255,255,.06);border-radius:1px;">
+              <div style="height:3px;width:${m.pct}%;background:${m.color === 'rgba(255,255,255,.4)' ? 'rgba(240,236,230,.3)' : m.color};border-radius:1px;transition:width .6s ease;"></div>
             </div>
-            <div class="rb-metric-val" style="color:${m.color};">${m.val}</div>
           </div>`).join('')}
       </div>
     </div>`
@@ -41746,6 +41758,54 @@ async function cpRenderMilestone(project) {
   overflow: visible !important;
   height: auto !important;
   max-height: none !important;
+}
+
+/* ── RUBRIC GRID — McKinsey style ── */
+#page-smm .smm-rubric-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0,1fr)) !important;
+  gap: 12px !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+}
+/* ── WINNER BANNER — McKinsey ── */
+#page-smm .smm-rubric-winner,
+#page-smm #smm-rubric-winner {
+  background: #111111 !important;
+  border: 0.5px solid rgba(255,255,255,.1) !important;
+  border-left: 3px solid #5DCAA5 !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  margin-bottom: 16px !important;
+}
+#page-smm .rb-winner-label {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 9px !important;
+  letter-spacing: .1em !important;
+  color: rgba(240,236,230,.4) !important;
+  text-transform: uppercase !important;
+}
+#page-smm .smm-winner-name,
+#page-smm #smm-winner-name {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 20px !important;
+  font-weight: 500 !important;
+  color: #f0ece6 !important;
+  text-transform: uppercase !important;
+  letter-spacing: -.01em !important;
+}
+#page-smm .rb-winner-stat-val {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 500 !important;
+}
+#page-smm .rb-winner-stat-lbl {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 9px !important;
+  letter-spacing: .07em !important;
+  color: rgba(240,236,230,.35) !important;
+  text-transform: uppercase !important;
 }
 </style>
 
