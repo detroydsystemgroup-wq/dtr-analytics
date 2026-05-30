@@ -43396,18 +43396,45 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
   /* ── Рендер редактора этапов ── */
   function renderStageEditor(listId, countId, selected) {
     var list = document.getElementById(listId);
-    var countEl = document.getElementById(countId);
     if (!list) return;
 
-    // selected — массив { name, emoji, enabled }
-    list.innerHTML = selected.map(function(s, i) {
-      return '<div class="dtr-stage-row" data-idx="' + i + '">'
-        + '<span class="dtr-stage-handle" title="Перетащить">⠿</span>'
-        + '<input class="dtr-stage-check" type="checkbox"' + (s.enabled !== false ? ' checked' : '') + ' onchange="dtrStageToggle(\'' + listId + '\',\'' + countId + '\',' + i + ',this.checked)">'
-        + '<input class="dtr-stage-name" type="text" value="' + s.name.replace(/"/g,'&quot;') + '" placeholder="Название этапа" oninput="dtrStageRename(\'' + listId + '\',' + i + ',this.value)">'
-        + '<button class="dtr-stage-del" onclick="dtrStageDel(\'' + listId + '\',\'' + countId + '\',' + i + ')" title="Удалить">✕</button>'
-        + '</div>';
-    }).join('');
+    list.innerHTML = '';
+    selected.forEach(function(s, i) {
+      var row = document.createElement('div');
+      row.className = 'dtr-stage-row';
+      row.dataset.idx = i;
+
+      var handle = document.createElement('span');
+      handle.className = 'dtr-stage-handle';
+      handle.title = 'Перетащить';
+      handle.textContent = '⠿';
+
+      var check = document.createElement('input');
+      check.type = 'checkbox';
+      check.className = 'dtr-stage-check';
+      check.checked = s.enabled !== false;
+      check.onchange = function() { updateStageCount(listId, countId); };
+
+      var nameInp = document.createElement('input');
+      nameInp.type = 'text';
+      nameInp.className = 'dtr-stage-name';
+      nameInp.placeholder = 'Название этапа';
+      nameInp.value = s.name || '';
+      nameInp.oninput = function() { updateStageCount(listId, countId); };
+
+      var del = document.createElement('button');
+      del.className = 'dtr-stage-del';
+      del.title = 'Удалить';
+      del.textContent = '✕';
+      del.onclick = function() { row.remove(); updateStageCount(listId, countId); };
+
+      row.appendChild(handle);
+      row.appendChild(check);
+      row.appendChild(nameInp);
+      row.appendChild(del);
+      list.appendChild(row);
+    });
+
     updateStageCount(listId, countId);
     setupStageDrag(listId, countId);
   }
@@ -43453,15 +43480,37 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
   window.dtrAddCustomStage = function(listId, countId) {
     var list = document.getElementById(listId);
     if (!list) return;
-    var i = list.querySelectorAll('.dtr-stage-row').length;
+
     var row = document.createElement('div');
-    row.className = 'dtr-stage-row'; row.dataset.idx = i;
-    row.innerHTML = '<span class="dtr-stage-handle">⠿</span>'
-      + '<input class="dtr-stage-check" type="checkbox" checked onchange="dtrStageToggle(\'' + listId + '\',\'' + countId + '\',' + i + ',this.checked)">'
-      + '<input class="dtr-stage-name" type="text" value="" placeholder="Название этапа" oninput="dtrStageRename(\'' + listId + '\',' + i + ',this.value)">'
-      + '<button class="dtr-stage-del" onclick="dtrStageDel(\'' + listId + '\',\'' + countId + '\',' + i + ')">✕</button>';
+    row.className = 'dtr-stage-row';
+
+    var handle = document.createElement('span');
+    handle.className = 'dtr-stage-handle';
+    handle.textContent = '⠿';
+
+    var check = document.createElement('input');
+    check.type = 'checkbox';
+    check.className = 'dtr-stage-check';
+    check.checked = true;
+    check.onchange = function() { updateStageCount(listId, countId); };
+
+    var nameInp = document.createElement('input');
+    nameInp.type = 'text';
+    nameInp.className = 'dtr-stage-name';
+    nameInp.placeholder = 'Название этапа';
+    nameInp.oninput = function() { updateStageCount(listId, countId); };
+
+    var del = document.createElement('button');
+    del.className = 'dtr-stage-del';
+    del.textContent = '✕';
+    del.onclick = function() { row.remove(); updateStageCount(listId, countId); };
+
+    row.appendChild(handle);
+    row.appendChild(check);
+    row.appendChild(nameInp);
+    row.appendChild(del);
     list.appendChild(row);
-    row.querySelector('.dtr-stage-name').focus();
+    nameInp.focus();
     updateStageCount(listId, countId);
     setupStageDrag(listId, countId);
   };
