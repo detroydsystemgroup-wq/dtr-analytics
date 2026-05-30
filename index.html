@@ -2448,7 +2448,7 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
   height:30px; padding:0 14px; border-radius:7px;
   font-family:Manrope,sans-serif; font-size:11px; font-weight:600;
   letter-spacing:-.01em; cursor:pointer; transition:all .15s;
-  white-space:nowrap; border:1px solid transparent;
+  white-space:nowrap; border:1px solid rgba(255,255,255,.1);
 }
 .smm-topbar-ai {
   background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.1);
@@ -24044,10 +24044,14 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 
 /* User pill */
 #page-smm .user-pill {
-  background: rgba(255,255,255,.04) !important;
-  border: 1px solid rgba(255,255,255,.07) !important;
-  border-radius: 20px !important;
-  padding: 4px 10px !important;
+  background: rgba(255,255,255,.06) !important;
+  border: 1px solid rgba(255,255,255,.1) !important;
+  border-radius: 7px !important;
+  padding: 0 10px !important;
+  height: 30px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
 }
 
 </style>
