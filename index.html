@@ -2445,27 +2445,27 @@ svg { transition: stroke .2s, fill .2s, opacity .2s; }
 /* ── Unified action buttons — same height, same padding ── */
 .smm-topbar-btn {
   display:inline-flex; align-items:center; gap:6px;
-  height:30px; padding:0 12px; border-radius:8px;
+  height:30px; padding:0 14px; border-radius:7px;
   font-family:Manrope,sans-serif; font-size:11px; font-weight:600;
   letter-spacing:-.01em; cursor:pointer; transition:all .15s;
   white-space:nowrap; border:1px solid transparent;
 }
 .smm-topbar-ai {
-  background:rgba(184,146,58,.1); border-color:rgba(184,146,58,.25);
-  color:rgba(184,146,58,.9);
+  background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.1);
+  color:rgba(255,255,255,.55);
 }
-.smm-topbar-ai:hover { background:rgba(184,146,58,.2); border-color:rgba(184,146,58,.5); }
+.smm-topbar-ai:hover { background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.18); color:rgba(255,255,255,.85); }
 .smm-topbar-ai:disabled { opacity:.35; cursor:not-allowed; }
 .smm-topbar-save {
-  background:linear-gradient(135deg,#5b5fc7,#7c3aed);
-  border-color:transparent; color:#fff;
-  box-shadow:0 2px 8px rgba(91,95,199,.3);
+  background:#22c55e;
+  border-color:transparent; color:#fff; font-weight:700;
+  box-shadow:0 2px 8px rgba(34,197,94,.25);
 }
-.smm-topbar-save:hover { filter:brightness(1.12); box-shadow:0 4px 14px rgba(91,95,199,.4); }
+.smm-topbar-save:hover { background:#16a34a; box-shadow:0 4px 14px rgba(34,197,94,.35); }
 .smm-topbar-logout {
-  background:transparent; border-color:rgba(255,255,255,.08); color:rgba(255,255,255,.3);
+  background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.1); color:rgba(255,255,255,.45);
 }
-.smm-topbar-logout:hover { border-color:rgba(255,255,255,.16); color:rgba(255,255,255,.6); }
+.smm-topbar-logout:hover { background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.18); color:rgba(255,255,255,.8); }
 .smm-hdr-right { display:flex; flex-direction:column; gap:10px; align-items:flex-end; }
 .smm-client-pill {
   background: var(--smm-bg4); border: 1px solid var(--smm-brd2);
@@ -23677,7 +23677,7 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 #page-smm .smm-topbar-btn {
   height: 30px !important;
   padding: 0 14px !important;
-  border-radius: 8px !important;
+  border-radius: 7px !important;
   font-size: 11px !important;
   font-family: 'DM Sans', sans-serif !important;
   cursor: pointer !important;
@@ -23685,30 +23685,25 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   display: flex !important; align-items: center !important; gap: 5px !important;
 }
 #page-smm .smm-topbar-logout {
-  background: rgba(255,255,255,.05) !important;
-  border: 1px solid rgba(255,255,255,.08) !important;
+  background: rgba(255,255,255,.06) !important;
+  border: 1px solid rgba(255,255,255,.1) !important;
   color: rgba(255,255,255,.5) !important;
 }
-#page-smm .smm-topbar-logout:hover { background: rgba(255,255,255,.09) !important; color: rgba(255,255,255,.8) !important; }
+#page-smm .smm-topbar-logout:hover { background: rgba(255,255,255,.1) !important; color: rgba(255,255,255,.8) !important; border-color: rgba(255,255,255,.18) !important; }
 #page-smm .smm-topbar-ai {
-  background: rgba(255,255,255,.05) !important;
-  border: 1px solid rgba(255,255,255,.08) !important;
+  background: rgba(255,255,255,.06) !important;
+  border: 1px solid rgba(255,255,255,.1) !important;
   color: rgba(255,255,255,.5) !important;
 }
-#page-smm .smm-topbar-ai:hover { background: rgba(255,255,255,.09) !important; color: rgba(255,255,255,.8) !important; }
+#page-smm .smm-topbar-ai:hover { background: rgba(255,255,255,.1) !important; color: rgba(255,255,255,.8) !important; border-color: rgba(255,255,255,.18) !important; }
 #page-smm .smm-topbar-save {
-  background: #b8923a !important;
+  background: #22c55e !important;
   border: none !important;
   color: #fff !important;
   font-weight: 700 !important;
-  position: relative !important; overflow: hidden !important;
+  box-shadow: 0 2px 8px rgba(34,197,94,.25) !important;
 }
-#page-smm .smm-topbar-save::before {
-  content: '' !important; position: absolute !important; inset: 0 !important;
-  background: linear-gradient(135deg,rgba(255,255,255,.12) 0%,transparent 60%) !important;
-  pointer-events: none !important;
-}
-#page-smm .smm-topbar-save:hover { background: #c9a84c !important; }
+#page-smm .smm-topbar-save:hover { background: #16a34a !important; box-shadow: 0 4px 14px rgba(34,197,94,.35) !important; }
 
 /* ══ NAV TABS ══ */
 #page-smm .smm-nav {
