@@ -43577,7 +43577,10 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
             var stages = res.data || [];
             if (stages.length) {
               var tpl = stages.map(function(s) {
-                return { name: s.name || DEFAULT_STAGE_TEMPLATES[s.stage_index]?.name || 'Этап', emoji: '📌', enabled: true };
+                var fallbackName = (window.STAGES && window.STAGES[s.stage_index] && window.STAGES[s.stage_index].name)
+                  || (DEFAULT_STAGE_TEMPLATES[s.stage_index] && DEFAULT_STAGE_TEMPLATES[s.stage_index].name)
+                  || ('Этап ' + (s.stage_index + 1));
+                return { name: s.name || fallbackName, emoji: '📌', enabled: true };
               });
               renderStageEditor('ps-stage-list', 'ps-stage-count', tpl);
             }
