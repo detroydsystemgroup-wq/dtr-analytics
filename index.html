@@ -35634,8 +35634,8 @@ async function cp2LoadTracker(project) {
   var nextStage = arr.find(function(s){ return s.status==='active'; }) || arr.find(function(s){ return s.status==='pending'; });
   var nsEl = g('cp2-next-step');
   if (nextStage && nsEl) {
-    var nextName = nextStage.name || (STAGES[nextStage.stage_index] && STAGES[nextStage.stage_index].name) || ('Этап ' + (nextStage.stage_index+1));
     var nextIdx  = arr.indexOf(nextStage);
+    var nextName = nextStage.name || ('Этап ' + (nextIdx + 1));
     var numStr   = String(nextIdx + 1).padStart(2, '0');
     var isActive = nextStage.status === 'active';
     var labelEl  = g('cp2-next-label');
