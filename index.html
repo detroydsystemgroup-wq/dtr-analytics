@@ -37926,8 +37926,27 @@ function renderDeadlinePanel() {
       var dow = DAYS_RU[item.dl.getDay()];
               var dvCls = item.status === 'overdue' ? ' dv-overdue' : item.status === 'today' ? ' dv-today' : item.status === 'done' ? ' dv-done' : '';
 
-                                    itemsHtml +=
-        '<div class="dl-card-v17' + dvCls + '" onclick="openProject(\'' + item.proj.id + '\')">'        + '<div class="dv-date">'        +   '<div class="dv-day" style="color:' + cntColor + ';">' + item.dl.getDate() + '</div>'        +   '<div class="dv-mon">' + mon + '</div>'        +   '<div class="dv-dow">' + dow + '</div>'        + '</div>'        + '<div class="dv-info">'        +   '<div class="dv-stage">'        +     '<span class="dv-stage-icon">' + item.stageObj.icon + '</span>'        +     '<span class="dv-stage-name">' + item.stageObj.name + '</span>'        +   '</div>'        +   '<div class="dv-meta">'        +     '<span class="dv-proj-pill" style="background:' + col + '14;color:' + col + ';border:1px solid ' + col + '28;">'        +       '<span class="dv-proj-dot" style="background:' + col + ';"></span>' + item.proj.name        +     '</span>'        +     (item.s.note ? '<span class="dv-note">\ud83d\udcac ' + item.s.note + '</span>' : '')        +   '</div>'        + '</div>'        + '<div class="dv-actions">'        +   '<div class="dv-cell-count">'        +     '<div class="dv-cnt-val" style="color:' + cntColor + ';">' + cntVal + '</div>'        +     '<div class="dv-cnt-lbl">' + cntLbl + '</div>'        +   '</div>'        +   '<div class="dv-cell-status">'        +     '<div class="dv-status-pill" style="background:' + badgeBg + ';color:' + badgeCol + ';border:1px solid ' + badgeCol + '35;">'        +       '<span class="dv-status-dot" style="background:' + badgeCol + ';"></span>'        +       badgeTxt        +     '</div>'        +   '</div>'        +   '<div class="dv-cell-open">'        +     '<button class="dv-open-btn" onclick="event.stopPropagation();openProject(\'' + item.proj.id + '\')">\u2192</button>'        +   '</div>'        + '</div>'        + '</div>';
+      itemsHtml +=
+        '<div class="dl-card-v17' + dvCls + '" onclick="openProject(\'' + item.proj.id + '\')" style="display:grid;grid-template-columns:56px 1fr auto;align-items:stretch;overflow:hidden;">' +
+          '<div class="dv-date" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 10px;border-right:1px solid rgba(255,255,255,.06);min-width:56px;">' +
+            '<div class="dv-day" style="color:' + cntColor + ';font-size:22px;font-weight:500;line-height:1;">' + item.dl.getDate() + '</div>' +
+            '<div class="dv-mon" style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);margin-top:2px;">' + mon + '</div>' +
+          '</div>' +
+          '<div style="padding:13px 16px;display:flex;flex-direction:column;justify-content:center;gap:4px;min-width:0;">' +
+            '<div style="font-size:13px;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(item.stageObj.name) + '</div>' +
+            '<div style="display:flex;align-items:center;gap:5px;">' +
+              '<span style="width:5px;height:5px;border-radius:50%;background:' + col + ';flex-shrink:0;display:inline-block;"></span>' +
+              '<span style="font-size:11px;color:var(--txt3);">' + esc(item.proj.name) + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div style="display:flex;align-items:center;gap:10px;padding:13px 14px;border-left:1px solid rgba(255,255,255,.06);">' +
+            '<div style="display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 9px;border-radius:20px;border:1px solid ' + badgeCol + '35;background:' + badgeBg + ';color:' + badgeCol + ';white-space:nowrap;">' +
+              '<span style="width:5px;height:5px;border-radius:50%;background:' + badgeCol + ';display:inline-block;"></span>' + badgeTxt +
+            '</div>' +
+            '<button onclick="event.stopPropagation();openProject(\'' + item.proj.id + '\')" style="width:28px;height:28px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:transparent;color:var(--txt2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">→</button>' +
+          '</div>' +
+        '</div>';
+
     });
 
     html += '<div class="dl-week-group" style="animation-delay:' + delay + 's">'
