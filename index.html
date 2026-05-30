@@ -31216,6 +31216,7 @@ function setProjectFilter(f, btn) {
 function filterProjects() { renderProjectGrid() }
 
 function renderProjectGrid() {
+  try {
   const grid = g('projects-grid')
   if (!grid) return
   const search = (g('dash-search')?.value || '').toLowerCase().trim()
@@ -31410,6 +31411,7 @@ function renderProjectGrid() {
     </div>`
     } catch(e) { console.error('[DTR card]', e); return ''; }
   }).join('')
+  } catch(e) { console.error('[renderProjectGrid]', e); }
 }
 function switchDashTab(tab, btn) {
   document.querySelectorAll('.dash-tab').forEach(b => b.classList.remove('dt-active'))
