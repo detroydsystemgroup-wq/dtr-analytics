@@ -33311,7 +33311,7 @@ let _biSelectedId = null
 // ── Compute P&L row for one project ──
 function _biComputeRow(p) {
   const budget   = p.monthly_budget || 0
-  const mins     = _finTaskHours[p.id] || 0
+  const mins     = (_finTaskHoursAll || _finTaskHours)[p.id] || 0
   const hours    = mins / 60  // дробное — для точного отображения ч+м
 
   // Поддержка нового unified формата (cat-поле) и старого формата
@@ -33360,12 +33360,26 @@ function biSetSegment(seg, btn) {
 
 async function loadFinance() {
   if (!_allProjects.length) await loadProjects()
-  // Только активные проекты — как в сводке
   const activeIds = _allProjects.filter(p=>p.status!=='archived' && getProjectProgress(p.id).pct<100).map(p=>p.id)
+
+  // Часы за последние 30 дней — по задачам обновлённым за этот период
   _finTaskHours = {}
+  _finTaskHoursAll = {}  // все время (для бейджа проекта)
   try {
-    const {data:tasks} = await sb.from('stage_tasks').select('project_id,time_logged').in('project_id',activeIds)
-    ;(tasks||[]).forEach(t=>{ _finTaskHours[t.project_id]=(_finTaskHours[t.project_id]||0)+(t.time_logged||0) })
+    const thirtyAgo = new Date(); thirtyAgo.setDate(thirtyAgo.getDate() - 30)
+    const thirtyAgoStr = thirtyAgo.toISOString()
+
+    // Все часы (для бейджа)
+    const {data:allTasks} = await sb.from('stage_tasks').select('project_id,time_logged').in('project_id',activeIds)
+    ;(allTasks||[]).forEach(t=>{ _finTaskHoursAll[t.project_id]=(_finTaskHoursAll[t.project_id]||0)+(t.time_logged||0) })
+
+    // Часы за 30 дней (для выручки/час)
+    const {data:tasks30} = await sb.from('stage_tasks')
+      .select('project_id,time_logged')
+      .in('project_id',activeIds)
+      .gte('updated_at', thirtyAgoStr)
+      .gt('time_logged', 0)
+    ;(tasks30||[]).forEach(t=>{ _finTaskHours[t.project_id]=(_finTaskHours[t.project_id]||0)+(t.time_logged||0) })
   } catch(e){}
   renderFinance()
 }
@@ -33380,7 +33394,13 @@ function renderFinance() {
   const totalCosts = withBudget.reduce((s,r)=>s+r.totalCost,0)
   const totalProfit= totalMRR - totalCosts
   const agencyMargin = totalMRR > 0 ? Math.round((totalProfit/totalMRR)*100) : 0
-  const totalHours = _biAllRows.reduce((s,r)=>s+r.hours,0)
+  // totalHours30 — для выручки/час (последние 30 дней)
+  const totalHours30 = activeIds => {
+    const ids = _allProjects.filter(p=>p.status!=='archived' && getProjectProgress(p.id).pct<100).map(p=>p.id)
+    return ids.reduce((s,id)=>s+(_finTaskHours[id]||0),0) / 60
+  }
+  const totalHoursMonth = totalHours30()
+  const totalHours = _biAllRows.reduce((s,r)=>s+r.hours,0)  // все время
 
   const s=(id,v)=>{const el=g(id);if(el)el.textContent=v}
   s('bi-mrr',          totalMRR>0 ? fmtM(totalMRR)+' сум' : '—')
@@ -33400,8 +33420,8 @@ function renderFinance() {
     if (mins === 0) return hrs + 'ч'
     return hrs + 'ч ' + mins + 'м'
   }
-  s('bi-hours',     totalHours > 0 ? fmtHours(totalHours) : '—')
-  s('bi-hours-sub', 'по всем проектам')
+  s('bi-hours',     totalHoursMonth > 0 ? fmtHours(totalHoursMonth) : (totalHours > 0 ? fmtHours(totalHours) : '—'))
+  s('bi-hours-sub', totalHoursMonth > 0 ? 'за 30 дней' : 'по всем проектам')
 
   const profitEl=g('bi-profit')
   if(profitEl && totalMRR>0) profitEl.style.color=totalProfit>=0?'var(--green)':'var(--red)'
@@ -33414,7 +33434,7 @@ function renderFinance() {
   const nClients = withBudget.length || 1
 
   // 1. Revenue per hour
-  const revPerH = totalHours > 0 ? Math.round(totalMRR / totalHours) : null
+  const revPerH = totalHoursMonth > 0 ? Math.round(totalMRR / totalHoursMonth) : null
   s('bi-rev-hour', revPerH ? fmtM(revPerH) + ' сум' : '—')
 
   // 2. Runway = accumulated profit reserve / monthly costs
@@ -38150,11 +38170,17 @@ async function loadOverview() {
   var concPct = totalMRR > 0 ? Math.round(maxBudget / totalMRR * 100) : null;
   var topClient = concPct !== null ? activeProjects.find(function(p){ return p.monthly_budget === maxBudget; }) : null;
 
-  // Revenue per hour
+  // Revenue per hour — только задачи за последние 30 дней (сопоставимо с MRR)
   var totalHours = 0;
   try {
-    var th = (await sb.from('stage_tasks').select('time_logged').in('project_id', activeProjectIds)).data || [];
-    totalHours = Math.round(th.reduce(function(s,t){ return s + (t.time_logged||0); }, 0) / 60);
+    var thirtyAgoSv = new Date(); thirtyAgoSv.setDate(thirtyAgoSv.getDate() - 30);
+    var th = (await sb.from('stage_tasks')
+      .select('time_logged')
+      .in('project_id', activeProjectIds)
+      .gte('updated_at', thirtyAgoSv.toISOString())
+      .gt('time_logged', 0)
+    ).data || [];
+    totalHours = th.reduce(function(s,t){ return s + (t.time_logged||0); }, 0) / 60;
   } catch(e) {}
   var revPerHour = (totalMRR > 0 && totalHours > 0) ? Math.round(totalMRR / totalHours) : null;
 
@@ -38246,7 +38272,7 @@ async function loadOverview() {
   }
 
   s('sv-revh-val', revPerHour !== null ? fmtM(revPerHour) : '—');
-  s('sv-revh-sub', totalHours > 0 ? totalHours + ' часов · MRR ' + fmtM(totalMRR) : 'Задайте бюджеты и часы');
+  s('sv-revh-sub', totalHours > 0 ? fmtM(Math.round(totalHours)) + ' ч за 30 дн · MRR ' + fmtM(totalMRR) : 'Задайте бюджеты и часы');
   if (revPerHour !== null) {
     svBadge('sv-revh-badge', revPerHour >= 100000 ? 'Высокая' : revPerHour >= 50000 ? 'Средняя' : 'Низкая',
       revPerHour >= 100000 ? 'rgba(62,207,142,.1)' : revPerHour >= 50000 ? 'rgba(232,153,58,.1)' : 'rgba(224,82,82,.1)',
