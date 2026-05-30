@@ -28146,18 +28146,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
   <span class="cp-pf-pill" id="cp2-pf-pill">— / 9</span>
   <span class="cp-pf-right">этапов завершено</span>
 </div>
-<!-- 4. АКТИВНЫЙ ЭТАП — что в работе прямо сейчас -->
-<div class="cp-next-inline" id="cp2-next-step" style="display:none;">
-  <div class="cp-next-dot-wrap"><div class="cp-next-dot"></div></div>
-  <div class="cp-next-info-title" id="cp2-next-title">—</div>
-  <div class="cp-next-divider" id="cp2-next-divider" style="display:none;"></div>
-  <div id="cp2-next-deadline" style="display:none;"></div>
-  <div style="flex:1;"></div>
-  <div class="cp-next-right">
-    <div class="cp-next-count" id="cp2-next-count">— / 9</div>
-    <div class="cp-next-count-sub">этапов завершено</div>
-  </div>
-</div>
+
 </div>
 
 <!-- 5. ОТЧЁТЫ + АКТИВНОСТЬ — оперативная информация рядом -->
@@ -35855,7 +35844,7 @@ async function cp2LoadActivity(project, limit, containerId) {
     'Возвращён в ожидание':'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.21"/></svg>'
   };
   el.innerHTML = hist.map(function(h) {
-    var stObj  = (typeof STAGES !== 'undefined' && STAGES[h.stage_index]) || { name: 'этап' };
+    var stName = (typeof STAGES !== 'undefined' && STAGES[h.stage_index] && STAGES[h.stage_index].name) || ('Этап ' + (h.stage_index+1));
     var cls    = evCol[h.event]  || 'start';
     var verb   = evText[h.event] || h.event;
     var icon   = evIcon[h.event] || evIcon['Начат'];
@@ -35870,7 +35859,7 @@ async function cp2LoadActivity(project, limit, containerId) {
       '<div class="cp-act-icon ' + cls + '">' + icon + '</div>' +
       '<div class="cp-act-body">' +
         '<div class="cp-act-text">Команда <b>' + verb + '</b></div>' +
-        '<div class="cp-act-tag">' + esc(stObj.name) + (h.note ? ' — ' + esc(h.note) : '') + '</div>' +
+        '<div class="cp-act-tag">' + esc(stName) + (h.note ? ' — ' + esc(h.note) : '') + '</div>' +
       '</div>' +
       '<div class="cp-act-time">' + timeStr + '</div>' +
     '</div>';
@@ -35881,13 +35870,16 @@ async function cp2RenderActivityFull(project) {
   var el = g('cp2-activity-full');
   if (!el) return;
 
-  var [stagesRes, tasksRes] = await Promise.all([
+  var [stagesRes, tasksRes, stageNamesRes] = await Promise.all([
     sb.from('stage_history').select('*').eq('project_id', project.id).order('created_at', {ascending:false}).limit(50),
-    sb.from('stage_tasks').select('*').eq('project_id', project.id).order('created_at', {ascending:false}).limit(200)
+    sb.from('stage_tasks').select('*').eq('project_id', project.id).order('created_at', {ascending:false}).limit(200),
+    sb.from('project_stages').select('stage_index,name').eq('project_id', project.id)
   ]);
 
   var stageEvents = (stagesRes.data || []);
   var allTasks    = (tasksRes.data || []);
+  var stageNames  = {};
+  (stageNamesRes.data || []).forEach(function(s){ stageNames[s.stage_index] = s.name; });
 
   if (!stageEvents.length && !allTasks.length) {
     el.innerHTML = '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.15);text-align:center;padding:16px 0;">Пока нет активности</div>';
@@ -35925,7 +35917,7 @@ async function cp2RenderActivityFull(project) {
   var renderedStages = {};
 
   stageEvents.forEach(function(h) {
-    var stObj  = (typeof STAGES !== 'undefined' && STAGES[h.stage_index]) || { name:'Этап' };
+    var stageName = stageNames[h.stage_index] || (typeof STAGES !== 'undefined' && STAGES[h.stage_index] && STAGES[h.stage_index].name) || ('Этап ' + (h.stage_index+1));
     var icon   = evIcon[h.event] || evIcon['Начат'];
     var cls    = h.event === 'Завершён' ? 'done' : h.event === 'Начат' ? 'start' : 'back';
     var verb   = evText[h.event] || h.event;
@@ -35942,7 +35934,7 @@ async function cp2RenderActivityFull(project) {
       '<div class="cp-act-group-header">' +
         '<div class="cp-act-group-icon ' + cls + '">' + icon + '</div>' +
         '<div class="cp-act-group-title">Команда <b>' + verb + '</b></div>' +
-        '<div class="cp-act-group-stage ' + cls + '">' + numStr + ' · ' + esc(stObj.name).toUpperCase() + '</div>' +
+        '<div class="cp-act-group-stage ' + cls + '">' + numStr + ' · ' + esc(stageName).toUpperCase() + '</div>' +
         '<div class="cp-act-group-time">' + fmtTime(h.created_at) + '</div>' +
       '</div>';
 
