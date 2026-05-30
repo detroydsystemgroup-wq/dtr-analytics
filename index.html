@@ -41659,6 +41659,50 @@ async function cpRenderMilestone(project) {
   border-radius: 12px !important;
   overflow: hidden !important;
 }
+
+/* ── УБРАТЬ полосу с контейнера, добавить на каждую карточку ── */
+#page-smm .kpi-group::before,
+#page-smm .kpi-group-content::before,
+#page-smm .kpi-group-digital::before,
+#page-smm .kpi-group-audience::before,
+#page-smm .smm-block::before {
+  display: none !important;
+  content: none !important;
+}
+#page-smm .kpi-group::after,
+#page-smm .kpi-group-content::after,
+#page-smm .kpi-group-digital::after,
+#page-smm .kpi-group-audience::after {
+  display: none !important;
+  content: none !important;
+}
+/* Полоса на каждой карточке отдельно */
+#page-smm .kpi-card {
+  position: relative !important;
+}
+#page-smm .kpi-card::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 2px !important;
+  background: rgba(184,146,58,.5) !important;
+  border-radius: 12px 12px 0 0 !important;
+  display: block !important;
+}
+#page-smm .kpi-card[style*="green"]::before,
+#page-smm .kpi-card:nth-child(1)::before {
+  background: rgba(29,158,117,.6) !important;
+}
+#page-smm .kpi-group-digital .kpi-card::before {
+  background: rgba(184,146,58,.5) !important;
+}
+
+/* Аудитория — без полосы, она отдельный блок */
+#page-smm .kpi-card-audience::before {
+  display: none !important;
+}
 </style>
 
 
