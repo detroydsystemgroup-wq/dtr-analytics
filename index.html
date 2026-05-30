@@ -38257,7 +38257,20 @@ async function loadOverview() {
   } catch(e) {}
 
   // ── Core computations (только активные проекты) ──
-  var totalStages = activeStagesAll.length || (activeProjects.length * 9);
+  // totalStages: из реальных этапов в БД, или из stage_templates если этапов нет
+  var totalStages = activeStagesAll.length;
+  if (!totalStages) {
+    totalStages = activeProjects.reduce(function(sum, p) {
+      if (p.stage_templates) {
+        try {
+          var tpl = JSON.parse(p.stage_templates);
+          var active = tpl.filter(function(s){ return s.enabled !== false && s.name && s.name.trim(); });
+          return sum + (active.length || 9);
+        } catch(e) {}
+      }
+      return sum + 9;
+    }, 0);
+  }
   var completedStages = activeStagesAll.filter(function(s){ return s.status === 'completed'; }).length;
   var activeStages = activeStagesAll.filter(function(s){ return s.status === 'active'; }).length;
   var globalPct = totalStages ? Math.round(completedStages / totalStages * 100) : 0;
