@@ -37657,9 +37657,15 @@ async function loadOverview() {
     if (!t.done) return false;
     var doneDate = t.done_at || t.updated_at;
     if (!doneDate) return false;
-    var dl = new Date(t.deadline); dl.setHours(23,59,59,0);
-    return new Date(doneDate) <= dl;
+    // Дедлайн — только дата (YYYY-MM-DD), сравниваем без времени
+    var dlStr = t.deadline.slice(0, 10); // 'YYYY-MM-DD'
+    var doneDateStr = doneDate.slice(0, 10); // 'YYYY-MM-DD'
+    return doneDateStr <= dlStr;
   });
+  console.log('[OnTime] tasksWithDeadline:', tasksWithDeadline.length,
+    'done:', tasksWithDeadline.filter(function(t){return t.done;}).length,
+    'onTime:', tasksOnTime.length,
+    'sample:', tasksWithDeadline.slice(0,3).map(function(t){return {done:t.done, done_at:t.done_at, updated_at:t.updated_at, deadline:t.deadline};}));
   var onTimeRate = tasksWithDeadline.length ? Math.round(tasksOnTime.length / tasksWithDeadline.length * 100) : null;
 
   // Velocity: tasks closed last 30 days
