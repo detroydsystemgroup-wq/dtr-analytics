@@ -44081,13 +44081,24 @@ async function loadTeamPanel() {
 // Добавляем team в switchDashTab
 var _origSwitchDashTab = window.switchDashTab;
 window.switchDashTab = function(tab, btn) {
+  // Скрываем team panel при любом переключении
+  var tp = document.getElementById('dtab-team-panel');
+  if (tp) tp.style.display = 'none';
+
   _origSwitchDashTab && _origSwitchDashTab(tab, btn);
+
   if (tab === 'team') {
+    // Скрываем все остальные панели
     document.querySelectorAll('[id^="dtab-"][id$="-panel"]').forEach(function(p){ p.style.display = 'none'; });
-    var tp = document.getElementById('dtab-team-panel');
     if (tp) tp.style.display = 'block';
     loadTeamPanel();
   }
 };
+
+// Скрываем при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+  var tp = document.getElementById('dtab-team-panel');
+  if (tp) tp.style.display = 'none';
+});
 </script>
 </html>
