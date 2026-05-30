@@ -31226,6 +31226,7 @@ function renderProjectGrid() {
   let list = _allProjects.filter(p => {
     if (search && !p.name.toLowerCase().includes(search) && !(p.description||'').toLowerCase().includes(search)) return false
     if (_activeCatTag && !(p.category||'').includes(_activeCatTag)) return false
+    if (window._activeCatTag && !(p.category||'').includes(window._activeCatTag)) return false
     if (window._activeSvcFilter) {
       try { const svcs = JSON.parse(p.services||'[]'); if (!svcs.includes(window._activeSvcFilter)) return false }
       catch(e) { if (!(p.services||'').includes(window._activeSvcFilter)) return false }
@@ -43246,10 +43247,16 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
 
   window.dtrSetCat = function(tag) {
     window._activeCatTag = (window._activeCatTag === tag ? null : tag);
+    if (typeof _activeCatTag !== 'undefined') { try { _activeCatTag = window._activeCatTag; } catch(e) {} }
     closeDds(); renderCatDd();
     if (typeof renderProjectGrid === 'function') renderProjectGrid();
   };
-  window.dtrCatReset = function() { window._activeCatTag = null; closeDds(); renderCatDd(); if (typeof renderProjectGrid === 'function') renderProjectGrid(); };
+  window.dtrCatReset = function() {
+    window._activeCatTag = null;
+    if (typeof _activeCatTag !== 'undefined') { try { _activeCatTag = null; } catch(e) {} }
+    closeDds(); renderCatDd();
+    if (typeof renderProjectGrid === 'function') renderProjectGrid();
+  };
 
   /* ── Service dropdown ── */
   var SVC_LABELS = { smm:'SMM', production:'Продакшн под ключ', target:'Таргетированная реклама', design:'Дизайн и брендинг', subscription:'Подписка DETROYD' };
