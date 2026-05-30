@@ -26017,6 +26017,12 @@ button, a, [role="button"],
             </span>
             <span class="cc-nav-text">Финансы</span>
           </button>
+          <button class="dash-tab cc-nav-item agency-only" id="dtab-team" onclick="switchDashTab('team',this)">
+            <span class="cc-nav-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            </span>
+            <span class="cc-nav-text">Команда</span>
+          </button>
           <button class="dash-tab cc-nav-item" id="dtab-kb" onclick="switchDashTab('kb',this)">
             <span class="cc-nav-icon">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
@@ -26501,6 +26507,20 @@ button, a, [role="button"],
           <div class="sv-health-body" id="sv-health-body"></div>
         </div>
 
+        <!-- Нагрузка по сотрудникам -->
+        <div class="sv-section-block">
+          <div class="sv-section-hdr">
+            <div class="sv-section-hdr-left">
+              <div class="sv-section-icon" style="background:rgba(127,119,221,.1);color:#7f77dd;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+              <div>
+                <div class="sv-section-title">Нагрузка по сотрудникам</div>
+                <div class="sv-section-sub">Активные этапы на каждого</div>
+              </div>
+            </div>
+          </div>
+          <div class="sv-health-body" id="sv-workload-body"></div>
+        </div>
+
       </div>
 
       <div style="height:60px;"></div>
@@ -26683,6 +26703,21 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
     </div>
 
     <!-- ══ БАЗА ЗНАНИЙ ══ -->
+    <div id="dtab-team-panel" style="display:none;padding:24px 20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div>
+          <div style="font-size:16px;font-weight:500;color:var(--txt);">Команда агентства</div>
+          <div style="font-size:11px;color:var(--txt3);margin-top:2px;">Сотрудники назначаются на этапы проектов</div>
+        </div>
+        <button class="btn-primary" style="padding:8px 16px;" onclick="openAddTeamMember()">+ Добавить</button>
+      </div>
+      <div id="team-members-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+      <div style="margin-top:28px;">
+        <div style="font-size:13px;font-weight:500;color:var(--txt);margin-bottom:14px;">Нагрузка по сотрудникам</div>
+        <div id="team-workload-bars" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+    </div>
+
     <div id="dtab-kb-panel" style="display:none;">
 
       <!-- ── KB TOPBAR ── -->
@@ -29891,6 +29926,11 @@ UPDATE stage_tasks SET kanban_status = CASE WHEN done = true THEN 'done' ELSE 'w
         <button class="stage-status-btn" data-status="active" onclick="selectStageStatus('active')" style="flex:1;">🔵 В работе</button>
         <button class="stage-status-btn" data-status="completed" onclick="selectStageStatus('completed')" style="flex:1;">✅ Завершён</button>
       </div>
+    </div>
+    <div class="field"><label>Ответственный</label>
+      <select id="stage-assignee-inp" style="width:100%;">
+        <option value="">— Не назначен —</option>
+      </select>
     </div>
     <div class="field"><label>Заметка для клиента</label><input type="text" id="stage-note-inp" placeholder="Например: собрали данные за 3 месяца"></div>
     <div class="field"><label>Дата завершения (план)</label><input type="date" id="stage-deadline-inp"></div>
@@ -35184,12 +35224,32 @@ function setupRealtimeTracker() {
 function openEditStage(i) {
   editingStageIndex = i
   const rec = trackerData.find(r => r.stage_index === i) || {}
-  g('stage-modal-title').innerHTML = (STAGES[i].emoji ? '<span style="margin-right:6px;">' + STAGES[i].emoji + '</span>' : '') + '<span>' + STAGES[i].name + '</span>'
+  const stageName = rec.name || (STAGES[i] && STAGES[i].name) || ('Этап ' + (i+1))
+  const stageEmoji = STAGES[i] && STAGES[i].emoji ? STAGES[i].emoji : ''
+  g('stage-modal-title').innerHTML = (stageEmoji ? '<span style="margin-right:6px;">' + stageEmoji + '</span>' : '') + '<span>' + stageName + '</span>'
   g('stage-note-inp').value = rec.note || ''
   g('stage-deadline-inp').value = rec.deadline || ''
   g('stage-link-inp').value = rec.link || ''
   selectedStageStatus = rec.status || 'pending'
   updateStageStatusBtns()
+
+  // Загружаем команду в дропдаун
+  const sel = g('stage-assignee-inp')
+  if (sel) {
+    sel.innerHTML = '<option value="">— Не назначен —</option>'
+    sb.from('team_members').select('id,name,role').eq('agency_id', currentUser.id).order('name')
+      .then(function(res) {
+        var members = res.data || []
+        members.forEach(function(m) {
+          var opt = document.createElement('option')
+          opt.value = m.id
+          opt.textContent = m.name + (m.role ? ' · ' + m.role : '')
+          if (rec.assignee_id === m.id) opt.selected = true
+          sel.appendChild(opt)
+        })
+      })
+  }
+
   openModal('modal-stage')
 }
 
@@ -35209,6 +35269,9 @@ async function saveStage() {
   const note = g('stage-note-inp').value.trim()
   const deadline = g('stage-deadline-inp').value || null
   const link = g('stage-link-inp').value.trim() || null
+  const assigneeSel = g('stage-assignee-inp')
+  const assigneeId   = assigneeSel?.value || null
+  const assigneeName = assigneeSel?.options[assigneeSel.selectedIndex]?.text || null
   const existing = trackerData.find(r => r.stage_index === editingStageIndex)
   const prevStatus = existing?.status || 'pending'
 
@@ -35219,6 +35282,8 @@ async function saveStage() {
     note: note || null,
     deadline,
     link,
+    assignee_id: assigneeId || null,
+    assignee_name: (assigneeId && assigneeName && assigneeName !== '— Не назначен —') ? assigneeName : null,
     updated_at: new Date().toISOString(),
     updated_by: currentUser.id,
     completed_at: selectedStageStatus === 'completed'
@@ -37503,6 +37568,30 @@ function showSQLHint() {
 </script>
 
 <!-- MODAL: Project Settings -->
+<div class="modal-overlay" id="modal-team-member">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-title" id="team-member-modal-title">Добавить участника</div>
+    <div class="field"><label>Имя</label><input type="text" id="tm-name-inp" placeholder="Иван Иванов"></div>
+    <div class="field"><label>Роль</label><input type="text" id="tm-role-inp" placeholder="SMM-менеджер, дизайнер..."></div>
+    <div class="field"><label>Цвет</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;" id="tm-color-wrap">
+        <div onclick="tmSetColor('#b8923a')" style="width:24px;height:24px;border-radius:50%;background:#b8923a;cursor:pointer;border:2px solid transparent;" data-color="#b8923a"></div>
+        <div onclick="tmSetColor('#3ecf8e')" style="width:24px;height:24px;border-radius:50%;background:#3ecf8e;cursor:pointer;border:2px solid transparent;" data-color="#3ecf8e"></div>
+        <div onclick="tmSetColor('#38b2ac')" style="width:24px;height:24px;border-radius:50%;background:#38b2ac;cursor:pointer;border:2px solid transparent;" data-color="#38b2ac"></div>
+        <div onclick="tmSetColor('#7f77dd')" style="width:24px;height:24px;border-radius:50%;background:#7f77dd;cursor:pointer;border:2px solid transparent;" data-color="#7f77dd"></div>
+        <div onclick="tmSetColor('#e8993a')" style="width:24px;height:24px;border-radius:50%;background:#e8993a;cursor:pointer;border:2px solid transparent;" data-color="#e8993a"></div>
+        <div onclick="tmSetColor('#e05252')" style="width:24px;height:24px;border-radius:50%;background:#e05252;cursor:pointer;border:2px solid transparent;" data-color="#e05252"></div>
+      </div>
+    </div>
+    <input type="hidden" id="tm-color-val" value="#b8923a">
+    <input type="hidden" id="tm-id-val" value="">
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-team-member')">Отмена</button>
+      <button class="btn-primary" style="flex:1;" onclick="saveTeamMember()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal-proj-settings">
   <div class="modal" style="max-width:440px;max-height:calc(100vh - 40px);overflow-y:auto;">
 
@@ -38628,6 +38717,53 @@ async function loadOverview() {
         '</div>';
       }).join('');
     }
+  }
+
+  // RENDER: Workload by team members
+  var wEl = document.getElementById('sv-workload-body');
+  if (wEl) {
+    sb.from('team_members').select('id,name,color').eq('agency_id', currentUser.id).order('name')
+      .then(function(mRes) {
+        var members = mRes.data || [];
+        if (!members.length) {
+          wEl.innerHTML = '<div style="font-size:11px;color:var(--txt3);padding:4px 0;">Добавь команду во вкладке «Команда»</div>';
+          return;
+        }
+        sb.from('project_stages').select('assignee_id,status')
+          .in('project_id', activeProjIds.length ? activeProjIds : ['00000000-0000-0000-0000-000000000000'])
+          .then(function(sRes) {
+            var stgs = sRes.data || [];
+            var memberLoad = members.map(function(m) {
+              var active  = stgs.filter(function(s){ return s.assignee_id === m.id && s.status === 'active'; }).length;
+              var pending = stgs.filter(function(s){ return s.assignee_id === m.id && s.status === 'pending'; }).length;
+              var done    = stgs.filter(function(s){ return s.assignee_id === m.id && s.status === 'completed'; }).length;
+              return { m: m, active: active, pending: pending, done: done, total: active + pending + done };
+            }).filter(function(r){ return r.total > 0; }).sort(function(a,b){ return b.active - a.active; });
+
+            if (!memberLoad.length) {
+              wEl.innerHTML = '<div style="font-size:11px;color:var(--txt3);padding:4px 0;">Назначь сотрудников на этапы в трекере</div>';
+              return;
+            }
+            wEl.innerHTML = memberLoad.map(function(r) {
+              var pctDone    = Math.round(r.done    / r.total * 100);
+              var pctActive  = Math.round(r.active  / r.total * 100);
+              var pctPending = Math.round(r.pending / r.total * 100);
+              var loadColor  = r.active >= 4 ? 'var(--red)' : r.active >= 2 ? 'var(--amber)' : 'var(--green)';
+              return '<div class="sv-health-row">' +
+                '<div class="sv-health-name" style="display:flex;align-items:center;gap:6px;">' +
+                  '<span style="width:8px;height:8px;border-radius:50%;background:' + r.m.color + ';flex-shrink:0;display:inline-block;"></span>' +
+                  r.m.name +
+                '</div>' +
+                '<div class="sv-health-bar-wrap" style="display:flex;overflow:hidden;border-radius:3px;">' +
+                  '<div style="width:' + pctDone + '%;background:#3ecf8e;opacity:.5;height:100%;"></div>' +
+                  '<div style="width:' + pctActive + '%;background:' + r.m.color + ';height:100%;"></div>' +
+                  '<div style="width:' + pctPending + '%;background:rgba(255,255,255,.1);height:100%;"></div>' +
+                '</div>' +
+                '<div class="sv-health-val" style="color:' + loadColor + ';">' + r.active + ' акт. · ' + r.total + '</div>' +
+              '</div>';
+            }).join('');
+          });
+      });
   }
 
   if (typeof loadSMMLb === 'function') loadSMMLb();
@@ -43816,5 +43952,142 @@ async function dtrResetClientPassword() {
     btn.textContent = 'Сохранить';
   }
 }
+</script>
+
+<script>
+// ── TEAM MANAGEMENT ──────────────────────────────────────────────
+
+var _tmColor = '#b8923a';
+
+function tmSetColor(c) {
+  _tmColor = c;
+  document.getElementById('tm-color-val').value = c;
+  document.querySelectorAll('#tm-color-wrap div').forEach(function(d) {
+    d.style.border = d.dataset.color === c ? '2px solid white' : '2px solid transparent';
+  });
+}
+
+function openAddTeamMember(member) {
+  document.getElementById('tm-name-inp').value = member ? member.name : '';
+  document.getElementById('tm-role-inp').value = member ? (member.role || '') : '';
+  document.getElementById('tm-id-val').value = member ? member.id : '';
+  document.getElementById('team-member-modal-title').textContent = member ? 'Редактировать' : 'Добавить участника';
+  tmSetColor(member ? (member.color || '#b8923a') : '#b8923a');
+  openModal('modal-team-member');
+  setTimeout(function(){ document.getElementById('tm-name-inp').focus(); }, 80);
+}
+
+async function saveTeamMember() {
+  var name = document.getElementById('tm-name-inp').value.trim();
+  var role = document.getElementById('tm-role-inp').value.trim();
+  var color = document.getElementById('tm-color-val').value || '#b8923a';
+  var id = document.getElementById('tm-id-val').value;
+  if (!name) return;
+  var payload = { name: name, role: role, color: color, agency_id: currentUser.id };
+  if (id) {
+    await sb.from('team_members').update(payload).eq('id', id);
+  } else {
+    await sb.from('team_members').insert(payload);
+  }
+  closeModal('modal-team-member');
+  loadTeamPanel();
+}
+
+async function deleteTeamMember(id) {
+  if (!confirm('Удалить участника? Этапы с ним станут без ответственного.')) return;
+  await sb.from('team_members').delete().eq('id', id);
+  loadTeamPanel();
+}
+
+async function loadTeamPanel() {
+  var listEl = document.getElementById('team-members-list');
+  var barsEl = document.getElementById('team-workload-bars');
+  if (!listEl) return;
+
+  var [membersRes, stagesRes] = await Promise.all([
+    sb.from('team_members').select('*').eq('agency_id', currentUser.id).order('name'),
+    sb.from('project_stages').select('id,assignee_id,assignee_name,status,name,project_id')
+      .in('project_id', _allProjects.filter(function(p){ return p.status !== 'archived'; }).map(function(p){ return p.id; }))
+  ]);
+
+  var members = membersRes.data || [];
+  var stages  = stagesRes.data || [];
+
+  // Список участников
+  if (!members.length) {
+    listEl.innerHTML = '<div style="font-size:12px;color:var(--txt3);padding:12px 0;">Пока нет участников. Добавь первого.</div>';
+  } else {
+    listEl.innerHTML = members.map(function(m) {
+      var assigned = stages.filter(function(s){ return s.assignee_id === m.id && s.status !== 'completed'; }).length;
+      return '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg3);border:1px solid var(--brd);border-radius:10px;">' +
+        '<div style="width:32px;height:32px;border-radius:50%;background:' + m.color + '22;border:1.5px solid ' + m.color + '44;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:' + m.color + ';flex-shrink:0;">' + m.name[0] + '</div>' +
+        '<div style="flex:1;min-width:0;">' +
+          '<div style="font-size:13px;color:var(--txt);">' + m.name + '</div>' +
+          (m.role ? '<div style="font-size:11px;color:var(--txt3);margin-top:1px;">' + m.role + '</div>' : '') +
+        '</div>' +
+        '<div style="font-size:11px;color:var(--txt3);">' + assigned + ' этапов</div>' +
+        '<button onclick="openAddTeamMember(' + JSON.stringify(m).replace(/"/g, '&quot;') + ')" style="font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid var(--brd);background:transparent;color:var(--txt2);cursor:pointer;">Изм.</button>' +
+        '<button onclick="deleteTeamMember(\'' + m.id + '\')" style="font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid rgba(224,82,82,.3);background:transparent;color:var(--red);cursor:pointer;">✕</button>' +
+      '</div>';
+    }).join('');
+  }
+
+  // График нагрузки
+  if (!members.length || !stages.length) {
+    if (barsEl) barsEl.innerHTML = '<div style="font-size:12px;color:var(--txt3);">Назначь этапы сотрудникам чтобы увидеть нагрузку</div>';
+    return;
+  }
+
+  var maxActive = 1;
+  var memberLoad = members.map(function(m) {
+    var active    = stages.filter(function(s){ return s.assignee_id === m.id && s.status === 'active'; }).length;
+    var pending   = stages.filter(function(s){ return s.assignee_id === m.id && s.status === 'pending'; }).length;
+    var completed = stages.filter(function(s){ return s.assignee_id === m.id && s.status === 'completed'; }).length;
+    var total     = active + pending + completed;
+    if (active > maxActive) maxActive = active;
+    return { m: m, active: active, pending: pending, completed: completed, total: total };
+  }).filter(function(r){ return r.total > 0; }).sort(function(a,b){ return b.active - a.active; });
+
+  if (!memberLoad.length) {
+    if (barsEl) barsEl.innerHTML = '<div style="font-size:12px;color:var(--txt3);">Назначь этапы сотрудникам чтобы увидеть нагрузку</div>';
+    return;
+  }
+
+  if (barsEl) {
+    barsEl.innerHTML = memberLoad.map(function(r) {
+      var pctActive  = Math.round(r.active  / r.total * 100);
+      var pctPending = Math.round(r.pending / r.total * 100);
+      var pctDone    = Math.round(r.completed / r.total * 100);
+      var loadColor  = r.active >= 4 ? 'var(--red)' : r.active >= 2 ? 'var(--amber)' : 'var(--green)';
+      return '<div style="display:grid;grid-template-columns:120px 1fr 80px;align-items:center;gap:12px;">' +
+        '<div style="display:flex;align-items:center;gap:8px;min-width:0;">' +
+          '<div style="width:22px;height:22px;border-radius:50%;background:' + r.m.color + '22;border:1.5px solid ' + r.m.color + '44;display:flex;align-items:center;justify-content:center;font-size:10px;color:' + r.m.color + ';flex-shrink:0;">' + r.m.name[0] + '</div>' +
+          '<div style="font-size:12px;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + r.m.name + '</div>' +
+        '</div>' +
+        '<div style="height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;display:flex;">' +
+          '<div style="width:' + pctDone + '%;background:#3ecf8e;opacity:.6;"></div>' +
+          '<div style="width:' + pctActive + '%;background:' + r.m.color + ';"></div>' +
+          '<div style="width:' + pctPending + '%;background:rgba(255,255,255,.12);"></div>' +
+        '</div>' +
+        '<div style="font-size:11px;font-family:var(--font-mono);text-align:right;">' +
+          '<span style="color:' + loadColor + ';">' + r.active + ' акт.</span>' +
+          '<span style="color:var(--txt3);"> · ' + r.total + '</span>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+}
+
+// Добавляем team в switchDashTab
+var _origSwitchDashTab = window.switchDashTab;
+window.switchDashTab = function(tab, btn) {
+  _origSwitchDashTab && _origSwitchDashTab(tab, btn);
+  if (tab === 'team') {
+    document.querySelectorAll('[id^="dtab-"][id$="-panel"]').forEach(function(p){ p.style.display = 'none'; });
+    var tp = document.getElementById('dtab-team-panel');
+    if (tp) tp.style.display = 'block';
+    loadTeamPanel();
+  }
+};
 </script>
 </html>
