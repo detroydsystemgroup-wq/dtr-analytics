@@ -8636,7 +8636,7 @@ input, select, textarea {
   function _showObToggle() {
     var btnOb     = document.getElementById('ob-toggle');
     var btnPeriod = document.getElementById('btn-period-wrap');
-    if (!_isClientCache === true) {
+    if (!_isClient) {
       if (btnOb)     btnOb.style.display     = 'inline-flex';
     }
     if (btnPeriod) btnPeriod.style.display = 'flex';
@@ -30047,6 +30047,7 @@ let editingStageIndex = null
 let selectedStageStatus = 'pending'
 let trackerChannel = null
 let _isClientCache = null
+let _isClient = false
 
 // ══════════════════════════════════════════════
 // UTILS
@@ -31769,9 +31770,10 @@ async function openReport(id) {
   const hasAnalysis = files?.some(f => f.parsed_data)
 
   // If report already has data — pre-collapse files section before page shows
-  // Клиент не видит блок файлов
-  
-  if (_isClientCache === true) {
+  // Клиент не видит блок файлов (проверяем метаданные пользователя)
+  _isClient = _isClientCache === true || currentUser?.user_metadata?.role !== 'agency'
+
+  if (_isClient) {
     if (g('files-section')) g('files-section').style.display = 'none'
     if (g('files-toggle-bar')) g('files-toggle-bar').style.display = 'none'
   } else if (hasAnalysis) {
