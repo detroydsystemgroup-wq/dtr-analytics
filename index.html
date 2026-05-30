@@ -35235,9 +35235,16 @@ async function saveStage() {
 
   // Send Telegram notification if status changed to active or completed
   if (prevStatus !== selectedStageStatus && (selectedStageStatus === 'active' || selectedStageStatus === 'completed')) {
-    // Берём имя из текущего trackerData ИЛИ из existing записи
-    const _tgRec = trackerData.find(s => s.stage_index === editingStageIndex)
-    const _tgName = (_tgRec && _tgRec.name) || STAGES[editingStageIndex]?.name || ('Этап ' + (editingStageIndex + 1))
+    // Загружаем имя этапа прямо из БД чтобы гарантированно получить актуальное
+    let _tgName = STAGES[editingStageIndex]?.name || ('Этап ' + (editingStageIndex + 1))
+    try {
+      const { data: _stageRow } = await sb.from('project_stages')
+        .select('name')
+        .eq('project_id', currentProject.id)
+        .eq('stage_index', editingStageIndex)
+        .single()
+      if (_stageRow && _stageRow.name) _tgName = _stageRow.name
+    } catch(e) {}
     sendTelegramStageNotification(editingStageIndex, selectedStageStatus, note, _tgName)
   }
 
