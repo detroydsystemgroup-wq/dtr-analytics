@@ -34991,10 +34991,11 @@ function renderTracker() {
   // Determine if client (use cache to avoid async in render)
   const hideEdit = _isClientCache === true
 
-  tl.innerHTML = STAGES.map((stage, i) => {
-    const rec = trackerData.find(r => r.stage_index === i) || { status: 'pending' }
+  tl.innerHTML = trackerData.map((rec, i) => {
+    const stageName = rec.name || (STAGES[rec.stage_index] && STAGES[rec.stage_index].name) || ('Этап ' + (i+1))
+    const stage = { name: stageName, emoji: (STAGES[rec.stage_index] && STAGES[rec.stage_index].emoji) || '📌', icon: (STAGE_ICONS[i] || '') }
     const st = rec.status || 'pending'
-    const isLast = i === 8
+    const isLast = i === trackerData.length - 1
 
     const dotInner = st === 'completed'
       ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
@@ -35554,19 +35555,22 @@ async function cp2LoadTracker(project) {
     });
   }
 
-  // SHORT must be declared before any use (footer + stages bar)
-  var SHORT = ['Анализ','Конкуренты','Контент стр.','Таргет стр.','Контент план','Сценарии','Съёмки I','Съёмки II','Отчётность'];
+  // SHORT — динамически из реальных этапов (обрезаем до 12 символов)
+  var SHORT = arr.map(function(s) {
+    var name = s.name || (STAGES[s.stage_index] && STAGES[s.stage_index].name) || ('Этап ' + (s.stage_index+1));
+    return name.length > 12 ? name.slice(0,11) + '…' : name;
+  });
 
   // Footer pill + active name
   var activeStage = arr.find(function(s){ return s.status === 'active'; });
-  var activeName = activeStage ? (SHORT[activeStage.stage_index] || '—') : '—';
+  var activeName = activeStage ? (SHORT[arr.indexOf(activeStage)] || '—') : '—';
   if (g('cp2-pf-active-name')) g('cp2-pf-active-name').textContent = activeName;
-  if (g('cp2-pf-pill')) g('cp2-pf-pill').textContent = done + ' / 9';
+  if (g('cp2-pf-pill')) g('cp2-pf-pill').textContent = done + ' / ' + total;
 
   // Stages bar — SVG ring stepper
   var bar = g('cp2-stages-bar');
   if (bar) {
-    var fillPct = Math.round(((done + (active ? 0.5 : 0)) / 9) * 100);
+    var fillPct = Math.round(((done + (active ? 0.5 : 0)) / total) * 100);
     bar.style.setProperty('--prog-fill', fillPct + '%');
     var SVG_ICONS = [
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>',
@@ -35579,18 +35583,18 @@ async function cp2LoadTracker(project) {
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>',
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>',
     ];
-    bar.innerHTML = STAGES.map(function(st, i) {
-      var rec = arr.find(function(r){ return r.stage_index === i; }) || { status: 'pending' };
+    bar.innerHTML = arr.map(function(rec, i) {
+      var stName = rec.name || (STAGES[rec.stage_index] && STAGES[rec.stage_index].name) || ('Этап ' + (i+1));
       var cls = rec.status === 'completed' ? 'cp-st-done' : rec.status === 'active' ? 'cp-st-active' : 'cp-st-pending';
-      var icon = SVG_ICONS[i] || '';
+      var icon = SVG_ICONS[i % SVG_ICONS.length] || '';
       var numStr = (i + 1 < 10 ? '0' : '') + (i + 1);
-      return '<div class="cp-stage-block ' + cls + '" title="' + esc(st.name) + '">' +
+      return '<div class="cp-stage-block ' + cls + '" title="' + esc(stName) + '">' +
         '<div class="cp-dot-wrap">' +
           '<div class="cp-dot-spinner"></div>' +
           '<div class="cp-stage-dot-inner">' + icon + '</div>' +
         '</div>' +
         '<span class="cp-stage-num-label">' + numStr + '</span>' +
-        '<div class="cp-stage-label-text">' + SHORT[i] + '</div>' +
+        '<div class="cp-stage-label-text">' + (SHORT[i] || stName) + '</div>' +
       '</div>';
     }).join('');
   }
@@ -35656,8 +35660,9 @@ async function cp2LoadTracker(project) {
     var histRes = await sb.from('stage_history').select('stage_index,event,created_at').eq('project_id', pid).order('created_at',{ascending:false});
     var hist = histRes.data || [];
 
-    detail.innerHTML = STAGES.map(function(st, i) {
-      var rec = arr.find(function(r){ return r.stage_index === i; }) || { status: 'pending' };
+    detail.innerHTML = arr.map(function(rec, i) {
+      var stName = rec.name || (STAGES[rec.stage_index] && STAGES[rec.stage_index].name) || ('Этап ' + (i+1));
+      var svgIcon = (STAGE_ICONS[i % STAGE_ICONS.length] || '');
       var s = rec.status || 'pending';
       var numCls = s==='completed' ? 'cp-sn-done' : s==='active' ? 'cp-sn-active' : 'cp-sn-pending';
       var tagStyle = '', tagText = '', tagIcon = '';
@@ -35727,7 +35732,7 @@ async function cp2LoadTracker(project) {
       return '<div class="cp-stage-row">' +
         '<div class="cp-stage-num ' + numCls + '">' + (i+1) + '</div>' +
         '<div style="width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;' + iconBg + ';">' + svgIcon + '</div>' +
-        '<div style="flex:1;min-width:0;font-family:var(--font-display);font-size:14px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;' + (s==='completed' ? 'color:rgba(255,255,255,.3);' : 'color:rgba(255,255,255,.85);') + '">' + esc(st.name) + '</div>' +
+        '<div style="flex:1;min-width:0;font-family:var(--font-display);font-size:14px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;' + (s==='completed' ? 'color:rgba(255,255,255,.3);' : 'color:rgba(255,255,255,.85);') + '">' + esc(stName) + '</div>' +
         ((datePart || deadlinePart) ? '<div style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin-left:auto;flex-shrink:0;">' + datePart + deadlinePart + '</div>' : '') +
         '<div style="' + tagStyle + '">' + tagIcon + tagText + '</div>' +
       '</div>';
