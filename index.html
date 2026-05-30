@@ -24380,9 +24380,9 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 
 /* Done card — muted */
 .kb-card-done {
-  opacity: .55;
+  opacity: .82;
 }
-.kb-card-done:hover { opacity: .75; }
+.kb-card-done:hover { opacity: 1; }
 
 /* Colour top stripe */
 .kb-card-cap {
@@ -34252,6 +34252,9 @@ function renderKanban() {
 
 function renderKanbanCol(containerId, tasks, status) {
   const container = g(containerId); if (!container) return
+  if (status === 'done' && tasks.length) {
+    console.log('[Kanban done]', tasks.length, 'tasks, isClient:', _isClientCache, 'sample:', {id:tasks[0].id, time_logged:tasks[0].time_logged, kanban_status:tasks[0].kanban_status, done:tasks[0].done})
+  }
 
   if (!tasks.length) {
     const empties = {
