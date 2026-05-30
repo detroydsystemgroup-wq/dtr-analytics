@@ -38596,20 +38596,36 @@ async function loadOverview() {
   // ─────────────────────────────
   var hEl = document.getElementById('sv-health-body');
   if (hEl) {
-    var STAGE_NAMES2 = ['Анализ клиентов','Конкуренты','Контент-стратегия','Таргет','Контент-план','Сценарии','Съёмки #1','Съёмки #2','Отчётность'];
     var activeProjs = _allProjects.filter(function(p){ return p.status !== 'archived' && (typeof getProjectProgress !== 'undefined' && getProjectProgress(p.id).pct < 100); });
     var activeProjIds = activeProjs.map(function(p){ return p.id; });
-    hEl.innerHTML = STAGE_NAMES2.map(function(name, i) {
-      var done  = _allStages.filter(function(s){ return activeProjIds.indexOf(s.project_id)!==-1 && s.stage_index===i && s.status==='completed'; }).length;
+    var activeStgs = _allStages.filter(function(s){ return activeProjIds.indexOf(s.project_id) !== -1; });
+
+    // Собираем уникальные этапы по stage_index с реальными именами из БД
+    var stageMap = {};
+    activeStgs.forEach(function(s) {
+      if (!stageMap[s.stage_index]) {
+        stageMap[s.stage_index] = { name: s.name || ('Этап ' + (s.stage_index + 1)), done: 0 };
+      }
+      if (s.status === 'completed') stageMap[s.stage_index].done++;
+    });
+
+    var stageIndices = Object.keys(stageMap).map(Number).sort(function(a,b){ return a-b; });
+
+    if (!stageIndices.length) {
+      hEl.innerHTML = '<div style="font-size:11px;color:var(--txt3);padding:12px 0;">Нет данных об этапах</div>';
+    } else {
       var total = activeProjs.length;
-      var pct = total ? Math.round(done/total*100) : 0;
-      var col = pct === 100 ? 'var(--green)' : pct >= 60 ? 'var(--a2)' : pct >= 30 ? 'var(--amber)' : 'rgba(255,255,255,.2)';
-      return '<div class="sv-health-row">' +
-        '<div class="sv-health-name">' + name + '</div>' +
-        '<div class="sv-health-bar-wrap"><div class="sv-health-bar" style="width:' + pct + '%;background:' + col + ';"></div></div>' +
-        '<div class="sv-health-val" style="color:' + col + ';">' + done + '/' + total + '</div>' +
-      '</div>';
-    }).join('');
+      hEl.innerHTML = stageIndices.map(function(i) {
+        var st = stageMap[i];
+        var pct = total ? Math.round(st.done / total * 100) : 0;
+        var col = pct === 100 ? 'var(--green)' : pct >= 60 ? 'var(--a2)' : pct >= 30 ? 'var(--amber)' : 'rgba(255,255,255,.2)';
+        return '<div class="sv-health-row">' +
+          '<div class="sv-health-name">' + st.name + '</div>' +
+          '<div class="sv-health-bar-wrap"><div class="sv-health-bar" style="width:' + pct + '%;background:' + col + ';"></div></div>' +
+          '<div class="sv-health-val" style="color:' + col + ';">' + st.done + '/' + total + '</div>' +
+        '</div>';
+      }).join('');
+    }
   }
 
   if (typeof loadSMMLb === 'function') loadSMMLb();
