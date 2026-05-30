@@ -34309,8 +34309,8 @@ function getActiveStageIndex() {
 
 function getActiveStageName() {
   const idx = getActiveStageIndex()
-  // Берём имя из реальных данных трекера
   const rec = trackerData.find(s => s.stage_index === idx)
+  console.log('[DTR] getActiveStageName idx:', idx, 'rec:', rec, 'trackerData:', trackerData)
   return (rec && rec.name) || STAGES[idx]?.name || ('Этап ' + (idx + 1))
 }
 
@@ -34686,7 +34686,7 @@ function openKanbanAddTask(defaultStatus = 'waiting') {
 
   // Stage hint
   const hint = g('kb-stage-hint')
-  if (hint) hint.innerHTML = `Задача будет привязана к активному этапу: ${STAGES[activeIdx]?.emoji||''} <b>${stageName}</b>`
+  if (hint) hint.innerHTML = `Задача будет привязана к активному этапу: <b>${stageName}</b>`
 
   // Modal title
   const labels = { waiting:'В ожидании', active:'Активные', done:'Завершённые' }
