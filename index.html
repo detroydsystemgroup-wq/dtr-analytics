@@ -35522,7 +35522,7 @@ async function showClientPortal(project) {
 
 async function cp2LoadTracker(project) {
   var pid = project.id;
-  var res = await sb.from('project_stages').select('*').eq('project_id', pid).order('stage_index');
+  var res = await sb.from('project_stages').select('id,project_id,stage_index,status,deadline,note,link,name').eq('project_id', pid).order('stage_index');
   var arr = res.data || [];
   var total = arr.length || 9;
   var done = arr.filter(function(s){ return s.status==='completed'; }).length;
