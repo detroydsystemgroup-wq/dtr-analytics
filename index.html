@@ -14805,7 +14805,12 @@ select:focus {
 @keyframes numberTick   { from { opacity:0; transform:translateY(6px) } to { opacity:1; transform:translateY(0) } }
 @keyframes ov2In        { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }
 
-/* ════════ NEXT STEP ════════ */
+/* ════════ NEXT STEP + FOCUS CARD — скрыты (удалены из клиентского вида) ════════ */
+.cp-next-step, #cp2-next-step, #cp-next-step,
+#cp2-focus, #cp-focus-card, .cp-focus-strip,
+.cp-focus-card, .cp2-focus {
+  display: none !important;
+}
 .cp-next-step {
   margin: 0 56px 0 !important;
   padding: 20px 24px !important;
@@ -28155,6 +28160,9 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 <div class="cp-card"><div class="cp-card-header"><div class="cp-card-title">Активность команды</div><div style="display:flex;align-items:center;gap:5px;"><div style="width:5px;height:5px;border-radius:50%;background:#3ecf8e;box-shadow:0 0 6px rgba(62,207,142,.5);"></div><span style="font-family:var(--font-mono);font-size:8px;color:#3ecf8e;letter-spacing:.1em;">LIVE</span></div></div><div id="cp2-activity-feed"></div></div>
 </div>
 
+<!-- cp2-focus: placeholder скрыт, блок СЛЕДУЮЩИЙ ЭТАП удалён -->
+<div id="cp2-focus" style="display:none !important;"></div>
+
 <!-- 6. SMM ПОКАЗАТЕЛИ — детализация по контенту -->
 <div class="cp-smm-strip" id="cp2-smm-strip" style="display:none;"><div class="cp-smm-header"><div class="cp-smm-title">SMM показатели</div><div class="cp-smm-period" id="cp2-smm-period">—</div></div><div class="cp-smm-grid" id="cp2-smm-grid"></div><div class="cp-smm-bench-row" id="cp2-smm-bench"></div></div>
 
@@ -35497,7 +35505,6 @@ async function showClientPortal(project) {
     cp2LoadReports(project),
     cp2LoadActivity(project, 5, 'cp2-activity-feed'),
     cp2LoadSMM(project),
-    cp2LoadFocus(project),
     cp2LoadROI(project)
   ]);
 }
@@ -35612,51 +35619,8 @@ async function cp2LoadTracker(project) {
   }
   renderDual('cp2-dual-bars2');
 
-  // Next step
-  var nextStage = arr.find(function(s){ return s.status==='active'; }) || arr.find(function(s){ return s.status==='pending'; });
-  var nsEl = g('cp2-next-step');
-  if (nextStage && nsEl) {
-    var nextIdx  = arr.indexOf(nextStage);
-    var nextName = nextStage.name || ('Этап ' + (nextIdx + 1));
-    var numStr   = String(nextIdx + 1).padStart(2, '0');
-    var isActive = nextStage.status === 'active';
-    var labelEl  = g('cp2-next-label');
-    if (labelEl) labelEl.textContent = isActive ? 'В работе' : 'Следующий этап';
-    if (g('cp2-next-title')) g('cp2-next-title').textContent = numStr + ' — ' + nextName;
-    if (g('cp2-next-count')) g('cp2-next-count').textContent = done + ' / ' + total;
-    nsEl.style.display = 'flex';
-
-    // Дедлайн этапа из агентской части
-    var dlEl  = g('cp2-next-deadline');
-    var divEl = g('cp2-next-divider');
-    if (dlEl) {
-      if (isActive && nextStage.deadline) {
-        var dlDate = new Date(nextStage.deadline + 'T00:00:00');
-        var todayD = new Date(); todayD.setHours(0,0,0,0);
-        var dlStr  = dlDate.toLocaleDateString('ru-RU', { day:'numeric', month:'long', year:'numeric' });
-        var isOvD  = dlDate < todayD;
-        var dlColor = isOvD ? '#e05252' : '#c9a84c';
-        var dlBg    = isOvD ? 'rgba(224,82,82,.08)' : 'rgba(184,146,58,.08)';
-        var dlBord  = isOvD ? 'rgba(224,82,82,.2)'  : 'rgba(184,146,58,.2)';
-        var calIcon = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
-        var dlPrefix = isOvD ? 'Просрочен · ' : 'Этап будет завершён · ';
-        dlEl.innerHTML =
-          '<span style="display:inline-flex;align-items:center;gap:5px;' +
-          'font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:.03em;' +
-          'padding:4px 11px;border-radius:7px;' +
-          'background:' + dlBg + ';border:1px solid ' + dlBord + ';color:' + dlColor + ';">' +
-            '<span style="color:' + dlColor + ';display:flex;align-items:center;">' + calIcon + '</span>' +
-            dlPrefix + dlStr +
-          '</span>';
-        dlEl.style.display = 'flex';
-        if (divEl) divEl.style.display = 'block';
-      } else {
-        dlEl.style.display = 'none';
-        dlEl.innerHTML = '';
-        if (divEl) divEl.style.display = 'none';
-      }
-    }
-  }
+  // Next step — блок удалён из клиентского вида
+  // (cp2-next-step скрыт через CSS display:none)
 
   // Stages detail tab — с датами из stage_history
   var detail = g('cp2-stages-detail');
@@ -36050,42 +36014,7 @@ async function cp2LoadROI(project) {
   }
 }
 
-async function cp2LoadFocus(project) {
-  var el = g('cp2-focus');
-  if (!el) return;
-  var res = await sb.from('project_stages').select('*').eq('project_id', project.id).order('stage_index');
-  var arr = res.data || [];
-
-  // Находим следующий этап: первый pending после последнего active/completed
-  var nextStage = arr.find(function(s){ return s.status === 'pending'; });
-  var activeStage = arr.find(function(s){ return s.status === 'active'; });
-  var completedCount = arr.filter(function(s){ return s.status === 'completed'; }).length;
-
-  // Если всё завершено — не показываем блок
-  if (!nextStage && !activeStage) { el.style.display = 'none'; return; }
-
-  // Следующий — pending этап (если нет pending, значит active — последний)
-  var target = nextStage || activeStage;
-  if (!target) { el.style.display = 'none'; return; }
-
-  var stObj = STAGES[target.stage_index] || { name: 'Следующий этап', icon: '▶' };
-  var numStr = (target.stage_index + 1 < 10 ? '0' : '') + (target.stage_index + 1);
-
-  // Обновляем eyebrow
-  var eyebrow = el.querySelector('.cp-focus-eyebrow');
-  if (eyebrow) eyebrow.textContent = 'СЛЕДУЮЩИЙ ЭТАП';
-
-  // Заголовок: номер + название
-  if (g('cp2-focus-text')) {
-    g('cp2-focus-text').textContent = numStr + ' — ' + stObj.name;
-  }
-  // Подсказка: прогресс
-  if (g('cp2-focus-tip')) {
-    g('cp2-focus-tip').textContent = completedCount + ' из ' + (arr ? arr.length : 9) + ' этапов завершено · этап ' + (target.stage_index + 1) + ' в очереди';
-  }
-
-  el.style.display = 'block';
-}
+// cp2LoadFocus — удалён (блок СЛЕДУЮЩИЙ ЭТАП убран из клиентского вида)
 
 // ══════════════════════════════════════════════
 // SMM REPORT — Reference Design
