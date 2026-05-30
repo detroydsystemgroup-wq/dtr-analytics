@@ -28860,7 +28860,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
         <div style="font-family:var(--font-display);font-size:28px;font-weight:800;letter-spacing:-.03em;" id="report-title-display">—</div>
       </div>
       <div style="display:flex;gap:8px;align-items:center;">
-        <div id="btn-period-wrap" style="display:none;align-items:center;gap:0;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--r-sm);overflow:hidden;font-family:'DM Mono',monospace;font-size:11px;height:36px;">
+        <div id="btn-period-wrap" style="display:none;align-items:center;gap:0;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--r-sm);overflow:hidden;font-family:'DM Mono',monospace;font-size:11px;height:36px;min-width:160px;">
           <div style="padding:0 11px;color:var(--txt3);border-right:1px solid var(--brd);white-space:nowrap;display:flex;align-items:center;gap:6px;height:100%;">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           </div>
@@ -28871,7 +28871,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
           </div>
         </div>
 
-        <button id="ob-toggle" onclick="toggleObOnboarding()" class="btn-ghost" style="display:none;gap:8px;height:36px;padding:0 14px;border:1px solid var(--brd);border-radius:var(--r-sm);background:var(--bg4);">
+        <button id="ob-toggle" onclick="toggleObOnboarding()" class="btn-ghost" style="display:none;gap:8px;height:36px;padding:0 14px;border:1px solid var(--brd);border-radius:var(--r-sm);background:var(--bg4);min-width:160px;justify-content:center;">
           <div id="ob-switch-track" style="width:28px;height:16px;border-radius:8px;background:#c9a84c;position:relative;flex-shrink:0;transition:background .22s ease;">
             <div id="ob-switch-knob" style="position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:6px;background:#fff;transition:transform .22s cubic-bezier(.34,1.4,.64,1);box-shadow:0 1px 3px rgba(0,0,0,.4);"></div>
           </div>
