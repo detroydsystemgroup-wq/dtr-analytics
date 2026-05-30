@@ -31307,6 +31307,7 @@ function renderProjectGrid() {
   }
 
   grid.innerHTML = list.map(p => {
+    try {
     const { pct, completed, total: progTotal } = getProjectProgress(p.id)
     const overdue = isProjectOverdue(p.id)
     const next = getNextDeadline(p.id)
@@ -31407,6 +31408,7 @@ function renderProjectGrid() {
 
       </div>
     </div>`
+    } catch(e) { console.error('[DTR card]', e); return ''; }
   }).join('')
 }
 function switchDashTab(tab, btn) {
