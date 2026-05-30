@@ -41088,7 +41088,7 @@ function kbRenderProjectSidebar() {
 
   var all = (typeof _allProjects !== 'undefined' && _allProjects) ? _allProjects : [];
   var projects  = all.filter(function(p){ return p.status !== 'archived' && (typeof getProjectProgress !== 'undefined' && getProjectProgress(p.id).pct < 100); });
-  var archived  = all.filter(function(p){ return p.status === 'archived'; });
+  var archived  = all.filter(function(p){ return p.status === 'archived' || (p.status !== 'archived' && typeof getProjectProgress !== 'undefined' && getProjectProgress(p.id).pct === 100); });
 
   var projStat  = document.getElementById('kb-proj-stat-proj');
   var itemsStat = document.getElementById('kb-proj-stat-items');
