@@ -31771,7 +31771,7 @@ async function openReport(id) {
 
   // If report already has data — pre-collapse files section before page shows
   // Клиент не видит блок файлов (проверяем метаданные пользователя)
-  _isClient = _isClientCache === true || currentUser?.user_metadata?.role !== 'agency'
+  _isClient = _isClientCache === true
 
   if (_isClient) {
     if (g('files-section')) g('files-section').style.display = 'none'
