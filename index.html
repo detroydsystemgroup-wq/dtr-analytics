@@ -38135,14 +38135,23 @@ async function loadOverview() {
   var doneTasks = allTasks.filter(function(t){ return t.done; });
   var velocity30 = doneTasks.filter(function(t){
     var d = t.done_at || t.updated_at;
-    if (!d) return false; // нет дат — не считаем
+    if (!d) return false;
     return new Date(d) >= thirtyAgo;
   }).length;
   var velocity7 = doneTasks.filter(function(t){
-    var d = t.done_at || t.updated_at || t.created_at;
+    var d = t.done_at || t.updated_at;
     if (!d) return false;
     return new Date(d) >= sevenAgo;
   }).length;
+  // Текущий календарный месяц
+  var monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+  var velocityMonth = doneTasks.filter(function(t){
+    var d = t.done_at || t.updated_at;
+    if (!d) return false;
+    return new Date(d) >= monthStart;
+  }).length;
+  var MONTHS_RU = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
+  var currentMonthName = MONTHS_RU[today.getMonth()];
 
   // Overdue deadlines — этапы + задачи с истёкшим дедлайном
   var allStageDL = activeStagesAll.filter(function(s){ return s.deadline && s.status !== 'completed'; });
@@ -38248,7 +38257,7 @@ async function loadOverview() {
   s('sv-overdue-foot', overdueProjs.length + ' проектов · ' + overdueTasksDL.length + ' задач просрочено');
 
   s('sv-velocity-num', velocity30);
-  s('sv-velocity-foot', 'за 7 дней: ' + velocity7 + ' · завершено: ' + doneTasks.length + ' · всего: ' + allTasks.length);
+  s('sv-velocity-foot', 'за 7 дней: ' + velocity7 + ' · ' + currentMonthName + ': ' + velocityMonth + ' · за 30 дн: ' + velocity30);
 
   // ─────────────────────────────
   // RENDER: Risk row
