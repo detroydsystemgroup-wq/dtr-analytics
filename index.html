@@ -30447,13 +30447,13 @@ async function sendTestTelegram() {
   if (btn) { btn.disabled = false; btn.textContent = 'Отправить тест' }
 }
 
-async function sendTelegramStageNotification(stageIndex, newStatus, note) {
+async function sendTelegramStageNotification(stageIndex, newStatus, note, stageName) {
   const chatId = currentProject?.telegram_chat_id
   if (!chatId) return // no telegram connected
 
   const rec = trackerData.find(s => s.stage_index === stageIndex)
-  const stageName = (rec && rec.name) || STAGES[stageIndex]?.name || ('Этап ' + (stageIndex + 1))
-  const stage = { name: stageName }
+  const name = stageName || (rec && rec.name) || STAGES[stageIndex]?.name || ('Этап ' + (stageIndex + 1))
+  const stage = { name }
 
   const statusText = newStatus === 'completed' ? '✅ Завершён' : '🔵 Начат'
   const emoji = newStatus === 'completed' ? '🎉' : '🚀'
@@ -35235,7 +35235,10 @@ async function saveStage() {
 
   // Send Telegram notification if status changed to active or completed
   if (prevStatus !== selectedStageStatus && (selectedStageStatus === 'active' || selectedStageStatus === 'completed')) {
-    sendTelegramStageNotification(editingStageIndex, selectedStageStatus, note)
+    // Берём имя из текущего trackerData ИЛИ из existing записи
+    const _tgRec = trackerData.find(s => s.stage_index === editingStageIndex)
+    const _tgName = (_tgRec && _tgRec.name) || STAGES[editingStageIndex]?.name || ('Этап ' + (editingStageIndex + 1))
+    sendTelegramStageNotification(editingStageIndex, selectedStageStatus, note, _tgName)
   }
 
   closeModal('modal-stage')
