@@ -29699,6 +29699,14 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
       </div>
     </div>
     <div style="border-top:1px solid var(--brd);padding-top:16px;margin-top:4px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-size:9px;font-family:var(--font-display);color:var(--a2);letter-spacing:.14em;text-transform:uppercase;">Этапы проекта</div>
+        <span style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.25);" id="proj-stage-count"></span>
+      </div>
+      <div id="proj-stage-list" style="display:flex;flex-direction:column;gap:4px;margin-bottom:10px;"></div>
+      <button onclick="dtrAddCustomStage('proj-stage-list','proj-stage-count')" style="width:100%;padding:8px;border-radius:8px;border:1px dashed rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.3);font-size:12px;cursor:pointer;transition:all .15s;" onmouseenter="this.style.borderColor='rgba(184,146,58,.4)';this.style.color='rgba(184,146,58,.7)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.12)';this.style.color='rgba(255,255,255,.3)'">+ Добавить свой этап</button>
+    </div>
+    <div style="border-top:1px solid var(--brd);padding-top:16px;margin-top:4px;">
       <div style="font-size:9px;font-family:var(--font-display);color:var(--a2);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;">Доступ клиента</div>
       <div class="field"><label>Логин клиента</label><input type="text" id="proj-client-login" placeholder="uzbek_doner" oninput="updateClientLoginPreview()"></div>
       <div class="field"><label>Пароль клиента</label><input type="password" id="proj-client-pass" placeholder="Минимум 8 символов"></div>
@@ -37502,6 +37510,15 @@ function showSQLHint() {
       <div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.2);margin-top:5px;">Выбери одну или несколько</div>
     </div>
     <div class="field">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <label style="margin-bottom:0;">Этапы проекта</label>
+        <span style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.25);" id="ps-stage-count"></span>
+      </div>
+      <div id="ps-stage-list" style="display:flex;flex-direction:column;gap:4px;margin-bottom:8px;"></div>
+      <button onclick="dtrAddCustomStage('ps-stage-list','ps-stage-count')" style="width:100%;padding:8px;border-radius:8px;border:1px dashed rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.3);font-size:12px;cursor:pointer;transition:all .15s;" onmouseenter="this.style.borderColor='rgba(184,146,58,.4)';this.style.color='rgba(184,146,58,.7)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.12)';this.style.color='rgba(255,255,255,.3)'">+ Добавить этап</button>
+      <div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,58,58,.4);margin-top:8px;" id="ps-stages-warning" style="display:none;"></div>
+    </div>
+    <div class="field">
       <label>Тариф</label>
       <div style="display:flex;gap:8px;margin-top:2px;" id="ps-tariff-btns">
         <button type="button" class="ps-tariff-btn" data-tariff="DeSilver"
@@ -43301,6 +43318,348 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
   } else {
     setTimeout(patchRenderFinance, 200);
   }
+})();
+</script>
+
+<style>
+/* ── DTR Custom Stages ── */
+.dtr-stage-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px; border-radius: 8px;
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);
+  transition: background .12s;
+}
+.dtr-stage-row:hover { background: rgba(255,255,255,.05); }
+.dtr-stage-handle {
+  color: rgba(255,255,255,.2); cursor: grab; flex-shrink: 0; line-height: 1;
+  font-size: 14px; padding: 2px;
+}
+.dtr-stage-check {
+  width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid rgba(255,255,255,.2);
+  background: transparent; cursor: pointer; flex-shrink: 0; appearance: none;
+  transition: all .12s; position: relative;
+}
+.dtr-stage-check:checked {
+  background: rgba(184,146,58,.2); border-color: rgba(184,146,58,.6);
+}
+.dtr-stage-check:checked::after {
+  content: '✓'; position: absolute; top: -1px; left: 2px;
+  font-size: 11px; color: var(--a2);
+}
+.dtr-stage-name {
+  flex: 1; background: transparent; border: none; outline: none;
+  font-family: var(--font-body); font-size: 12px; color: rgba(255,255,255,.7);
+  padding: 0; min-width: 0;
+}
+.dtr-stage-name::placeholder { color: rgba(255,255,255,.25); }
+.dtr-stage-del {
+  background: transparent; border: none; color: rgba(255,255,255,.2);
+  cursor: pointer; font-size: 14px; padding: 2px 4px; flex-shrink: 0;
+  transition: color .12s; line-height: 1;
+}
+.dtr-stage-del:hover { color: rgba(248,113,113,.7); }
+</style>
+
+<script>
+(function(){
+  var DEFAULT_STAGE_TEMPLATES = [
+    { name: 'Анализ клиентских данных',    emoji: '🔍' },
+    { name: 'Анализ конкурентов',           emoji: '📋' },
+    { name: 'Разработка контент стратегии', emoji: '✍️' },
+    { name: 'Разработка таргет стратегии',  emoji: '📸' },
+    { name: 'Разработка контент плана',     emoji: '🎬' },
+    { name: 'Написание сценариев',          emoji: '✅' },
+    { name: 'Съёмки раунд 1',              emoji: '📊' },
+    { name: 'Съёмки раунд 2',              emoji: '💬' },
+    { name: 'Подготовка отчётности',        emoji: '🏆' },
+  ];
+
+  /* ── Рендер редактора этапов ── */
+  function renderStageEditor(listId, countId, selected) {
+    var list = document.getElementById(listId);
+    var countEl = document.getElementById(countId);
+    if (!list) return;
+
+    // selected — массив { name, emoji, enabled }
+    list.innerHTML = selected.map(function(s, i) {
+      return '<div class="dtr-stage-row" data-idx="' + i + '">'
+        + '<span class="dtr-stage-handle" title="Перетащить">⠿</span>'
+        + '<input class="dtr-stage-check" type="checkbox"' + (s.enabled !== false ? ' checked' : '') + ' onchange="dtrStageToggle(\'' + listId + '\',\'' + countId + '\',' + i + ',this.checked)">'
+        + '<input class="dtr-stage-name" type="text" value="' + s.name.replace(/"/g,'&quot;') + '" placeholder="Название этапа" oninput="dtrStageRename(\'' + listId + '\',' + i + ',this.value)">'
+        + '<button class="dtr-stage-del" onclick="dtrStageDel(\'' + listId + '\',\'' + countId + '\',' + i + ')" title="Удалить">✕</button>'
+        + '</div>';
+    }).join('');
+    updateStageCount(listId, countId);
+    setupStageDrag(listId, countId);
+  }
+
+  function getStageData(listId) {
+    var list = document.getElementById(listId);
+    if (!list) return [];
+    return Array.from(list.querySelectorAll('.dtr-stage-row')).map(function(row) {
+      return {
+        name: row.querySelector('.dtr-stage-name').value.trim() || 'Этап',
+        enabled: row.querySelector('.dtr-stage-check').checked,
+        emoji: '📌'
+      };
+    });
+  }
+
+  function updateStageCount(listId, countId) {
+    var el = document.getElementById(countId);
+    if (!el) return;
+    var data = getStageData(listId);
+    var enabled = data.filter(function(s){ return s.enabled; }).length;
+    el.textContent = enabled + ' из ' + data.length + ' этапов';
+  }
+
+  window.dtrStageToggle = function(listId, countId, idx, checked) {
+    updateStageCount(listId, countId);
+  };
+
+  window.dtrStageRename = function(listId, idx, val) {
+    updateStageCount(listId, idx); // just update
+  };
+
+  window.dtrStageDel = function(listId, countId, idx) {
+    var list = document.getElementById(listId);
+    if (!list) return;
+    var rows = list.querySelectorAll('.dtr-stage-row');
+    if (rows[idx]) rows[idx].remove();
+    // Reindex
+    list.querySelectorAll('.dtr-stage-row').forEach(function(r, i){ r.dataset.idx = i; });
+    updateStageCount(listId, countId);
+  };
+
+  window.dtrAddCustomStage = function(listId, countId) {
+    var list = document.getElementById(listId);
+    if (!list) return;
+    var i = list.querySelectorAll('.dtr-stage-row').length;
+    var row = document.createElement('div');
+    row.className = 'dtr-stage-row'; row.dataset.idx = i;
+    row.innerHTML = '<span class="dtr-stage-handle">⠿</span>'
+      + '<input class="dtr-stage-check" type="checkbox" checked onchange="dtrStageToggle(\'' + listId + '\',\'' + countId + '\',' + i + ',this.checked)">'
+      + '<input class="dtr-stage-name" type="text" value="" placeholder="Название этапа" oninput="dtrStageRename(\'' + listId + '\',' + i + ',this.value)">'
+      + '<button class="dtr-stage-del" onclick="dtrStageDel(\'' + listId + '\',\'' + countId + '\',' + i + ')">✕</button>';
+    list.appendChild(row);
+    row.querySelector('.dtr-stage-name').focus();
+    updateStageCount(listId, countId);
+    setupStageDrag(listId, countId);
+  };
+
+  /* ── Drag-to-reorder ── */
+  function setupStageDrag(listId, countId) {
+    var list = document.getElementById(listId);
+    if (!list) return;
+    var dragging = null;
+    list.querySelectorAll('.dtr-stage-handle').forEach(function(handle) {
+      var row = handle.closest('.dtr-stage-row');
+      handle.addEventListener('mousedown', function(e) {
+        dragging = row;
+        row.style.opacity = '.5';
+        e.preventDefault();
+      });
+    });
+    list.addEventListener('mouseover', function(e) {
+      if (!dragging) return;
+      var target = e.target.closest('.dtr-stage-row');
+      if (target && target !== dragging) {
+        var rows = Array.from(list.querySelectorAll('.dtr-stage-row'));
+        var di = rows.indexOf(dragging), ti = rows.indexOf(target);
+        if (di < ti) list.insertBefore(dragging, target.nextSibling);
+        else list.insertBefore(dragging, target);
+      }
+    });
+    document.addEventListener('mouseup', function() {
+      if (dragging) { dragging.style.opacity = ''; dragging = null; updateStageCount(listId, countId); }
+    });
+  }
+
+  /* ── Init редактора при открытии модалов ── */
+  // Создание проекта — дефолтные этапы
+  function initCreateStageEditor() {
+    var templates = DEFAULT_STAGE_TEMPLATES.map(function(s){ return { name: s.name, emoji: s.emoji, enabled: true }; });
+    renderStageEditor('proj-stage-list', 'proj-stage-count', templates);
+  }
+
+  // Патчим openModal чтобы инициализировать при открытии
+  var _origOpenModal = window.openModal;
+  window.openModal = function(id) {
+    _origOpenModal && _origOpenModal(id);
+    if (id === 'modal-project') setTimeout(initCreateStageEditor, 30);
+  };
+
+  /* ── Патчим openProjectSettings — загружаем существующие этапы ── */
+  var _origOpenPS = window.openProjectSettings;
+  window.openProjectSettings = function(id) {
+    _origOpenPS && _origOpenPS(id);
+    setTimeout(function() {
+      // Загружаем stage_templates из проекта или дефолт
+      var p = typeof _allProjects !== 'undefined' ? _allProjects.find(function(x){ return x.id === id; }) : null;
+      var templates = DEFAULT_STAGE_TEMPLATES.map(function(s){ return { name: s.name, emoji: s.emoji, enabled: true }; });
+      if (p && p.stage_templates) {
+        try {
+          var saved = JSON.parse(p.stage_templates);
+          if (Array.isArray(saved) && saved.length) templates = saved;
+        } catch(e) {}
+      } else if (p) {
+        // Нет шаблона — пробуем загрузить из существующих project_stages
+        sb.from('project_stages').select('stage_index,name').eq('project_id', id).order('stage_index')
+          .then(function(res) {
+            var stages = res.data || [];
+            if (stages.length) {
+              var tpl = stages.map(function(s) {
+                return { name: s.name || DEFAULT_STAGE_TEMPLATES[s.stage_index]?.name || 'Этап', emoji: '📌', enabled: true };
+              });
+              renderStageEditor('ps-stage-list', 'ps-stage-count', tpl);
+            }
+          });
+      }
+      renderStageEditor('ps-stage-list', 'ps-stage-count', templates);
+    }, 40);
+  };
+
+  /* ── Патчим createProject — сохраняем этапы ── */
+  var _origCreate = window.createProject;
+  window.createProject = async function() {
+    var stageData = getStageData('proj-stage-list');
+    var activeStages = stageData.filter(function(s){ return s.enabled && s.name.trim(); });
+    if (!activeStages.length) {
+      if (typeof showToast === 'function') showToast('⚠️', 'Добавь хотя бы один этап', 'warn');
+      return;
+    }
+    // Сохраняем шаблон для передачи в createProject через временную переменную
+    window._pendingStageTemplates = stageData;
+    await _origCreate();
+    window._pendingStageTemplates = null;
+  };
+
+  /* ── Патчим saveProjectSettings — сохраняем этапы ── */
+  var _origSavePS = window.saveProjectSettings;
+  window.saveProjectSettings = async function() {
+    var projId = typeof _psProjectId !== 'undefined' ? _psProjectId : null;
+    await _origSavePS();
+    if (!projId) return;
+    var stageData = getStageData('ps-stage-list');
+    var val = JSON.stringify(stageData);
+    try {
+      var res = await sb.from('projects').update({ stage_templates: val }).eq('id', projId);
+      if (!res.error) {
+        // Обновляем кэш
+        if (typeof _allProjects !== 'undefined') {
+          var p = _allProjects.find(function(x){ return x.id === projId; });
+          if (p) p.stage_templates = val;
+        }
+        // Пересоздаём project_stages по новому шаблону
+        await rebuildProjectStages(projId, stageData);
+        if (typeof showToast === 'function') showToast('✓', 'Этапы сохранены', 'ok');
+      } else {
+        console.warn('[DTR Stages] SQL needed: ALTER TABLE projects ADD COLUMN IF NOT EXISTS stage_templates text;');
+        if (typeof showToast === 'function') showToast('⚡', 'SQL: ALTER TABLE projects ADD COLUMN IF NOT EXISTS stage_templates text;', 'warn');
+      }
+    } catch(e) { console.warn('[DTR Stages]', e); }
+  };
+
+  /* ── Пересоздание project_stages по шаблону ── */
+  async function rebuildProjectStages(projId, stageData) {
+    var activeStages = stageData.filter(function(s){ return s.enabled && s.name.trim(); });
+    // Загружаем существующие этапы чтобы сохранить статусы/дедлайны
+    var existing = [];
+    try {
+      var res = await sb.from('project_stages').select('*').eq('project_id', projId).order('stage_index');
+      existing = res.data || [];
+    } catch(e) {}
+
+    // Удаляем все текущие этапы
+    try { await sb.from('project_stages').delete().eq('project_id', projId); } catch(e) {}
+
+    // Создаём новые
+    var toInsert = activeStages.map(function(s, i) {
+      var old = existing[i] || {};
+      return {
+        project_id: projId,
+        stage_index: i,
+        name: s.name.trim(),
+        status: old.status || 'pending',
+        deadline: old.deadline || null,
+        note: old.note || null,
+        link: old.link || null,
+      };
+    });
+
+    if (toInsert.length) {
+      try { await sb.from('project_stages').insert(toInsert); } catch(e) { console.warn('[DTR Stages] insert error', e); }
+    }
+
+    // Обновляем trackerData если проект открыт
+    if (typeof currentProject !== 'undefined' && currentProject && currentProject.id === projId) {
+      if (typeof loadTracker === 'function') loadTracker();
+    }
+  }
+
+  /* ── Патчим renderTracker — используем кастомные имена этапов ── */
+  function patchRenderTracker() {
+    if (typeof renderTracker !== 'function') { setTimeout(patchRenderTracker, 400); return; }
+    var orig = renderTracker;
+    window.renderTracker = function() {
+      // Подменяем STAGES если у проекта есть stage_templates
+      var origStages = window.STAGES ? window.STAGES.slice() : null;
+      if (typeof currentProject !== 'undefined' && currentProject && currentProject.stage_templates) {
+        try {
+          var tpl = JSON.parse(currentProject.stage_templates);
+          var active = tpl.filter(function(s){ return s.enabled !== false && s.name; });
+          if (active.length) {
+            window.STAGES = active.map(function(s, i) {
+              return { name: s.name, emoji: s.emoji || '📌', icon: (window.STAGE_ICONS && window.STAGE_ICONS[i]) || '' };
+            });
+          }
+        } catch(e) {}
+      }
+      orig();
+      // Восстанавливаем дефолтные STAGES
+      if (origStages) window.STAGES = origStages;
+    };
+  }
+
+  /* ── Патчим сохранение этапов при создании (после вставки проекта) ── */
+  // Перехватываем project.insert через хук на loadProjects
+  var _origLoadProjects = window.loadProjects;
+  if (typeof loadProjects === 'function') {
+    var _hookedLP = false;
+    var _hookLoadProjects = function() {
+      if (!_hookedLP) {
+        _hookedLP = true;
+        var origLP = window.loadProjects;
+        window.loadProjects = async function() {
+          await origLP();
+          // После загрузки — если есть pendingStageTemplates применяем к новому проекту
+          if (window._pendingStageTemplates && typeof _allProjects !== 'undefined') {
+            var newest = _allProjects.slice().sort(function(a,b){ return new Date(b.created_at)-new Date(a.created_at); })[0];
+            if (newest) {
+              var val = JSON.stringify(window._pendingStageTemplates);
+              await sb.from('projects').update({ stage_templates: val }).eq('id', newest.id);
+              newest.stage_templates = val;
+              await rebuildProjectStages(newest.id, window._pendingStageTemplates);
+            }
+            window._pendingStageTemplates = null;
+          }
+        };
+      }
+    };
+    setTimeout(_hookLoadProjects, 500);
+  }
+
+  function init() {
+    patchRenderTracker();
+  }
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); }
+  else { setTimeout(init, 300); }
+
+  // Экспортируем для использования снаружи
+  window._dtrGetStageData = getStageData;
+  window._dtrRenderStageEditor = renderStageEditor;
+  window._dtrDefaultStageTemplates = DEFAULT_STAGE_TEMPLATES;
+
 })();
 </script>
 </html>
