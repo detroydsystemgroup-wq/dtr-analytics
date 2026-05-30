@@ -34309,7 +34309,9 @@ function getActiveStageIndex() {
 
 function getActiveStageName() {
   const idx = getActiveStageIndex()
-  return STAGES[idx]?.name || ('Этап ' + (idx + 1))
+  // Берём имя из реальных данных трекера
+  const rec = trackerData.find(s => s.stage_index === idx)
+  return (rec && rec.name) || STAGES[idx]?.name || ('Этап ' + (idx + 1))
 }
 
 // ── Load kanban tasks ──
@@ -34904,7 +34906,9 @@ async function _deleteTask(taskId, stageIndex) {
 function openAddTask(stageIndex) {
   g('task-stage-index').value = stageIndex
   g('task-editing-id').value = ''
-  g('task-modal-title').textContent = (STAGES[stageIndex]?.icon||'') + ' ' + (STAGES[stageIndex]?.name||'Этап')
+  const _stageRec = trackerData.find(s => s.stage_index === stageIndex)
+  const _stageName = (_stageRec && _stageRec.name) || STAGES[stageIndex]?.name || ('Этап ' + (stageIndex + 1))
+  g('task-modal-title').textContent = (STAGES[stageIndex]?.icon||'') + ' ' + _stageName
   g('task-title-inp').value = ''
   g('task-deadline-inp').value = ''
   g('task-priority-inp').value = 'normal'
