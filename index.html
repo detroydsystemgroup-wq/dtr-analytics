@@ -43443,7 +43443,9 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
     if (!list) return;
     var row = makeRow(listId, countId, '', true);
     list.appendChild(row);
-    row.querySelector('.dtr-sr-name').focus();
+    var nameSpan = row.querySelectorAll('span');
+    var editable = nameSpan[nameSpan.length - 1];
+    if (editable) setTimeout(function(){ editable.focus(); }, 30);
     updateCount(listId, countId);
   };
 
@@ -43584,5 +43586,53 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
   window._dtrGetStageData = getData;
   window._dtrDefaultStages = DEFAULTS;
 })();
+</script>
+
+<script>
+async function dtrResetClientPassword() {
+  var newPass = document.getElementById('ps-new-client-pass').value.trim();
+  var msg = document.getElementById('ps-reset-pass-msg');
+  var btn = document.getElementById('ps-reset-pass-btn');
+  var projId = typeof _psProjectId !== 'undefined' ? _psProjectId : null;
+
+  function showMsg(text, color) {
+    msg.style.display = 'block';
+    msg.style.color = color;
+    msg.textContent = text;
+  }
+
+  msg.style.display = 'none';
+  if (!newPass) { showMsg('Введи новый пароль', 'rgba(248,113,113,.7)'); return; }
+  if (newPass.length < 8) { showMsg('Минимум 8 символов', 'rgba(248,113,113,.7)'); return; }
+  if (!projId) { showMsg('Проект не определён', 'rgba(248,113,113,.7)'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Сохраняем...';
+
+  try {
+    var session = await sb.auth.getSession();
+    var token = session?.data?.session?.access_token;
+    if (!token) { showMsg('Нет сессии — войди заново', 'rgba(248,113,113,.7)'); return; }
+
+    var res = await fetch(RESET_PASS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ project_id: projId, new_password: newPass })
+    });
+
+    var data = await res.json();
+    if (res.ok && data.success) {
+      showMsg('✓ Пароль изменён для ' + data.email, 'rgba(56,178,172,.8)');
+      document.getElementById('ps-new-client-pass').value = '';
+    } else {
+      showMsg(data.error || 'Ошибка', 'rgba(248,113,113,.7)');
+    }
+  } catch(e) {
+    showMsg('Ошибка: ' + e.message, 'rgba(248,113,113,.7)');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Сохранить';
+  }
+}
 </script>
 </html>
