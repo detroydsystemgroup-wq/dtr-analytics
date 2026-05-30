@@ -28858,10 +28858,9 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
         <div style="font-family:var(--font-display);font-size:28px;font-weight:800;letter-spacing:-.03em;" id="report-title-display">—</div>
       </div>
       <div style="display:flex;gap:8px;align-items:center;">
-        <div id="btn-period-wrap" style="display:none;align-items:center;gap:0;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--r-sm);overflow:hidden;font-family:'DM Mono',monospace;font-size:11px;height:34px;">
+        <div id="btn-period-wrap" style="display:none;align-items:center;gap:0;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--r-sm);overflow:hidden;font-family:'DM Mono',monospace;font-size:11px;height:36px;">
           <div style="padding:0 11px;color:var(--txt3);border-right:1px solid var(--brd);white-space:nowrap;display:flex;align-items:center;gap:6px;height:100%;">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            Период
           </div>
           <div style="padding:0 14px;white-space:nowrap;display:flex;align-items:center;gap:6px;height:100%;">
             <span id="btn-period-b" style="color:rgba(201,168,76,.85);">—</span>
@@ -28870,11 +28869,11 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
           </div>
         </div>
 
-        <button id="ob-toggle" onclick="toggleObOnboarding()" class="btn-ghost" style="display:none;gap:8px;">
-          <div id="ob-switch-track" style="width:32px;height:18px;border-radius:9px;background:#c9a84c;position:relative;flex-shrink:0;transition:background .22s ease;">
-            <div id="ob-switch-knob" style="position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:7px;background:#fff;transition:transform .22s cubic-bezier(.34,1.4,.64,1);box-shadow:0 1px 3px rgba(0,0,0,.4);"></div>
+        <button id="ob-toggle" onclick="toggleObOnboarding()" class="btn-ghost" style="display:none;gap:8px;height:36px;padding:0 14px;border:1px solid var(--brd);border-radius:var(--r-sm);background:var(--bg4);">
+          <div id="ob-switch-track" style="width:28px;height:16px;border-radius:8px;background:#c9a84c;position:relative;flex-shrink:0;transition:background .22s ease;">
+            <div id="ob-switch-knob" style="position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:6px;background:#fff;transition:transform .22s cubic-bezier(.34,1.4,.64,1);box-shadow:0 1px 3px rgba(0,0,0,.4);"></div>
           </div>
-          <span id="ob-toggle-label" style="font-size:11px;font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.6);">Подсказки</span>
+          <span id="ob-toggle-label" style="font-size:11px;font-weight:500;letter-spacing:.04em;color:rgba(255,255,255,.6);font-family:'DM Mono',monospace;">Подсказки</span>
         </button>
         <button class="btn-ghost" id="btn-publish" onclick="publishReport()" style="display:none;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
@@ -31797,8 +31796,8 @@ async function openReport(id) {
         const k = map[f.template_type]
         if (k) {
           S[k] = f.parsed_data
-          if (k === 'b1') { LABEL_B = f.parsed_data.meta?.period_label || buildLabel(f.parsed_data.meta) }
-          if (k === 'd1') { LABEL_D = f.parsed_data.meta?.period_label || buildLabel(f.parsed_data.meta) }
+          if (k === 'b1') { LABEL_B = f.parsed_data.meta?.period_label || buildLabel(f.parsed_data.meta); const _pb=g('btn-period-b'); if(_pb) _pb.textContent=LABEL_B; }
+          if (k === 'd1') { LABEL_D = f.parsed_data.meta?.period_label || buildLabel(f.parsed_data.meta); const _pd=g('btn-period-d'); if(_pd) _pd.textContent=LABEL_D; }
           const z = g('z-'+k); if (z) z.classList.add('done')
           const ok = g('ok-'+k); if (ok) { ok.textContent = '✓ '+f.file_name.slice(0,20); ok.style.display = 'block' }
         }
@@ -31878,8 +31877,8 @@ function processFile(file, key) {
       S[key] = parsed
 
       // Update labels
-      if (key === 'b1') LABEL_B = buildLabel(parsed.meta)
-      if (key === 'd1') LABEL_D = buildLabel(parsed.meta)
+      if (key === 'b1') { LABEL_B = buildLabel(parsed.meta); const _pb=g('btn-period-b'); if(_pb) _pb.textContent=LABEL_B; }
+      if (key === 'd1') { LABEL_D = buildLabel(parsed.meta); const _pd=g('btn-period-d'); if(_pd) _pd.textContent=LABEL_D; }
       updateAllLabels()
 
       // Save to Supabase
