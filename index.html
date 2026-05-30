@@ -8634,11 +8634,11 @@ input, select, textarea {
 
   // ── Показываем тумблер когда отчёт загружен ──
   function _showObToggle() {
-    var btnPdf    = document.getElementById('btn-pdf');
     var btnOb     = document.getElementById('ob-toggle');
     var btnPeriod = document.getElementById('btn-period-wrap');
-    if (btnPdf)    btnPdf.style.display    = 'inline-flex';
-    if (btnOb)     btnOb.style.display     = 'inline-flex';
+    if (!_isClientCache === true) {
+      if (btnOb)     btnOb.style.display     = 'inline-flex';
+    }
     if (btnPeriod) btnPeriod.style.display = 'flex';
     _syncPeriodBtn();
   }
@@ -8686,7 +8686,7 @@ function exportReportPDF() {
     return;
   }
 
-  var btn = document.getElementById('btn-pdf');
+  var btn = null; // btn-pdf removed
   var origHTML = btn ? btn.innerHTML : '';
   if (btn) { btn.innerHTML = '⏳ Генерация...'; btn.disabled = true; }
 
@@ -31769,7 +31769,12 @@ async function openReport(id) {
   const hasAnalysis = files?.some(f => f.parsed_data)
 
   // If report already has data — pre-collapse files section before page shows
-  if (hasAnalysis) {
+  // Клиент не видит блок файлов
+  
+  if (_isClientCache === true) {
+    if (g('files-section')) g('files-section').style.display = 'none'
+    if (g('files-toggle-bar')) g('files-toggle-bar').style.display = 'none'
+  } else if (hasAnalysis) {
     if (g('files-section')) g('files-section').classList.add('collapsed')
     if (g('files-toggle-bar')) g('files-toggle-bar').style.display = 'flex'
     if (g('files-toggle-label')) g('files-toggle-label').textContent = 'Показать файлы'
