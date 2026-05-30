@@ -25,9 +25,9 @@
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
   script-src  'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
-  style-src   'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;
-  font-src    https://fonts.gstatic.com https://cdn.jsdelivr.net;
-  img-src     'self' data: blob:;
+  style-src   'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
+  font-src    https://fonts.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com data:;
+  img-src     'self' data: blob: https:;
   connect-src https://ygxfvmpfhrfxqzoylddo.supabase.co
               wss://ygxfvmpfhrfxqzoylddo.supabase.co
               https://api.anthropic.com
@@ -8636,7 +8636,9 @@ input, select, textarea {
   function _showObToggle() {
     var btnOb     = document.getElementById('ob-toggle');
     var btnPeriod = document.getElementById('btn-period-wrap');
-    if (!_isClient && btnOb) btnOb.style.display = 'inline-flex';
+    if (!_isClient) {
+      if (btnOb)     btnOb.style.display     = 'inline-flex';
+    }
     if (btnPeriod) btnPeriod.style.display = 'flex';
     _syncPeriodBtn();
   }
@@ -8684,7 +8686,7 @@ function exportReportPDF() {
     return;
   }
 
-  var btn = document.getElementById('btn-pdf');
+  var btn = null; // btn-pdf removed
   var origHTML = btn ? btn.innerHTML : '';
   if (btn) { btn.innerHTML = '⏳ Генерация...'; btn.disabled = true; }
 
@@ -24380,9 +24382,9 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 
 /* Done card — muted */
 .kb-card-done {
-  opacity: .55;
+  opacity: .82;
 }
-.kb-card-done:hover { opacity: .75; }
+.kb-card-done:hover { opacity: 1; }
 
 /* Colour top stripe */
 .kb-card-cap {
@@ -26141,17 +26143,9 @@ button, a, [role="button"],
       <!-- ① HERO STRIP -->
       <div class="apl-hero-strip dl-hero">
         <div class="apl-hero-card">
-          <div class="apl-hero-eyebrow">ВСЕГО ДЕДЛАЙНОВ</div>
-          <div class="apl-hero-num" id="dl-stat-all" style="color:var(--txt);">—</div>
-          <div class="apl-hero-sub">активных этапов</div>
-          <div class="apl-hero-rule"></div>
-          <div class="apl-hero-foot" id="dl-hero-projects">— проектов</div>
-        </div>
-        <div class="apl-hero-divider"></div>
-        <div class="apl-hero-card">
           <div class="apl-hero-eyebrow">ПРОСРОЧЕНО</div>
           <div class="apl-hero-num" id="dl-stat-overdue" style="color:var(--red);">—</div>
-          <div class="apl-hero-sub">истёкших дедлайнов</div>
+          <div class="apl-hero-sub" id="dl-sub-overdue">— эт. · — зад.</div>
           <div class="apl-hero-rule"></div>
           <div class="apl-hero-foot" id="dl-hero-overdue-days">—</div>
         </div>
@@ -26159,7 +26153,7 @@ button, a, [role="button"],
         <div class="apl-hero-card">
           <div class="apl-hero-eyebrow">СЕГОДНЯ</div>
           <div class="apl-hero-num" id="dl-stat-today" style="color:var(--amber);">—</div>
-          <div class="apl-hero-sub">дедлайнов сегодня</div>
+          <div class="apl-hero-sub" id="dl-sub-today">— эт. · — зад.</div>
           <div class="apl-hero-rule"></div>
           <div class="apl-hero-foot" id="dl-hero-week">— на этой неделе</div>
         </div>
@@ -26167,9 +26161,16 @@ button, a, [role="button"],
         <div class="apl-hero-card">
           <div class="apl-hero-eyebrow">БУДУЩИЕ</div>
           <div class="apl-hero-num" id="dl-stat-future" style="color:var(--a2);">—</div>
-          <div class="apl-hero-sub">запланировано</div>
+          <div class="apl-hero-sub" id="dl-sub-future">— эт. · — зад.</div>
           <div class="apl-hero-rule"></div>
-          <div class="apl-hero-foot" id="dl-stat-week" style="display:none;">—</div>
+          <div class="apl-hero-foot" id="dl-hero-week-detail">— на этой неделе</div>
+        </div>
+        <div class="apl-hero-divider"></div>
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">ВЫПОЛНЕНО</div>
+          <div class="apl-hero-num" id="dl-stat-done" style="color:var(--green);">—</div>
+          <div class="apl-hero-sub" id="dl-sub-done">— эт. · — зад.</div>
+          <div class="apl-hero-rule"></div>
           <div class="apl-hero-foot" id="dl-hero-on-time">—</div>
         </div>
       </div>
@@ -28857,10 +28858,9 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
         <div style="font-family:var(--font-display);font-size:28px;font-weight:800;letter-spacing:-.03em;" id="report-title-display">—</div>
       </div>
       <div style="display:flex;gap:8px;align-items:center;">
-        <div id="btn-period-wrap" style="display:none;align-items:center;gap:0;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--r-sm);overflow:hidden;font-family:'DM Mono',monospace;font-size:11px;height:34px;">
+        <div id="btn-period-wrap" style="display:none;align-items:center;gap:0;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--r-sm);overflow:hidden;font-family:'DM Mono',monospace;font-size:11px;height:36px;">
           <div style="padding:0 11px;color:var(--txt3);border-right:1px solid var(--brd);white-space:nowrap;display:flex;align-items:center;gap:6px;height:100%;">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            Период
           </div>
           <div style="padding:0 14px;white-space:nowrap;display:flex;align-items:center;gap:6px;height:100%;">
             <span id="btn-period-b" style="color:rgba(201,168,76,.85);">—</span>
@@ -28868,15 +28868,12 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
             <span id="btn-period-d" style="color:rgba(201,168,76,.85);">—</span>
           </div>
         </div>
-        <button onclick="showPdfComingSoon(this)" class="btn-ghost" style="display:none;" id="btn-pdf">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-          Скачать PDF
-        </button>
-        <button id="ob-toggle" onclick="toggleObOnboarding()" class="btn-ghost" style="display:none;gap:8px;">
-          <div id="ob-switch-track" style="width:32px;height:18px;border-radius:9px;background:#c9a84c;position:relative;flex-shrink:0;transition:background .22s ease;">
-            <div id="ob-switch-knob" style="position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:7px;background:#fff;transition:transform .22s cubic-bezier(.34,1.4,.64,1);box-shadow:0 1px 3px rgba(0,0,0,.4);"></div>
+
+        <button id="ob-toggle" onclick="toggleObOnboarding()" class="btn-ghost" style="display:none;gap:8px;height:36px;padding:0 14px;border:1px solid var(--brd);border-radius:var(--r-sm);background:var(--bg4);">
+          <div id="ob-switch-track" style="width:28px;height:16px;border-radius:8px;background:#c9a84c;position:relative;flex-shrink:0;transition:background .22s ease;">
+            <div id="ob-switch-knob" style="position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:6px;background:#fff;transition:transform .22s cubic-bezier(.34,1.4,.64,1);box-shadow:0 1px 3px rgba(0,0,0,.4);"></div>
           </div>
-          <span id="ob-toggle-label" style="font-size:11px;font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.6);">Подсказки</span>
+          <span id="ob-toggle-label" style="font-size:11px;font-weight:500;letter-spacing:.04em;color:rgba(255,255,255,.6);font-family:'DM Mono',monospace;">Подсказки</span>
         </button>
         <button class="btn-ghost" id="btn-publish" onclick="publishReport()" style="display:none;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
@@ -29754,8 +29751,9 @@ ALTER TABLE client_passports ADD COLUMN IF NOT EXISTS ai_briefs jsonb DEFAULT '[
 ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS kanban_status text DEFAULT 'waiting';
 ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS timer_started_at timestamptz;
 ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS done_at timestamptz;
-UPDATE stage_tasks SET kanban_status = CASE WHEN done = true THEN 'done' ELSE 'waiting' END WHERE kanban_status IS NULL;
-UPDATE stage_tasks SET done_at = updated_at WHERE done = true AND done_at IS NULL AND updated_at IS NOT NULL;</pre>
+
+-- ⑦ Синхронизация статусов канбана
+UPDATE stage_tasks SET kanban_status = CASE WHEN done = true THEN 'done' ELSE 'waiting' END WHERE kanban_status IS NULL OR kanban_status = 'waiting';</pre>
     </div>
 
     <div style="display:flex;gap:8px;padding:10px 14px;background:rgba(74,222,128,.05);border:1px solid rgba(74,222,128,.15);border-radius:8px;margin-bottom:14px;font-family:var(--font-display);font-size:11px;color:var(--txt2);">
@@ -30229,15 +30227,36 @@ async function afterLogin() {
   set('header-user2', name)
   set('header-user3', name)
 
+  // Автомиграция БД — добавляем недостающие колонки при каждом входе (безопасно, IF NOT EXISTS)
+  try {
+    // Проверяем наличие колонки kanban_status — если нет, таблица требует миграции
+    const { data: testRow } = await sb.from('stage_tasks').select('kanban_status,timer_started_at,done_at,time_logged').limit(1)
+    // Если запрос прошёл без ошибки — колонки есть
+  } catch(migErr) {
+    // Колонки отсутствуют — показываем подсказку пользователю
+    console.warn('[Migration needed] stage_tasks missing columns:', migErr.message)
+    showToast && showToast('⚠️', 'Требуется миграция БД — открой настройки', 'warn')
+  }
+
+  // Check if this user is a client (has a project linked to their email)
+  // Agency users (role: 'agency') always get the dashboard — never the client portal
   const isAgencyUser = currentUser.user_metadata?.role === 'agency'
+
   if (!isAgencyUser) {
-    const { data: clientProject } = await sb.from('projects').select('*').eq('client_login', currentUser.email).maybeSingle()
+    const { data: clientProject } = await sb.from('projects')
+      .select('*')
+      .eq('client_login', currentUser.email)
+      .maybeSingle()
+
     if (clientProject) {
+      // Client — show dedicated client portal
       document.querySelectorAll('.agency-only').forEach(el => el.style.display = 'none')
       await showClientPortal(clientProject)
       return
     }
   }
+
+  // Agency — normal dashboard
   showPage('page-dashboard')
   loadProjects()
   // Handle deep link AFTER login flow completes
@@ -31157,7 +31176,7 @@ function renderProjectGrid() {
     if (_projectFilter === 'archived') return p.status === 'archived' || getProjectProgress(p.id).pct === 100
     if (_projectFilter === 'done') return p.status === 'archived' || getProjectProgress(p.id).pct === 100
     if (_projectFilter === 'overdue') return isProjectOverdue(p.id)
-    // 'all' — показываем все
+    // 'all' — показываем все включая архивные и завершённые
     return true
   })
 
@@ -31178,28 +31197,41 @@ function renderProjectGrid() {
   const _activeStgs  = _allStages.filter(s => _trulyActive.some(p => p.id === s.project_id))
   const allPcts = _trulyActive.map(p => getProjectProgress(p.id).pct)
   const avgPct = allPcts.length ? Math.round(allPcts.reduce((s,v)=>s+v,0)/allPcts.length) : 0
+  // Просроченные этапы активных проектов
+  const todayHero = new Date(); todayHero.setHours(0,0,0,0)
+  const trulyActiveIds = _trulyActive.map(p => p.id)
+  const overdueStages = _activeStgs.filter(s =>
+    s.status !== 'completed' && s.deadline &&
+    new Date(s.deadline + 'T00:00:00') < todayHero
+  )
+  // Просроченные задачи — подгружаем каждый раз асинхронно (лёгкий запрос)
+  const todayStr = todayHero.getFullYear() + '-' + String(todayHero.getMonth()+1).padStart(2,'0') + '-' + String(todayHero.getDate()).padStart(2,'0')
+  ;(async () => {
+    try {
+      if (!trulyActiveIds.length) return
+      // Грузим все задачи активных проектов с дедлайном, фильтруем на клиенте
+      const { data, error } = await sb.from('stage_tasks')
+        .select('project_id,deadline,done')
+        .in('project_id', trulyActiveIds)
+        .not('deadline', 'is', null)
+      const overdueTasksCount = (data || []).filter(t =>
+        !t.done && t.deadline && t.deadline.slice(0,10) < todayStr
+      ).length
+      const totalOverdue = overdueStages.length + overdueTasksCount
+      const e1 = g('proj-hero-overdue')
+      if (e1) { e1.textContent = totalOverdue; e1.style.color = totalOverdue > 0 ? 'var(--red)' : 'var(--green)' }
+      const e2 = g('proj-hero-overdue-dl')
+      if (e2) e2.textContent = totalOverdue === 0 ? 'Всё в срок ✓' : overdueStages.length + ' эт. · ' + overdueTasksCount + ' зад.'
+    } catch(e) { console.warn('[OverdueTasks] error:', e) }
+  })()
+  // Пока задачи грузятся — показываем только этапы
+  const overdueCount = overdueStages.length
   const archivedProjs = _allProjects.filter(p => p.status === 'archived')
   const doneCount = _activeProjs.filter(p => getProjectProgress(p.id).pct === 100).length + archivedProjs.length
   const activeCount = _trulyActive.length
   const totalStagesDone = _activeStgs.filter(s => s.status === 'completed').length
   const doneProjs = [..._activeProjs.filter(p => getProjectProgress(p.id).pct === 100), ...archivedProjs]
   const totalMRR = doneProjs.reduce((s,p) => s + (p.monthly_budget||0), 0)
-  // Просрочка — этапы + задачи async
-  const todayHero = new Date(); todayHero.setHours(0,0,0,0)
-  const todayStrH = todayHero.getFullYear() + '-' + String(todayHero.getMonth()+1).padStart(2,'0') + '-' + String(todayHero.getDate()).padStart(2,'0')
-  const overdueStages = _activeStgs.filter(s => s.status !== 'completed' && s.deadline && new Date(s.deadline + 'T00:00:00') < todayHero)
-  const overdueCount = overdueStages.length
-  ;(async () => {
-    try {
-      const tIds = _trulyActive.map(p => p.id)
-      if (!tIds.length) return
-      const { data } = await sb.from('stage_tasks').select('project_id,deadline,done').in('project_id', tIds).not('deadline','is',null)
-      const tOverdue = (data||[]).filter(t => !t.done && t.deadline && t.deadline.slice(0,10) < todayStrH).length
-      const total = overdueStages.length + tOverdue
-      const e1 = g('proj-hero-overdue'); if(e1){ e1.textContent=total; e1.style.color=total>0?'var(--red)':'var(--green)' }
-      const e2 = g('proj-hero-overdue-dl'); if(e2) e2.textContent = total===0 ? 'Всё в срок ✓' : overdueStages.length+' эт. · '+tOverdue+' зад.'
-    } catch(e){}
-  })()
   const setH = (id, v) => { const e = g(id); if(e) e.textContent = v }
   setH('proj-hero-total', activeCount)
   setH('proj-hero-active', activeCount + ' активных · ' + doneCount + ' завершено')
@@ -31404,6 +31436,15 @@ function updateClientLoginPreview() {
 }
 
 async function createProject() {
+  // Проверяем наличие нужных колонок перед созданием проекта
+  try {
+    await sb.from('stage_tasks').select('kanban_status,timer_started_at,done_at,time_logged').limit(0)
+  } catch(colErr) {
+    // Колонки отсутствуют — показываем инструкцию
+    openSQLSetup()
+    showToast && showToast('⚠️', 'Сначала выполни SQL миграцию', 'warn')
+    return
+  }
   const name = g('proj-name-inp').value.trim()
   const desc = g('proj-desc-inp').value.trim()
   const color = g('proj-color-inp').value
@@ -31570,7 +31611,7 @@ async function loadReports() {
     var metricsStrip = '<div class="rp-metrics-strip">'
       + rpMetricFull('Рост выручки', fmtPct(growthPct), mCol(growthPct), mBg(growthPct), mArrow(growthPct), growthPct != null)
       + rpMetricFull('Трафик Δ', growthPct != null ? fmtNum(trafficD) + '&nbsp;гост.' : '—', mCol(trafficD), mBg(trafficD), mArrow(trafficD), trafficD != null)
-      + rpMetricFull('Ср. чек Δ', avgChkD != null ? fmtNum(avgChkD) + '&nbsp;₽' : '—', mCol(avgChkD), mBg(avgChkD), mArrow(avgChkD), avgChkD != null)
+      + rpMetricFull('Ср. чек Δ', avgChkD != null ? fmtNum(avgChkD) + '&nbsp;сум' : '—', mCol(avgChkD), mBg(avgChkD), mArrow(avgChkD), avgChkD != null)
       + rpMetricFull('Выручка факт', fmtRev(dRev), 'var(--a2)', 'rgba(184,146,58,.07)', '', dRev != null)
       + rpMetricFull('База', fmtRev(bRev), 'rgba(184,146,58,.45)', 'rgba(184,146,58,.05)', '', bRev != null)
       + (!hasAnyData ? '<div class="rp-no-analysis">Запустите анализ в отчёте чтобы увидеть метрики</div>' : '')
@@ -31687,6 +31728,10 @@ async function openReport(id) {
   set('report-title-display', r.title)
   LABEL_B = r.period_b_label || 'Период 1'
   LABEL_D = r.period_d_label || 'Период 2'
+  // Сразу обновляем кнопку периода
+  const _bEl = g('btn-period-b'), _dEl = g('btn-period-d')
+  if (_bEl) _bEl.textContent = LABEL_B
+  if (_dEl) _dEl.textContent = LABEL_D
   g('btn-publish').style.display = r.status === 'draft' ? 'flex' : 'none'
   g('back-to-project').onclick = () => goBackToProject()
 
@@ -31724,7 +31769,9 @@ async function openReport(id) {
   const hasAnalysis = files?.some(f => f.parsed_data)
 
   // If report already has data — pre-collapse files section before page shows
+  // Клиент не видит блок файлов (проверяем метаданные пользователя)
   _isClient = _isClientCache === true
+
   if (_isClient) {
     if (g('files-section')) g('files-section').style.display = 'none'
     if (g('files-toggle-bar')) g('files-toggle-bar').style.display = 'none'
@@ -31757,6 +31804,9 @@ async function openReport(id) {
       }
     })
     updateCounter()
+    // Обновляем кнопку периода после загрузки файлов
+    const _pb2 = g('btn-period-b'); if (_pb2 && LABEL_B !== 'Период 1') _pb2.textContent = LABEL_B
+    const _pd2 = g('btn-period-d'); if (_pd2 && LABEL_D !== 'Период 2') _pd2.textContent = LABEL_D
     if (S['b1'] && S['d1']) {
       g('go-btn').disabled = false
       // Run analysis immediately — files already hidden
@@ -31768,8 +31818,19 @@ async function openReport(id) {
 }
 
 function showPdfComingSoon(btn) {
-  if (typeof showToast === 'function') { showToast('🚧', 'PDF экспорт в разработке', 'Скоро будет доступен') }
-  else { var orig = btn.textContent; btn.textContent = '🚧 В разработке'; btn.style.opacity = '.6'; setTimeout(function(){ btn.textContent = orig; btn.style.opacity = '' }, 2000) }
+  // Показываем тост "в разработке"
+  if (typeof showToast === 'function') {
+    showToast('🚧', 'PDF экспорт в разработке', 'Скоро будет доступен')
+  } else {
+    // Fallback — inline tooltip на кнопке
+    var orig = btn.textContent
+    btn.textContent = '🚧 В разработке'
+    btn.style.opacity = '.6'
+    setTimeout(function() {
+      btn.textContent = orig
+      btn.style.opacity = ''
+    }, 2000)
+  }
 }
 
 async function publishReport() {
@@ -31819,8 +31880,8 @@ function processFile(file, key) {
       S[key] = parsed
 
       // Update labels
-      if (key === 'b1') LABEL_B = buildLabel(parsed.meta)
-      if (key === 'd1') LABEL_D = buildLabel(parsed.meta)
+      if (key === 'b1') { LABEL_B = buildLabel(parsed.meta); const _pb=g('btn-period-b'); if(_pb) _pb.textContent=LABEL_B; }
+      if (key === 'd1') { LABEL_D = buildLabel(parsed.meta); const _pd=g('btn-period-d'); if(_pd) _pd.textContent=LABEL_D; }
       updateAllLabels()
 
       // Save to Supabase
@@ -33266,7 +33327,7 @@ let _biSelectedId = null
 function _biComputeRow(p) {
   const budget   = p.monthly_budget || 0
   const mins     = (_finTaskHoursAll || _finTaskHours)[p.id] || 0
-  const hours    = mins / 60
+  const hours    = mins / 60  // дробное — для точного отображения ч+м
 
   // Поддержка нового unified формата (cat-поле) и старого формата
   const allExp   = [
@@ -33315,13 +33376,24 @@ function biSetSegment(seg, btn) {
 async function loadFinance() {
   if (!_allProjects.length) await loadProjects()
   const activeIds = _allProjects.filter(p=>p.status!=='archived' && getProjectProgress(p.id).pct<100).map(p=>p.id)
+
+  // Часы за последние 30 дней — по задачам обновлённым за этот период
   _finTaskHours = {}
-  _finTaskHoursAll = {}
+  _finTaskHoursAll = {}  // все время (для бейджа проекта)
   try {
     const thirtyAgo = new Date(); thirtyAgo.setDate(thirtyAgo.getDate() - 30)
-    const {data:allT} = await sb.from('stage_tasks').select('project_id,time_logged').in('project_id',activeIds)
-    ;(allT||[]).forEach(t=>{ _finTaskHoursAll[t.project_id]=(_finTaskHoursAll[t.project_id]||0)+(t.time_logged||0) })
-    const {data:tasks30} = await sb.from('stage_tasks').select('project_id,time_logged').in('project_id',activeIds).gte('updated_at',thirtyAgo.toISOString()).gt('time_logged',0)
+    const thirtyAgoStr = thirtyAgo.toISOString()
+
+    // Все часы (для бейджа)
+    const {data:allTasks} = await sb.from('stage_tasks').select('project_id,time_logged').in('project_id',activeIds)
+    ;(allTasks||[]).forEach(t=>{ _finTaskHoursAll[t.project_id]=(_finTaskHoursAll[t.project_id]||0)+(t.time_logged||0) })
+
+    // Часы за 30 дней (для выручки/час)
+    const {data:tasks30} = await sb.from('stage_tasks')
+      .select('project_id,time_logged')
+      .in('project_id',activeIds)
+      .gte('updated_at', thirtyAgoStr)
+      .gt('time_logged', 0)
     ;(tasks30||[]).forEach(t=>{ _finTaskHours[t.project_id]=(_finTaskHours[t.project_id]||0)+(t.time_logged||0) })
   } catch(e){}
   renderFinance()
@@ -33337,7 +33409,15 @@ function renderFinance() {
   const totalCosts = withBudget.reduce((s,r)=>s+r.totalCost,0)
   const totalProfit= totalMRR - totalCosts
   const agencyMargin = totalMRR > 0 ? Math.round((totalProfit/totalMRR)*100) : 0
-  const totalHours = _biAllRows.reduce((s,r)=>s+r.hours,0)
+  // totalHours30 — для выручки/час (последние 30 дней)
+  const totalHours30 = activeIds => {
+    const ids = _allProjects.filter(p=>p.status!=='archived' && getProjectProgress(p.id).pct<100).map(p=>p.id)
+    return ids.reduce((s,id)=>s+(_finTaskHours[id]||0),0) / 60
+  }
+  const totalHoursMonth = totalHours30()
+  const totalHours = _biAllRows.reduce((s,r)=>s+r.hours,0)  // все время
+  const hoursForRevPerH = totalHoursMonth > 0 ? totalHoursMonth : totalHours
+  const hoursForRevLabel = totalHoursMonth > 0 ? 'за 30 дн' : 'всё время' 
 
   const s=(id,v)=>{const el=g(id);if(el)el.textContent=v}
   s('bi-mrr',          totalMRR>0 ? fmtM(totalMRR)+' сум' : '—')
@@ -33357,8 +33437,8 @@ function renderFinance() {
     if (mins === 0) return hrs + 'ч'
     return hrs + 'ч ' + mins + 'м'
   }
-  s('bi-hours',     totalHours > 0 ? fmtHours(totalHours) : '—')
-  s('bi-hours-sub', 'по всем проектам')
+  s('bi-hours',     hoursForRevPerH > 0 ? fmtHours(hoursForRevPerH) : '—')
+  s('bi-hours-sub', hoursForRevLabel)
 
   const profitEl=g('bi-profit')
   if(profitEl && totalMRR>0) profitEl.style.color=totalProfit>=0?'var(--green)':'var(--red)'
@@ -33371,7 +33451,7 @@ function renderFinance() {
   const nClients = withBudget.length || 1
 
   // 1. Revenue per hour
-  const revPerH = totalHours > 0 ? Math.round(totalMRR / totalHours) : null
+  const revPerH = hoursForRevPerH > 0 ? Math.round(totalMRR / hoursForRevPerH) : null
   s('bi-rev-hour', revPerH ? fmtM(revPerH) + ' сум' : '—')
 
   // 2. Runway = accumulated profit reserve / monthly costs
@@ -33531,7 +33611,7 @@ function biRenderTable() {
 
         <div class="bi-mblock bi-mb-hours">
           <div class="bi-mb-lbl">Часы</div>
-          <div class="bi-mb-val" style="color:${hours>0?'rgba(34,211,238,.9)':'rgba(255,255,255,.2)'};">${hours>0?hours+'h':'—'}</div>
+          <div class="bi-mb-val" style="color:${hours>0?'rgba(34,211,238,.9)':'rgba(255,255,255,.2)'};">${hours>0?(()=>{const hh=Math.floor(hours),mm=Math.round((hours-hh)*60);return hh>0&&mm>0?hh+'ч '+mm+'м':hh>0?hh+'ч':mm+'м'})():'—'}</div>
         </div>
 
       </div>
@@ -33808,7 +33888,7 @@ let _timerInterval = null
 
 // ── Форматирование суммарного времени проекта ──
 function _fmtProjectTime(totalMin) {
-  if (!totalMin || totalMin <= 0) return '—'
+  if (!totalMin || totalMin <= 0) return '0м'
   const h = Math.floor(totalMin / 60)
   const m = totalMin % 60
   if (h === 0) return m + 'м'
@@ -33830,8 +33910,25 @@ function updateProjectTimeDisplay() {
   if (totalMin === 0 && typeof _finTaskHours === 'object') {
     totalMin = _finTaskHours[currentProject.id] || 0
   }
+  // Если всё ещё 0 — запросить напрямую из БД (после перезагрузки)
   const el = g('global-timer-display')
-  if (el) el.textContent = _fmtProjectTime(totalMin)
+  if (totalMin > 0) {
+    if (el) el.textContent = _fmtProjectTime(totalMin)
+  } else {
+    sb.from('stage_tasks').select('time_logged').eq('project_id', currentProject.id)
+      .then(function(res) {
+        var dbMin = (res.data || []).reduce(function(s,t){ return s + (t.time_logged||0) }, 0)
+        _finTaskHours[currentProject.id] = dbMin
+        if (el) el.textContent = _fmtProjectTime(dbMin)
+        // Убедимся что badge показан
+        var b = g('global-timer-badge')
+        if (b) { b.classList.remove('gtb-running'); b.style.display = 'flex' }
+        var st = g('gtb-static'); var ru = g('gbt-running')
+        if (st) st.style.display = 'flex'
+        if (ru) ru.style.display = 'none'
+      }).catch(function(){})
+    if (el) el.textContent = '...'
+  }
   // Убираем running-режим, показываем static
   const badge = g('global-timer-badge')
   if (badge) {
@@ -33891,6 +33988,7 @@ async function stopActiveTimer() {
   document.querySelectorAll('.task-timer-btn.running').forEach(b => b.classList.remove('running'))
 
   if (elapsedSec < 5) {
+    // Меньше 5 секунд — случайное нажатие
     updateProjectTimeDisplay()
     return
   }
@@ -34153,6 +34251,23 @@ function getActiveStageName() {
 // ── Load kanban tasks ──
 async function loadKanban() {
   if (!currentProject) return
+
+  // Автомиграция: создаём колонки если их нет (один раз для всего проекта)
+  if (!window._kanbanMigrated) {
+    window._kanbanMigrated = true
+    try {
+      await sb.rpc('run_migration', { sql: `
+        ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS kanban_status text DEFAULT 'waiting';
+        ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS timer_started_at timestamptz;
+        ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS done_at timestamptz;
+        ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS time_logged integer DEFAULT 0;
+      `})
+    } catch(e) {
+      // rpc может не существовать — пробуем напрямую через отдельные запросы
+      try { await sb.from('stage_tasks').update({ kanban_status: 'waiting' }).eq('id', '00000000-0000-0000-0000-000000000000') } catch(e2) {}
+    }
+  }
+
   try {
     const { data, error } = await sb.from('stage_tasks')
       .select('*')
@@ -34174,6 +34289,12 @@ async function loadKanban() {
   }
   renderKanban()
   startKanbanLiveTimer()
+  // Обновляем бейдж суммарным временем (данные из kanbanTasks)
+  const _kbTotalMin = (kanbanTasks||[]).reduce((s,t) => s+(t.time_logged||0), 0)
+  if (_kbTotalMin > 0) {
+    _finTaskHours[currentProject.id] = _kbTotalMin
+  }
+  updateProjectTimeDisplay()
 }
 
 // ── Render full kanban board ──
@@ -34405,9 +34526,13 @@ async function kbMoveTask(taskId, fromStatus, toStatus) {
     if (trackerTask) Object.assign(trackerTask, updates)
     renderKanban()
     renderTasksForStage(task.stage_index)
+    // Обновляем бейдж времени после каждого движения задачи
+    const _newTotal = (kanbanTasks||[]).reduce((s,t) => s+(t.time_logged||0), 0)
+    _finTaskHours[currentProject.id] = _newTotal
+    updateProjectTimeDisplay()
   } catch(e) {
     console.warn('Move task failed:', e)
-    if (e.message?.includes('column')) { g('kb-sql-note').style.display='flex'; openSQLSetup() }
+    if (e.message?.includes('column') || e.message?.includes('does not exist')) { g('kb-sql-note') && (g('kb-sql-note').style.display='flex'); openSQLSetup() }
     // Обновляем локальный стейт даже если БД упала
     Object.assign(task, updates)
     renderKanban()
@@ -34699,7 +34824,7 @@ async function _toggleTask(taskId, stageIndex, newDone) {
     await sb.from('stage_tasks').update(taskUpdate).eq('id', taskId)
     const arr = tasksData[stageIndex] || []
     const t = arr.find(x => x.id === taskId)
-    if (t) { t.done = newDone; t.done_at = newDone ? taskUpdate.done_at : null; }
+    if (t) { t.done = newDone; if (newDone) t.done_at = taskUpdate.done_at; }
     renderTasksForStage(stageIndex)
   } catch(e) { console.warn('Toggle task failed:', e) }
 }
@@ -36420,32 +36545,28 @@ function renderSMMReelsGrid() {
 
     return `<div class="smm-reel-card ${rankCls}">
 
-      <!-- Full-bleed cover — everything inside -->
+      <!-- Full-bleed cover -->
       <div class="smm-reel-cover" style="${coverStyle}">
-
-        <!-- Deep overlay for readability -->
         <div class="smm-reel-cover-overlay"></div>
-
-        <!-- Rank — top left -->
         <div class="smm-reel-rank-pill">${rankLabel}</div>
-
-        <!-- Play btn — center, on hover -->
         <a class="smm-reel-play-btn" ${linkAttrs}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         </a>
-
-        <!-- Bottom info block — fully inside cover -->
+        <!-- Title inside cover -->
         <div class="smm-reel-overlay-footer">
           <div class="smm-reel-overlay-title">${esc(title)}</div>
-          <div class="smm-reel-overlay-row">
-            <div class="smm-reel-overlay-views">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".7"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              ${fmtFull(r.views)}
-            </div>
-            <span class="smm-reel-er-pill ${erCls}">${erLabel}</span>
-          </div>
         </div>
+      </div>
 
+      <!-- Stats below cover — glassmorphism -->
+      <div style="display:flex;gap:6px;padding:10px 12px;background:rgba(10,10,10,.95);border-top:0.5px solid rgba(255,255,255,.08);">
+        <div style="flex:1;display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.08);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:0.5px solid rgba(255,255,255,.12);border-radius:10px;padding:7px 10px;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(240,236,230,.6)" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(240,236,230,.85);letter-spacing:.02em;">${fmtFull(r.views)}</span>
+        </div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:0.5px solid rgba(255,255,255,.15);border-radius:10px;padding:7px 10px;" class="${erCls}">
+          <span style="font-family:'DM Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.03em;">${erFmt}</span>
+        </div>
       </div>
 
     </div>`
@@ -36504,37 +36625,49 @@ function renderSMMRubricGrid() {
       { name: 'Просмотры',       val: fmtFull(r.views),                   pct: viPct, color: 'rgba(255,255,255,.4)' },
     ]
 
-    return `<div class="rb-card${isWin ? ' rb-card-winner' : ''}">
-      <div class="rb-card-stripe" style="background:${pal.a};"></div>
-      <div class="rb-card-blob" style="background:${pal.a};"></div>
+    return `<div style="
+      background:#111111;
+      border:0.5px solid rgba(255,255,255,.1);
+      border-top:2px solid ${isWin ? '#5DCAA5' : pal.a};
+      border-radius:12px;
+      overflow:hidden;
+      padding:18px 20px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      transition:background .15s;
+    " onmouseover="this.style.background='#171717'" onmouseout="this.style.background='#111111'">
 
-      <div class="rb-card-head">
+      <!-- Header -->
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
         <div>
-          <div class="rb-card-label">Рубрика</div>
-          <div class="rb-card-name">${esc(r.name)}</div>
-          ${isWin ? `<div class="rb-card-winner-badge">👑 Лучшая</div>` : ''}
+          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;color:rgba(240,236,230,.3);text-transform:uppercase;margin-bottom:5px;">
+            ${isWin ? '👑 ЛУЧШАЯ РУБРИКА' : 'РУБРИКА'}
+          </div>
+          <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;color:#f0ece6;letter-spacing:-.01em;text-transform:uppercase;">
+            ${esc(r.name)}
+          </div>
         </div>
-        <div class="rb-card-posts-block">
-          <div class="rb-card-posts-val" style="color:${pal.a};">${r.posts || 0}</div>
-          <div class="rb-card-posts-lbl">постов</div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-family:'DM Sans',sans-serif;font-size:22px;font-weight:500;color:${isWin ? '#5DCAA5' : pal.a};line-height:1;">${r.posts || 0}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(240,236,230,.3);letter-spacing:.06em;margin-top:2px;">ПОСТОВ</div>
         </div>
       </div>
 
-      <div class="rb-card-divider"></div>
+      <!-- Divider -->
+      <div style="height:0.5px;background:rgba(255,255,255,.08);"></div>
 
-      <div>
+      <!-- Metrics -->
+      <div style="display:flex;flex-direction:column;gap:10px;">
         ${metrics.map(m => `
-          <div class="rb-metric">
-            <div class="rb-metric-left">
-              <div class="rb-metric-dot" style="background:${m.color};"></div>
-              <div class="rb-metric-name">${m.name}</div>
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
+              <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.07em;color:rgba(240,236,230,.35);text-transform:uppercase;">${m.name}</span>
+              <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:${m.color === 'rgba(255,255,255,.4)' ? 'rgba(240,236,230,.6)' : m.color};">${m.val}</span>
             </div>
-            <div class="rb-metric-bar-wrap">
-              <div class="rb-metric-bar-track">
-                <div class="rb-metric-bar-fill" style="width:${m.pct}%;background:${m.color};"></div>
-              </div>
+            <div style="height:3px;background:rgba(255,255,255,.06);border-radius:1px;">
+              <div style="height:3px;width:${m.pct}%;background:${m.color === 'rgba(255,255,255,.4)' ? 'rgba(240,236,230,.3)' : m.color};border-radius:1px;transition:width .6s ease;"></div>
             </div>
-            <div class="rb-metric-val" style="color:${m.color};">${m.val}</div>
           </div>`).join('')}
       </div>
     </div>`
@@ -37440,13 +37573,19 @@ function renderDeadlinePanel() {
   var MONTHS_SH = ['ЯНВ','ФЕВ','МАР','АПР','МАЙ','ИЮН','ИЮЛ','АВГ','СЕН','ОКТ','НОЯ','ДЕК'];
   var DAYS_RU = ['ВС','ПН','ВТ','СР','ЧТ','ПТ','СБ'];
 
-  // Collect items
+  // Collect STAGE items — только активные проекты (не архивные, pct < 100)
+  var activeProjs = (typeof _allProjects !== 'undefined') ? _allProjects.filter(function(p){
+    return p.status !== 'archived' && (typeof getProjectProgress !== 'undefined' && getProjectProgress(p.id).pct < 100);
+  }) : [];
+  var activeProjIds = activeProjs.map(function(p){ return p.id; });
+
   var allItems = [];
-  if (typeof _allStages !== 'undefined' && typeof _allProjects !== 'undefined') {
+  if (typeof _allStages !== 'undefined') {
     _allStages.forEach(function(s) {
       if (!s.deadline) return;
-      var proj = _allProjects.find(function(p){ return p.id === s.project_id; });
-      if (!proj || proj.status === 'archived') return;
+      if (activeProjIds.indexOf(s.project_id) === -1) return;
+      var proj = activeProjs.find(function(p){ return p.id === s.project_id; });
+      if (!proj) return;
       var stageObj = (typeof STAGES !== 'undefined' && STAGES[s.stage_index]) || { name: 'Этап ' + s.stage_index, icon: '•' };
       var dl = new Date(s.deadline); dl.setHours(0,0,0,0);
       var diff = Math.round((dl - today) / 86400000);
@@ -37455,41 +37594,94 @@ function renderDeadlinePanel() {
         : diff === 0 ? 'today'
         : diff <= 7  ? 'soon'
         : 'future';
-      allItems.push({ s: s, proj: proj, stageObj: stageObj, dl: dl, diff: diff, status: status });
+      allItems.push({ kind: 'stage', s: s, proj: proj, stageObj: stageObj, dl: dl, diff: diff, status: status });
     });
   }
 
   allItems.sort(function(a,b){ return a.dl - b.dl; });
 
-  // Update stats
   function setS(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
-  var cntAll     = allItems.length;
-  var cntOverdue = allItems.filter(function(i){ return i.status === 'overdue'; }).length;
-  var cntToday   = allItems.filter(function(i){ return i.status === 'today'; }).length;
-  var cntWeek    = allItems.filter(function(i){ return i.status === 'soon'; }).length;
-  var cntFuture  = allItems.filter(function(i){ return i.status === 'future'; }).length;
-  var cntDone    = allItems.filter(function(i){ return i.status === 'done'; }).length;
-  var projIds    = [...new Set(allItems.filter(function(i){ return i.status !== 'done'; }).map(function(i){ return i.proj.id; }))];
 
-  setS('dl-stat-all',     cntAll);
-  setS('dl-stat-overdue', cntOverdue);
-  setS('dl-stat-today',   cntToday);
-  setS('dl-stat-week',    cntWeek);
-  setS('dl-stat-future',  cntFuture);
-
-  // Update hero strip
-  setS('dl-hero-projects',  projIds.length + ' проектов');
-  // Worst overdue: how many days
-  var overdueItems = allItems.filter(function(i){ return i.status === 'overdue'; });
-  if (overdueItems.length) {
-    var worst = Math.max.apply(null, overdueItems.map(function(i){ return Math.abs(i.diff); }));
-    setS('dl-hero-overdue-days', 'Макс. ' + worst + ' дн. просрочки');
-  } else {
-    setS('dl-hero-overdue-days', 'Всё в срок');
+  // Helper: count by status and kind
+  function cntBy(status, kind) {
+    return allItems.filter(function(i){ return i.status === status && (!kind || i.kind === kind); }).length;
   }
-  setS('dl-hero-week', cntWeek + ' на этой неделе');
-  var onTimePct = (cntDone + cntAll) > 0 ? Math.round(cntDone / (cntDone + cntOverdue + 1) * 100) : 0;
-  setS('dl-hero-on-time', cntDone + ' выполнено из ' + (cntDone + cntOverdue + cntToday + cntWeek + cntFuture));
+  function sub(status) {
+    var s = cntBy(status,'stage'), t = cntBy(status,'task');
+    return '📋 ' + s + ' эт. · ✅ ' + t + ' зад.';
+  }
+
+  // Async: load task deadlines and re-render strip
+  if (activeProjIds.length) {
+    (async function() {
+      try {
+        var todayStr = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+        var weekEnd = new Date(today); weekEnd.setDate(today.getDate()+7);
+        var weekStr = weekEnd.toISOString().slice(0,10);
+        var { data: tasks } = await sb.from('stage_tasks')
+          .select('project_id,deadline,done')
+          .in('project_id', activeProjIds)
+          .not('deadline','is',null);
+        (tasks||[]).forEach(function(t) {
+          if (!t.deadline) return;
+          var dlStr = t.deadline.slice(0,10);
+          var dl = new Date(dlStr); dl.setHours(0,0,0,0);
+          var diff = Math.round((dl - today) / 86400000);
+          var status = t.done ? 'done'
+            : diff < 0  ? 'overdue'
+            : diff === 0 ? 'today'
+            : diff <= 7  ? 'soon'
+            : 'future';
+          var proj = activeProjs.find(function(p){ return p.id === t.project_id; });
+          if (!proj) return;
+          allItems.push({ kind: 'task', t: t, proj: proj, dl: dl, diff: diff, status: status });
+        });
+        updateDLHeroStrip();
+      } catch(e) { console.warn('[DL tasks]', e); }
+    })();
+  }
+
+  function updateDLHeroStrip() {
+    var sOverdue = cntBy('overdue','stage'), tOverdue = cntBy('overdue','task');
+    var sToday   = cntBy('today','stage'),   tToday   = cntBy('today','task');
+    var sFuture  = cntBy('future','stage'),  tFuture  = cntBy('future','task');
+    var sSoon    = cntBy('soon','stage'),     tSoon    = cntBy('soon','task');
+    var sDone    = cntBy('done','stage'),     tDone    = cntBy('done','task');
+    var cntOverdue = sOverdue+tOverdue, cntToday = sToday+tToday;
+    var cntFuture = sFuture+tFuture, cntSoon = sSoon+tSoon, cntDone = sDone+tDone;
+
+    setS('dl-stat-overdue', cntOverdue);
+    setS('dl-sub-overdue',  sOverdue + ' эт. · ' + tOverdue + ' зад.');
+    setS('dl-stat-today',   cntToday);
+    setS('dl-sub-today',    sToday + ' эт. · ' + tToday + ' зад.');
+    setS('dl-stat-future',  cntFuture);
+    setS('dl-sub-future',   sFuture + ' эт. · ' + tFuture + ' зад.');
+    setS('dl-stat-done',    cntDone);
+    setS('dl-sub-done',     sDone + ' эт. · ' + tDone + ' зад.');
+
+    var overdueItems = allItems.filter(function(i){ return i.status==='overdue'; });
+    if (overdueItems.length) {
+      var worst = Math.max.apply(null, overdueItems.map(function(i){ return Math.abs(i.diff); }));
+      setS('dl-hero-overdue-days','Макс. ' + worst + ' дн. просрочки');
+    } else {
+      setS('dl-hero-overdue-days','Всё в срок ✓');
+    }
+    setS('dl-hero-week',        (sSoon+tSoon) + ' на этой неделе');
+    setS('dl-hero-week-detail', (sSoon+tSoon) + ' на этой неделе');
+    setS('dl-hero-on-time',     cntDone + ' выполнено из ' + allItems.length);
+  }
+
+  // Initial render with stages only (tasks load async)
+  updateDLHeroStrip();
+
+  // Legacy compat
+  var cntAll = allItems.length;
+  var cntOverdue = cntBy('overdue');
+  var cntToday = cntBy('today');
+  var cntWeek = cntBy('soon');
+  var cntFuture = cntBy('future');
+  var cntDone = cntBy('done');
+  var projIds = [...new Set(allItems.filter(function(i){ return i.status!=='done'; }).map(function(i){ return i.proj.id; }))];
 
   // Populate project dropdown once
   var pf = document.getElementById('dl-proj-filter');
@@ -37904,7 +38096,7 @@ function ov2ScrollTo(id) {
 }
 
 // Override loadOverview completely
-var _svProjFilter = 'all';
+var _svProjFilter = 'active';
 window.svSetProjFilter = function(f, btn) {
   _svProjFilter = f;
   document.querySelectorAll('.sv-pill').forEach(function(b){ b.classList.remove('sv-pill-active'); });
@@ -37920,7 +38112,7 @@ async function loadOverview() {
   var MONTHS = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
 
   // ── Только активные проекты для всех метрик ──
-  var activeProjects = _allProjects.filter(function(p){ return p.status !== 'archived'; });
+  var activeProjects = _allProjects.filter(function(p){ return p.status !== 'archived' && (typeof getProjectProgress !== 'undefined' && getProjectProgress(p.id).pct < 100); });
   var activeProjectIds = activeProjects.map(function(p){ return p.id; });
   var activeStagesAll = _allStages.filter(function(s){ return activeProjectIds.indexOf(s.project_id) !== -1; });
 
@@ -37937,7 +38129,7 @@ async function loadOverview() {
   } catch(e) {}
 
   // ── Core computations (только активные проекты) ──
-  var totalStages = activeProjects.length * 9;
+  var totalStages = activeStagesAll.length || (activeProjects.length * 9);
   var completedStages = activeStagesAll.filter(function(s){ return s.status === 'completed'; }).length;
   var activeStages = activeStagesAll.filter(function(s){ return s.status === 'active'; }).length;
   var globalPct = totalStages ? Math.round(completedStages / totalStages * 100) : 0;
@@ -37964,8 +38156,8 @@ async function loadOverview() {
   // Если ни одна дата не найдена — считаем задачу в 30-дневное окно
   var doneTasks = allTasks.filter(function(t){ return t.done; });
   var velocity30 = doneTasks.filter(function(t){
-    var d = t.done_at || t.updated_at || t.created_at;
-    if (!d) return true; // нет дат — считаем как recent
+    var d = t.done_at || t.updated_at;
+    if (!d) return false;
     return new Date(d) >= thirtyAgo;
   }).length;
   var velocity7 = doneTasks.filter(function(t){
@@ -37973,6 +38165,7 @@ async function loadOverview() {
     if (!d) return false;
     return new Date(d) >= sevenAgo;
   }).length;
+  // Текущий календарный месяц
   var monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
   var velocityMonth = doneTasks.filter(function(t){
     var d = t.done_at || t.updated_at;
@@ -38002,23 +38195,41 @@ async function loadOverview() {
   var healthLabel = healthScore >= 75 ? 'Отличное' : healthScore >= 45 ? 'Требует внимания' : 'Критическое';
 
   // Revenue concentration
-  var budgets = activeProjects.map(function(p){ return p.monthly_budget || 0; }).filter(function(b){ return b > 0; });
+  var budgets = activeProjects.map(function(p){ return p.monthly_budget || 0; }).filter(function(b){ return b > 0; }); // только активные
   var totalMRR = budgets.reduce(function(s,b){ return s+b; }, 0);
   var maxBudget = budgets.length ? Math.max.apply(null, budgets) : 0;
   var concPct = totalMRR > 0 ? Math.round(maxBudget / totalMRR * 100) : null;
   var topClient = concPct !== null ? activeProjects.find(function(p){ return p.monthly_budget === maxBudget; }) : null;
 
-  // Revenue per hour
+  // Revenue per hour — только задачи за последние 30 дней (сопоставимо с MRR)
   var totalHours = 0;
+  var hoursLabel = 'за 30 дн';
   try {
-    var th = (await sb.from('stage_tasks').select('time_logged').in('project_id', activeProjectIds)).data || [];
-    totalHours = Math.round(th.reduce(function(s,t){ return s + (t.time_logged||0); }, 0) / 60);
+    var thirtyAgoSv = new Date(); thirtyAgoSv.setDate(thirtyAgoSv.getDate() - 30);
+    var th30 = (await sb.from('stage_tasks')
+      .select('time_logged')
+      .in('project_id', activeProjectIds)
+      .gte('updated_at', thirtyAgoSv.toISOString())
+      .gt('time_logged', 0)
+    ).data || [];
+    totalHours = th30.reduce(function(s,t){ return s + (t.time_logged||0); }, 0) / 60;
+
+    // Fallback — все накопленные часы если за 30 дней нет данных
+    if (totalHours === 0) {
+      var thAll = (await sb.from('stage_tasks')
+        .select('time_logged')
+        .in('project_id', activeProjectIds)
+        .gt('time_logged', 0)
+      ).data || [];
+      totalHours = thAll.reduce(function(s,t){ return s + (t.time_logged||0); }, 0) / 60;
+      hoursLabel = 'всё время';
+    }
   } catch(e) {}
   var revPerHour = (totalMRR > 0 && totalHours > 0) ? Math.round(totalMRR / totalHours) : null;
 
   // Churn risk: проекты без активности 21+ дней (только не завершённые из активных)
   var twentyOneAgo = new Date(today); twentyOneAgo.setDate(today.getDate() - 21);
-  var churnOnlyActive = activeProjects.filter(function(p){ return getProjectProgress(p.id).pct < 100; });
+  var churnOnlyActive = activeProjects; // уже только pct<100
   var churnRisk = churnOnlyActive.filter(function(p) {
     // Последняя активность в истории этапов
     var lastStage = stageHistory.find(function(h){ return h.project_id === p.id; });
@@ -38063,7 +38274,10 @@ async function loadOverview() {
   s('sv-health-num', healthScore + '%');
   sc('sv-health-num', healthColor);
   s('sv-health-sub', healthLabel + ' состояние');
-  s('sv-health-foot', activeProjects.length + ' активных · ' + doneProjs.length + ' на 100%');
+  var _svDoneCount = _allProjects.filter(function(p){
+    return p.status === 'archived' || (p.status !== 'archived' && getProjectProgress(p.id).pct === 100);
+  }).length;
+  s('sv-health-foot', activeProjects.length + ' активных · ' + _svDoneCount + ' завершено');
 
   s('sv-ontime-num', onTimeRate !== null ? onTimeRate + '%' : '—');
   sc('sv-ontime-num', onTimeRate !== null ? (onTimeRate >= 70 ? 'var(--green)' : onTimeRate >= 50 ? 'var(--amber)' : 'var(--red)') : 'var(--txt3)');
@@ -38104,7 +38318,7 @@ async function loadOverview() {
   }
 
   s('sv-revh-val', revPerHour !== null ? fmtM(revPerHour) : '—');
-  s('sv-revh-sub', totalHours > 0 ? totalHours + ' часов · MRR ' + fmtM(totalMRR) : 'Задайте бюджеты и часы');
+  s('sv-revh-sub', totalHours > 0 ? fmtM(Math.round(totalHours)) + ' ч · ' + hoursLabel + ' · MRR ' + fmtM(totalMRR) : 'Задайте бюджеты и часы');
   if (revPerHour !== null) {
     svBadge('sv-revh-badge', revPerHour >= 100000 ? 'Высокая' : revPerHour >= 50000 ? 'Средняя' : 'Низкая',
       revPerHour >= 100000 ? 'rgba(62,207,142,.1)' : revPerHour >= 50000 ? 'rgba(232,153,58,.1)' : 'rgba(224,82,82,.1)',
@@ -38147,7 +38361,7 @@ async function loadOverview() {
   overdueProjs.forEach(function(p){ window._svOverdueMap[p.id] = true; });
 
   var metaEl = document.getElementById('sv-proj-meta');
-  if (metaEl) metaEl.textContent = _allProjects.length + ' проектов · ' + completedStages + '/' + totalStages + ' этапов';
+  if (metaEl) metaEl.textContent = activeProjects.length + ' активных · ' + completedStages + '/' + totalStages + ' этапов';
 
   svRenderProjTable(projData, window._svOverdueMap, today, MONTHS);
 
@@ -38190,7 +38404,7 @@ async function loadOverview() {
   var hEl = document.getElementById('sv-health-body');
   if (hEl) {
     var STAGE_NAMES2 = ['Анализ клиентов','Конкуренты','Контент-стратегия','Таргет','Контент-план','Сценарии','Съёмки #1','Съёмки #2','Отчётность'];
-    var activeProjs = _allProjects.filter(function(p){ return p.status !== 'archived'; });
+    var activeProjs = _allProjects.filter(function(p){ return p.status !== 'archived' && (typeof getProjectProgress !== 'undefined' && getProjectProgress(p.id).pct < 100); });
     var activeProjIds = activeProjs.map(function(p){ return p.id; });
     hEl.innerHTML = STAGE_NAMES2.map(function(name, i) {
       var done  = _allStages.filter(function(s){ return activeProjIds.indexOf(s.project_id)!==-1 && s.stage_index===i && s.status==='completed'; }).length;
@@ -40800,65 +41014,881 @@ async function cpRenderMilestone(project) {
 .kb-color-swatch.selected { border-color:#fff; transform:scale(1.2); }
 </style>
 
-<style id="dtr-overrides">
-#page-smm { background:#0c0c0c !important; }
-#page-smm .smm-topbar { background:#0c0c0c !important; border-bottom:1px solid rgba(255,255,255,.1) !important; box-shadow:none !important; }
-#page-smm .smm-nav { background:#0c0c0c !important; border-bottom:1px solid rgba(255,255,255,.1) !important; padding:0 32px !important; gap:0 !important; }
-#page-smm .smm-nav-item { font-family:'DM Mono',monospace !important; font-size:10px !important; letter-spacing:.1em !important; color:rgba(240,236,230,.4) !important; padding:12px 20px !important; border-radius:0 !important; border-bottom:2px solid transparent !important; border-top:none !important; border-left:none !important; border-right:none !important; background:none !important; margin:0 !important; }
-#page-smm .smm-nav-item.sni-active,#page-smm .smm-nav-item:hover { color:#f0ece6 !important; border-bottom-color:#f0ece6 !important; background:none !important; }
-#page-smm .smm-body { background:#0c0c0c !important; padding:32px 24px !important; max-width:none !important; margin:0 !important; width:100% !important; box-sizing:border-box !important; }
-#page-smm .smm-sec-title { font-size:16px !important; font-weight:500 !important; color:#f0ece6 !important; text-transform:none !important; }
-#page-smm .smm-sec-num { font-family:'DM Mono',monospace !important; font-size:11px !important; color:rgba(240,236,230,.35) !important; background:none !important; border:none !important; border-radius:0 !important; }
-#page-smm .smm-sec-heading { padding-bottom:10px !important; border-bottom:1.5px solid rgba(240,236,230,.18) !important; margin-bottom:20px !important; }
-#page-smm .kpi-group-content,#page-smm .kpi-group-digital,#page-smm .kpi-group { display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:12px !important; border:none !important; border-radius:0 !important; overflow:visible !important; background:transparent !important; width:100% !important; }
-#page-smm .kpi-group-audience { display:grid !important; grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:12px !important; border:none !important; overflow:visible !important; background:transparent !important; }
-#page-smm .kpi-group::before,#page-smm .kpi-group-content::before,#page-smm .kpi-group-digital::before,#page-smm .kpi-group-audience::before,#page-smm .kpi-group::after,#page-smm .kpi-group-content::after,#page-smm .kpi-group-digital::after,#page-smm .kpi-group-audience::after { display:none !important; content:none !important; }
-#page-smm .kpi-card { background:#111111 !important; border:0.5px solid rgba(255,255,255,.1) !important; border-radius:12px !important; padding:18px 20px !important; box-shadow:none !important; position:relative !important; overflow:hidden !important; }
-#page-smm .kpi-card:hover { background:#171717 !important; transform:none !important; box-shadow:none !important; }
-#page-smm .kpi-card::before { content:'' !important; position:absolute !important; top:0 !important; left:0 !important; right:0 !important; height:2px !important; background:rgba(184,146,58,.5) !important; border-radius:12px 12px 0 0 !important; display:block !important; }
-#page-smm .kpi-card::after { display:none !important; }
-#page-smm .kpi-card-val { font-size:28px !important; font-weight:500 !important; line-height:1 !important; }
-#page-smm .kpi-card-name { font-size:12px !important; color:rgba(240,236,230,.7) !important; font-weight:400 !important; text-transform:none !important; letter-spacing:0 !important; }
-#page-smm .kpi-card-sub { font-family:'DM Mono',monospace !important; font-size:10px !important; color:rgba(240,236,230,.35) !important; }
-#page-smm .kpi-group-label { font-family:'DM Mono',monospace !important; font-size:10px !important; letter-spacing:.1em !important; color:rgba(240,236,230,.35) !important; text-transform:uppercase !important; background:none !important; border:none !important; padding:0 !important; }
-#page-smm .kpi-group-icon { display:none !important; }
-#page-smm .smm-block { background:#111111 !important; border:0.5px solid rgba(255,255,255,.1) !important; border-radius:12px !important; margin-top:16px !important; box-shadow:none !important; overflow:hidden !important; }
-#page-smm .smm-block::before,#page-smm .smm-block::after { display:none !important; }
-#page-smm .smm-block-title { font-family:'DM Mono',monospace !important; font-size:10px !important; letter-spacing:.1em !important; color:rgba(240,236,230,.35) !important; text-transform:uppercase !important; font-weight:400 !important; }
-#page-smm .smm-prog-bar { height:4px !important; background:rgba(255,255,255,.06) !important; border-radius:1px !important; overflow:hidden !important; }
-#page-smm .smm-prog-fill { height:4px !important; border-radius:1px !important; }
-#page-smm .smm-stat-grid { display:grid !important; grid-template-columns:repeat(5,minmax(0,1fr)) !important; gap:12px !important; border:none !important; overflow:visible !important; }
-#page-smm .smm-stat-card { background:#111111 !important; border:0.5px solid rgba(255,255,255,.1) !important; border-radius:12px !important; padding:20px !important; box-shadow:none !important; }
-#page-smm .smm-stat-card:hover { background:#171717 !important; transform:none !important; }
-#page-smm .smm-stat-card::before,#page-smm .smm-stat-card::after { display:none !important; }
-#page-smm .smm-stat-lbl { font-family:'DM Mono',monospace !important; font-size:10px !important; letter-spacing:.08em !important; color:rgba(240,236,230,.35) !important; text-transform:uppercase !important; margin-bottom:10px !important; }
-#page-smm .smm-stat-val { font-size:36px !important; font-weight:500 !important; letter-spacing:-.02em !important; line-height:1 !important; animation:none !important; }
-#page-smm .smm-stat-delta { font-family:'DM Mono',monospace !important; font-size:11px !important; font-weight:500 !important; padding:2px 7px !important; border-radius:2px !important; display:inline-block !important; margin-top:6px !important; }
-#page-smm .smm-metrics-grid { display:grid !important; grid-template-columns:repeat(5,minmax(0,1fr)) !important; gap:12px !important; border:none !important; overflow:visible !important; }
-#page-smm .smm-metric-card { background:#111111 !important; border:0.5px solid rgba(255,255,255,.1) !important; border-radius:12px !important; padding:18px 16px !important; box-shadow:none !important; transform:none !important; }
-#page-smm .smm-metric-card:hover { background:#171717 !important; transform:none !important; }
-#page-smm .smm-metric-code { font-family:'DM Mono',monospace !important; font-size:10px !important; letter-spacing:.1em !important; color:rgba(240,236,230,.4) !important; }
-#page-smm .smm-metric-val { font-size:26px !important; font-weight:500 !important; line-height:1 !important; }
-#page-smm .smm-reels-grid { grid-template-columns:repeat(8,minmax(0,1fr)) !important; gap:12px !important; border:none !important; overflow:visible !important; width:100% !important; }
-#page-smm .smm-reel-card { border-radius:16px !important; overflow:hidden !important; border:0.5px solid rgba(255,255,255,.1) !important; }
-#page-smm .smm-reel-card:hover { transform:none !important; box-shadow:none !important; }
-#page-smm .smm-reel-cover { aspect-ratio:4/5 !important; }
-#page-smm .smm-reel-cover img,#page-smm .smm-reel-cover video { width:100% !important; height:100% !important; object-fit:cover !important; object-position:center !important; }
-#page-smm .smm-rubric-grid { display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:12px !important; border:none !important; background:transparent !important; padding:0 !important; }
-#page-smm .smm-rubric-winner,#page-smm #smm-rubric-winner { background:#111111 !important; border:0.5px solid rgba(255,255,255,.1) !important; border-left:3px solid #5DCAA5 !important; border-radius:12px !important; box-shadow:none !important; margin-bottom:16px !important; }
-#page-smm #smm-winner-name { font-size:20px !important; font-weight:500 !important; color:#f0ece6 !important; text-transform:uppercase !important; }
-#page-smm .ms-l { font-family:'DM Mono',monospace !important; font-size:10px !important; letter-spacing:.08em !important; color:rgba(240,236,230,.35) !important; text-transform:uppercase !important; }
-#page-smm .ms-v { font-size:22px !important; font-weight:500 !important; color:#f0ece6 !important; }
-#page-smm *::before { animation:none !important; }
-#page-smm::before { display:none !important; }
-#btn-period-wrap,#ob-toggle { height:36px !important; box-sizing:border-box !important; font-family:'DM Mono',monospace !important; font-size:11px !important; border-radius:6px !important; border:1px solid rgba(255,255,255,.15) !important; background:rgba(255,255,255,.05) !important; display:inline-flex !important; align-items:center !important; }
-#ob-toggle { padding:0 16px !important; gap:8px !important; }
-#btn-period-wrap { padding:0 !important; }
-#btn-period-wrap > div { height:100% !important; display:flex !important; align-items:center !important; }
-#page-report .go-btn,#go-btn { min-width:220px !important; margin:0 auto !important; padding:12px 32px !important; background:#c9a84c !important; border:none !important; border-radius:6px !important; color:#0c0c0c !important; font-family:'DM Mono',monospace !important; font-size:12px !important; font-weight:600 !important; letter-spacing:.08em !important; text-transform:uppercase !important; animation:none !important; }
-#page-report .go-btn:hover:not(:disabled),#go-btn:hover:not(:disabled) { background:#e0ba5a !important; transform:none !important; }
-#page-report .go-btn:disabled,#go-btn:disabled { background:rgba(201,168,76,.2) !important; color:rgba(201,168,76,.4) !important; opacity:1 !important; }
+<style id="smm-mckinsey-override">
+/* ══════════════════════════════════════════════════
+   SMM REPORT — McKinsey Style Override
+   Максимальная специфичность: #page-smm + !important
+   Перебивает все предыдущие стили
+══════════════════════════════════════════════════ */
+
+/* ── ЦВЕТА и ПЕРЕМЕННЫЕ ── */
+#page-smm {
+  --mk-bg: #0c0c0c !important;
+  --mk-bg2: #111111 !important;
+  --mk-border: rgba(255,255,255,.1) !important;
+  --mk-border-strong: rgba(255,255,255,.22) !important;
+  --mk-text: #f0ece6 !important;
+  --mk-muted: rgba(240,236,230,.45) !important;
+  --mk-accent: #1D9E75 !important;
+  --mk-blue: #378ADD !important;
+  --mk-amber: #BA7517 !important;
+  background: var(--mk-bg) !important;
+}
+
+/* ── TOPBAR ── */
+#page-smm .smm-topbar {
+  background: #0c0c0c !important;
+  border-bottom: 1px solid rgba(255,255,255,.1) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+#page-smm .smm-topbar-agency {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 11px !important;
+  letter-spacing: .1em !important;
+  color: rgba(240,236,230,.5) !important;
+  font-weight: 400 !important;
+}
+#page-smm .smm-topbar-report {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #f0ece6 !important;
+  letter-spacing: -.01em !important;
+}
+#page-smm .smm-topbar-client {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #f0ece6 !important;
+}
+#page-smm .smm-topbar-period {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 11px !important;
+  color: rgba(240,236,230,.45) !important;
+}
+
+/* ── NAV ── */
+#page-smm .smm-nav {
+  background: #0c0c0c !important;
+  border-bottom: 1px solid rgba(255,255,255,.1) !important;
+  padding: 0 32px !important;
+  gap: 0 !important;
+}
+#page-smm .smm-nav-item {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important;
+  letter-spacing: .1em !important;
+  color: rgba(240,236,230,.4) !important;
+  padding: 12px 20px !important;
+  border-radius: 0 !important;
+  border-bottom: 2px solid transparent !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  background: none !important;
+  transition: all .15s !important;
+  margin: 0 !important;
+}
+#page-smm .smm-nav-item.sni-active,
+#page-smm .smm-nav-item:hover {
+  color: #f0ece6 !important;
+  border-bottom-color: #f0ece6 !important;
+  background: none !important;
+}
+
+/* ── BODY ── */
+#page-smm .smm-body {
+  background: #0c0c0c !important;
+  padding: 32px 24px !important;
+  max-width: none !important;
+  margin: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* ── SECTION HEADING ── */
+#page-smm .smm-sec-heading {
+  margin-bottom: 20px !important;
+  padding-bottom: 10px !important;
+  border-bottom: 1.5px solid rgba(240,236,230,.18) !important;
+  align-items: baseline !important;
+}
+#page-smm .smm-sec-num {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 11px !important;
+  color: rgba(240,236,230,.35) !important;
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  letter-spacing: .08em !important;
+}
+#page-smm .smm-sec-title {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  letter-spacing: -.01em !important;
+  color: #f0ece6 !important;
+  text-transform: none !important;
+}
+#page-smm .smm-sec-line {
+  display: none !important;
+}
+
+/* ── KPI GROUP LABEL ── */
+#page-smm .kpi-group-label {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important;
+  letter-spacing: .1em !important;
+  color: rgba(240,236,230,.35) !important;
+  text-transform: uppercase !important;
+  margin-bottom: 10px !important;
+  margin-top: 24px !important;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+}
+#page-smm .kpi-group-icon { display: none !important; }
+
+/* ── KPI GROUP GRID ── */
+#page-smm .kpi-group-content,
+#page-smm .kpi-group-digital,
+#page-smm .kpi-group {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0,1fr)) !important;
+  gap: 0 !important;
+  border: 0.5px solid rgba(255,255,255,.12) !important;
+  border-radius: 2px !important;
+  overflow: hidden !important;
+  background: #111111 !important;
+  width: 100% !important;
+}
+#page-smm .kpi-group-audience {
+  grid-template-columns: repeat(2, minmax(0,1fr)) !important;
+}
+#page-smm .kpi-group > * {
+  min-width: 0 !important;
+  width: auto !important;
+  flex: none !important;
+}
+
+/* ── KPI CARD ── */
+#page-smm .kpi-card {
+  background: #111111 !important;
+  border: none !important;
+  border-right: 0.5px solid rgba(255,255,255,.1) !important;
+  border-radius: 0 !important;
+  padding: 18px 20px !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: background .15s !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+}
+#page-smm .kpi-card:last-child { border-right: none !important; }
+#page-smm .kpi-card:hover {
+  background: #171717 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+#page-smm .kpi-card::before,
+#page-smm .kpi-card::after { display: none !important; }
+
+#page-smm .kpi-card-icon {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 2px !important;
+  margin-bottom: 10px !important;
+  flex-shrink: 0 !important;
+}
+#page-smm .kpi-card-val {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 28px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+  margin-bottom: 4px !important;
+  letter-spacing: -.02em !important;
+}
+#page-smm .kpi-card-val.kpi-big {
+  font-size: 32px !important;
+}
+#page-smm .kpi-card-name {
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  color: rgba(240,236,230,.7) !important;
+  margin-bottom: 2px !important;
+  font-family: 'DM Sans', sans-serif !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+#page-smm .kpi-card-sub {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important;
+  color: rgba(240,236,230,.35) !important;
+  letter-spacing: .04em !important;
+  margin-top: 0 !important;
+}
+
+/* ── AUDIENCE CARD ── */
+#page-smm .kpi-card-audience {
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 20px 24px !important;
+}
+#page-smm .kpi-card-audience .kpi-card-icon {
+  margin-bottom: 0 !important;
+}
+
+/* ── SMM BLOCK (reach/views bars) ── */
+#page-smm .smm-block {
+  background: #111111 !important;
+  border: 0.5px solid rgba(255,255,255,.1) !important;
+  border-radius: 2px !important;
+  margin-top: 16px !important;
+  box-shadow: none !important;
+}
+#page-smm .smm-block-title {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important;
+  letter-spacing: .1em !important;
+  color: rgba(240,236,230,.35) !important;
+  text-transform: uppercase !important;
+  font-weight: 400 !important;
+}
+#page-smm .smm-block-dot { display: none !important; }
+
+/* ── PROG BARS ── */
+#page-smm .smm-prog-bar {
+  height: 4px !important;
+  background: rgba(255,255,255,.06) !important;
+  border-radius: 1px !important;
+  overflow: hidden !important;
+}
+#page-smm .smm-prog-fill {
+  height: 4px !important;
+  border-radius: 1px !important;
+}
+#page-smm .smm-prog-lbl {
+  font-size: 12px !important;
+  color: rgba(240,236,230,.7) !important;
+  font-family: 'DM Sans', sans-serif !important;
+}
+#page-smm .smm-prog-val {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 12px !important;
+  color: rgba(240,236,230,.5) !important;
+}
+
+/* ── STAT GRID (большие числа) ── */
+#page-smm .smm-stat-grid {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0,1fr)) !important;
+  gap: 0 !important;
+  border: 0.5px solid rgba(255,255,255,.12) !important;
+  border-radius: 2px !important;
+  overflow: hidden !important;
+  margin-bottom: 24px !important;
+}
+#page-smm .smm-stat-card {
+  background: #111111 !important;
+  border: none !important;
+  border-right: 0.5px solid rgba(255,255,255,.1) !important;
+  border-radius: 0 !important;
+  padding: 20px !important;
+  box-shadow: none !important;
+}
+#page-smm .smm-stat-card:last-child { border-right: none !important; }
+#page-smm .smm-stat-card::before,
+#page-smm .smm-stat-card::after { display: none !important; }
+#page-smm .smm-stat-card:hover {
+  background: #171717 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+#page-smm .smm-stat-lbl {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important;
+  letter-spacing: .08em !important;
+  color: rgba(240,236,230,.35) !important;
+  text-transform: uppercase !important;
+  margin-bottom: 10px !important;
+}
+#page-smm .smm-stat-val {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 36px !important;
+  font-weight: 500 !important;
+  letter-spacing: -.02em !important;
+  line-height: 1 !important;
+  animation: none !important;
+}
+#page-smm .smm-stat-sub {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important;
+  color: rgba(240,236,230,.35) !important;
+  margin-top: 6px !important;
+}
+#page-smm .smm-stat-delta {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  font-family: 'DM Mono', monospace !important;
+  padding: 2px 7px !important;
+  border-radius: 2px !important;
+  display: inline-block !important;
+  margin-top: 6px !important;
+}
+#page-smm .smm-stat-delta.ssd-up {
+  background: rgba(29,158,117,.15) !important;
+  color: #5DCAA5 !important;
+}
+#page-smm .smm-stat-delta.ssd-down {
+  background: rgba(224,82,82,.12) !important;
+  color: #f87171 !important;
+}
+
+/* ── METRICS GRID ── */
+#page-smm .smm-metrics-grid {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0,1fr)) !important;
+  gap: 0 !important;
+  border: 0.5px solid rgba(255,255,255,.12) !important;
+  border-radius: 2px !important;
+  overflow: hidden !important;
+}
+#page-smm .smm-metric-card {
+  background: #111111 !important;
+  border: none !important;
+  border-right: 0.5px solid rgba(255,255,255,.1) !important;
+  border-radius: 0 !important;
+  padding: 18px 16px !important;
+  box-shadow: none !important;
+  transform: none !important;
+  position: relative !important;
+}
+#page-smm .smm-metric-card:last-child { border-right: none !important; }
+#page-smm .smm-metric-card:hover {
+  background: #171717 !important;
+  transform: none !important;
+  box-shadow: none !important;
+  border-color: rgba(255,255,255,.1) !important;
+}
+#page-smm .smm-metric-code {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important;
+  letter-spacing: .1em !important;
+  color: rgba(240,236,230,.4) !important;
+  margin-bottom: 8px !important;
+  font-weight: 400 !important;
+}
+#page-smm .smm-metric-val {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 26px !important;
+  font-weight: 500 !important;
+  letter-spacing: -.01em !important;
+  line-height: 1 !important;
+}
+#page-smm .smm-metric-bm {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 9px !important;
+  color: rgba(240,236,230,.25) !important;
+  letter-spacing: .06em !important;
+  margin-top: 6px !important;
+}
+#page-smm .smm-metric-status {
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  font-family: 'DM Mono', monospace !important;
+  padding: 2px 7px !important;
+  border-radius: 2px !important;
+  margin-top: 6px !important;
+  display: inline-block !important;
+  letter-spacing: .04em !important;
+}
+
+/* ── REELS GRID ── */
+#page-smm .smm-reels-grid {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0,1fr)) !important;
+  gap: 0 !important;
+  border: 0.5px solid rgba(255,255,255,.12) !important;
+  border-radius: 2px !important;
+  overflow: hidden !important;
+}
+#page-smm .smm-reel-card {
+  border-radius: 0 !important;
+  border: none !important;
+  border-right: 0.5px solid rgba(255,255,255,.1) !important;
+  background: #111111 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+#page-smm .smm-reel-card:last-child { border-right: none !important; }
+#page-smm .smm-reel-card:hover {
+  transform: none !important;
+  box-shadow: none !important;
+  background: #171717 !important;
+}
+#page-smm .smm-reel-card::before {
+  height: 2px !important;
+  border-radius: 0 !important;
+}
+
+/* ── MS- LABELS / VALUES ── */
+#page-smm .ms-l {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important;
+  letter-spacing: .08em !important;
+  color: rgba(240,236,230,.35) !important;
+  text-transform: uppercase !important;
+}
+#page-smm .ms-v {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 22px !important;
+  font-weight: 500 !important;
+  letter-spacing: -.01em !important;
+  color: #f0ece6 !important;
+}
+
+/* ── AI ANALYSIS SECTION ── */
+#page-smm #ss-ai .smm-ai-output {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 14px !important;
+  line-height: 1.7 !important;
+  color: rgba(240,236,230,.85) !important;
+}
+
+/* ── УБРАТЬ ВСЕ ДЕКОРАТИВНЫЕ ЭФФЕКТЫ ── */
+#page-smm * {
+  animation-duration: 0.01ms !important;
+}
+#page-smm .smm-stat-val {
+  animation: none !important;
+}
+#page-smm::before {
+  display: none !important;
+}
+
+/* ── HEADER BLOCK (smm-hdr) ── */
+#page-smm .smm-hdr {
+  background: #0c0c0c !important;
+  border-bottom: 1px solid rgba(255,255,255,.1) !important;
+  box-shadow: none !important;
+}
+#page-smm .smm-hdr-name {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 22px !important;
+  font-weight: 500 !important;
+  letter-spacing: -.02em !important;
+  color: #f0ece6 !important;
+  text-transform: none !important;
+}
+#page-smm .smm-hdr-agency {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important;
+  letter-spacing: .1em !important;
+  color: rgba(240,236,230,.4) !important;
+}
+#page-smm .smm-hdr-agency::before { display: none !important; }
+#page-smm .smm-hdr-sub {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important;
+  color: rgba(240,236,230,.3) !important;
+  letter-spacing: .06em !important;
+}
+
+/* ── TOPBAR BUTTONS ── */
+#page-smm .smm-topbar-btn {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important;
+  letter-spacing: .06em !important;
+  border-radius: 2px !important;
+}
+#page-smm .smm-back-btn {
+  border-radius: 2px !important;
+}
+
+/* ── SCROLLBAR ── */
+#page-smm ::-webkit-scrollbar { width: 3px !important; }
+#page-smm ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12) !important; border-radius: 0 !important; }
+
+
+/* ── НЕЙТРАЛИЗАЦИЯ INLINE ЦВЕТОВ — McKinsey единый тон ── */
+#page-smm .kpi-card-val[style*="color"] {
+  color: #f0ece6 !important;
+}
+#page-smm .kpi-card-val.kpi-big[style*="color"] {
+  color: #f0ece6 !important;
+}
+/* Подписчики — акцент зелёный как исключение */
+#page-smm #sv-followers {
+  color: #5DCAA5 !important;
+}
+#page-smm .smm-stat-delta.ssd-up,
+#page-smm .smm-stat-delta.ssd-down,
+#page-smm .ssd-up,
+#page-smm .ssd-down {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important;
+  border-radius: 2px !important;
+}
+/* Скрыть дублирующие большие числа внизу блока охвата */
+#page-smm .smm-block [id="sv-total-reach"],
+#page-smm .smm-block [id="sv-total-views"],
+#page-smm .smm-block .smm-prog-totals,
+#page-smm .smm-block > div:last-child > div:last-child {
+  display: none !important;
+}
+/* Иконки в KPI картах — нейтральный фон */
+#page-smm .kpi-card-icon[style*="background"] {
+  background: rgba(255,255,255,.06) !important;
+}
+#page-smm .kpi-card-icon svg {
+  stroke: rgba(240,236,230,.6) !important;
+}
+#page-smm .kpi-card-icon[style*="color"] {
+  color: rgba(240,236,230,.6) !important;
+}
+
+/* ── FULL WIDTH ── */
+#page-smm .smm-sec {
+  width: 100% !important;
+  max-width: none !important;
+}
+#page-smm .kpi-group-content,
+#page-smm .kpi-group-digital,
+#page-smm .kpi-group-audience,
+#page-smm .kpi-group {
+  width: 100% !important;
+  max-width: none !important;
+}
+#page-smm .smm-block {
+  width: 100% !important;
+  max-width: none !important;
+}
+#page-smm .smm-stat-grid {
+  width: 100% !important;
+  max-width: none !important;
+}
+#page-smm .smm-metrics-grid {
+  width: 100% !important;
+  max-width: none !important;
+}
+#page-smm .smm-reels-grid {
+  width: 100% !important;
+  max-width: none !important;
+}
+#page-smm .smm-sec-heading {
+  width: 100% !important;
+}
+
+/* ── METRIC CARDS — gap + rounded corners ── */
+#page-smm .smm-metrics-grid {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0,1fr)) !important;
+  gap: 12px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+}
+#page-smm .smm-metric-card {
+  border: 0.5px solid rgba(255,255,255,.1) !important;
+  border-right: 0.5px solid rgba(255,255,255,.1) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+#page-smm .smm-metric-card:last-child {
+  border-right: 0.5px solid rgba(255,255,255,.1) !important;
+}
+
+/* ── KPI CARDS — gap + rounded corners ── */
+#page-smm .kpi-group-content,
+#page-smm .kpi-group-digital,
+#page-smm .kpi-group,
+#page-smm .kpi-group-audience {
+  gap: 12px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+  background: transparent !important;
+}
+#page-smm .kpi-card {
+  border: 0.5px solid rgba(255,255,255,.1) !important;
+  border-right: 0.5px solid rgba(255,255,255,.1) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+#page-smm .kpi-card:last-child {
+  border-right: 0.5px solid rgba(255,255,255,.1) !important;
+}
+
+/* ── REELS GRID — gap + rounded corners ── */
+#page-smm .smm-reels-grid {
+  gap: 12px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+}
+#page-smm .smm-reel-card {
+  border: 0.5px solid rgba(255,255,255,.1) !important;
+  border-right: 0.5px solid rgba(255,255,255,.1) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+#page-smm .smm-reel-card:last-child {
+  border-right: 0.5px solid rgba(255,255,255,.1) !important;
+}
+
+/* ── STAT GRID — gap + rounded ── */
+#page-smm .smm-stat-grid {
+  gap: 12px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+}
+#page-smm .smm-stat-card {
+  border: 0.5px solid rgba(255,255,255,.1) !important;
+  border-right: 0.5px solid rgba(255,255,255,.1) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+#page-smm .smm-stat-card:last-child {
+  border-right: 0.5px solid rgba(255,255,255,.1) !important;
+}
+
+/* ── СМЕЖНЫЕ БЛОКИ — rounded ── */
+#page-smm .smm-block {
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+
+/* ── УБРАТЬ полосу с контейнера, добавить на каждую карточку ── */
+#page-smm .kpi-group::before,
+#page-smm .kpi-group-content::before,
+#page-smm .kpi-group-digital::before,
+#page-smm .kpi-group-audience::before,
+#page-smm .smm-block::before {
+  display: none !important;
+  content: none !important;
+}
+#page-smm .kpi-group::after,
+#page-smm .kpi-group-content::after,
+#page-smm .kpi-group-digital::after,
+#page-smm .kpi-group-audience::after {
+  display: none !important;
+  content: none !important;
+}
+/* Полоса на каждой карточке отдельно */
+#page-smm .kpi-card {
+  position: relative !important;
+}
+#page-smm .kpi-card::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 2px !important;
+  background: rgba(184,146,58,.5) !important;
+  border-radius: 12px 12px 0 0 !important;
+  display: block !important;
+}
+#page-smm .kpi-card[style*="green"]::before,
+#page-smm .kpi-card:nth-child(1)::before {
+  background: rgba(29,158,117,.6) !important;
+}
+#page-smm .kpi-group-digital .kpi-card::before {
+  background: rgba(184,146,58,.5) !important;
+}
+
+/* Аудитория — без полосы, она отдельный блок */
+#page-smm .kpi-card-audience::before {
+  display: none !important;
+}
+
+/* ── REEL CARDS — мягкие скруглённые углы ── */
+#page-smm .smm-reel-card {
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  border: 0.5px solid rgba(255,255,255,.1) !important;
+  border-right: 0.5px solid rgba(255,255,255,.1) !important;
+}
+#page-smm .smm-reel-cover {
+  border-radius: 0 !important;
+}
+#page-smm .smm-reel-card::before {
+  border-radius: 16px 16px 0 0 !important;
+}
+/* Рубрики контента */
+#page-smm .smm-rubric-card,
+#page-smm .rubric-card,
+#page-smm [class*="rubric"] {
+  border-radius: 16px !important;
+  overflow: hidden !important;
+}
+
+/* ── REEL CARDS — компактный размер с адаптивным фото ── */
+#page-smm .smm-reels-grid {
+  grid-template-columns: repeat(8, minmax(0,1fr)) !important;
+  gap: 12px !important;
+  border: none !important;
+  overflow: visible !important;
+  width: 100% !important;
+}
+#page-smm .smm-reel-card {
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  border: 0.5px solid rgba(255,255,255,.1) !important;
+}
+#page-smm .smm-reel-cover {
+  aspect-ratio: 4/5 !important;
+  border-radius: 0 !important;
+}
+#page-smm .smm-reel-cover img,
+#page-smm .smm-reel-cover video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  display: block !important;
+}
+
+/* ── REELS GRID — no overflow hidden, wrap correctly ── */
+#page-smm .smm-reels-grid {
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}
+#page-smm #smm-reels-grid {
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}
+
+/* ── RUBRIC GRID — McKinsey style ── */
+#page-smm .smm-rubric-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0,1fr)) !important;
+  gap: 12px !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+}
+/* ── WINNER BANNER — McKinsey ── */
+#page-smm .smm-rubric-winner,
+#page-smm #smm-rubric-winner {
+  background: #111111 !important;
+  border: 0.5px solid rgba(255,255,255,.1) !important;
+  border-left: 3px solid #5DCAA5 !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  margin-bottom: 16px !important;
+}
+#page-smm .rb-winner-label {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 9px !important;
+  letter-spacing: .1em !important;
+  color: rgba(240,236,230,.4) !important;
+  text-transform: uppercase !important;
+}
+#page-smm .smm-winner-name,
+#page-smm #smm-winner-name {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 20px !important;
+  font-weight: 500 !important;
+  color: #f0ece6 !important;
+  text-transform: uppercase !important;
+  letter-spacing: -.01em !important;
+}
+#page-smm .rb-winner-stat-val {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 500 !important;
+}
+#page-smm .rb-winner-stat-lbl {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 9px !important;
+  letter-spacing: .07em !important;
+  color: rgba(240,236,230,.35) !important;
+  text-transform: uppercase !important;
+}
+
+/* ── REPORT TOPBAR BUTTONS — unified size ── */
+#btn-period-wrap,
+#ob-toggle {
+  height: 36px !important;
+  box-sizing: border-box !important;
+  font-family: 'DM Mono', monospace !important;
+  font-size: 11px !important;
+  border-radius: 6px !important;
+  background: var(--bg4) !important;
+  border: 1px solid var(--brd) !important;
+}
+#btn-period-wrap {
+  display: none;
+}
+#ob-toggle {
+  padding: 0 14px !important;
+  gap: 8px !important;
+}
+
+/* ── GO-BTN — McKinsey style ── */
+#page-report .go-btn,
+#go-btn {
+  width: auto !important;
+  min-width: 220px !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  padding: 12px 32px !important;
+  background: #c9a84c !important;
+  border: none !important;
+  border-radius: 6px !important;
+  color: #0c0c0c !important;
+  font-family: 'DM Mono', monospace !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+  transition: all .15s !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+#page-report .go-btn:hover:not(:disabled),
+#go-btn:hover:not(:disabled) {
+  background: #e0ba5a !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+#page-report .go-btn:disabled,
+#go-btn:disabled {
+  background: rgba(201,168,76,.2) !important;
+  color: rgba(201,168,76,.4) !important;
+  opacity: 1 !important;
+  cursor: not-allowed !important;
+}
+#page-report .go-btn svg,
+#go-btn svg {
+  stroke: #0c0c0c !important;
+}
+#page-report .go-btn:disabled svg,
+#go-btn:disabled svg {
+  stroke: rgba(201,168,76,.4) !important;
+}
+/* Контейнер кнопки */
+.go-btn-wrap {
+  display: flex !important;
+  justify-content: center !important;
+  padding: 24px 0 !important;
+  background: transparent !important;
+  border: none !important;
+}
 </style>
+
 
 <!-- ── KB JAVASCRIPT ── -->
 <script>
