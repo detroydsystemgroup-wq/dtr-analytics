@@ -37874,7 +37874,6 @@ function renderDeadlinePanel() {
         var diff2 = item.diff;
         var cntTxt = item.status === 'done' ? '✓' : item.status === 'overdue' ? '−' + Math.abs(diff2) + 'д' : item.status === 'today' ? 'Сегодня' : '+' + diff2 + 'д';
         var stTxt = item.status === 'done' ? 'Выполнен' : item.s.status === 'active' ? 'В работе' : 'Ожидает';
-        var stTxt = item.status === 'done' ? 'Выполнен' : item.s.status === 'active' ? 'В работе' : 'Ожидает';
         var badgeBg2 = item.status === 'done' ? 'rgba(62,207,142,.08)' : item.s.status === 'active' ? 'rgba(184,146,58,.08)' : 'rgba(255,255,255,.04)';
         var badgeCol2 = item.status === 'done' ? '#3ecf8e' : item.s.status === 'active' ? '#b8923a' : 'var(--txt3)';
         rowsHtml +=
@@ -37892,7 +37891,9 @@ function renderDeadlinePanel() {
       projHtml +=
         '<div class="dvp-group" style="animation-delay:' + delay + 's;background:var(--bg3);border:1px solid rgba(255,255,255,.07);border-radius:14px;overflow:hidden;margin-bottom:8px;">' +
           '<div style="display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;" onclick="openProject(\'' + group.proj.id + '\')">' +
-            '<div style="width:32px;height:32px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;background:' + col + '18;border:1.5px solid ' + col + '44;color:' + col + ';">' + group.proj.name[0] + '</div>' +
+            (group.proj.photo_url
+              ? '<div style="width:32px;height:32px;border-radius:8px;flex-shrink:0;overflow:hidden;border:1.5px solid ' + col + '44;"><img src="' + group.proj.photo_url + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+              : '<div style="width:32px;height:32px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;background:' + col + '22;border:1.5px solid ' + col + '44;color:' + col + ';">' + group.proj.name[0] + '</div>') +
             '<div style="flex:1;min-width:0;">' +
               '<div style="font-size:13px;font-weight:500;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + group.proj.name + '</div>' +
               '<div style="font-size:11px;color:var(--txt3);margin-top:2px;">' + prog.pct + '% · ' + group.items.length + ' дедл.</div>' +
