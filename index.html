@@ -31184,6 +31184,22 @@ function renderProjectGrid() {
   const totalStagesDone = _activeStgs.filter(s => s.status === 'completed').length
   const doneProjs = [..._activeProjs.filter(p => getProjectProgress(p.id).pct === 100), ...archivedProjs]
   const totalMRR = doneProjs.reduce((s,p) => s + (p.monthly_budget||0), 0)
+  // Просрочка — этапы + задачи async
+  const todayHero = new Date(); todayHero.setHours(0,0,0,0)
+  const todayStrH = todayHero.getFullYear() + '-' + String(todayHero.getMonth()+1).padStart(2,'0') + '-' + String(todayHero.getDate()).padStart(2,'0')
+  const overdueStages = _activeStgs.filter(s => s.status !== 'completed' && s.deadline && new Date(s.deadline + 'T00:00:00') < todayHero)
+  const overdueCount = overdueStages.length
+  ;(async () => {
+    try {
+      const tIds = _trulyActive.map(p => p.id)
+      if (!tIds.length) return
+      const { data } = await sb.from('stage_tasks').select('project_id,deadline,done').in('project_id', tIds).not('deadline','is',null)
+      const tOverdue = (data||[]).filter(t => !t.done && t.deadline && t.deadline.slice(0,10) < todayStrH).length
+      const total = overdueStages.length + tOverdue
+      const e1 = g('proj-hero-overdue'); if(e1){ e1.textContent=total; e1.style.color=total>0?'var(--red)':'var(--green)' }
+      const e2 = g('proj-hero-overdue-dl'); if(e2) e2.textContent = total===0 ? 'Всё в срок ✓' : overdueStages.length+' эт. · '+tOverdue+' зад.'
+    } catch(e){}
+  })()
   const setH = (id, v) => { const e = g(id); if(e) e.textContent = v }
   setH('proj-hero-total', activeCount)
   setH('proj-hero-active', activeCount + ' активных · ' + doneCount + ' завершено')
