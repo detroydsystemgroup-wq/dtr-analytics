@@ -31216,7 +31216,6 @@ function setProjectFilter(f, btn) {
 function filterProjects() { renderProjectGrid() }
 
 function renderProjectGrid() {
-  try {
   const grid = g('projects-grid')
   if (!grid) return
   const search = (g('dash-search')?.value || '').toLowerCase().trim()
@@ -31309,7 +31308,8 @@ function renderProjectGrid() {
 
   grid.innerHTML = list.map(p => {
     try {
-    const { pct, completed, total: progTotal } = getProjectProgress(p.id)
+    const { pct, completed } = getProjectProgress(p.id)
+    const progTotal = getProjectProgress(p.id).total
     const overdue = isProjectOverdue(p.id)
     const next = getNextDeadline(p.id)
     const col = p.brand_color || '#b8923a'
@@ -31411,7 +31411,6 @@ function renderProjectGrid() {
     </div>`
     } catch(e) { console.error('[DTR card]', e); return ''; }
   }).join('')
-  } catch(e) { console.error('[renderProjectGrid]', e); }
 }
 function switchDashTab(tab, btn) {
   document.querySelectorAll('.dash-tab').forEach(b => b.classList.remove('dt-active'))
