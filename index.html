@@ -27145,7 +27145,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
       </div>
 
       <!-- ── STAGES SECTION LABEL ── -->
-      <div class="pp-stage-section-label">Этапы проекта · 9 шагов</div>
+      <div class="pp-stage-section-label">Этапы проекта · <span id="tracker-stage-count">9 шагов</span></div>
 
       <!-- ── TRACKER TIMELINE ── -->
       <div class="tracker-timeline" id="tracker-timeline"></div>
@@ -30822,7 +30822,7 @@ function globalSearch(q) {
   ).slice(0, 5)
 
   const stages = !q ? [] : _allStages.filter(s => {
-    const stageName = STAGES[s.stage_index]?.name || ''
+    const stageName = s.name || STAGES[s.stage_index]?.name || ''
     return stageName.toLowerCase().includes(q)
   }).slice(0, 3)
 
@@ -30852,13 +30852,14 @@ function globalSearch(q) {
     html += `<div class="gsr-section-title">Этапы</div>`
     html += stages.map(s => {
       const proj = _allProjects.find(p => p.id === s.project_id)
+      const stageName = s.name || STAGES[s.stage_index]?.name || ('Этап ' + (s.stage_index + 1))
       const stage = STAGES[s.stage_index]
-      if (!proj || !stage) return ''
+      if (!proj) return ''
       const stColor = s.status === 'completed' ? 'var(--green)' : s.status === 'active' ? 'var(--a2)' : 'var(--txt3)'
       return `<div class="gsr-item" onclick="closeGlobalSearch();openProject('${proj.id}')">
-        <div class="gsr-icon" style="background:var(--bg4);font-size:16px;">${stage.emoji || '•'}</div>
+        <div class="gsr-icon" style="background:var(--bg4);font-size:16px;">${stage?.emoji || '📌'}</div>
         <div>
-          <div class="gsr-title">${stage.name}</div>
+          <div class="gsr-title">${esc(stageName)}</div>
           <div class="gsr-sub">${esc(proj.name)} · <span style="color:${stColor}">${s.status === 'completed' ? 'Завершён' : s.status === 'active' ? 'В работе' : 'Ожидает'}</span></div>
         </div>
       </div>`
@@ -34998,6 +34999,7 @@ function renderTracker() {
   const pct = totalStages > 0 ? Math.round((completed / totalStages) * 100) : 0
   if (g('tracker-pct')) g('tracker-pct').textContent = pct + '%'
   if (g('tracker-bar')) g('tracker-bar').style.width = pct + '%'
+  if (g('tracker-stage-count')) g('tracker-stage-count').textContent = totalStages + ' ' + (totalStages === 1 ? 'шаг' : totalStages < 5 ? 'шага' : 'шагов')
   updateProjMiniProgress(pct)
   // ── McKinsey mini stats ──
   ppUpdateMiniStats(completed, totalStages - completed - trackerData.filter(s => s.status === 'active').length, trackerData)
@@ -37711,7 +37713,8 @@ function renderDeadlinePanel() {
       if (activeProjIds.indexOf(s.project_id) === -1) return;
       var proj = activeProjs.find(function(p){ return p.id === s.project_id; });
       if (!proj) return;
-      var stageObj = (typeof STAGES !== 'undefined' && STAGES[s.stage_index]) || { name: 'Этап ' + s.stage_index, icon: '•' };
+      var stageName = s.name || (typeof STAGES !== 'undefined' && STAGES[s.stage_index] && STAGES[s.stage_index].name) || ('Этап ' + (s.stage_index + 1));
+      var stageObj = { name: stageName, icon: '•', emoji: (typeof STAGES !== 'undefined' && STAGES[s.stage_index] && STAGES[s.stage_index].emoji) || '📌' };
       var dl = new Date(s.deadline); dl.setHours(0,0,0,0);
       var diff = Math.round((dl - today) / 86400000);
       var status = s.status === 'completed' ? 'done'
@@ -38628,7 +38631,16 @@ function svRenderProjTable(projData, overdueMap, today, MONTHS) {
 // McKinsey mini stats — called from inside renderTracker
 function ppUpdateMiniStats(done, pending, trackerData) {
   var active = trackerData ? trackerData.filter(function(s){ return s.status === 'active'; }).length : 0;
-  var pend = Math.max(0, 9 - done - active);
+  var total  = trackerData ? trackerData.length : 9;
+  // Если есть stage_templates у текущего проекта — берём total из них
+  if (typeof currentProject !== 'undefined' && currentProject && currentProject.stage_templates) {
+    try {
+      var tpl = JSON.parse(currentProject.stage_templates);
+      var activeTpl = tpl.filter(function(s){ return s.enabled !== false && s.name && s.name.trim(); });
+      if (activeTpl.length) total = activeTpl.length;
+    } catch(e) {}
+  }
+  var pend = Math.max(0, total - done - active);
 
   var setEl = function(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
   setEl('pp-mini-done',    done);
@@ -38665,7 +38677,7 @@ function ppUpdateMiniStats(done, pending, trackerData) {
   if (pipeEl && trackerData) {
     var col = (typeof currentProject !== 'undefined' && currentProject && currentProject.brand_color) ? currentProject.brand_color : '#b8923a';
     var html = '';
-    for (var i = 0; i < 9; i++) {
+    for (var i = 0; i < total; i++) {
       var st = trackerData.find(function(s){ return s.stage_index === i; });
       var status = st ? st.status : 'pending';
       var bg = status === 'completed' ? col : status === 'active' ? col + '66' : 'rgba(184,146,58,.1)';
