@@ -23077,6 +23077,11 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 ══════════════════════════════════════════════════════════ */
 
 /* ── SIDEBAR SHELL ── */
+#page-dashboard .cc-shell {
+  overflow: hidden !important;
+  height: 100vh !important;
+}
+
 #page-dashboard .cc-sidebar {
   background: #0a0a0c !important;
   border-right: 1px solid rgba(255,255,255,.05) !important;
@@ -23085,6 +23090,12 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
   display: flex !important;
   flex-direction: column !important;
   padding: 0 !important;
+  position: sticky !important;
+  top: 0 !important;
+  height: 100vh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  flex-shrink: 0 !important;
 }
 
 /* ── BRAND ── */
@@ -23428,6 +23439,9 @@ button, a, [role="button"], .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 #page-dashboard .cc-main {
   background: #070709 !important;
   flex: 1 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  height: 100vh !important;
 }
 
 /* Header */
