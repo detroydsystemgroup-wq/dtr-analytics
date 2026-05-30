@@ -41156,10 +41156,16 @@ async function cpRenderMilestone(project) {
   border: 0.5px solid rgba(255,255,255,.12) !important;
   border-radius: 2px !important;
   overflow: hidden !important;
-  background: none !important;
+  background: #111111 !important;
+  width: 100% !important;
 }
 #page-smm .kpi-group-audience {
   grid-template-columns: repeat(2, minmax(0,1fr)) !important;
+}
+#page-smm .kpi-group > * {
+  min-width: 0 !important;
+  width: auto !important;
+  flex: none !important;
 }
 
 /* ── KPI CARD ── */
@@ -41502,6 +41508,43 @@ async function cpRenderMilestone(project) {
 #page-smm ::-webkit-scrollbar { width: 3px !important; }
 #page-smm ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12) !important; border-radius: 0 !important; }
 
+
+/* ── НЕЙТРАЛИЗАЦИЯ INLINE ЦВЕТОВ — McKinsey единый тон ── */
+#page-smm .kpi-card-val[style*="color"] {
+  color: #f0ece6 !important;
+}
+#page-smm .kpi-card-val.kpi-big[style*="color"] {
+  color: #f0ece6 !important;
+}
+/* Подписчики — акцент зелёный как исключение */
+#page-smm #sv-followers {
+  color: #5DCAA5 !important;
+}
+#page-smm .smm-stat-delta.ssd-up,
+#page-smm .smm-stat-delta.ssd-down,
+#page-smm .ssd-up,
+#page-smm .ssd-down {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important;
+  border-radius: 2px !important;
+}
+/* Скрыть дублирующие большие числа внизу блока охвата */
+#page-smm .smm-block [id="sv-total-reach"],
+#page-smm .smm-block [id="sv-total-views"],
+#page-smm .smm-block .smm-prog-totals,
+#page-smm .smm-block > div:last-child > div:last-child {
+  display: none !important;
+}
+/* Иконки в KPI картах — нейтральный фон */
+#page-smm .kpi-card-icon[style*="background"] {
+  background: rgba(255,255,255,.06) !important;
+}
+#page-smm .kpi-card-icon svg {
+  stroke: rgba(240,236,230,.6) !important;
+}
+#page-smm .kpi-card-icon[style*="color"] {
+  color: rgba(240,236,230,.6) !important;
+}
 </style>
 
 
