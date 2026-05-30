@@ -26462,10 +26462,10 @@ button, a, [role="button"],
             <div class="sv-th">Проект</div>
             <div class="sv-th sv-th-r">Категория</div>
             <div class="sv-th sv-th-r">MRR</div>
-            <div class="sv-th sv-th-r">Маржа</div>
+            <div class="sv-th sv-th-r">Маржа / Прибыль</div>
             <div class="sv-th sv-th-r">Дедлайн</div>
-            <div class="sv-th sv-th-r">Churn Risk</div>
-            <div class="sv-th" style="width:80px;"></div>
+            <div class="sv-th sv-th-r">Churn</div>
+            <div class="sv-th" style="width:72px;"></div>
           </div>
           <div id="sv-proj-tbody"></div>
         </div>
@@ -38580,35 +38580,53 @@ function svRenderProjTable(projData, overdueMap, today, MONTHS) {
     return;
   }
 
-  function fmtMrr(v) {
+  function fmtFull(v) {
     if (!v) return '—';
-    if (v >= 1000000) return (v/1000000).toFixed(1).replace('.0','') + ' млн';
-    if (v >= 1000)    return (v/1000).toFixed(0) + ' тыс';
-    return v.toString();
+    return new Intl.NumberFormat('ru-RU').format(Math.round(v));
   }
 
   tbody.innerHTML = rows.map(function(item) {
     var p = item.p; var prog = item.prog;
     var col = p.brand_color || 'var(--a)';
 
-    // Категория
-    var catTxt = (p.category || '').split(',')[0].trim() || '—';
+    // Категория — plain text, берём первое значение
+    var catRaw = (p.category || '').trim();
+    // убираем JSON-артефакты если вдруг попало
+    if (catRaw.startsWith('[') || catRaw.startsWith('"')) {
+      try { var parsed = JSON.parse(catRaw); catRaw = Array.isArray(parsed) ? parsed[0] : parsed; } catch(e) { catRaw = catRaw.replace(/[\[\]"]/g,''); }
+    }
+    var catTxt = (catRaw.split(',')[0] || '').trim() || '—';
 
-    // MRR
-    var mrr = p.monthly_budget || 0;
-    var mrrTxt = mrr > 0 ? fmtMrr(mrr) + ' сум' : '—';
+    // Услуги — JSON массив ID
+    var svcsHtml = '';
+    if (p.services) {
+      try {
+        var svcIds = JSON.parse(p.services);
+        var SVC_LABELS = { smm:'SMM', production:'Продакшн', target:'Таргет', design:'Дизайн', subscription:'Подписка' };
+        svcsHtml = svcIds.slice(0,2).map(function(id){ return '<span style="display:inline-block;font-size:9px;padding:1px 5px;border-radius:3px;border:1px solid var(--brd);color:var(--txt3);margin-right:2px;">'+(SVC_LABELS[id]||id)+'</span>'; }).join('');
+      } catch(e) {}
+    }
+
+    // MRR и маржа напрямую из финансового движка
+    var biRow = null;
+    if (typeof _biAllRows !== 'undefined' && _biAllRows && _biAllRows.length) {
+      biRow = _biAllRows.find(function(r){ return r.p && r.p.id === p.id; });
+    }
+    if (!biRow && typeof _biComputeRow === 'function') {
+      try { biRow = _biComputeRow(p); } catch(e) {}
+    }
+
+    var mrr        = biRow ? (biRow.budget || 0) : (p.monthly_budget || 0);
+    var profit     = biRow ? biRow.profit     : null;
+    var marginPct  = biRow ? biRow.marginPct  : null;
+
+    var mrrTxt   = mrr > 0 ? fmtFull(mrr) + ' сум' : '—';
     var mrrColor = mrr > 0 ? 'var(--txt)' : 'var(--txt3)';
 
-    // Маржа из _biAllRows если есть — вычислим на лету если не загружено
-    var marginPct = null;
-    if (typeof _biAllRows !== 'undefined' && _biAllRows && _biAllRows.length) {
-      var biRow = _biAllRows.find(function(r){ return r.p && r.p.id === p.id; });
-      if (biRow) marginPct = biRow.marginPct;
-    } else if (typeof _biComputeRow === 'function') {
-      try { var r2 = _biComputeRow(p); marginPct = r2.marginPct; } catch(e){}
-    }
+    var profitTxt   = profit !== null ? (profit >= 0 ? '+' : '') + fmtFull(profit) + ' сум' : '—';
     var marginTxt   = marginPct !== null ? marginPct + '%' : '—';
     var marginColor = marginPct === null ? 'var(--txt3)' : marginPct >= 60 ? '#22d3ee' : marginPct >= 30 ? 'var(--green)' : marginPct >= 15 ? 'var(--amber)' : 'var(--red)';
+    var profitColor = profit === null ? 'var(--txt3)' : profit >= 0 ? 'var(--green)' : 'var(--red)';
     var marginBarW  = marginPct !== null ? Math.max(0, Math.min(100, marginPct)) : 0;
 
     // Дедлайн
@@ -38625,25 +38643,27 @@ function svRenderProjTable(projData, overdueMap, today, MONTHS) {
     var churnColor = item.isChurn ? 'var(--red)' : item.daysSince > 10 ? 'var(--amber)' : 'var(--green)';
     var churnTxt   = item.isChurn ? '⚠ ' + item.daysSince + 'д' : item.daysSince < 999 ? item.daysSince + 'д' : 'новый';
 
-    return '<div class="sv-proj-row" style="border-left-color:' + col + ';grid-template-columns:1.6fr 90px 120px 110px 100px 80px 72px;" onclick="openProject(\'' + p.id + '\')">' +
+    var cols = '1.8fr 80px 160px 150px 90px 70px 72px';
+
+    return '<div class="sv-proj-row" style="border-left-color:' + col + ';grid-template-columns:' + cols + ';" onclick="openProject(\'' + p.id + '\')">' +
       '<div class="sv-pr-name-cell">' +
         (p.photo_url
           ? '<div class="sv-pr-avatar" style="background:transparent;border:1.5px solid ' + col + '44;padding:0;overflow:hidden;"><img src="' + p.photo_url + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
           : '<div class="sv-pr-avatar" style="background:' + col + '18;color:' + col + ';border:1.5px solid ' + col + '44;">' + p.name[0] + '</div>') +
-        '<div>' +
-          '<div class="sv-pr-name">' + p.name + '</div>' +
-          '<div class="sv-pr-meta">' + (p.services ? p.services.split(',').slice(0,2).map(function(s){ return '<span style="display:inline-block;font-size:9px;padding:1px 5px;border-radius:3px;border:1px solid var(--brd);color:var(--txt3);margin-right:2px;">'+s.trim()+'</span>'; }).join('') : '') + '</div>' +
+        '<div><div class="sv-pr-name">' + p.name + '</div><div class="sv-pr-meta">' + svcsHtml + '</div></div>' +
+      '</div>' +
+      '<div style="text-align:right;">' +
+        (catTxt !== '—' ? '<span style="font-size:10px;padding:2px 7px;border-radius:4px;border:1px solid var(--brd);color:var(--txt2);font-family:var(--font-mono);">' + catTxt + '</span>' : '<span style="color:var(--txt3);font-size:11px;">—</span>') +
+      '</div>' +
+      '<div style="text-align:right;">' +
+        '<div style="font-size:13px;color:' + mrrColor + ';font-family:var(--font-mono);">' + mrrTxt + '</div>' +
+        (mrr > 0 ? '<div style="font-size:9px;color:var(--txt3);margin-top:1px;font-family:var(--font-mono);">мес</div>' : '') +
+      '</div>' +
+      '<div style="text-align:right;">' +
+        '<div style="display:flex;align-items:baseline;gap:8px;justify-content:flex-end;">' +
+          '<div style="font-size:13px;color:' + marginColor + ';font-family:var(--font-mono);">' + marginTxt + '</div>' +
+          (profit !== null ? '<div style="font-size:11px;color:' + profitColor + ';font-family:var(--font-mono);">' + profitTxt + '</div>' : '') +
         '</div>' +
-      '</div>' +
-      '<div style="text-align:right;">' +
-        '<span style="font-size:11px;padding:2px 8px;border-radius:4px;border:1px solid var(--brd);color:var(--txt2);font-family:var(--font-mono);">' + catTxt + '</span>' +
-      '</div>' +
-      '<div style="text-align:right;">' +
-        '<div style="font-size:13px;color:' + mrrColor + ';">' + mrrTxt + '</div>' +
-        (mrr > 0 ? '<div style="font-size:9px;color:var(--txt3);font-family:var(--font-mono);margin-top:1px;">мес</div>' : '') +
-      '</div>' +
-      '<div style="text-align:right;">' +
-        '<div style="font-size:13px;color:' + marginColor + ';">' + marginTxt + '</div>' +
         (marginPct !== null ? '<div style="height:2px;background:var(--brd2);border-radius:2px;overflow:hidden;margin-top:4px;"><div style="height:100%;width:' + marginBarW + '%;background:' + marginColor + ';border-radius:2px;"></div></div>' : '') +
       '</div>' +
       '<div style="text-align:right;font-family:var(--font-mono);font-size:12px;color:' + dlColor + ';">' + dlTxt + '</div>' +
@@ -40570,14 +40590,14 @@ async function cpRenderMilestone(project) {
 .sv-proj-table { padding: 0; }
 .sv-proj-thead {
   display: grid;
-  grid-template-columns: 1fr 160px 80px 90px 90px 90px 80px;
+  grid-template-columns: 1.8fr 80px 160px 150px 90px 70px 72px;
   padding: 8px 20px; border-bottom: 1px solid var(--brd);
 }
 .sv-th { font-family: var(--font-mono); font-size: 9px; color: var(--txt3); letter-spacing: .1em; text-transform: uppercase; }
 .sv-th-r { text-align: right; }
 .sv-proj-row {
   display: grid;
-  grid-template-columns: 1fr 160px 80px 90px 90px 90px 80px;
+  grid-template-columns: 1.8fr 80px 160px 150px 90px 70px 72px;
   align-items: center;
   padding: 12px 20px;
   border-bottom: 1px solid rgba(240,236,230,.04);
