@@ -35827,16 +35827,26 @@ async function cp2RenderActivityFull(project) {
   var el = g('cp2-activity-full');
   if (!el) return;
 
-  var [stagesRes, tasksRes, stageNamesRes] = await Promise.all([
+  // Получаем индексы этапов проекта для fallback-запроса задач с project_id = NULL
+  var stageIdxRes = await sb.from('project_stages').select('stage_index,name').eq('project_id', project.id);
+  var stageIdxArr = (stageIdxRes.data || []);
+  var stageIdxList = stageIdxArr.map(function(s){ return s.stage_index; });
+
+  var [stagesRes, tasksRes] = await Promise.all([
     sb.from('stage_history').select('*').eq('project_id', project.id).order('created_at', {ascending:false}).limit(50),
-    sb.from('stage_tasks').select('*').eq('project_id', project.id).order('created_at', {ascending:false}).limit(200),
-    sb.from('project_stages').select('stage_index,name').eq('project_id', project.id)
+    // Берём задачи с project_id проекта ИЛИ с NULL project_id но нужным stage_index
+    stageIdxList.length
+      ? sb.from('stage_tasks').select('*')
+          .or('project_id.eq.' + project.id + ',project_id.is.null')
+          .in('stage_index', stageIdxList)
+          .order('created_at', {ascending:false}).limit(200)
+      : sb.from('stage_tasks').select('*').eq('project_id', project.id).order('created_at', {ascending:false}).limit(200)
   ]);
 
   var stageEvents = (stagesRes.data || []);
   var allTasks    = (tasksRes.data || []);
   var stageNames  = {};
-  (stageNamesRes.data || []).forEach(function(s){ stageNames[s.stage_index] = s.name; });
+  stageIdxArr.forEach(function(s){ stageNames[s.stage_index] = s.name; });
 
   if (!stageEvents.length && !allTasks.length) {
     el.innerHTML = '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.15);text-align:center;padding:16px 0;">Пока нет активности</div>';
@@ -35917,6 +35927,45 @@ async function cp2RenderActivityFull(project) {
 
     html += '</div>';
   });
+
+  // Задачи этапов у которых нет event в stage_history — рендерим отдельно
+  Object.keys(tasksByStage).forEach(function(si) {
+    if (renderedStages[si]) return; // уже отрисован вместе с событием
+    var tasks = tasksByStage[si];
+    if (!tasks || !tasks.length) return;
+    var stageNum = parseInt(si) + 1;
+    var numStr   = (stageNum < 10 ? '0' : '') + stageNum;
+    var stageName = stageNames[si] || (typeof STAGES !== 'undefined' && STAGES[si] && STAGES[si].name) || ('Этап ' + stageNum);
+    html += '<div class="cp-act-group">';
+    html +=
+      '<div class="cp-act-group-header">' +
+        '<div class="cp-act-group-icon start">' + evIcon['Начат'] + '</div>' +
+        '<div class="cp-act-group-title">Задачи этапа</div>' +
+        '<div class="cp-act-group-stage start">' + numStr + ' · ' + esc(stageName).toUpperCase() + '</div>' +
+        '<div class="cp-act-group-time"></div>' +
+      '</div>';
+    html += '<div class="cp-act-tasks-wrap">';
+    tasks.forEach(function(t) {
+      var isDone = t.done;
+      var tIcon  = isDone ? taskDoneIcon : taskOpenIcon;
+      var tCls   = isDone ? 'done' : '';
+      var hiPri  = t.priority === 'high' ? '<span class="cp-act-priority">срочно</span>' : '';
+      html +=
+        '<div class="cp-act-task-row">' +
+          '<div class="cp-act-task-icon ' + tCls + '">' + tIcon + '</div>' +
+          '<div style="flex:1;min-width:0;font-family:var(--font-display);font-size:12px;' +
+            (isDone ? 'color:rgba(255,255,255,.28);text-decoration:line-through;text-decoration-color:rgba(255,255,255,.15);' : 'color:rgba(255,255,255,.7);') +
+          '">' + esc(t.title) + hiPri + '</div>' +
+          '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.18);white-space:nowrap;flex-shrink:0;">' + fmtTime(t.created_at) + '</div>' +
+        '</div>';
+    });
+    html += '</div></div>';
+  });
+
+  if (!html) {
+    el.innerHTML = '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.15);text-align:center;padding:16px 0;">Пока нет активности</div>';
+    return;
+  }
 
   el.innerHTML = html;
 }
