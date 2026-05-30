@@ -41092,7 +41092,7 @@ function kbRenderProjectSidebar() {
 
   var projStat  = document.getElementById('kb-proj-stat-proj');
   var itemsStat = document.getElementById('kb-proj-stat-items');
-  if (projStat)  projStat.textContent = projects.length + archived.length;
+  if (projStat)  projStat.textContent = projects.length;
   if (itemsStat) itemsStat.textContent = '—';
 
   function buildItem(p, i, arr) {
