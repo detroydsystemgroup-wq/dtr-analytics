@@ -43562,30 +43562,17 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
   window.openProjectSettings = function(id) {
     _origOpenPS && _origOpenPS(id);
     setTimeout(function() {
-      // Загружаем stage_templates из проекта или дефолт
       var p = typeof _allProjects !== 'undefined' ? _allProjects.find(function(x){ return x.id === id; }) : null;
+      // Дефолтные 9 этапов
       var templates = DEFAULT_STAGE_TEMPLATES.map(function(s){ return { name: s.name, emoji: s.emoji, enabled: true }; });
+      // Если есть сохранённый шаблон — используем его
       if (p && p.stage_templates) {
         try {
           var saved = JSON.parse(p.stage_templates);
           if (Array.isArray(saved) && saved.length) templates = saved;
         } catch(e) {}
-      } else if (p) {
-        // Нет шаблона — пробуем загрузить из существующих project_stages
-        sb.from('project_stages').select('stage_index,name').eq('project_id', id).order('stage_index')
-          .then(function(res) {
-            var stages = res.data || [];
-            if (stages.length) {
-              var tpl = stages.map(function(s) {
-                var fallbackName = (window.STAGES && window.STAGES[s.stage_index] && window.STAGES[s.stage_index].name)
-                  || (DEFAULT_STAGE_TEMPLATES[s.stage_index] && DEFAULT_STAGE_TEMPLATES[s.stage_index].name)
-                  || ('Этап ' + (s.stage_index + 1));
-                return { name: s.name || fallbackName, emoji: '📌', enabled: true };
-              });
-              renderStageEditor('ps-stage-list', 'ps-stage-count', tpl);
-            }
-          });
       }
+      // Всегда рендерим дефолтные или сохранённые — не трогаем project_stages
       renderStageEditor('ps-stage-list', 'ps-stage-count', templates);
     }, 40);
   };
