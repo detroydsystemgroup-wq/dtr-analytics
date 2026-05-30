@@ -33821,7 +33821,7 @@ let _timerInterval = null
 
 // ── Форматирование суммарного времени проекта ──
 function _fmtProjectTime(totalMin) {
-  if (!totalMin || totalMin <= 0) return '—'
+  if (!totalMin || totalMin <= 0) return '0м'
   const h = Math.floor(totalMin / 60)
   const m = totalMin % 60
   if (h === 0) return m + 'м'
@@ -33852,10 +33852,15 @@ function updateProjectTimeDisplay() {
       .then(function(res) {
         var dbMin = (res.data || []).reduce(function(s,t){ return s + (t.time_logged||0) }, 0)
         _finTaskHours[currentProject.id] = dbMin
-        if (el) el.textContent = dbMin > 0 ? _fmtProjectTime(dbMin) : '--'
+        if (el) el.textContent = _fmtProjectTime(dbMin)
+        // Убедимся что badge показан
+        var b = g('global-timer-badge')
+        if (b) { b.classList.remove('gtb-running'); b.style.display = 'flex' }
+        var st = g('gtb-static'); var ru = g('gbt-running')
+        if (st) st.style.display = 'flex'
+        if (ru) ru.style.display = 'none'
       }).catch(function(){})
     if (el) el.textContent = '...'
-    return
   }
   // Убираем running-режим, показываем static
   const badge = g('global-timer-badge')
@@ -34200,6 +34205,12 @@ async function loadKanban() {
   }
   renderKanban()
   startKanbanLiveTimer()
+  // Обновляем бейдж суммарным временем (данные из kanbanTasks)
+  const _kbTotalMin = (kanbanTasks||[]).reduce((s,t) => s+(t.time_logged||0), 0)
+  if (_kbTotalMin > 0) {
+    _finTaskHours[currentProject.id] = _kbTotalMin
+  }
+  updateProjectTimeDisplay()
 }
 
 // ── Render full kanban board ──
@@ -34431,6 +34442,10 @@ async function kbMoveTask(taskId, fromStatus, toStatus) {
     if (trackerTask) Object.assign(trackerTask, updates)
     renderKanban()
     renderTasksForStage(task.stage_index)
+    // Обновляем бейдж времени после каждого движения задачи
+    const _newTotal = (kanbanTasks||[]).reduce((s,t) => s+(t.time_logged||0), 0)
+    _finTaskHours[currentProject.id] = _newTotal
+    updateProjectTimeDisplay()
   } catch(e) {
     console.warn('Move task failed:', e)
     if (e.message?.includes('column')) { g('kb-sql-note').style.display='flex'; openSQLSetup() }
