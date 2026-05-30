@@ -33401,6 +33401,8 @@ function renderFinance() {
   }
   const totalHoursMonth = totalHours30()
   const totalHours = _biAllRows.reduce((s,r)=>s+r.hours,0)  // все время
+  const hoursForRevPerH = totalHoursMonth > 0 ? totalHoursMonth : totalHours
+  const hoursForRevLabel = totalHoursMonth > 0 ? 'за 30 дн' : 'всё время' 
 
   const s=(id,v)=>{const el=g(id);if(el)el.textContent=v}
   s('bi-mrr',          totalMRR>0 ? fmtM(totalMRR)+' сум' : '—')
@@ -33420,8 +33422,8 @@ function renderFinance() {
     if (mins === 0) return hrs + 'ч'
     return hrs + 'ч ' + mins + 'м'
   }
-  s('bi-hours',     totalHoursMonth > 0 ? fmtHours(totalHoursMonth) : (totalHours > 0 ? fmtHours(totalHours) : '—'))
-  s('bi-hours-sub', totalHoursMonth > 0 ? 'за 30 дней' : 'по всем проектам')
+  s('bi-hours',     hoursForRevPerH > 0 ? fmtHours(hoursForRevPerH) : '—')
+  s('bi-hours-sub', hoursForRevLabel)
 
   const profitEl=g('bi-profit')
   if(profitEl && totalMRR>0) profitEl.style.color=totalProfit>=0?'var(--green)':'var(--red)'
@@ -33434,7 +33436,7 @@ function renderFinance() {
   const nClients = withBudget.length || 1
 
   // 1. Revenue per hour
-  const revPerH = totalHoursMonth > 0 ? Math.round(totalMRR / totalHoursMonth) : null
+  const revPerH = hoursForRevPerH > 0 ? Math.round(totalMRR / hoursForRevPerH) : null
   s('bi-rev-hour', revPerH ? fmtM(revPerH) + ' сум' : '—')
 
   // 2. Runway = accumulated profit reserve / monthly costs
@@ -38181,15 +38183,27 @@ async function loadOverview() {
 
   // Revenue per hour — только задачи за последние 30 дней (сопоставимо с MRR)
   var totalHours = 0;
+  var hoursLabel = 'за 30 дн';
   try {
     var thirtyAgoSv = new Date(); thirtyAgoSv.setDate(thirtyAgoSv.getDate() - 30);
-    var th = (await sb.from('stage_tasks')
+    var th30 = (await sb.from('stage_tasks')
       .select('time_logged')
       .in('project_id', activeProjectIds)
       .gte('updated_at', thirtyAgoSv.toISOString())
       .gt('time_logged', 0)
     ).data || [];
-    totalHours = th.reduce(function(s,t){ return s + (t.time_logged||0); }, 0) / 60;
+    totalHours = th30.reduce(function(s,t){ return s + (t.time_logged||0); }, 0) / 60;
+
+    // Fallback — все накопленные часы если за 30 дней нет данных
+    if (totalHours === 0) {
+      var thAll = (await sb.from('stage_tasks')
+        .select('time_logged')
+        .in('project_id', activeProjectIds)
+        .gt('time_logged', 0)
+      ).data || [];
+      totalHours = thAll.reduce(function(s,t){ return s + (t.time_logged||0); }, 0) / 60;
+      hoursLabel = 'всё время';
+    }
   } catch(e) {}
   var revPerHour = (totalMRR > 0 && totalHours > 0) ? Math.round(totalMRR / totalHours) : null;
 
@@ -38284,7 +38298,7 @@ async function loadOverview() {
   }
 
   s('sv-revh-val', revPerHour !== null ? fmtM(revPerHour) : '—');
-  s('sv-revh-sub', totalHours > 0 ? fmtM(Math.round(totalHours)) + ' ч за 30 дн · MRR ' + fmtM(totalMRR) : 'Задайте бюджеты и часы');
+  s('sv-revh-sub', totalHours > 0 ? fmtM(Math.round(totalHours)) + ' ч · ' + hoursLabel + ' · MRR ' + fmtM(totalMRR) : 'Задайте бюджеты и часы');
   if (revPerHour !== null) {
     svBadge('sv-revh-badge', revPerHour >= 100000 ? 'Высокая' : revPerHour >= 50000 ? 'Средняя' : 'Низкая',
       revPerHour >= 100000 ? 'rgba(62,207,142,.1)' : revPerHour >= 50000 ? 'rgba(232,153,58,.1)' : 'rgba(224,82,82,.1)',
