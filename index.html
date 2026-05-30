@@ -41832,6 +41832,61 @@ async function cpRenderMilestone(project) {
   padding: 0 14px !important;
   gap: 8px !important;
 }
+
+/* ── GO-BTN — McKinsey style ── */
+#page-report .go-btn,
+#go-btn {
+  width: auto !important;
+  min-width: 220px !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  padding: 12px 32px !important;
+  background: #c9a84c !important;
+  border: none !important;
+  border-radius: 6px !important;
+  color: #0c0c0c !important;
+  font-family: 'DM Mono', monospace !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+  transition: all .15s !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+#page-report .go-btn:hover:not(:disabled),
+#go-btn:hover:not(:disabled) {
+  background: #e0ba5a !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+#page-report .go-btn:disabled,
+#go-btn:disabled {
+  background: rgba(201,168,76,.2) !important;
+  color: rgba(201,168,76,.4) !important;
+  opacity: 1 !important;
+  cursor: not-allowed !important;
+}
+#page-report .go-btn svg,
+#go-btn svg {
+  stroke: #0c0c0c !important;
+}
+#page-report .go-btn:disabled svg,
+#go-btn:disabled svg {
+  stroke: rgba(201,168,76,.4) !important;
+}
+/* Контейнер кнопки */
+.go-btn-wrap {
+  display: flex !important;
+  justify-content: center !important;
+  padding: 24px 0 !important;
+  background: transparent !important;
+  border: none !important;
+}
 </style>
 
 
