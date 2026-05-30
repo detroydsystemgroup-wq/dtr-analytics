@@ -40851,8 +40851,10 @@ async function cpRenderMilestone(project) {
 #page-smm .ms-v { font-size:22px !important; font-weight:500 !important; color:#f0ece6 !important; }
 #page-smm *::before { animation:none !important; }
 #page-smm::before { display:none !important; }
-#btn-period-wrap,#ob-toggle { height:36px !important; box-sizing:border-box !important; font-family:'DM Mono',monospace !important; font-size:11px !important; border-radius:6px !important; }
-#ob-toggle { padding:0 14px !important; gap:8px !important; }
+#btn-period-wrap,#ob-toggle { height:36px !important; box-sizing:border-box !important; font-family:'DM Mono',monospace !important; font-size:11px !important; border-radius:6px !important; border:1px solid rgba(255,255,255,.15) !important; background:rgba(255,255,255,.05) !important; display:inline-flex !important; align-items:center !important; }
+#ob-toggle { padding:0 16px !important; gap:8px !important; }
+#btn-period-wrap { padding:0 !important; }
+#btn-period-wrap > div { height:100% !important; display:flex !important; align-items:center !important; }
 #page-report .go-btn,#go-btn { min-width:220px !important; margin:0 auto !important; padding:12px 32px !important; background:#c9a84c !important; border:none !important; border-radius:6px !important; color:#0c0c0c !important; font-family:'DM Mono',monospace !important; font-size:12px !important; font-weight:600 !important; letter-spacing:.08em !important; text-transform:uppercase !important; animation:none !important; }
 #page-report .go-btn:hover:not(:disabled),#go-btn:hover:not(:disabled) { background:#e0ba5a !important; transform:none !important; }
 #page-report .go-btn:disabled,#go-btn:disabled { background:rgba(201,168,76,.2) !important; color:rgba(201,168,76,.4) !important; opacity:1 !important; }
