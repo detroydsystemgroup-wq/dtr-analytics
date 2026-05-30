@@ -38600,29 +38600,31 @@ async function loadOverview() {
     var activeProjIds = activeProjs.map(function(p){ return p.id; });
     var activeStgs = _allStages.filter(function(s){ return activeProjIds.indexOf(s.project_id) !== -1; });
 
-    // Собираем уникальные этапы по stage_index с реальными именами из БД
-    var stageMap = {};
+    // Собираем уникальные этапы по имени — каждый уникальный этап это строка
+    // done = сколько проектов завершили этот этап, total = сколько проектов имеют этот этап
+    var nameMap = {};
+    var nameOrder = [];
     activeStgs.forEach(function(s) {
-      if (!stageMap[s.stage_index]) {
-        stageMap[s.stage_index] = { name: s.name || ('Этап ' + (s.stage_index + 1)), done: 0 };
+      var nm = (s.name || ('Этап ' + (s.stage_index + 1))).trim();
+      if (!nameMap[nm]) {
+        nameMap[nm] = { done: 0, total: 0 };
+        nameOrder.push(nm);
       }
-      if (s.status === 'completed') stageMap[s.stage_index].done++;
+      nameMap[nm].total++;
+      if (s.status === 'completed') nameMap[nm].done++;
     });
 
-    var stageIndices = Object.keys(stageMap).map(Number).sort(function(a,b){ return a-b; });
-
-    if (!stageIndices.length) {
+    if (!nameOrder.length) {
       hEl.innerHTML = '<div style="font-size:11px;color:var(--txt3);padding:12px 0;">Нет данных об этапах</div>';
     } else {
-      var total = activeProjs.length;
-      hEl.innerHTML = stageIndices.map(function(i) {
-        var st = stageMap[i];
-        var pct = total ? Math.round(st.done / total * 100) : 0;
+      hEl.innerHTML = nameOrder.map(function(nm) {
+        var st = nameMap[nm];
+        var pct = st.total ? Math.round(st.done / st.total * 100) : 0;
         var col = pct === 100 ? 'var(--green)' : pct >= 60 ? 'var(--a2)' : pct >= 30 ? 'var(--amber)' : 'rgba(255,255,255,.2)';
         return '<div class="sv-health-row">' +
-          '<div class="sv-health-name">' + st.name + '</div>' +
+          '<div class="sv-health-name">' + nm + '</div>' +
           '<div class="sv-health-bar-wrap"><div class="sv-health-bar" style="width:' + pct + '%;background:' + col + ';"></div></div>' +
-          '<div class="sv-health-val" style="color:' + col + ';">' + st.done + '/' + total + '</div>' +
+          '<div class="sv-health-val" style="color:' + col + ';">' + st.done + '/' + st.total + '</div>' +
         '</div>';
       }).join('');
     }
