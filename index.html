@@ -26460,8 +26460,9 @@ button, a, [role="button"],
         <div class="sv-proj-table">
           <div class="sv-proj-thead">
             <div class="sv-th">Проект</div>
-            <div class="sv-th sv-th-r">Прогресс</div>
-            <div class="sv-th sv-th-r">Статус</div>
+            <div class="sv-th sv-th-r">Категория</div>
+            <div class="sv-th sv-th-r">MRR</div>
+            <div class="sv-th sv-th-r">Маржа</div>
             <div class="sv-th sv-th-r">Дедлайн</div>
             <div class="sv-th sv-th-r">Churn Risk</div>
             <div class="sv-th" style="width:80px;"></div>
@@ -38578,24 +38579,39 @@ function svRenderProjTable(projData, overdueMap, today, MONTHS) {
     tbody.innerHTML = '<div style="padding:32px;text-align:center;font-family:var(--font-mono);font-size:11px;color:var(--txt3);">Нет проектов в этом фильтре</div>';
     return;
   }
+
+  function fmtMrr(v) {
+    if (!v) return '—';
+    if (v >= 1000000) return (v/1000000).toFixed(1).replace('.0','') + ' млн';
+    if (v >= 1000)    return (v/1000).toFixed(0) + ' тыс';
+    return v.toString();
+  }
+
   tbody.innerHTML = rows.map(function(item) {
     var p = item.p; var prog = item.prog;
     var col = p.brand_color || 'var(--a)';
-    var progColor = prog.pct >= 80 ? 'var(--green)' : prog.pct >= 40 ? col : 'var(--amber)';
-    var statusTxt = item.overdue ? 'Просрочен' : prog.pct === 100 ? 'Завершён' : 'Активен';
-    var statusBg  = item.overdue ? 'rgba(224,82,82,.1)' : prog.pct === 100 ? 'rgba(62,207,142,.1)' : 'rgba(184,146,58,.1)';
-    var statusCol = item.overdue ? 'var(--red)' : prog.pct === 100 ? 'var(--green)' : 'var(--a2)';
 
-    var projStages = _allStages.filter(function(s){ return s.project_id === p.id; });
-    var segs = '';
-    for (var i = 0; i < 9; i++) {
-      var st = projStages.find(function(s){ return s.stage_index === i; });
-      var stStatus = st ? st.status : 'pending';
-      var segBg = stStatus === 'completed' ? '#b8923a' : (stStatus === 'active' || stStatus === 'in_progress') ? '#dec17a' : 'rgba(255,255,255,.07)';
-      var segH = (stStatus === 'active' || stStatus === 'in_progress') ? '10px' : '5px';
-      segs += '<div class="sv-pipe-seg" style="background:' + segBg + ';height:' + segH + ';"></div>';
+    // Категория
+    var catTxt = (p.category || '').split(',')[0].trim() || '—';
+
+    // MRR
+    var mrr = p.monthly_budget || 0;
+    var mrrTxt = mrr > 0 ? fmtMrr(mrr) + ' сум' : '—';
+    var mrrColor = mrr > 0 ? 'var(--txt)' : 'var(--txt3)';
+
+    // Маржа из _biAllRows если есть — вычислим на лету если не загружено
+    var marginPct = null;
+    if (typeof _biAllRows !== 'undefined' && _biAllRows && _biAllRows.length) {
+      var biRow = _biAllRows.find(function(r){ return r.p && r.p.id === p.id; });
+      if (biRow) marginPct = biRow.marginPct;
+    } else if (typeof _biComputeRow === 'function') {
+      try { var r2 = _biComputeRow(p); marginPct = r2.marginPct; } catch(e){}
     }
+    var marginTxt   = marginPct !== null ? marginPct + '%' : '—';
+    var marginColor = marginPct === null ? 'var(--txt3)' : marginPct >= 60 ? '#22d3ee' : marginPct >= 30 ? 'var(--green)' : marginPct >= 15 ? 'var(--amber)' : 'var(--red)';
+    var marginBarW  = marginPct !== null ? Math.max(0, Math.min(100, marginPct)) : 0;
 
+    // Дедлайн
     var dlTxt = '—'; var dlColor = 'var(--txt3)';
     if (item.next) {
       var dl = new Date(item.next.deadline + 'T00:00:00');
@@ -38609,19 +38625,28 @@ function svRenderProjTable(projData, overdueMap, today, MONTHS) {
     var churnColor = item.isChurn ? 'var(--red)' : item.daysSince > 10 ? 'var(--amber)' : 'var(--green)';
     var churnTxt   = item.isChurn ? '⚠ ' + item.daysSince + 'д' : item.daysSince < 999 ? item.daysSince + 'д' : 'новый';
 
-    return '<div class="sv-proj-row" style="border-left-color:' + col + ';" onclick="openProject(\'' + p.id + '\')">' +
+    return '<div class="sv-proj-row" style="border-left-color:' + col + ';grid-template-columns:1.6fr 90px 120px 110px 100px 80px 72px;" onclick="openProject(\'' + p.id + '\')">' +
       '<div class="sv-pr-name-cell">' +
         (p.photo_url
           ? '<div class="sv-pr-avatar" style="background:transparent;border:1.5px solid ' + col + '44;padding:0;overflow:hidden;"><img src="' + p.photo_url + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
           : '<div class="sv-pr-avatar" style="background:' + col + '18;color:' + col + ';border:1.5px solid ' + col + '44;">' + p.name[0] + '</div>') +
         '<div>' +
           '<div class="sv-pr-name">' + p.name + '</div>' +
-          '<div class="sv-pr-meta">' + (p.description||'').substring(0,22) + '</div>' +
+          '<div class="sv-pr-meta">' + (p.services ? p.services.split(',').slice(0,2).map(function(s){ return '<span style="display:inline-block;font-size:9px;padding:1px 5px;border-radius:3px;border:1px solid var(--brd);color:var(--txt3);margin-right:2px;">'+s.trim()+'</span>'; }).join('') : '') + '</div>' +
         '</div>' +
       '</div>' +
-      '<div style="text-align:right;font-family:var(--font-display);font-size:13px;color:' + progColor + ';">' + prog.pct + '%<div style="font-family:var(--font-mono);font-size:9px;color:var(--txt3);margin-top:2px;">' + prog.completed + '/' + prog.total + ' эт.</div></div>' +
-      '<div style="text-align:right;"><span class="sv-status" style="background:' + statusBg + ';color:' + statusCol + ';">' + statusTxt + '</span></div>' +
-      '<div style="text-align:right;font-family:var(--font-mono);font-size:11px;color:' + dlColor + ';">' + dlTxt + '</div>' +
+      '<div style="text-align:right;">' +
+        '<span style="font-size:11px;padding:2px 8px;border-radius:4px;border:1px solid var(--brd);color:var(--txt2);font-family:var(--font-mono);">' + catTxt + '</span>' +
+      '</div>' +
+      '<div style="text-align:right;">' +
+        '<div style="font-size:13px;color:' + mrrColor + ';">' + mrrTxt + '</div>' +
+        (mrr > 0 ? '<div style="font-size:9px;color:var(--txt3);font-family:var(--font-mono);margin-top:1px;">мес</div>' : '') +
+      '</div>' +
+      '<div style="text-align:right;">' +
+        '<div style="font-size:13px;color:' + marginColor + ';">' + marginTxt + '</div>' +
+        (marginPct !== null ? '<div style="height:2px;background:var(--brd2);border-radius:2px;overflow:hidden;margin-top:4px;"><div style="height:100%;width:' + marginBarW + '%;background:' + marginColor + ';border-radius:2px;"></div></div>' : '') +
+      '</div>' +
+      '<div style="text-align:right;font-family:var(--font-mono);font-size:12px;color:' + dlColor + ';">' + dlTxt + '</div>' +
       '<div style="text-align:right;font-family:var(--font-mono);font-size:11px;color:' + churnColor + ';">' +
         '<span class="sv-risk-dot" style="background:' + churnColor + ';"></span>' + churnTxt +
       '</div>' +
