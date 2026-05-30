@@ -26075,9 +26075,9 @@ button, a, [role="button"],
       <!-- ① HERO STRIP -->
       <div class="apl-hero-strip proj-hero">
         <div class="apl-hero-card">
-          <div class="apl-hero-eyebrow">ВСЕГО ПРОЕКТОВ</div>
+          <div class="apl-hero-eyebrow">АКТИВНЫХ ПРОЕКТОВ</div>
           <div class="apl-hero-num" id="proj-hero-total" style="color:var(--a2);">—</div>
-          <div class="apl-hero-sub">в портфеле</div>
+          <div class="apl-hero-sub">в работе</div>
           <div class="apl-hero-rule"></div>
           <div class="apl-hero-foot" id="proj-hero-active">— активных</div>
         </div>
@@ -26085,7 +26085,7 @@ button, a, [role="button"],
         <div class="apl-hero-card">
           <div class="apl-hero-eyebrow">СРЕДНИЙ ПРОГРЕСС</div>
           <div class="apl-hero-num" id="proj-hero-avg" style="color:var(--cyan);">—</div>
-          <div class="apl-hero-sub">этапов завершено</div>
+          <div class="apl-hero-sub">по активным проектам</div>
           <div class="apl-hero-rule"></div>
           <div class="apl-hero-foot" id="proj-hero-stages">—</div>
         </div>
@@ -31185,17 +31185,19 @@ function renderProjectGrid() {
 
   // ── Update hero strip (только активные проекты) ──
   const _activeProjs = _allProjects.filter(p => p.status !== 'archived')
-  const _activeStgs  = _allStages.filter(s => _activeProjs.some(p => p.id === s.project_id))
-  const allPcts = _activeProjs.map(p => getProjectProgress(p.id).pct)
+  const _trulyActive = _activeProjs.filter(p => getProjectProgress(p.id).pct < 100)
+  const _activeStgs  = _allStages.filter(s => _trulyActive.some(p => p.id === s.project_id))
+  const allPcts = _trulyActive.map(p => getProjectProgress(p.id).pct)
   const avgPct = allPcts.length ? Math.round(allPcts.reduce((s,v)=>s+v,0)/allPcts.length) : 0
-  const overdueCount = _activeProjs.filter(p => isProjectOverdue(p.id)).length
+  const overdueCount = _trulyActive.filter(p => isProjectOverdue(p.id)).length
   const archivedProjs = _allProjects.filter(p => p.status === 'archived')
   const doneCount = _activeProjs.filter(p => getProjectProgress(p.id).pct === 100).length + archivedProjs.length
-  const activeCount = _activeProjs.filter(p => getProjectProgress(p.id).pct < 100).length
+  const activeCount = _trulyActive.length
   const totalStagesDone = _activeStgs.filter(s => s.status === 'completed').length
-  const totalMRR = _activeProjs.reduce((s,p) => s + (p.monthly_budget||0), 0)
+  const doneProjs = [..._activeProjs.filter(p => getProjectProgress(p.id).pct === 100), ...archivedProjs]
+  const totalMRR = doneProjs.reduce((s,p) => s + (p.monthly_budget||0), 0)
   const setH = (id, v) => { const e = g(id); if(e) e.textContent = v }
-  setH('proj-hero-total', _activeProjs.length)
+  setH('proj-hero-total', activeCount)
   setH('proj-hero-active', activeCount + ' активных · ' + doneCount + ' завершено')
   setH('proj-hero-avg', avgPct + '%')
   setH('proj-hero-stages', totalStagesDone + ' этапов завершено')
