@@ -29974,6 +29974,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 //
 // AI_PROXY_URL — URL Edge Function (если пустой, запросы идут напрямую с ключом из браузера)
 const AI_PROXY_URL = '' // <-- вставить: SUPABASE_URL + '/functions/v1/ai-proxy'
+const RESET_PASS_URL = 'https://ygxfvmpfhrfxqzoylddo.supabase.co/functions/v1/reset-client-password'
 const ANTHROPIC_KEY = '' // НЕ вставляй ключ сюда в продакшн! Используй AI_PROXY_URL через Edge Function.
 // Если ключ нужен только для локального теста — вставь и сразу удали перед деплоем.
 if (ANTHROPIC_KEY && !AI_PROXY_URL && typeof window !== 'undefined') {
@@ -37558,6 +37559,24 @@ function showSQLHint() {
     <!-- Divider -->
     <div style="height:1px;background:rgba(255,255,255,.06);margin:20px 0;"></div>
 
+    <!-- Reset client password -->
+    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px 16px;margin-bottom:10px;">
+      <div style="margin-bottom:10px;">
+        <div style="font-size:13px;color:rgba(255,255,255,.6);margin-bottom:2px;">Пароль клиента</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.25);">Задай новый пароль для входа клиента</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <input type="password" id="ps-new-client-pass" placeholder="Новый пароль (мин. 8 символов)"
+          style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 12px;color:rgba(255,255,255,.7);font-size:12px;outline:none;font-family:var(--font-body);">
+        <button onclick="dtrResetClientPassword()" id="ps-reset-pass-btn"
+          style="background:rgba(184,146,58,.12);border:1px solid rgba(184,146,58,.3);border-radius:8px;padding:8px 14px;color:var(--a2);font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap;font-family:var(--font-body);"
+          onmouseover="this.style.background='rgba(184,146,58,.2)'" onmouseout="this.style.background='rgba(184,146,58,.12)'">
+          Сохранить
+        </button>
+      </div>
+      <div id="ps-reset-pass-msg" style="font-size:11px;margin-top:8px;display:none;font-family:var(--font-mono);"></div>
+    </div>
+
     <!-- Danger zone -->
     <div style="background:rgba(248,113,113,.05);border:1px solid rgba(248,113,113,.15);border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
       <div>
@@ -43661,5 +43680,57 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
   window._dtrDefaultStageTemplates = DEFAULT_STAGE_TEMPLATES;
 
 })();
+</script>
+
+<script>
+async function dtrResetClientPassword() {
+  const newPass = document.getElementById('ps-new-client-pass').value.trim()
+  const msg = document.getElementById('ps-reset-pass-msg')
+  const btn = document.getElementById('ps-reset-pass-btn')
+  const projId = typeof _psProjectId !== 'undefined' ? _psProjectId : null
+
+  msg.style.display = 'none'
+
+  if (!newPass) { showMsg('Введи новый пароль', 'rgba(248,113,113,.7)'); return }
+  if (newPass.length < 8) { showMsg('Минимум 8 символов', 'rgba(248,113,113,.7)'); return }
+  if (!projId) { showMsg('Проект не определён', 'rgba(248,113,113,.7)'); return }
+
+  btn.disabled = true
+  btn.textContent = 'Сохраняем...'
+
+  try {
+    const session = await sb.auth.getSession()
+    const token = session?.data?.session?.access_token
+    if (!token) { showMsg('Нет сессии — войди заново', 'rgba(248,113,113,.7)'); return }
+
+    const res = await fetch(RESET_PASS_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({ project_id: projId, new_password: newPass })
+    })
+
+    const data = await res.json()
+    if (res.ok && data.success) {
+      showMsg('✓ Пароль изменён для ' + data.email, 'rgba(56,178,172,.8)')
+      document.getElementById('ps-new-client-pass').value = ''
+    } else {
+      showMsg(data.error || 'Ошибка', 'rgba(248,113,113,.7)')
+    }
+  } catch(e) {
+    showMsg('Ошибка соединения: ' + e.message, 'rgba(248,113,113,.7)')
+  } finally {
+    btn.disabled = false
+    btn.textContent = 'Сохранить'
+  }
+
+  function showMsg(text, color) {
+    msg.style.display = 'block'
+    msg.style.color = color
+    msg.textContent = text
+  }
+}
 </script>
 </html>
