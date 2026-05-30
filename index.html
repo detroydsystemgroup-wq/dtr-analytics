@@ -26115,6 +26115,8 @@ button, a, [role="button"],
           </div>
           <!-- Category tags -->
           <div class="proj-tags-row" id="dash-tags-row"></div>
+          <!-- Service filter chips -->
+          <div class="proj-tags-row" id="dash-svc-row" style="display:none;"></div>
         </div>
         <div class="proj-cmd-right">
           <div class="dl-select2-wrap">
@@ -29631,6 +29633,11 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
     <div id="proj-err" class="err-box" style="display:none;"></div>
     <div class="field"><label>Название заведения</label><input type="text" id="proj-name-inp" placeholder="Uzbek Doner" oninput="updateClientLoginPreview()"></div>
     <div class="field"><label>Описание</label><input type="text" id="proj-desc-inp" placeholder="Сеть фастфуда, Ташкент"></div>
+    <div class="field">
+      <label>Услуги</label>
+      <div id="proj-services-select" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;"></div>
+      <div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.2);margin-top:5px;">Выбери одну или несколько услуг</div>
+    </div>
     <div class="field"><label>Цвет бренда</label><input type="color" id="proj-color-inp" value="#c9a84c" style="height:44px;padding:4px;"></div>
     <div class="field">
       <label>Фото / логотип проекта</label>
@@ -31174,6 +31181,10 @@ function renderProjectGrid() {
   let list = _allProjects.filter(p => {
     if (search && !p.name.toLowerCase().includes(search) && !(p.description||'').toLowerCase().includes(search)) return false
     if (_activeCatTag && !(p.category||'').includes(_activeCatTag)) return false
+    if (window._activeSvcFilter) {
+      try { const svcs = JSON.parse(p.services||'[]'); if (!svcs.includes(window._activeSvcFilter)) return false }
+      catch(e) { if (!(p.services||'').includes(window._activeSvcFilter)) return false }
+    }
     if (_projectFilter === 'active') return p.status !== 'archived' && getProjectProgress(p.id).pct < 100
     if (_projectFilter === 'archived') return p.status === 'archived' || getProjectProgress(p.id).pct === 100
     if (_projectFilter === 'done') return p.status === 'archived' || getProjectProgress(p.id).pct === 100
@@ -37450,7 +37461,11 @@ function showSQLHint() {
       <div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.2);margin-top:5px;">Несколько через запятую</div>
     </div>
 
-    <!-- Тариф -->
+    <div class="field">
+      <label>Услуги</label>
+      <div id="ps-services-select" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;"></div>
+      <div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.2);margin-top:5px;">Выбери одну или несколько</div>
+    </div>
     <div class="field">
       <label>Тариф</label>
       <div style="display:flex;gap:8px;margin-top:2px;" id="ps-tariff-btns">
@@ -42721,5 +42736,248 @@ window.kbDeleteCat = async function(id) {
 
 function cp2FilterReports(){}  // legacy stub — больше не используется
 function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
+</script>
+
+<style>
+/* ═══════════════════════════════════════
+   DTR SERVICES — сегментация по услугам
+═══════════════════════════════════════ */
+.svc-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 10px; border-radius: 6px; cursor: pointer;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+  letter-spacing: .05em; text-transform: uppercase;
+  border: 1.5px solid transparent; transition: all .15s;
+  user-select: none;
+}
+.svc-chip-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.svc-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 7px; border-radius: 4px;
+  font-family: var(--font-mono); font-size: 9px; font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase;
+}
+.dash-svc-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 6px; cursor: pointer;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+  letter-spacing: .05em; text-transform: uppercase;
+  border: 1px solid rgba(255,255,255,.1);
+  background: rgba(255,255,255,.04); color: rgba(255,255,255,.45);
+  transition: all .15s;
+}
+.dash-svc-tag:hover { background: rgba(255,255,255,.08); color: rgba(255,255,255,.7); }
+.dash-svc-tag.active { color: #fff; }
+</style>
+
+<script>
+(function() {
+  const SERVICES = [
+    { id: 'smm',          label: 'SMM',                    color: '#38b2ac', bg: 'rgba(56,178,172,.12)',  border: 'rgba(56,178,172,.3)'  },
+    { id: 'production',   label: 'Продакшн под ключ',      color: '#b06fc0', bg: 'rgba(176,111,192,.12)', border: 'rgba(176,111,192,.3)' },
+    { id: 'target',       label: 'Таргетированная реклама', color: '#e8993a', bg: 'rgba(232,153,58,.12)',  border: 'rgba(232,153,58,.3)'  },
+    { id: 'design',       label: 'Дизайн и брендинг',      color: '#e05252', bg: 'rgba(224,82,82,.12)',   border: 'rgba(224,82,82,.3)'   },
+    { id: 'subscription', label: 'Подписка DETROYD',        color: '#b8923a', bg: 'rgba(184,146,58,.12)',  border: 'rgba(184,146,58,.3)'  },
+  ];
+
+  window._activeSvcFilter = null;
+
+  function getSvc(id) { return SERVICES.find(s => s.id === id); }
+
+  function parseServices(val) {
+    if (!val) return [];
+    try { const arr = JSON.parse(val); if (Array.isArray(arr)) return arr; } catch(e) {}
+    return val.split(',').map(s => s.trim()).filter(Boolean);
+  }
+
+  function serializeServices(arr) { return JSON.stringify(arr || []); }
+
+  function renderServiceSelect(containerId, selected) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    el.innerHTML = SERVICES.map(s => {
+      const active = selected.includes(s.id);
+      return `<div class="svc-chip" data-svc="${s.id}" data-active="${active?'1':'0'}"
+        style="background:${active ? s.bg : 'rgba(255,255,255,.04)'};
+               border-color:${active ? s.border : 'rgba(255,255,255,.1)'};
+               color:${active ? s.color : 'rgba(255,255,255,.4)'};"
+        onclick="dtrToggleService(this,'${containerId}')">
+        <div class="svc-chip-dot" style="background:${active ? s.color : 'rgba(255,255,255,.2)'};"></div>
+        ${s.label}
+      </div>`;
+    }).join('');
+  }
+
+  window.dtrToggleService = function(el) {
+    const id = el.dataset.svc;
+    const s = getSvc(id);
+    if (!s) return;
+    const nowActive = el.dataset.active !== '1';
+    el.dataset.active = nowActive ? '1' : '0';
+    el.style.background  = nowActive ? s.bg     : 'rgba(255,255,255,.04)';
+    el.style.borderColor = nowActive ? s.border : 'rgba(255,255,255,.1)';
+    el.style.color       = nowActive ? s.color  : 'rgba(255,255,255,.4)';
+    el.querySelector('.svc-chip-dot').style.background = nowActive ? s.color : 'rgba(255,255,255,.2)';
+  };
+
+  function getSelectedServices(containerId) {
+    const el = document.getElementById(containerId);
+    if (!el) return [];
+    return [...el.querySelectorAll('.svc-chip')].filter(c => c.dataset.active === '1').map(c => c.dataset.svc);
+  }
+
+  window.dtrServiceBadges = function(servicesVal) {
+    const arr = parseServices(servicesVal);
+    if (!arr.length) return '';
+    const shorts = { smm:'SMM', production:'PROD', target:'TARGET', design:'DESIGN', subscription:'DSS' };
+    return arr.slice(0,3).map(id => {
+      const s = getSvc(id);
+      if (!s) return '';
+      return `<span class="svc-badge" style="background:${s.bg};color:${s.color};border:1px solid ${s.border};">
+        <span style="width:4px;height:4px;border-radius:50%;background:${s.color};display:inline-block;flex-shrink:0;"></span>
+        ${shorts[id]||id}
+      </span>`;
+    }).join('');
+  };
+
+  function renderSvcFilterRow() {
+    const row = document.getElementById('dash-svc-row');
+    if (!row) return;
+    const used = new Set();
+    if (typeof _allProjects !== 'undefined') {
+      _allProjects.forEach(p => parseServices(p.services).forEach(id => used.add(id)));
+    }
+    if (!used.size) { row.style.display = 'none'; return; }
+    row.style.display = 'flex';
+    row.innerHTML = [...used].map(id => {
+      const s = getSvc(id);
+      if (!s) return '';
+      const active = window._activeSvcFilter === id;
+      return `<button class="dash-svc-tag${active?' active':''}"
+        style="${active ? `background:${s.bg};border-color:${s.border};color:${s.color};` : ''}"
+        onclick="dtrSetSvcFilter('${id}')">
+        <span style="width:5px;height:5px;border-radius:50%;background:${s.color};display:inline-block;flex-shrink:0;"></span>
+        ${s.label}
+      </button>`;
+    }).join('');
+  }
+
+  window.dtrSetSvcFilter = function(id) {
+    window._activeSvcFilter = window._activeSvcFilter === id ? null : id;
+    renderSvcFilterRow();
+    if (typeof renderProjectGrid === 'function') renderProjectGrid();
+  };
+
+  /* ── Патч renderProjectGrid: бейджи + svc-row (фильтрация уже встроена в renderProjectGrid напрямую) ── */
+  function patchRenderGrid() {
+    if (typeof renderProjectGrid !== 'function') { setTimeout(patchRenderGrid, 300); return; }
+    const orig = renderProjectGrid;
+    window.renderProjectGrid = function() {
+      orig();
+      renderSvcFilterRow();
+      // Вставляем сервисные бейджи в карточки
+      if (typeof _allProjects === 'undefined') return;
+      document.querySelectorAll('.proj-row').forEach(function(row) {
+        var onclick = row.getAttribute('onclick') || '';
+        var m = onclick.match(/openProject\('([^']+)'\)/);
+        if (!m) return;
+        var p = _allProjects.find(function(x){ return x.id === m[1]; });
+        if (!p || !p.services) return;
+        var badges = dtrServiceBadges(p.services);
+        if (!badges) return;
+        var meta = row.querySelector('.prow-meta');
+        if (meta && !meta.querySelector('.svc-badge')) {
+          meta.insertAdjacentHTML('beforeend', '<span style="display:inline-flex;gap:3px;flex-wrap:wrap;margin-left:2px;">'+badges+'</span>');
+        }
+      });
+    };
+  }
+
+  /* ── Патч openProjectSettings: prefill ── */
+  function patchOpenSettings() {
+    if (typeof openProjectSettings !== 'function') { setTimeout(patchOpenSettings, 300); return; }
+    const orig = openProjectSettings;
+    window.openProjectSettings = function(id) {
+      orig(id);
+      setTimeout(function() {
+        var p = typeof _allProjects !== 'undefined' ? _allProjects.find(function(x){ return x.id === id; }) : null;
+        var selected = p ? parseServices(p.services) : [];
+        renderServiceSelect('ps-services-select', selected);
+      }, 30);
+    };
+  }
+
+  /* ── Патч saveProjectSettings: сохранение ── */
+  function patchSaveSettings() {
+    if (typeof saveProjectSettings !== 'function') { setTimeout(patchSaveSettings, 300); return; }
+    const orig = saveProjectSettings;
+    window.saveProjectSettings = async function() {
+      var projId = typeof _psProjectId !== 'undefined' ? _psProjectId : null;
+      await orig();
+      if (!projId) return;
+      var svcs = getSelectedServices('ps-services-select');
+      var val = serializeServices(svcs);
+      try {
+        var res = await sb.from('projects').update({ services: val }).eq('id', projId);
+        if (!res.error) {
+          if (typeof _allProjects !== 'undefined') {
+            var p = _allProjects.find(function(x){ return x.id === projId; });
+            if (p) p.services = val;
+          }
+        } else {
+          console.warn('[DTR Services] Add column: ALTER TABLE projects ADD COLUMN IF NOT EXISTS services text;');
+          if (typeof showToast === 'function') showToast('⚡', 'SQL: ALTER TABLE projects ADD COLUMN IF NOT EXISTS services text;', 'warn');
+        }
+      } catch(e) { console.warn('[DTR Services]', e); }
+    };
+  }
+
+  /* ── Патч createProject: сохранение услуг после создания ── */
+  function patchCreateProject() {
+    if (typeof createProject !== 'function') { setTimeout(patchCreateProject, 300); return; }
+    const orig = createProject;
+    window.createProject = async function() {
+      var svcs = getSelectedServices('proj-services-select');
+      // Запоминаем ID существующих проектов до создания
+      var existingIds = typeof _allProjects !== 'undefined' ? _allProjects.map(function(p){ return p.id; }) : [];
+      await orig();
+      if (!svcs.length) { renderServiceSelect('proj-services-select', []); return; }
+      // Ждём пока loadProjects обновит _allProjects (до 3 сек)
+      var val = serializeServices(svcs);
+      var attempts = 0;
+      var interval = setInterval(async function() {
+        attempts++;
+        if (typeof _allProjects === 'undefined') { if (attempts > 15) clearInterval(interval); return; }
+        var newest = _allProjects.find(function(p){ return existingIds.indexOf(p.id) === -1; });
+        if (!newest && attempts <= 15) return;
+        clearInterval(interval);
+        if (!newest) return;
+        try {
+          var res = await sb.from('projects').update({ services: val }).eq('id', newest.id);
+          if (!res.error) { newest.services = val; renderSvcFilterRow(); }
+        } catch(e) {}
+        renderServiceSelect('proj-services-select', []);
+      }, 200);
+    };
+  }
+
+  /* ── Инициализация ── */
+  function init() {
+    renderServiceSelect('proj-services-select', []);
+    renderServiceSelect('ps-services-select', []);
+    patchRenderGrid();
+    patchOpenSettings();
+    patchSaveSettings();
+    patchCreateProject();
+    renderSvcFilterRow();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    setTimeout(init, 250);
+  }
+
+})();
 </script>
 </html>
