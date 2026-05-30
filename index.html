@@ -26703,20 +26703,6 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
     </div>
 
     <!-- ══ БАЗА ЗНАНИЙ ══ -->
-    <div id="dtab-team-panel" style="display:none !important;padding:24px 20px;">
-       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-        <div>
-          <div style="font-size:16px;font-weight:500;color:var(--txt);">Команда агентства</div>
-          <div style="font-size:11px;color:var(--txt3);margin-top:2px;">Сотрудники назначаются на этапы проектов</div>
-        </div>
-        <button class="btn-primary" style="padding:8px 16px;" onclick="openAddTeamMember()">+ Добавить</button>
-      </div>
-      <div id="team-members-list" style="display:flex;flex-direction:column;gap:8px;"></div>
-      <div style="margin-top:28px;">
-        <div style="font-size:13px;font-weight:500;color:var(--txt);margin-bottom:14px;">Нагрузка по сотрудникам</div>
-        <div id="team-workload-bars" style="display:flex;flex-direction:column;gap:8px;"></div>
-      </div>
-    </div>
 
     <div id="dtab-kb-panel" style="display:none;">
 
@@ -26809,6 +26795,21 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
           </div>
 
         </main>
+      </div>
+    </div>
+
+    <div id="dtab-team-panel" style="display:none;padding:24px 20px;">
+       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div>
+          <div style="font-size:16px;font-weight:500;color:var(--txt);">Команда агентства</div>
+          <div style="font-size:11px;color:var(--txt3);margin-top:2px;">Сотрудники назначаются на этапы проектов</div>
+        </div>
+        <button class="btn-primary" style="padding:8px 16px;" onclick="openAddTeamMember()">+ Добавить</button>
+      </div>
+      <div id="team-members-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+      <div style="margin-top:28px;">
+        <div style="font-size:13px;font-weight:500;color:var(--txt);margin-bottom:14px;">Нагрузка по сотрудникам</div>
+        <div id="team-workload-bars" style="display:flex;flex-direction:column;gap:8px;"></div>
       </div>
     </div>
 
