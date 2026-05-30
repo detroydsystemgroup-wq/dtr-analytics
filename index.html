@@ -26507,20 +26507,20 @@ button, a, [role="button"],
           <div class="sv-health-body" id="sv-health-body"></div>
         </div>
 
-        <!-- Нагрузка по сотрудникам -->
-        <div class="sv-section-block" style="margin-top:16px;">
-          <div class="sv-section-hdr">
-            <div class="sv-section-hdr-left">
-              <div class="sv-section-icon" style="background:rgba(127,119,221,.1);color:#7f77dd;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
-              <div>
-                <div class="sv-section-title">Нагрузка по сотрудникам</div>
-                <div class="sv-section-sub">Активные этапы на каждого</div>
-              </div>
+      </div>
+
+      <!-- Нагрузка по сотрудникам — full width -->
+      <div class="sv-section-block" style="margin:20px 12px 0;">
+        <div class="sv-section-hdr">
+          <div class="sv-section-hdr-left">
+            <div class="sv-section-icon" style="background:rgba(127,119,221,.1);color:#7f77dd;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+            <div>
+              <div class="sv-section-title">Нагрузка по сотрудникам</div>
+              <div class="sv-section-sub">В ожидании · В работе · Завершено</div>
             </div>
           </div>
-          <div class="sv-health-body" id="sv-workload-body"></div>
         </div>
-
+        <div id="sv-workload-body" style="padding:0;"></div>
       </div>
 
       <div style="height:60px;"></div>
@@ -38748,24 +38748,58 @@ async function loadOverview() {
               wEl.innerHTML = '<div style="font-size:11px;color:var(--txt3);padding:4px 0;">Назначь сотрудников на этапы в трекере</div>';
               return;
             }
-            wEl.innerHTML = memberLoad.map(function(r) {
-              var pctDone    = Math.round(r.done    / r.total * 100);
-              var pctActive  = Math.round(r.active  / r.total * 100);
-              var pctPending = Math.round(r.pending / r.total * 100);
-              var loadColor  = r.active >= 4 ? 'var(--red)' : r.active >= 2 ? 'var(--amber)' : 'var(--green)';
-              return '<div class="sv-health-row">' +
-                '<div class="sv-health-name" style="display:flex;align-items:center;gap:6px;">' +
-                  '<span style="width:8px;height:8px;border-radius:50%;background:' + r.m.color + ';flex-shrink:0;display:inline-block;"></span>' +
-                  r.m.name +
+            // Считаем суммарные значения для заголовка
+            var totalPending  = memberLoad.reduce(function(s,r){ return s + r.pending; }, 0);
+            var totalActive   = memberLoad.reduce(function(s,r){ return s + r.active;  }, 0);
+            var totalDone     = memberLoad.reduce(function(s,r){ return s + r.done;    }, 0);
+            var totalAll      = totalPending + totalActive + totalDone;
+
+            // Шапка 3 колонок
+            var colHdr = '<div style="display:grid;grid-template-columns:180px 1fr 1fr 1fr;gap:0;border-bottom:1px solid var(--brd);">' +
+              '<div style="padding:10px 16px;font-size:11px;color:var(--txt3);">Сотрудник</div>' +
+              '<div style="padding:10px 16px;font-size:11px;color:var(--txt3);text-align:center;border-left:1px solid var(--brd);">В ожидании <span style="color:var(--txt2);font-family:var(--font-mono);">' + totalPending + '</span></div>' +
+              '<div style="padding:10px 16px;font-size:11px;color:var(--txt3);text-align:center;border-left:1px solid var(--brd);">В работе <span style="color:var(--amber);font-family:var(--font-mono);">' + totalActive + '</span></div>' +
+              '<div style="padding:10px 16px;font-size:11px;color:var(--txt3);text-align:center;border-left:1px solid var(--brd);">Завершено <span style="color:var(--green);font-family:var(--font-mono);">' + totalDone + '</span></div>' +
+            '</div>';
+
+            // Строки сотрудников
+            var rows = memberLoad.map(function(r) {
+              var total = r.pending + r.active + r.done; // пересчёт для надёжности
+              // Полоска нагрузки: relative width от максимального total в команде
+              var maxTotal = Math.max.apply(null, memberLoad.map(function(x){ return x.pending + x.active + x.done; }));
+              var barPending = maxTotal ? Math.round(r.pending / maxTotal * 100) : 0;
+              var barActive  = maxTotal ? Math.round(r.active  / maxTotal * 100) : 0;
+              var barDone    = maxTotal ? Math.round(r.done    / maxTotal * 100) : 0;
+
+              var loadColor = r.active >= 5 ? 'var(--red)' : r.active >= 3 ? 'var(--amber)' : 'var(--green)';
+
+              function bar(count, color, pct, label) {
+                if (count === 0) return '<div style="display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;padding:14px 16px;border-left:1px solid var(--brd);">' +
+                  '<span style="font-size:11px;color:var(--txt3);font-family:var(--font-mono);">—</span></div>';
+                return '<div style="display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;padding:14px 16px;border-left:1px solid var(--brd);">' +
+                  '<span style="font-size:20px;font-family:var(--font-mono);color:' + color + ';line-height:1;">' + count + '</span>' +
+                  '<div style="width:100%;max-width:80px;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;">' +
+                    '<div style="width:' + pct + '%;height:100%;background:' + color + ';opacity:.7;border-radius:2px;"></div>' +
+                  '</div>' +
+                '</div>';
+              }
+
+              return '<div style="display:grid;grid-template-columns:180px 1fr 1fr 1fr;gap:0;border-bottom:1px solid var(--brd);align-items:stretch;">' +
+                // Имя
+                '<div style="display:flex;align-items:center;gap:8px;padding:12px 16px;">' +
+                  '<div style="width:28px;height:28px;border-radius:50%;background:' + r.m.color + '22;border:1.5px solid ' + r.m.color + '55;display:flex;align-items:center;justify-content:center;font-size:11px;color:' + r.m.color + ';flex-shrink:0;">' + r.m.name[0] + '</div>' +
+                  '<div>' +
+                    '<div style="font-size:13px;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px;">' + r.m.name + '</div>' +
+                    '<div style="font-size:10px;color:var(--txt3);margin-top:1px;font-family:var(--font-mono);">' + total + ' всего</div>' +
+                  '</div>' +
                 '</div>' +
-                '<div class="sv-health-bar-wrap" style="display:flex;overflow:hidden;border-radius:3px;">' +
-                  '<div style="width:' + pctDone + '%;background:#3ecf8e;opacity:.5;height:100%;"></div>' +
-                  '<div style="width:' + pctActive + '%;background:' + r.m.color + ';height:100%;"></div>' +
-                  '<div style="width:' + pctPending + '%;background:rgba(255,255,255,.1);height:100%;"></div>' +
-                '</div>' +
-                '<div class="sv-health-val" style="color:' + loadColor + ';">' + r.active + ' акт. · ' + r.total + '</div>' +
+                bar(r.pending, 'rgba(240,236,230,.5)', barPending) +
+                bar(r.active,  loadColor,              barActive) +
+                bar(r.done,    'var(--green)',          barDone) +
               '</div>';
             }).join('');
+
+            wEl.innerHTML = colHdr + rows;
           });
       });
   }
