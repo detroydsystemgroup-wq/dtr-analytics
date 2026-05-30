@@ -43343,447 +43343,212 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
 </script>
 
 <style>
-/* ── DTR Custom Stages ── */
-.dtr-stage-row {
-  display: flex; align-items: center; gap: 8px;
-  padding: 7px 10px; border-radius: 8px;
-  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);
-  transition: background .12s;
-}
-.dtr-stage-row:hover { background: rgba(255,255,255,.05); }
-.dtr-stage-handle {
-  color: rgba(255,255,255,.2); cursor: grab; flex-shrink: 0; line-height: 1;
-  font-size: 14px; padding: 2px;
-}
-.dtr-stage-check {
-  width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid rgba(255,255,255,.2);
-  background: transparent; cursor: pointer; flex-shrink: 0; appearance: none;
-  transition: all .12s; position: relative;
-}
-.dtr-stage-check:checked {
-  background: rgba(184,146,58,.2); border-color: rgba(184,146,58,.6);
-}
-.dtr-stage-check:checked::after {
-  content: '✓'; position: absolute; top: -1px; left: 2px;
-  font-size: 11px; color: var(--a2);
-}
-.dtr-stage-name {
-  flex: 1; background: transparent !important; border: none !important; outline: none !important;
-  font-family: var(--font-body) !important; font-size: 12px !important; color: rgba(255,255,255,.7) !important;
-  padding: 0 !important; min-width: 0; box-shadow: none !important; border-radius: 0 !important;
-  letter-spacing: normal !important; font-weight: 400 !important; width: auto !important;
-  transition: none !important;
-}
-.dtr-stage-name::placeholder { color: rgba(255,255,255,.25) !important; }
-.dtr-stage-del {
-  background: transparent; border: none; color: rgba(255,255,255,.2);
-  cursor: pointer; font-size: 14px; padding: 2px 4px; flex-shrink: 0;
-  transition: color .12s; line-height: 1;
-}
-.dtr-stage-del:hover { color: rgba(248,113,113,.7); }
+.dtr-sr { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:8px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); margin-bottom:4px; }
+.dtr-sr:hover { background:rgba(255,255,255,.06); }
+.dtr-sr-grip { color:rgba(255,255,255,.2); cursor:grab; font-size:13px; flex-shrink:0; user-select:none; }
+.dtr-sr-cb { width:15px; height:15px; border-radius:3px; border:1.5px solid rgba(255,255,255,.25); background:transparent; cursor:pointer; flex-shrink:0; accent-color:rgba(184,146,58,.8); }
+.dtr-sr-name { flex:1; min-width:0; font-size:12px; color:rgba(255,255,255,.75); font-family:var(--font-body); outline:none; cursor:text; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.dtr-sr-name:empty::before { content:attr(data-ph); color:rgba(255,255,255,.25); pointer-events:none; }
+.dtr-sr-del { background:none; border:none; color:rgba(255,255,255,.2); cursor:pointer; font-size:13px; padding:2px 4px; flex-shrink:0; line-height:1; }
+.dtr-sr-del:hover { color:rgba(248,113,113,.7); }
 </style>
 
 <script>
 (function(){
-  var DEFAULT_STAGE_TEMPLATES = [
-    { name: 'Анализ клиентских данных',    emoji: '🔍' },
-    { name: 'Анализ конкурентов',           emoji: '📋' },
-    { name: 'Разработка контент стратегии', emoji: '✍️' },
-    { name: 'Разработка таргет стратегии',  emoji: '📸' },
-    { name: 'Разработка контент плана',     emoji: '🎬' },
-    { name: 'Написание сценариев',          emoji: '✅' },
-    { name: 'Съёмки раунд 1',              emoji: '📊' },
-    { name: 'Съёмки раунд 2',              emoji: '💬' },
-    { name: 'Подготовка отчётности',        emoji: '🏆' },
+  var DEFAULTS = [
+    'Анализ клиентских данных',
+    'Анализ конкурентов',
+    'Разработка контент стратегии',
+    'Разработка таргет стратегии',
+    'Разработка контент плана',
+    'Написание сценариев',
+    'Съёмки раунд 1',
+    'Съёмки раунд 2',
+    'Подготовка отчётности'
   ];
 
-  /* ── Рендер редактора этапов ── */
-  function renderStageEditor(listId, countId, selected) {
-    var list = document.getElementById(listId);
-    if (!list) return;
+  function makeRow(listId, countId, name, enabled) {
+    var row = document.createElement('div');
+    row.className = 'dtr-sr';
 
-    list.innerHTML = '';
-    var inputs = [];
+    var grip = document.createElement('span');
+    grip.className = 'dtr-sr-grip';
+    grip.textContent = '⠿';
 
-    selected.forEach(function(s, i) {
-      var row = document.createElement('div');
-      row.className = 'dtr-stage-row';
-      row.dataset.idx = i;
+    var cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.className = 'dtr-sr-cb';
+    cb.checked = enabled !== false;
+    cb.onchange = function(){ updateCount(listId, countId); };
 
-      var handle = document.createElement('span');
-      handle.className = 'dtr-stage-handle';
-      handle.title = 'Перетащить';
-      handle.textContent = '⠿';
+    var span = document.createElement('span');
+    span.className = 'dtr-sr-name';
+    span.contentEditable = 'true';
+    span.setAttribute('data-ph', 'Название этапа');
+    span.textContent = name || '';
 
-      var check = document.createElement('input');
-      check.type = 'checkbox';
-      check.className = 'dtr-stage-check';
-      check.checked = s.enabled !== false;
-      check.onchange = function() { updateStageCount(listId, countId); };
+    var del = document.createElement('button');
+    del.className = 'dtr-sr-del';
+    del.textContent = '✕';
+    del.onclick = function(){ row.remove(); updateCount(listId, countId); };
 
-      var nameInp = document.createElement('input');
-      nameInp.type = 'text';
-      nameInp.className = 'dtr-stage-name';
-      nameInp.placeholder = 'Название этапа';
-      nameInp.oninput = function() { updateStageCount(listId, countId); };
-      inputs.push({ el: nameInp, val: s.name || '' });
-
-      var del = document.createElement('button');
-      del.className = 'dtr-stage-del';
-      del.title = 'Удалить';
-      del.textContent = '✕';
-      del.onclick = function() { row.remove(); updateStageCount(listId, countId); };
-
-      row.appendChild(handle);
-      row.appendChild(check);
-      row.appendChild(nameInp);
-      row.appendChild(del);
-      list.appendChild(row);
-    });
-
-    // Устанавливаем value после рендера
-    setTimeout(function() {
-      inputs.forEach(function(item) {
-        item.el.value = item.val;
-        item.el.defaultValue = item.val;
-      });
-      updateStageCount(listId, countId);
-    }, 50);
-
-    setupStageDrag(listId, countId);
+    row.appendChild(grip);
+    row.appendChild(cb);
+    row.appendChild(span);
+    row.appendChild(del);
+    return row;
   }
 
-  function getStageData(listId) {
+  function render(listId, countId, stages) {
+    var list = document.getElementById(listId);
+    if (!list) return;
+    list.innerHTML = '';
+    stages.forEach(function(s) {
+      list.appendChild(makeRow(listId, countId, s.name, s.enabled));
+    });
+    updateCount(listId, countId);
+  }
+
+  function getData(listId) {
     var list = document.getElementById(listId);
     if (!list) return [];
-    return Array.from(list.querySelectorAll('.dtr-stage-row')).map(function(row) {
+    return Array.from(list.querySelectorAll('.dtr-sr')).map(function(row) {
       return {
-        name: row.querySelector('.dtr-stage-name').value.trim() || 'Этап',
-        enabled: row.querySelector('.dtr-stage-check').checked,
-        emoji: '📌'
+        name: (row.querySelector('.dtr-sr-name').textContent || '').trim() || 'Этап',
+        enabled: row.querySelector('.dtr-sr-cb').checked
       };
     });
   }
 
-  function updateStageCount(listId, countId) {
+  function updateCount(listId, countId) {
     var el = document.getElementById(countId);
     if (!el) return;
-    var data = getStageData(listId);
-    var enabled = data.filter(function(s){ return s.enabled; }).length;
-    el.textContent = enabled + ' из ' + data.length + ' этапов';
+    var d = getData(listId);
+    el.textContent = d.filter(function(s){ return s.enabled; }).length + ' из ' + d.length + ' этапов';
   }
-
-  window.dtrStageToggle = function(listId, countId, idx, checked) {
-    updateStageCount(listId, countId);
-  };
-
-  window.dtrStageRename = function(listId, idx, val) {
-    updateStageCount(listId, idx); // just update
-  };
-
-  window.dtrStageDel = function(listId, countId, idx) {
-    var list = document.getElementById(listId);
-    if (!list) return;
-    var rows = list.querySelectorAll('.dtr-stage-row');
-    if (rows[idx]) rows[idx].remove();
-    // Reindex
-    list.querySelectorAll('.dtr-stage-row').forEach(function(r, i){ r.dataset.idx = i; });
-    updateStageCount(listId, countId);
-  };
 
   window.dtrAddCustomStage = function(listId, countId) {
     var list = document.getElementById(listId);
     if (!list) return;
-
-    var row = document.createElement('div');
-    row.className = 'dtr-stage-row';
-
-    var handle = document.createElement('span');
-    handle.className = 'dtr-stage-handle';
-    handle.textContent = '⠿';
-
-    var check = document.createElement('input');
-    check.type = 'checkbox';
-    check.className = 'dtr-stage-check';
-    check.checked = true;
-    check.onchange = function() { updateStageCount(listId, countId); };
-
-    var nameInp = document.createElement('input');
-    nameInp.type = 'text';
-    nameInp.className = 'dtr-stage-name';
-    nameInp.placeholder = 'Название этапа';
-    nameInp.oninput = function() { updateStageCount(listId, countId); };
-
-    var del = document.createElement('button');
-    del.className = 'dtr-stage-del';
-    del.textContent = '✕';
-    del.onclick = function() { row.remove(); updateStageCount(listId, countId); };
-
-    row.appendChild(handle);
-    row.appendChild(check);
-    row.appendChild(nameInp);
-    row.appendChild(del);
+    var row = makeRow(listId, countId, '', true);
     list.appendChild(row);
-    nameInp.focus();
-    updateStageCount(listId, countId);
-    setupStageDrag(listId, countId);
+    row.querySelector('.dtr-sr-name').focus();
+    updateCount(listId, countId);
   };
 
-  /* ── Drag-to-reorder ── */
-  function setupStageDrag(listId, countId) {
-    var list = document.getElementById(listId);
-    if (!list) return;
-    var dragging = null;
-    list.querySelectorAll('.dtr-stage-handle').forEach(function(handle) {
-      var row = handle.closest('.dtr-stage-row');
-      handle.addEventListener('mousedown', function(e) {
-        dragging = row;
-        row.style.opacity = '.5';
-        e.preventDefault();
-      });
-    });
-    list.addEventListener('mouseover', function(e) {
-      if (!dragging) return;
-      var target = e.target.closest('.dtr-stage-row');
-      if (target && target !== dragging) {
-        var rows = Array.from(list.querySelectorAll('.dtr-stage-row'));
-        var di = rows.indexOf(dragging), ti = rows.indexOf(target);
-        if (di < ti) list.insertBefore(dragging, target.nextSibling);
-        else list.insertBefore(dragging, target);
-      }
-    });
-    document.addEventListener('mouseup', function() {
-      if (dragging) { dragging.style.opacity = ''; dragging = null; updateStageCount(listId, countId); }
-    });
-  }
-
-  /* ── Init редактора при открытии модалов ── */
-  // Создание проекта — дефолтные этапы
-  function initCreateStageEditor() {
-    var templates = DEFAULT_STAGE_TEMPLATES.map(function(s){ return { name: s.name, emoji: s.emoji, enabled: true }; });
-    renderStageEditor('proj-stage-list', 'proj-stage-count', templates);
-  }
-
-  // Патчим openModal чтобы инициализировать при открытии
-  var _origOpenModal = window.openModal;
+  // Патчим openModal
+  var _om = window.openModal;
   window.openModal = function(id) {
-    _origOpenModal && _origOpenModal(id);
-    if (id === 'modal-project') setTimeout(initCreateStageEditor, 30);
+    _om && _om(id);
+    if (id === 'modal-project') {
+      setTimeout(function(){
+        render('proj-stage-list', 'proj-stage-count', DEFAULTS.map(function(n){ return {name:n, enabled:true}; }));
+      }, 50);
+    }
   };
 
-  /* ── Патчим openProjectSettings — загружаем существующие этапы ── */
-  var _origOpenPS = window.openProjectSettings;
+  // Патчим openProjectSettings
+  var _origOPS = window.openProjectSettings;
   window.openProjectSettings = function(id) {
-    _origOpenPS && _origOpenPS(id);
-    setTimeout(function() {
-      var p = typeof _allProjects !== 'undefined' ? _allProjects.find(function(x){ return x.id === id; }) : null;
-      // Дефолтные 9 этапов
-      var templates = DEFAULT_STAGE_TEMPLATES.map(function(s){ return { name: s.name, emoji: s.emoji, enabled: true }; });
-      // Если есть сохранённый шаблон — используем его
+    _origOPS && _origOPS(id);
+    setTimeout(function(){
+      var p = typeof _allProjects !== 'undefined' ? _allProjects.find(function(x){ return x.id===id; }) : null;
+      var stages = DEFAULTS.map(function(n){ return {name:n, enabled:true}; });
       if (p && p.stage_templates) {
         try {
-          var saved = JSON.parse(p.stage_templates);
-          if (Array.isArray(saved) && saved.length) templates = saved;
-        } catch(e) {}
+          var s = JSON.parse(p.stage_templates);
+          if (Array.isArray(s) && s.length) stages = s;
+        } catch(e){}
       }
-      // Всегда рендерим дефолтные или сохранённые — не трогаем project_stages
-      renderStageEditor('ps-stage-list', 'ps-stage-count', templates);
-    }, 40);
+      render('ps-stage-list', 'ps-stage-count', stages);
+    }, 60);
   };
 
-  /* ── Патчим createProject — сохраняем этапы ── */
-  var _origCreate = window.createProject;
-  window.createProject = async function() {
-    var stageData = getStageData('proj-stage-list');
-    var activeStages = stageData.filter(function(s){ return s.enabled && s.name.trim(); });
-    if (!activeStages.length) {
-      if (typeof showToast === 'function') showToast('⚠️', 'Добавь хотя бы один этап', 'warn');
-      return;
-    }
-    // Сохраняем шаблон для передачи в createProject через временную переменную
-    window._pendingStageTemplates = stageData;
-    await _origCreate();
-    window._pendingStageTemplates = null;
-  };
-
-  /* ── Патчим saveProjectSettings — сохраняем этапы ── */
-  var _origSavePS = window.saveProjectSettings;
+  // Патчим saveProjectSettings
+  var _origSPS = window.saveProjectSettings;
   window.saveProjectSettings = async function() {
     var projId = typeof _psProjectId !== 'undefined' ? _psProjectId : null;
-    await _origSavePS();
+    await _origSPS();
     if (!projId) return;
-    var stageData = getStageData('ps-stage-list');
-    var val = JSON.stringify(stageData);
+    var d = getData('ps-stage-list');
     try {
-      var res = await sb.from('projects').update({ stage_templates: val }).eq('id', projId);
-      if (!res.error) {
-        // Обновляем кэш
+      var r = await sb.from('projects').update({ stage_templates: JSON.stringify(d) }).eq('id', projId);
+      if (!r.error) {
         if (typeof _allProjects !== 'undefined') {
-          var p = _allProjects.find(function(x){ return x.id === projId; });
-          if (p) p.stage_templates = val;
+          var p = _allProjects.find(function(x){ return x.id===projId; });
+          if (p) p.stage_templates = JSON.stringify(d);
         }
-        // Пересоздаём project_stages по новому шаблону
-        await rebuildProjectStages(projId, stageData);
-        if (typeof showToast === 'function') showToast('✓', 'Этапы сохранены', 'ok');
+        await rebuildStages(projId, d);
       } else {
-        console.warn('[DTR Stages] SQL needed: ALTER TABLE projects ADD COLUMN IF NOT EXISTS stage_templates text;');
-        if (typeof showToast === 'function') showToast('⚡', 'SQL: ALTER TABLE projects ADD COLUMN IF NOT EXISTS stage_templates text;', 'warn');
+        console.warn('[DTR] SQL: ALTER TABLE projects ADD COLUMN IF NOT EXISTS stage_templates text;');
       }
-    } catch(e) { console.warn('[DTR Stages]', e); }
+    } catch(e){ console.warn(e); }
   };
 
-  /* ── Пересоздание project_stages по шаблону ── */
-  async function rebuildProjectStages(projId, stageData) {
-    var activeStages = stageData.filter(function(s){ return s.enabled && s.name.trim(); });
-    // Загружаем существующие этапы чтобы сохранить статусы/дедлайны
-    var existing = [];
-    try {
-      var res = await sb.from('project_stages').select('*').eq('project_id', projId).order('stage_index');
-      existing = res.data || [];
-    } catch(e) {}
+  // Патчим createProject
+  var _origCP = window.createProject;
+  window.createProject = async function() {
+    var d = getData('proj-stage-list');
+    window._pendingStages = d.filter(function(s){ return s.enabled && s.name.trim(); });
+    await _origCP();
+    window._pendingStages = null;
+  };
 
-    // Удаляем все текущие этапы
-    try { await sb.from('project_stages').delete().eq('project_id', projId); } catch(e) {}
+  // Hook loadProjects чтобы сохранить этапы нового проекта
+  var _hooked = false;
+  function hookLP() {
+    if (_hooked || typeof loadProjects !== 'function') { if (!_hooked) setTimeout(hookLP, 400); return; }
+    _hooked = true;
+    var orig = loadProjects;
+    window.loadProjects = async function() {
+      await orig();
+      if (window._pendingStages && typeof _allProjects !== 'undefined') {
+        var newest = _allProjects.slice().sort(function(a,b){ return new Date(b.created_at)-new Date(a.created_at); })[0];
+        if (newest) {
+          var val = JSON.stringify(window._pendingStages);
+          await sb.from('projects').update({ stage_templates: val }).eq('id', newest.id);
+          newest.stage_templates = val;
+          await rebuildStages(newest.id, window._pendingStages);
+        }
+        window._pendingStages = null;
+      }
+    };
+  }
 
-    // Создаём новые
-    var toInsert = activeStages.map(function(s, i) {
-      var old = existing[i] || {};
-      return {
-        project_id: projId,
-        stage_index: i,
-        name: s.name.trim(),
-        status: old.status || 'pending',
-        deadline: old.deadline || null,
-        note: old.note || null,
-        link: old.link || null,
-      };
-    });
-
-    if (toInsert.length) {
-      try { await sb.from('project_stages').insert(toInsert); } catch(e) { console.warn('[DTR Stages] insert error', e); }
-    }
-
-    // Обновляем trackerData если проект открыт
-    if (typeof currentProject !== 'undefined' && currentProject && currentProject.id === projId) {
+  async function rebuildStages(projId, stages) {
+    var active = stages.filter(function(s){ return s.enabled && s.name.trim(); });
+    try { await sb.from('project_stages').delete().eq('project_id', projId); } catch(e){}
+    if (!active.length) return;
+    var rows = active.map(function(s,i){ return { project_id:projId, stage_index:i, name:s.name.trim(), status:'pending' }; });
+    try { await sb.from('project_stages').insert(rows); } catch(e){ console.warn(e); }
+    if (typeof currentProject !== 'undefined' && currentProject && currentProject.id===projId) {
       if (typeof loadTracker === 'function') loadTracker();
     }
   }
 
-  /* ── Патчим renderTracker — используем кастомные имена этапов ── */
-  function patchRenderTracker() {
-    if (typeof renderTracker !== 'function') { setTimeout(patchRenderTracker, 400); return; }
+  // Патчим renderTracker
+  function patchRT() {
+    if (typeof renderTracker !== 'function') { setTimeout(patchRT, 400); return; }
     var orig = renderTracker;
     window.renderTracker = function() {
-      // Подменяем STAGES если у проекта есть stage_templates
-      var origStages = window.STAGES ? window.STAGES.slice() : null;
+      var origS = window.STAGES ? window.STAGES.slice() : null;
       if (typeof currentProject !== 'undefined' && currentProject && currentProject.stage_templates) {
         try {
           var tpl = JSON.parse(currentProject.stage_templates);
           var active = tpl.filter(function(s){ return s.enabled !== false && s.name; });
-          if (active.length) {
-            window.STAGES = active.map(function(s, i) {
-              return { name: s.name, emoji: s.emoji || '📌', icon: (window.STAGE_ICONS && window.STAGE_ICONS[i]) || '' };
-            });
-          }
-        } catch(e) {}
+          if (active.length) window.STAGES = active.map(function(s,i){ return { name:s.name, emoji:'📌', icon:(window.STAGE_ICONS&&window.STAGE_ICONS[i])||'' }; });
+        } catch(e){}
       }
       orig();
-      // Восстанавливаем дефолтные STAGES
-      if (origStages) window.STAGES = origStages;
+      if (origS) window.STAGES = origS;
     };
   }
 
-  /* ── Патчим сохранение этапов при создании (после вставки проекта) ── */
-  // Перехватываем project.insert через хук на loadProjects
-  var _origLoadProjects = window.loadProjects;
-  if (typeof loadProjects === 'function') {
-    var _hookedLP = false;
-    var _hookLoadProjects = function() {
-      if (!_hookedLP) {
-        _hookedLP = true;
-        var origLP = window.loadProjects;
-        window.loadProjects = async function() {
-          await origLP();
-          // После загрузки — если есть pendingStageTemplates применяем к новому проекту
-          if (window._pendingStageTemplates && typeof _allProjects !== 'undefined') {
-            var newest = _allProjects.slice().sort(function(a,b){ return new Date(b.created_at)-new Date(a.created_at); })[0];
-            if (newest) {
-              var val = JSON.stringify(window._pendingStageTemplates);
-              await sb.from('projects').update({ stage_templates: val }).eq('id', newest.id);
-              newest.stage_templates = val;
-              await rebuildProjectStages(newest.id, window._pendingStageTemplates);
-            }
-            window._pendingStageTemplates = null;
-          }
-        };
-      }
-    };
-    setTimeout(_hookLoadProjects, 500);
-  }
+  setTimeout(hookLP, 500);
+  setTimeout(patchRT, 500);
 
-  function init() {
-    patchRenderTracker();
-  }
-  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); }
-  else { setTimeout(init, 300); }
-
-  // Экспортируем для использования снаружи
-  window._dtrGetStageData = getStageData;
-  window._dtrRenderStageEditor = renderStageEditor;
-  window._dtrDefaultStageTemplates = DEFAULT_STAGE_TEMPLATES;
-
+  window._dtrGetStageData = getData;
+  window._dtrDefaultStages = DEFAULTS;
 })();
-</script>
-
-<script>
-async function dtrResetClientPassword() {
-  const newPass = document.getElementById('ps-new-client-pass').value.trim()
-  const msg = document.getElementById('ps-reset-pass-msg')
-  const btn = document.getElementById('ps-reset-pass-btn')
-  const projId = typeof _psProjectId !== 'undefined' ? _psProjectId : null
-
-  msg.style.display = 'none'
-
-  if (!newPass) { showMsg('Введи новый пароль', 'rgba(248,113,113,.7)'); return }
-  if (newPass.length < 8) { showMsg('Минимум 8 символов', 'rgba(248,113,113,.7)'); return }
-  if (!projId) { showMsg('Проект не определён', 'rgba(248,113,113,.7)'); return }
-
-  btn.disabled = true
-  btn.textContent = 'Сохраняем...'
-
-  try {
-    const session = await sb.auth.getSession()
-    const token = session?.data?.session?.access_token
-    if (!token) { showMsg('Нет сессии — войди заново', 'rgba(248,113,113,.7)'); return }
-
-    const res = await fetch(RESET_PASS_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      },
-      body: JSON.stringify({ project_id: projId, new_password: newPass })
-    })
-
-    const data = await res.json()
-    if (res.ok && data.success) {
-      showMsg('✓ Пароль изменён для ' + data.email, 'rgba(56,178,172,.8)')
-      document.getElementById('ps-new-client-pass').value = ''
-    } else {
-      showMsg(data.error || 'Ошибка', 'rgba(248,113,113,.7)')
-    }
-  } catch(e) {
-    showMsg('Ошибка соединения: ' + e.message, 'rgba(248,113,113,.7)')
-  } finally {
-    btn.disabled = false
-    btn.textContent = 'Сохранить'
-  }
-
-  function showMsg(text, color) {
-    msg.style.display = 'block'
-    msg.style.color = color
-    msg.textContent = text
-  }
-}
 </script>
 </html>
