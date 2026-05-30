@@ -34310,7 +34310,6 @@ function getActiveStageIndex() {
 function getActiveStageName() {
   const idx = getActiveStageIndex()
   const rec = trackerData.find(s => s.stage_index === idx)
-  console.log('[DTR] getActiveStageName idx:', idx, 'rec:', rec, 'trackerData:', trackerData)
   return (rec && rec.name) || STAGES[idx]?.name || ('Этап ' + (idx + 1))
 }
 
@@ -34389,8 +34388,9 @@ function renderKanban() {
   const lbl = g('kb-active-stage-label')
   if (lbl) {
     const idx = getActiveStageIndex()
-    const stage = STAGES[idx]
-    lbl.textContent = stage ? `Активный этап: ${stage.emoji || '•'} ${stage.name}` : 'Активный этап: —'
+    const rec = trackerData.find(s => s.stage_index === idx)
+    const stageName = (rec && rec.name) || (STAGES[idx] && STAGES[idx].name) || ('Этап ' + (idx+1))
+    lbl.textContent = `Активный этап: ${stageName}`
   }
 
   // Render each column
