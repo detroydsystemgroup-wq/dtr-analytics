@@ -42864,6 +42864,8 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
   };
 
   function renderSvcFilterRow() {
+    // Заменено дропдауном — ничего не делаем
+    return;
     const row = document.getElementById('dash-svc-row');
     if (!row) return;
     const used = new Set();
