@@ -36527,7 +36527,7 @@ function renderSMMReelsGrid() {
     'linear-gradient(160deg,#1a1500 0%,#3d3000 50%,#1a0a00 100%)',
   ]
 
-  grid.innerHTML = reels.slice(0,10).map((r,i) => {
+  grid.innerHTML = reels.slice(0,20).map((r,i) => {
     const rank = i + 1
     const rankCls = rank <= 3 ? `rrc-${rank}` : ''
     const rankLabel = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`
