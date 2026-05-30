@@ -26460,7 +26460,6 @@ button, a, [role="button"],
         <div class="sv-proj-table">
           <div class="sv-proj-thead">
             <div class="sv-th">Проект</div>
-            <div class="sv-th">Пайплайн</div>
             <div class="sv-th sv-th-r">Прогресс</div>
             <div class="sv-th sv-th-r">Статус</div>
             <div class="sv-th sv-th-r">Дедлайн</div>
@@ -31376,18 +31375,15 @@ function renderProjectGrid() {
         </div>
       </div>
 
-      <!-- 2+3. Пайплайн + Прогресс симметрично -->
+      <!-- Прогресс -->
       <div style="display:flex;flex-direction:column;gap:6px;justify-content:center;padding:0 24px 0 16px;">
         <div style="display:flex;align-items:center;gap:10px;">
-          <div class="prow-pipe" style="flex:1;">${segs}</div>
-          <div style="font-family:var(--font-display);font-size:17px;font-weight:800;letter-spacing:-.03em;color:${progColor};line-height:1;min-width:44px;text-align:right;">${pct}%</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;">
-          <div style="flex:1;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;">
-            <div style="width:${pct}%;height:100%;background:${progColor};border-radius:2px;"></div>
+          <div style="flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;">
+            <div style="width:${pct}%;height:100%;background:${progColor};border-radius:3px;transition:width .6s;"></div>
           </div>
-          <div style="font-family:var(--font-mono);font-size:9px;color:var(--txt3);min-width:44px;text-align:right;">${completed}/${progTotal}</div>
+          <div style="font-family:var(--font-display);font-size:17px;letter-spacing:-.03em;color:${progColor};line-height:1;min-width:44px;text-align:right;">${pct}%</div>
         </div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--txt3);text-align:right;">${completed}/${progTotal} этапов</div>
       </div>
 
       <!-- 4-7. Данные в пилюлях — все одинаковые -->
