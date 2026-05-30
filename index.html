@@ -43369,27 +43369,30 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
 
   function makeRow(listId, countId, name, enabled) {
     var row = document.createElement('div');
-    row.className = 'dtr-sr';
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);margin-bottom:4px;';
 
     var grip = document.createElement('span');
-    grip.className = 'dtr-sr-grip';
     grip.textContent = '⠿';
+    grip.style.cssText = 'color:rgba(255,255,255,.2);cursor:grab;font-size:13px;flex-shrink:0;user-select:none;';
 
     var cb = document.createElement('input');
     cb.type = 'checkbox';
-    cb.className = 'dtr-sr-cb';
     cb.checked = enabled !== false;
+    cb.style.cssText = 'width:15px;height:15px;flex-shrink:0;cursor:pointer;accent-color:#b8923a;';
     cb.onchange = function(){ updateCount(listId, countId); };
 
     var span = document.createElement('span');
-    span.className = 'dtr-sr-name';
     span.contentEditable = 'true';
     span.setAttribute('data-ph', 'Название этапа');
     span.textContent = name || '';
+    span.style.cssText = 'flex:1;min-width:0;font-size:12px;color:rgba(255,255,255,.8);font-family:sans-serif;outline:none;cursor:text;display:block;';
+    if (!name) span.style.color = 'rgba(255,255,255,.25)';
+    span.addEventListener('focus', function(){ if (!this.textContent.trim()) this.textContent = ''; });
+    span.addEventListener('input', function(){ updateCount(listId, countId); });
 
     var del = document.createElement('button');
-    del.className = 'dtr-sr-del';
     del.textContent = '✕';
+    del.style.cssText = 'background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:13px;padding:0 4px;flex-shrink:0;line-height:1;';
     del.onclick = function(){ row.remove(); updateCount(listId, countId); };
 
     row.appendChild(grip);
@@ -43412,10 +43415,13 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
   function getData(listId) {
     var list = document.getElementById(listId);
     if (!list) return [];
-    return Array.from(list.querySelectorAll('.dtr-sr')).map(function(row) {
+    return Array.from(list.children).filter(function(r){ return r.querySelector('input[type=checkbox]'); }).map(function(row) {
+      var spans = row.querySelectorAll('span');
+      var nameSpan = spans[spans.length - 1]; // последний span — имя
+      var cb = row.querySelector('input[type=checkbox]');
       return {
-        name: (row.querySelector('.dtr-sr-name').textContent || '').trim() || 'Этап',
-        enabled: row.querySelector('.dtr-sr-cb').checked
+        name: nameSpan ? (nameSpan.textContent || '').trim() || 'Этап' : 'Этап',
+        enabled: cb ? cb.checked : true
       };
     });
   }
