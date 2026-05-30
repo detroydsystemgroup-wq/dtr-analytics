@@ -37874,9 +37874,33 @@ function renderDeadlinePanel() {
         var diff2 = item.diff;
         var cntTxt = item.status === 'done' ? '✓' : item.status === 'overdue' ? '−' + Math.abs(diff2) + 'д' : item.status === 'today' ? 'Сегодня' : '+' + diff2 + 'д';
         var stTxt = item.status === 'done' ? 'Выполнен' : item.s.status === 'active' ? 'В работе' : 'Ожидает';
-        rowsHtml += '<div class="dvp-row" onclick="openProject(\'' + item.proj.id + '\')">'          + '<div class="dvp-row-date" style="color:' + dotCol + ';">' + item.dl.getDate() + ' ' + mon2 + '</div>'          + '<div class="dvp-row-dot" style="background:' + dotCol + ';box-shadow:0 0 6px ' + dotCol + '66;"></div>'          + '<div class="dvp-row-icon">' + item.stageObj.icon + '</div>'          + '<div class="dvp-row-name">' + item.stageObj.name + '</div>'          + '<div class="dvp-row-cnt" style="color:' + dotCol + ';">' + cntTxt + '</div>'          + '<div class="dvp-row-badge" style="background:' + badgeBg2 + ';color:' + badgeCol2 + ';border:1px solid ' + badgeCol2 + '30;">' + stTxt + '</div>'          + '<button class="dvp-row-btn" onclick="event.stopPropagation();openProject(\'' + item.proj.id + '\')">→</button>'          + '</div>';
+        var stTxt = item.status === 'done' ? 'Выполнен' : item.s.status === 'active' ? 'В работе' : 'Ожидает';
+        var badgeBg2 = item.status === 'done' ? 'rgba(62,207,142,.08)' : item.s.status === 'active' ? 'rgba(184,146,58,.08)' : 'rgba(255,255,255,.04)';
+        var badgeCol2 = item.status === 'done' ? '#3ecf8e' : item.s.status === 'active' ? '#b8923a' : 'var(--txt3)';
+        rowsHtml +=
+          '<div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-top:1px solid rgba(255,255,255,.05);cursor:pointer;transition:background .12s;" onmouseover="this.style.background=\'rgba(255,255,255,.02)\'" onmouseout="this.style.background=\'transparent\'" onclick="openProject(\'' + item.proj.id + '\')">' +
+            '<div style="font-size:11px;color:' + dotCol + ';font-family:var(--font-mono);min-width:48px;">' + item.dl.getDate() + ' ' + mon2 + '</div>' +
+            '<div style="flex:1;min-width:0;font-size:13px;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + item.stageObj.name + '</div>' +
+            '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">' +
+              (item.status !== 'done' ? '<div style="font-size:12px;font-weight:500;color:' + dotCol + ';min-width:28px;text-align:right;">' + cntTxt + '</div>' : '') +
+              '<div style="display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 9px;border-radius:20px;border:1px solid ' + badgeCol2 + '35;background:' + badgeBg2 + ';color:' + badgeCol2 + ';white-space:nowrap;">' +
+                '<span style="width:5px;height:5px;border-radius:50%;background:' + badgeCol2 + ';display:inline-block;"></span>' + stTxt +
+              '</div>' +
+            '</div>' +
+          '</div>';
       });
-      projHtml += '<div class="dvp-group" style="animation-delay:' + delay + 's">'        + '<div class="dvp-header" onclick="openProject(\'' + group.proj.id + '\')" style="border-left:3px solid ' + col + ';">'        +   '<div class="dvp-avatar" style="background:' + col + '18;border:1.5px solid ' + col + '44;color:' + col + ';">' + group.proj.name[0] + '</div>'        +   '<div class="dvp-hinfo">'        +     '<div class="dvp-hname">' + group.proj.name + '</div>'        +     '<div class="dvp-hmeta">' + prog.pct + '% · ' + group.items.length + ' дедл.</div>'        +   '</div>'        +   (overdueC ? '<div class="dvp-overdue-badge">' + overdueC + ' просрочено</div>' : '')        +   '<button class="dvp-open-btn" onclick="event.stopPropagation();openProject(\'' + group.proj.id + '\')">Открыть →</button>'        + '</div>'        + '<div class="dvp-body">' + rowsHtml + '</div>'        + '</div>';
+      projHtml +=
+        '<div class="dvp-group" style="animation-delay:' + delay + 's;background:var(--bg3);border:1px solid rgba(255,255,255,.07);border-radius:14px;overflow:hidden;margin-bottom:8px;">' +
+          '<div style="display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;" onclick="openProject(\'' + group.proj.id + '\')">' +
+            '<div style="width:32px;height:32px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;background:' + col + '18;border:1.5px solid ' + col + '44;color:' + col + ';">' + group.proj.name[0] + '</div>' +
+            '<div style="flex:1;min-width:0;">' +
+              '<div style="font-size:13px;font-weight:500;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + group.proj.name + '</div>' +
+              '<div style="font-size:11px;color:var(--txt3);margin-top:2px;">' + prog.pct + '% · ' + group.items.length + ' дедл.</div>' +
+            '</div>' +
+            (overdueC ? '<div style="font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(248,113,113,.1);color:#f87171;border:1px solid rgba(248,113,113,.25);">' + overdueC + ' просрочено</div>' : '') +
+          '</div>' +
+          rowsHtml +
+        '</div>';
     });
     panel.innerHTML = projHtml;
     return;
@@ -37943,7 +37967,7 @@ function renderDeadlinePanel() {
             '<div style="display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 9px;border-radius:20px;border:1px solid ' + badgeCol + '35;background:' + badgeBg + ';color:' + badgeCol + ';white-space:nowrap;">' +
               '<span style="width:5px;height:5px;border-radius:50%;background:' + badgeCol + ';display:inline-block;"></span>' + badgeTxt +
             '</div>' +
-            '<button onclick="event.stopPropagation();openProject(\'' + item.proj.id + '\')" style="width:28px;height:28px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:transparent;color:var(--txt2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">→</button>' +
+
           '</div>' +
         '</div>';
 
