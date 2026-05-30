@@ -37989,7 +37989,7 @@ function ov2ScrollTo(id) {
 }
 
 // Override loadOverview completely
-var _svProjFilter = 'all';
+var _svProjFilter = 'active';
 window.svSetProjFilter = function(f, btn) {
   _svProjFilter = f;
   document.querySelectorAll('.sv-pill').forEach(function(b){ b.classList.remove('sv-pill-active'); });
@@ -38005,7 +38005,7 @@ async function loadOverview() {
   var MONTHS = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
 
   // ── Только активные проекты для всех метрик ──
-  var activeProjects = _allProjects.filter(function(p){ return p.status !== 'archived'; });
+  var activeProjects = _allProjects.filter(function(p){ return p.status !== 'archived' && (typeof getProjectProgress !== 'undefined' && getProjectProgress(p.id).pct < 100); });
   var activeProjectIds = activeProjects.map(function(p){ return p.id; });
   var activeStagesAll = _allStages.filter(function(s){ return activeProjectIds.indexOf(s.project_id) !== -1; });
 
@@ -38224,7 +38224,7 @@ async function loadOverview() {
   overdueProjs.forEach(function(p){ window._svOverdueMap[p.id] = true; });
 
   var metaEl = document.getElementById('sv-proj-meta');
-  if (metaEl) metaEl.textContent = _allProjects.length + ' проектов · ' + completedStages + '/' + totalStages + ' этапов';
+  if (metaEl) metaEl.textContent = activeProjects.length + ' активных · ' + completedStages + '/' + totalStages + ' этапов';
 
   svRenderProjTable(projData, window._svOverdueMap, today, MONTHS);
 
