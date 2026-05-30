@@ -41579,6 +41579,86 @@ async function cpRenderMilestone(project) {
 #page-smm .smm-sec-heading {
   width: 100% !important;
 }
+
+/* ── METRIC CARDS — gap + rounded corners ── */
+#page-smm .smm-metrics-grid {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0,1fr)) !important;
+  gap: 12px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+}
+#page-smm .smm-metric-card {
+  border: 0.5px solid rgba(255,255,255,.1) !important;
+  border-right: 0.5px solid rgba(255,255,255,.1) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+#page-smm .smm-metric-card:last-child {
+  border-right: 0.5px solid rgba(255,255,255,.1) !important;
+}
+
+/* ── KPI CARDS — gap + rounded corners ── */
+#page-smm .kpi-group-content,
+#page-smm .kpi-group-digital,
+#page-smm .kpi-group,
+#page-smm .kpi-group-audience {
+  gap: 12px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+  background: transparent !important;
+}
+#page-smm .kpi-card {
+  border: 0.5px solid rgba(255,255,255,.1) !important;
+  border-right: 0.5px solid rgba(255,255,255,.1) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+#page-smm .kpi-card:last-child {
+  border-right: 0.5px solid rgba(255,255,255,.1) !important;
+}
+
+/* ── REELS GRID — gap + rounded corners ── */
+#page-smm .smm-reels-grid {
+  gap: 12px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+}
+#page-smm .smm-reel-card {
+  border: 0.5px solid rgba(255,255,255,.1) !important;
+  border-right: 0.5px solid rgba(255,255,255,.1) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+#page-smm .smm-reel-card:last-child {
+  border-right: 0.5px solid rgba(255,255,255,.1) !important;
+}
+
+/* ── STAT GRID — gap + rounded ── */
+#page-smm .smm-stat-grid {
+  gap: 12px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+}
+#page-smm .smm-stat-card {
+  border: 0.5px solid rgba(255,255,255,.1) !important;
+  border-right: 0.5px solid rgba(255,255,255,.1) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+#page-smm .smm-stat-card:last-child {
+  border-right: 0.5px solid rgba(255,255,255,.1) !important;
+}
+
+/* ── СМЕЖНЫЕ БЛОКИ — rounded ── */
+#page-smm .smm-block {
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
 </style>
 
 
