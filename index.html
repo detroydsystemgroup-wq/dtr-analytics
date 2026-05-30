@@ -26465,7 +26465,6 @@ button, a, [role="button"],
             <div class="sv-th sv-th-r" style="padding-left:16px;">Маржа / Прибыль</div>
             <div class="sv-th sv-th-r">Дедлайн</div>
             <div class="sv-th sv-th-r">Churn</div>
-            <div class="sv-th" style="width:72px;"></div>
           </div>
           <div id="sv-proj-tbody"></div>
         </div>
@@ -38649,7 +38648,7 @@ function svRenderProjTable(projData, overdueMap, today, MONTHS) {
     var churnColor = item.isChurn ? 'var(--red)' : item.daysSince > 10 ? 'var(--amber)' : 'var(--green)';
     var churnTxt   = item.isChurn ? '⚠ ' + item.daysSince + 'д' : item.daysSince < 999 ? item.daysSince + 'д' : 'новый';
 
-    var cols = '1.8fr 80px 160px 150px 90px 70px 72px';
+    var cols = '1.8fr 80px 160px 150px 90px 70px';
 
     return '<div class="sv-proj-row" style="border-left-color:' + col + ';grid-template-columns:' + cols + ';" onclick="openProject(\'' + p.id + '\')">' +
       '<div class="sv-pr-name-cell">' +
@@ -38675,8 +38674,7 @@ function svRenderProjTable(projData, overdueMap, today, MONTHS) {
       '<div style="text-align:right;font-family:var(--font-mono);font-size:11px;color:' + churnColor + ';">' +
         '<span class="sv-risk-dot" style="background:' + churnColor + ';"></span>' + churnTxt +
       '</div>' +
-      '<div style="text-align:right;"><button class="sv-proj-btn" onclick="event.stopPropagation();openProject(\'' + p.id + '\')">Открыть</button></div>' +
-    '</div>';
+      '</div>';
   }).join('');
 }
 </script>
@@ -40595,14 +40593,14 @@ async function cpRenderMilestone(project) {
 .sv-proj-table { padding: 0; }
 .sv-proj-thead {
   display: grid;
-  grid-template-columns: 1.8fr 80px 160px 150px 90px 70px 72px;
+  grid-template-columns: 1.8fr 80px 160px 150px 90px 70px;
   padding: 8px 20px; border-bottom: 1px solid var(--brd);
 }
 .sv-th { font-family: var(--font-mono); font-size: 9px; color: var(--txt3); letter-spacing: .1em; text-transform: uppercase; }
 .sv-th-r { text-align: right; }
 .sv-proj-row {
   display: grid;
-  grid-template-columns: 1.8fr 80px 160px 150px 90px 70px 72px;
+  grid-template-columns: 1.8fr 80px 160px 150px 90px 70px;
   align-items: center;
   padding: 12px 20px;
   border-bottom: 1px solid rgba(240,236,230,.04);
