@@ -41703,6 +41703,52 @@ async function cpRenderMilestone(project) {
 #page-smm .kpi-card-audience::before {
   display: none !important;
 }
+
+/* ── REEL CARDS — мягкие скруглённые углы ── */
+#page-smm .smm-reel-card {
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  border: 0.5px solid rgba(255,255,255,.1) !important;
+  border-right: 0.5px solid rgba(255,255,255,.1) !important;
+}
+#page-smm .smm-reel-cover {
+  border-radius: 0 !important;
+}
+#page-smm .smm-reel-card::before {
+  border-radius: 16px 16px 0 0 !important;
+}
+/* Рубрики контента */
+#page-smm .smm-rubric-card,
+#page-smm .rubric-card,
+#page-smm [class*="rubric"] {
+  border-radius: 16px !important;
+  overflow: hidden !important;
+}
+
+/* ── REEL CARDS — компактный размер с адаптивным фото ── */
+#page-smm .smm-reels-grid {
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
+  gap: 12px !important;
+  border: none !important;
+  overflow: visible !important;
+}
+#page-smm .smm-reel-card {
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  border: 0.5px solid rgba(255,255,255,.1) !important;
+}
+#page-smm .smm-reel-cover {
+  aspect-ratio: 4/5 !important;
+  border-radius: 0 !important;
+}
+#page-smm .smm-reel-cover img,
+#page-smm .smm-reel-cover video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  display: block !important;
+}
 </style>
 
 
