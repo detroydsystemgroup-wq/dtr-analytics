@@ -35613,12 +35613,14 @@ async function cp2LoadTracker(project) {
   var nextStage = arr.find(function(s){ return s.status==='active'; }) || arr.find(function(s){ return s.status==='pending'; });
   var nsEl = g('cp2-next-step');
   if (nextStage && nsEl) {
-    var stObj   = STAGES[nextStage.stage_index] || { name:'Этап' };
+    var nextName = nextStage.name || (STAGES[nextStage.stage_index] && STAGES[nextStage.stage_index].name) || ('Этап ' + (nextStage.stage_index+1));
+    var nextIdx  = arr.indexOf(nextStage);
+    var numStr   = String(nextIdx + 1).padStart(2, '0');
     var isActive = nextStage.status === 'active';
     var labelEl  = g('cp2-next-label');
     if (labelEl) labelEl.textContent = isActive ? 'В работе' : 'Следующий этап';
-    if (g('cp2-next-title')) g('cp2-next-title').textContent = stObj.name;
-    if (g('cp2-next-count')) g('cp2-next-count').textContent = done + ' / ' + totalSt;
+    if (g('cp2-next-title')) g('cp2-next-title').textContent = numStr + ' — ' + nextName;
+    if (g('cp2-next-count')) g('cp2-next-count').textContent = done + ' / ' + total;
     nsEl.style.display = 'flex';
 
     // Дедлайн этапа из агентской части
@@ -43557,6 +43559,16 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
     });
 
     try { await sb.from('project_stages').insert(rows); } catch(e){ console.warn(e); }
+
+    // Обновляем _allStages локально чтобы счётчики обновились сразу
+    if (typeof _allStages !== 'undefined') {
+      _allStages = _allStages.filter(function(s){ return s.project_id !== projId; });
+      rows.forEach(function(r){ _allStages.push(r); });
+    }
+
+    // Перерисовываем грид проектов чтобы обновить прогресс
+    if (typeof renderProjectGrid === 'function') renderProjectGrid();
+
     if (typeof currentProject !== 'undefined' && currentProject && currentProject.id===projId) {
       if (typeof loadTracker === 'function') loadTracker();
     }
