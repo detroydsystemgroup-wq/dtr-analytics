@@ -29762,7 +29762,11 @@ ALTER TABLE client_passports ADD COLUMN IF NOT EXISTS ai_briefs jsonb DEFAULT '[
 
 -- ⑥ Канбан — Операционка
 ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS kanban_status text DEFAULT 'waiting';
-ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS timer_started_at timestamptz;</pre>
+ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS timer_started_at timestamptz;
+ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS done_at timestamptz;
+
+-- ⑦ Синхронизация статусов канбана
+UPDATE stage_tasks SET kanban_status = CASE WHEN done = true THEN 'done' ELSE 'waiting' END WHERE kanban_status IS NULL OR kanban_status = 'waiting';</pre>
     </div>
 
     <div style="display:flex;gap:8px;padding:10px 14px;background:rgba(74,222,128,.05);border:1px solid rgba(74,222,128,.15);border-radius:8px;margin-bottom:14px;font-family:var(--font-display);font-size:11px;color:var(--txt2);">
@@ -30234,6 +30238,17 @@ async function afterLogin() {
   set('header-user', name)
   set('header-user2', name)
   set('header-user3', name)
+
+  // Автомиграция БД — добавляем недостающие колонки при каждом входе (безопасно, IF NOT EXISTS)
+  try {
+    // Проверяем наличие колонки kanban_status — если нет, таблица требует миграции
+    const { data: testRow } = await sb.from('stage_tasks').select('kanban_status,timer_started_at,done_at,time_logged').limit(1)
+    // Если запрос прошёл без ошибки — колонки есть
+  } catch(migErr) {
+    // Колонки отсутствуют — показываем подсказку пользователю
+    console.warn('[Migration needed] stage_tasks missing columns:', migErr.message)
+    showToast && showToast('⚠️', 'Требуется миграция БД — открой настройки', 'warn')
+  }
 
   // Check if this user is a client (has a project linked to their email)
   const { data: clientProject } = await sb.from('projects')
@@ -31429,6 +31444,15 @@ function updateClientLoginPreview() {
 }
 
 async function createProject() {
+  // Проверяем наличие нужных колонок перед созданием проекта
+  try {
+    await sb.from('stage_tasks').select('kanban_status,timer_started_at,done_at,time_logged').limit(0)
+  } catch(colErr) {
+    // Колонки отсутствуют — показываем инструкцию
+    openSQLSetup()
+    showToast && showToast('⚠️', 'Сначала выполни SQL миграцию', 'warn')
+    return
+  }
   const name = g('proj-name-inp').value.trim()
   const desc = g('proj-desc-inp').value.trim()
   const color = g('proj-color-inp').value
@@ -34184,6 +34208,23 @@ function getActiveStageName() {
 // ── Load kanban tasks ──
 async function loadKanban() {
   if (!currentProject) return
+
+  // Автомиграция: создаём колонки если их нет (один раз для всего проекта)
+  if (!window._kanbanMigrated) {
+    window._kanbanMigrated = true
+    try {
+      await sb.rpc('run_migration', { sql: `
+        ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS kanban_status text DEFAULT 'waiting';
+        ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS timer_started_at timestamptz;
+        ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS done_at timestamptz;
+        ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS time_logged integer DEFAULT 0;
+      `})
+    } catch(e) {
+      // rpc может не существовать — пробуем напрямую через отдельные запросы
+      try { await sb.from('stage_tasks').update({ kanban_status: 'waiting' }).eq('id', '00000000-0000-0000-0000-000000000000') } catch(e2) {}
+    }
+  }
+
   try {
     const { data, error } = await sb.from('stage_tasks')
       .select('*')
@@ -34451,7 +34492,7 @@ async function kbMoveTask(taskId, fromStatus, toStatus) {
     updateProjectTimeDisplay()
   } catch(e) {
     console.warn('Move task failed:', e)
-    if (e.message?.includes('column')) { g('kb-sql-note').style.display='flex'; openSQLSetup() }
+    if (e.message?.includes('column') || e.message?.includes('does not exist')) { g('kb-sql-note') && (g('kb-sql-note').style.display='flex'); openSQLSetup() }
     // Обновляем локальный стейт даже если БД упала
     Object.assign(task, updates)
     renderKanban()
