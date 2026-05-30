@@ -38666,11 +38666,9 @@ function svRenderProjTable(projData, overdueMap, today, MONTHS) {
         (mrr > 0 ? '<div style="font-size:9px;color:var(--txt3);margin-top:1px;font-family:var(--font-mono);">мес</div>' : '') +
       '</div>' +
       '<div style="text-align:right;padding-left:16px;">' +
-        '<div style="display:flex;align-items:baseline;gap:8px;justify-content:flex-end;">' +
-          '<div style="font-size:13px;color:' + marginColor + ';font-family:var(--font-mono);">' + marginTxt + '</div>' +
-          (profit !== null ? '<div style="font-size:11px;color:' + profitColor + ';font-family:var(--font-mono);">' + profitTxt + '</div>' : '') +
-        '</div>' +
-        (marginPct !== null ? '<div style="height:2px;background:var(--brd2);border-radius:2px;overflow:hidden;margin-top:4px;"><div style="height:100%;width:' + marginBarW + '%;background:' + marginColor + ';border-radius:2px;"></div></div>' : '') +
+        '<div style="font-size:13px;color:' + marginColor + ';font-family:var(--font-mono);">' + marginTxt + '</div>' +
+        (profit !== null ? '<div style="font-size:10px;color:' + profitColor + ';font-family:var(--font-mono);margin-top:1px;">' + profitTxt + '</div>' : '<div style="font-size:9px;color:var(--txt3);margin-top:1px;font-family:var(--font-mono);">—</div>') +
+        (marginPct !== null ? '<div style="height:2px;background:var(--brd2);border-radius:2px;overflow:hidden;margin-top:3px;"><div style="height:100%;width:' + marginBarW + '%;background:' + marginColor + ';border-radius:2px;"></div></div>' : '') +
       '</div>' +
       '<div style="text-align:right;font-family:var(--font-mono);font-size:12px;color:' + dlColor + ';">' + dlTxt + '</div>' +
       '<div style="text-align:right;font-family:var(--font-mono);font-size:11px;color:' + churnColor + ';">' +
