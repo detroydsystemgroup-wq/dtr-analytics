@@ -30251,20 +30251,26 @@ async function afterLogin() {
   }
 
   // Check if this user is a client (has a project linked to their email)
-  const { data: clientProject } = await sb.from('projects')
-    .select('*')
-    .eq('client_login', currentUser.email)
-    .maybeSingle()
+  // Agency users (role: 'agency') always get the dashboard — never the client portal
+  const isAgencyUser = currentUser.user_metadata?.role === 'agency'
 
-  if (clientProject) {
-    // Client — show dedicated client portal
-    document.querySelectorAll('.agency-only').forEach(el => el.style.display = 'none')
-    await showClientPortal(clientProject)
-  } else {
-    // Agency — normal dashboard
-    showPage('page-dashboard')
-    loadProjects()
+  if (!isAgencyUser) {
+    const { data: clientProject } = await sb.from('projects')
+      .select('*')
+      .eq('client_login', currentUser.email)
+      .maybeSingle()
+
+    if (clientProject) {
+      // Client — show dedicated client portal
+      document.querySelectorAll('.agency-only').forEach(el => el.style.display = 'none')
+      await showClientPortal(clientProject)
+      return
+    }
   }
+
+  // Agency — normal dashboard
+  showPage('page-dashboard')
+  loadProjects()
   // Handle deep link AFTER login flow completes
   await handleHashRoute()
 }
