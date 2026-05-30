@@ -31103,7 +31103,6 @@ async function loadProjects() {
     badge.classList.toggle('visible', deadlinesWeek > 0)
   }
 
-  window._projHeroTasksLoaded = false; window._projHeroTasks = []
   renderProjectGrid()
   renderDeadlinePanel()
   renderCategoryTags()
@@ -31197,24 +31196,27 @@ function renderProjectGrid() {
     s.status !== 'completed' && s.deadline &&
     new Date(s.deadline + 'T00:00:00') < todayHero
   )
-  // Просроченные задачи — из кэша, подгружаем асинхронно
-  if (!window._projHeroTasksLoaded) {
-    window._projHeroTasksLoaded = true
-    window._projHeroTasks = []
-    ;(async () => {
-      try {
-        const { data } = await sb.from('stage_tasks').select('project_id,deadline,done').in('project_id', trulyActiveIds)
-        window._projHeroTasks = data || []
-        renderProjectGrid() // перерисовать после загрузки
-      } catch(e) {}
-    })()
-  }
-  const overdueTasksHero = (window._projHeroTasks || []).filter(t =>
-    trulyActiveIds.indexOf(t.project_id) !== -1 &&
-    !t.done && t.deadline &&
-    t.deadline.slice(0,10) < todayHero.toISOString().slice(0,10)
-  )
-  const overdueCount = overdueStages.length + overdueTasksHero.length
+  // Просроченные задачи — подгружаем каждый раз асинхронно (лёгкий запрос)
+  const todayStr = todayHero.toISOString().slice(0,10)
+  ;(async () => {
+    try {
+      if (!trulyActiveIds.length) return
+      const { data } = await sb.from('stage_tasks')
+        .select('project_id,deadline,done')
+        .in('project_id', trulyActiveIds)
+        .eq('done', false)
+        .lt('deadline', todayStr)
+        .not('deadline', 'is', null)
+      const overdueTasksCount = (data || []).length
+      const totalOverdue = overdueStages.length + overdueTasksCount
+      const e1 = g('proj-hero-overdue')
+      if (e1) { e1.textContent = totalOverdue; e1.style.color = totalOverdue > 0 ? 'var(--red)' : 'var(--green)' }
+      const e2 = g('proj-hero-overdue-dl')
+      if (e2) e2.textContent = totalOverdue === 0 ? 'Всё в срок ✓' : overdueStages.length + ' эт. · ' + overdueTasksCount + ' зад.'
+    } catch(e) {}
+  })()
+  // Пока задачи грузятся — показываем только этапы
+  const overdueCount = overdueStages.length
   const archivedProjs = _allProjects.filter(p => p.status === 'archived')
   const doneCount = _activeProjs.filter(p => getProjectProgress(p.id).pct === 100).length + archivedProjs.length
   const activeCount = _trulyActive.length
@@ -31228,7 +31230,7 @@ function renderProjectGrid() {
   setH('proj-hero-stages', totalStagesDone + ' этапов завершено')
   setH('proj-hero-overdue', overdueCount)
   const e1 = g('proj-hero-overdue'); if(e1) e1.style.color = overdueCount > 0 ? 'var(--red)' : 'var(--green)'
-  setH('proj-hero-overdue-dl', overdueCount === 0 ? 'Всё в срок ✓' : overdueStages.length + ' эт. · ' + overdueTasksHero.length + ' зад.')
+  setH('proj-hero-overdue-dl', overdueCount === 0 ? 'Всё в срок ✓' : overdueCount + ' требуют внимания')
   setH('proj-hero-done', doneCount)
   setH('proj-hero-mrr', totalMRR > 0 ? 'MRR: ' + fmtM(totalMRR) : 'Задайте бюджеты')
 
