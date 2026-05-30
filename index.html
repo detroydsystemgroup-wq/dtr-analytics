@@ -26703,7 +26703,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
     </div>
 
     <!-- ══ БАЗА ЗНАНИЙ ══ -->
-    <div id="dtab-team-panel" style="display:none;padding:24px 20px;">
+    <div id="dtab-team-panel" style="display:none !important;padding:24px 20px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
         <div>
           <div style="font-size:16px;font-weight:500;color:var(--txt);">Команда агентства</div>
@@ -31475,6 +31475,8 @@ function switchDashTab(tab, btn) {
   g('dtab-finance-panel').style.display   = tab === 'finance'   ? 'block' : 'none'
   var kbPanel = g('dtab-kb-panel')
   if (kbPanel) kbPanel.style.display = tab === 'kb' ? 'block' : 'none'
+  var teamPanel = g('dtab-team-panel')
+  if (teamPanel) teamPanel.style.cssText = tab === 'team' ? 'display:block;padding:24px 20px;' : 'display:none !important;padding:24px 20px;'
   // legacy compat
   const calPanel = g('dtab-calendar-panel')
   const actPanel = g('dtab-activity-panel')
@@ -44078,27 +44080,12 @@ async function loadTeamPanel() {
   }
 }
 
-// Добавляем team в switchDashTab
-var _origSwitchDashTab = window.switchDashTab;
+
+// Загружаем команду при переходе на вкладку — show/hide теперь в оригинальном switchDashTab
+var _origSwitchDashTab2 = window.switchDashTab;
 window.switchDashTab = function(tab, btn) {
-  // Скрываем team panel при любом переключении
-  var tp = document.getElementById('dtab-team-panel');
-  if (tp) tp.style.display = 'none';
-
-  _origSwitchDashTab && _origSwitchDashTab(tab, btn);
-
-  if (tab === 'team') {
-    // Скрываем все остальные панели
-    document.querySelectorAll('[id^="dtab-"][id$="-panel"]').forEach(function(p){ p.style.display = 'none'; });
-    if (tp) tp.style.display = 'block';
-    loadTeamPanel();
-  }
+  _origSwitchDashTab2 && _origSwitchDashTab2(tab, btn);
+  if (tab === 'team') loadTeamPanel();
 };
-
-// Скрываем при загрузке страницы
-document.addEventListener('DOMContentLoaded', function() {
-  var tp = document.getElementById('dtab-team-panel');
-  if (tp) tp.style.display = 'none';
-});
 </script>
 </html>
