@@ -43535,7 +43535,7 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
   }
 
   async function rebuildStages(projId, stages) {
-    var active = stages.filter(function(s){ return s.enabled && s.name.trim(); });
+    var active = stages.filter(function(s){ return s.enabled && s.name && s.name.trim(); });
     if (!active.length) return;
 
     // Сначала загружаем существующие этапы чтобы сохранить статусы
