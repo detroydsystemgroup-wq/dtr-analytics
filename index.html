@@ -38134,8 +38134,8 @@ async function loadOverview() {
   // Если ни одна дата не найдена — считаем задачу в 30-дневное окно
   var doneTasks = allTasks.filter(function(t){ return t.done; });
   var velocity30 = doneTasks.filter(function(t){
-    var d = t.done_at || t.updated_at || t.created_at;
-    if (!d) return true; // нет дат — считаем как recent
+    var d = t.done_at || t.updated_at;
+    if (!d) return false; // нет дат — не считаем
     return new Date(d) >= thirtyAgo;
   }).length;
   var velocity7 = doneTasks.filter(function(t){
@@ -38231,7 +38231,10 @@ async function loadOverview() {
   s('sv-health-num', healthScore + '%');
   sc('sv-health-num', healthColor);
   s('sv-health-sub', healthLabel + ' состояние');
-  s('sv-health-foot', activeProjects.length + ' активных · ' + doneProjs.length + ' на 100%');
+  var _svDoneCount = _allProjects.filter(function(p){
+    return p.status === 'archived' || (p.status !== 'archived' && getProjectProgress(p.id).pct === 100);
+  }).length;
+  s('sv-health-foot', activeProjects.length + ' активных · ' + _svDoneCount + ' завершено');
 
   s('sv-ontime-num', onTimeRate !== null ? onTimeRate + '%' : '—');
   sc('sv-ontime-num', onTimeRate !== null ? (onTimeRate >= 70 ? 'var(--green)' : onTimeRate >= 50 ? 'var(--amber)' : 'var(--red)') : 'var(--txt3)');
@@ -38358,7 +38361,7 @@ async function loadOverview() {
   var hEl = document.getElementById('sv-health-body');
   if (hEl) {
     var STAGE_NAMES2 = ['Анализ клиентов','Конкуренты','Контент-стратегия','Таргет','Контент-план','Сценарии','Съёмки #1','Съёмки #2','Отчётность'];
-    var activeProjs = _allProjects.filter(function(p){ return p.status !== 'archived'; });
+    var activeProjs = _allProjects.filter(function(p){ return p.status !== 'archived' && (typeof getProjectProgress !== 'undefined' && getProjectProgress(p.id).pct < 100); });
     var activeProjIds = activeProjs.map(function(p){ return p.id; });
     hEl.innerHTML = STAGE_NAMES2.map(function(name, i) {
       var done  = _allStages.filter(function(s){ return activeProjIds.indexOf(s.project_id)!==-1 && s.stage_index===i && s.status==='completed'; }).length;
