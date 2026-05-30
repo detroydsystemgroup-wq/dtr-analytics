@@ -31307,9 +31307,7 @@ function renderProjectGrid() {
   }
 
   grid.innerHTML = list.map(p => {
-    try {
     const { pct, completed } = getProjectProgress(p.id)
-    const progTotal = getProjectProgress(p.id).total
     const overdue = isProjectOverdue(p.id)
     const next = getNextDeadline(p.id)
     const col = p.brand_color || '#b8923a'
@@ -31317,8 +31315,7 @@ function renderProjectGrid() {
 
     // Pipeline segs
     const projStages = _allStages.filter(s => s.project_id === p.id)
-    const segCount = projStages.length || 9
-    const stageStatuses = Array.from({length:segCount}, (_,i) => {
+    const stageStatuses = Array.from({length:9}, (_,i) => {
       const st = projStages.find(s => s.stage_index === i)
       return st ? st.status : 'pending'
     })
@@ -31375,7 +31372,7 @@ function renderProjectGrid() {
           <div style="flex:1;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;">
             <div style="width:${pct}%;height:100%;background:${progColor};border-radius:2px;"></div>
           </div>
-          <div style="font-family:var(--font-mono);font-size:9px;color:var(--txt3);min-width:44px;text-align:right;">${completed}/${progTotal}</div>
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--txt3);min-width:44px;text-align:right;">${completed}/9</div>
         </div>
       </div>
 
@@ -31409,7 +31406,6 @@ function renderProjectGrid() {
 
       </div>
     </div>`
-    } catch(e) { console.error('[DTR card]', e); return ''; }
   }).join('')
 }
 function switchDashTab(tab, btn) {
