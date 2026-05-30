@@ -30451,8 +30451,9 @@ async function sendTelegramStageNotification(stageIndex, newStatus, note) {
   const chatId = currentProject?.telegram_chat_id
   if (!chatId) return // no telegram connected
 
-  const stage = STAGES[stageIndex]
-  if (!stage) return
+  const rec = trackerData.find(s => s.stage_index === stageIndex)
+  const stageName = (rec && rec.name) || STAGES[stageIndex]?.name || ('Этап ' + (stageIndex + 1))
+  const stage = { name: stageName }
 
   const statusText = newStatus === 'completed' ? '✅ Завершён' : '🔵 Начат'
   const emoji = newStatus === 'completed' ? '🎉' : '🚀'
@@ -30668,7 +30669,7 @@ async function checkOverdueAlerts() {
       s.status !== 'completed' && s.deadline && s.deadline < today
     )
     if (overdue.length) {
-      const names = overdue.map(s => `• ${STAGES[s.stage_index]?.icon||''} ${tgEsc(STAGES[s.stage_index]?.name||'Этап')}`).join('\n')
+      const names = overdue.map(s => `• ${tgEsc(s.name || STAGES[s.stage_index]?.name || ('Этап ' + (s.stage_index+1)))}`).join('\n')
       const text = `⏰ *Просроченные этапы*\n\nПроект: *${tgEsc(currentProject.name)}*\n\n${names}\n\n_DTR Analytics_`
       // Throttle: only fire once per session per project
       const key = 'alert_overdue_stage_' + currentProject.id
