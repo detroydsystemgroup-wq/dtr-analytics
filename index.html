@@ -43528,9 +43528,32 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
 
   async function rebuildStages(projId, stages) {
     var active = stages.filter(function(s){ return s.enabled && s.name.trim(); });
-    try { await sb.from('project_stages').delete().eq('project_id', projId); } catch(e){}
     if (!active.length) return;
-    var rows = active.map(function(s,i){ return { project_id:projId, stage_index:i, name:s.name.trim(), status:'pending' }; });
+
+    // Сначала загружаем существующие этапы чтобы сохранить статусы
+    var existing = [];
+    try {
+      var res = await sb.from('project_stages').select('*').eq('project_id', projId).order('stage_index');
+      existing = res.data || [];
+    } catch(e){}
+
+    // Удаляем старые
+    try { await sb.from('project_stages').delete().eq('project_id', projId); } catch(e){}
+
+    // Создаём новые — сохраняем статус/дедлайн/заметки по позиции
+    var rows = active.map(function(s, i) {
+      var old = existing[i] || {};
+      return {
+        project_id: projId,
+        stage_index: i,
+        name: s.name.trim(),
+        status: old.status || 'pending',
+        deadline: old.deadline || null,
+        note: old.note || null,
+        link: old.link || null,
+      };
+    });
+
     try { await sb.from('project_stages').insert(rows); } catch(e){ console.warn(e); }
     if (typeof currentProject !== 'undefined' && currentProject && currentProject.id===projId) {
       if (typeof loadTracker === 'function') loadTracker();
