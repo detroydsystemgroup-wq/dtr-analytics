@@ -26461,8 +26461,8 @@ button, a, [role="button"],
           <div class="sv-proj-thead">
             <div class="sv-th">Проект</div>
             <div class="sv-th sv-th-r">Категория</div>
-            <div class="sv-th sv-th-r">MRR</div>
-            <div class="sv-th sv-th-r">Маржа / Прибыль</div>
+            <div class="sv-th sv-th-r" style="padding-right:16px;">MRR</div>
+            <div class="sv-th sv-th-r" style="padding-left:16px;">Маржа / Прибыль</div>
             <div class="sv-th sv-th-r">Дедлайн</div>
             <div class="sv-th sv-th-r">Churn</div>
             <div class="sv-th" style="width:72px;"></div>
@@ -38229,6 +38229,7 @@ window.svSetProjFilter = function(f, btn) {
   _svProjFilter = f;
   document.querySelectorAll('.sv-pill').forEach(function(b){ b.classList.remove('sv-pill-active'); });
   if (btn) btn.classList.add('sv-pill-active');
+  if (typeof renderFinance === 'function' && (!_biAllRows || !_biAllRows.length)) renderFinance();
   svRenderProjTable(window._svProjData || [], window._svOverdueMap || {});
 };
 
@@ -38504,6 +38505,11 @@ async function loadOverview() {
   var metaEl = document.getElementById('sv-proj-meta');
   if (metaEl) metaEl.textContent = activeProjects.length + ' активных · ' + completedStages + '/' + totalStages + ' этапов';
 
+  // Убеждаемся что финансовые данные посчитаны (нужны для маржи)
+  if (typeof renderFinance === 'function' && (!_biAllRows || !_biAllRows.length)) {
+    renderFinance();
+  }
+
   svRenderProjTable(projData, window._svOverdueMap, today, MONTHS);
 
   // ─────────────────────────────
@@ -38655,11 +38661,11 @@ function svRenderProjTable(projData, overdueMap, today, MONTHS) {
       '<div style="text-align:right;">' +
         (catTxt !== '—' ? '<span style="font-size:10px;padding:2px 7px;border-radius:4px;border:1px solid var(--brd);color:var(--txt2);font-family:var(--font-mono);">' + catTxt + '</span>' : '<span style="color:var(--txt3);font-size:11px;">—</span>') +
       '</div>' +
-      '<div style="text-align:right;">' +
+      '<div style="text-align:right;padding-right:16px;">' +
         '<div style="font-size:13px;color:' + mrrColor + ';font-family:var(--font-mono);">' + mrrTxt + '</div>' +
         (mrr > 0 ? '<div style="font-size:9px;color:var(--txt3);margin-top:1px;font-family:var(--font-mono);">мес</div>' : '') +
       '</div>' +
-      '<div style="text-align:right;">' +
+      '<div style="text-align:right;padding-left:16px;">' +
         '<div style="display:flex;align-items:baseline;gap:8px;justify-content:flex-end;">' +
           '<div style="font-size:13px;color:' + marginColor + ';font-family:var(--font-mono);">' + marginTxt + '</div>' +
           (profit !== null ? '<div style="font-size:11px;color:' + profitColor + ';font-family:var(--font-mono);">' + profitTxt + '</div>' : '') +
