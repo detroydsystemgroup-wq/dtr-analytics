@@ -33312,7 +33312,7 @@ let _biSelectedId = null
 function _biComputeRow(p) {
   const budget   = p.monthly_budget || 0
   const mins     = _finTaskHours[p.id] || 0
-  const hours    = Math.round(mins / 60)
+  const hours    = mins / 60  // дробное — для точного отображения ч+м
 
   // Поддержка нового unified формата (cat-поле) и старого формата
   const allExp   = [
@@ -33574,7 +33574,7 @@ function biRenderTable() {
 
         <div class="bi-mblock bi-mb-hours">
           <div class="bi-mb-lbl">Часы</div>
-          <div class="bi-mb-val" style="color:${hours>0?'rgba(34,211,238,.9)':'rgba(255,255,255,.2)'};">${hours>0?hours+'h':'—'}</div>
+          <div class="bi-mb-val" style="color:${hours>0?'rgba(34,211,238,.9)':'rgba(255,255,255,.2)'};">${hours>0?(()=>{const hh=Math.floor(hours),mm=Math.round((hours-hh)*60);return hh>0&&mm>0?hh+'ч '+mm+'м':hh>0?hh+'ч':mm+'м'})():'—'}</div>
         </div>
 
       </div>
