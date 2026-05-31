@@ -18615,6 +18615,13 @@ function toggleObOnboarding() {
             </span>
             <span class="cc-nav-text">Команда</span>
           </button>
+          <button class="dash-tab cc-nav-item agency-only" id="dtab-cycletime" onclick="switchDashTab('cycletime',this)">
+            <span class="cc-nav-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>
+            </span>
+            <span class="cc-nav-text">Циклы</span>
+            <span class="dash-tab-badge" id="dtab-badge-ct">0</span>
+          </button>
           <button class="dash-tab cc-nav-item" id="dtab-kb" onclick="switchDashTab('kb',this)">
             <span class="cc-nav-icon">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
@@ -19351,6 +19358,97 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
         </div>
       </div>
 
+    </div>
+
+    <!-- ══ ЦИКЛЫ ЭТАПОВ (Cycle Time Intelligence) ══ -->
+    <div id="dtab-cycletime-panel" style="display:none;padding-bottom:60px;">
+
+      <!-- ① HERO METRICS -->
+      <div class="apl-hero-strip">
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">ЦИКЛ ПРОЕКТА · МЕДИАНА</div>
+          <div class="apl-hero-num" id="ct-cycle-total">—</div>
+          <div class="apl-hero-sub">сумма медиан этапов</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="ct-cycle-total-foot">—</div>
+        </div>
+        <div class="apl-hero-divider"></div>
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">УЗКОЕ МЕСТО</div>
+          <div class="apl-hero-num apl-red" id="ct-bottleneck" style="font-size:18px;">—</div>
+          <div class="apl-hero-sub">самый долгий этап</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="ct-bottleneck-foot">—</div>
+        </div>
+        <div class="apl-hero-divider"></div>
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">ПОКРЫТИЕ ДАННЫМИ</div>
+          <div class="apl-hero-num apl-blue" id="ct-coverage">—</div>
+          <div class="apl-hero-sub">этапов с измеримым циклом</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="ct-coverage-foot">—</div>
+        </div>
+        <div class="apl-hero-divider"></div>
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">ЗАСТРЯЛО СЕЙЧАС</div>
+          <div class="apl-hero-num" id="ct-aging" style="color:var(--amber);">—</div>
+          <div class="apl-hero-sub">этапов дольше нормы (p85)</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="ct-aging-foot">—</div>
+        </div>
+      </div>
+
+      <!-- empty state -->
+      <div id="ct-empty" style="display:none;">
+        <div class="apl-empty-state">
+          <div class="apl-empty-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".3"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="apl-empty-title">Пока нет данных о циклах</div>
+          <div class="apl-empty-sub" id="ct-empty-sub">Метрика считается из истории переходов этапов.<br>Завершите хотя бы несколько этапов после включения истории — и здесь появится аналитика.</div>
+        </div>
+      </div>
+
+      <!-- main body -->
+      <div id="ct-body" style="display:none;">
+
+        <!-- bottleneck chart -->
+        <div class="apl-chart-card" style="margin-bottom:14px;">
+          <div class="apl-chart-label">МЕДИАНА (p50) И ХУДШИЙ СЛУЧАЙ (p90) ПО ЭТАПАМ · ДНИ</div>
+          <div style="position:relative;height:300px;margin-top:8px;"><canvas id="cCycleStages"></canvas></div>
+        </div>
+
+        <!-- per-stage table -->
+        <div class="apl-chart-card" style="margin-bottom:14px;">
+          <div class="apl-chart-label">ДЕТАЛИЗАЦИЯ ПО ЭТАПАМ</div>
+          <div id="ct-stage-table" style="margin-top:6px;overflow-x:auto;"></div>
+        </div>
+
+        <!-- aging WIP -->
+        <div class="apl-chart-card" id="ct-aging-wrap" style="margin-bottom:14px;display:none;">
+          <div class="apl-chart-label" style="color:var(--amber);">⚠ ЗАСТРЯВШИЕ ЭТАПЫ — РАНЕЕ ПРЕДУПРЕЖДЕНИЕ</div>
+          <div id="ct-aging-list" style="margin-top:8px;"></div>
+        </div>
+
+        <!-- trend -->
+        <div class="apl-chart-card" id="ct-trend-wrap" style="margin-bottom:14px;">
+          <div class="apl-chart-label">ТРЕНД: МЕДИАНА ЦИКЛА ЗАВЕРШЁННЫХ ЭТАПОВ ПО МЕСЯЦАМ · ДНИ</div>
+          <div style="position:relative;height:220px;margin-top:8px;"><canvas id="cCycleTrend"></canvas></div>
+        </div>
+
+        <!-- benchmark by client -->
+        <div class="apl-chart-card" style="margin-bottom:14px;">
+          <div class="apl-chart-label">БЕНЧМАРК ПО КЛИЕНТАМ · СРЕДНИЙ ЦИКЛ ЗАВЕРШЁННОГО ЭТАПА</div>
+          <div id="ct-bench-client" style="margin-top:6px;overflow-x:auto;"></div>
+        </div>
+
+        <!-- methodology -->
+        <div style="margin-top:8px;padding:16px 18px;background:rgba(255,255,255,.02);border:1px solid var(--brd);border-radius:var(--r-lg);">
+          <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--txt2);margin-bottom:10px;">КАК ЭТО СЧИТАЕТСЯ (ЧЕСТНО)</div>
+          <div id="ct-method" style="font-family:var(--font-body);font-size:12px;line-height:1.7;color:var(--txt2);"></div>
+        </div>
+
+      </div>
     </div>
 
     <!-- ══ БАЗА ЗНАНИЙ ══ -->
@@ -23375,6 +23473,8 @@ function switchDashTab(tab, btn) {
   if (kbPanel) kbPanel.style.display = (tab === 'kb' || tab === 'tools') ? 'block' : 'none'
   var teamPanel = g('dtab-team-panel')
   if (teamPanel) teamPanel.style.display = tab === 'team' ? 'block' : 'none'
+  var ctPanel = g('dtab-cycletime-panel')
+  if (ctPanel) ctPanel.style.display = tab === 'cycletime' ? 'block' : 'none'
   // legacy compat
   const calPanel = g('dtab-calendar-panel')
   const actPanel = g('dtab-activity-panel')
@@ -23389,6 +23489,9 @@ function switchDashTab(tab, btn) {
   if (tab === 'finance')  loadFinance()
   if (tab === 'kb' && typeof loadKB === 'function') loadKB()
   if (tab === 'tools' && typeof openToolsSpace === 'function') openToolsSpace()
+  if (tab === 'cycletime' && typeof loadCycleTime === 'function') {
+    if (_allProjects.length) loadCycleTime(); else loadProjects().then(loadCycleTime)
+  }
 }
 
 let _tlMode = 'deadlines'
@@ -30934,6 +31037,441 @@ window.svSetProjFilter = function(f, btn) {
   if (typeof renderFinance === 'function' && (!_biAllRows || !_biAllRows.length)) renderFinance();
   svRenderProjTable(window._svProjData || [], window._svOverdueMap || {});
 };
+
+// ══════════════════════════════════════════════
+// CYCLE TIME INTELLIGENCE — аналитика длительности этапов
+// Источник правды: stage_history (события переходов статуса).
+// Принцип: считаем только то, что реально измеримо из данных.
+// Этапы, завершённые без записанного старта, в средние НЕ попадают
+// (учитываются лишь в «покрытии данными»), чтобы метрика не врала.
+// ══════════════════════════════════════════════
+const _CT_DAY = 86400000;
+
+// Канонические имена этапов (по stage_index). Кросс-проектная агрегация —
+// по индексу; если у проекта кастомный stage_templates, имя может отличаться,
+// поэтому подпись берём из дефолтного пайплайна.
+function _ctStageName(idx) {
+  if (typeof STAGES !== 'undefined' && STAGES[idx] && STAGES[idx].name) return STAGES[idx].name;
+  return 'Этап ' + (idx + 1);
+}
+
+// Нормализуем статус события: сначала new_status, иначе — из текста event.
+function _ctStatusOf(ev) {
+  if (ev.new_status) return ev.new_status;
+  var e = ev.event || '';
+  if (/Начат/i.test(e)) return 'active';
+  if (/Заверш/i.test(e)) return 'completed';
+  if (/ожидан|Возвращ/i.test(e)) return 'pending';
+  return null;
+}
+
+// Перцентиль с линейной интерполяцией (тип R-7 / Excel PERCENTILE.INC).
+function _ctPctile(sortedAsc, p) {
+  var n = sortedAsc.length;
+  if (!n) return null;
+  if (n === 1) return sortedAsc[0];
+  var idx = (n - 1) * p;
+  var lo = Math.floor(idx), hi = Math.ceil(idx);
+  if (lo === hi) return sortedAsc[lo];
+  return sortedAsc[lo] + (sortedAsc[hi] - sortedAsc[lo]) * (idx - lo);
+}
+function _ctMedian(sortedAsc) { return _ctPctile(sortedAsc, 0.5); }
+
+// Форматирование длительности из миллисекунд.
+function _ctFmtDur(ms) {
+  if (ms == null || isNaN(ms)) return '—';
+  var d = ms / _CT_DAY;
+  if (d < 1) {
+    var h = ms / 3600000;
+    if (h < 1) return Math.max(1, Math.round(ms / 60000)) + ' мин';
+    return h.toFixed(1).replace('.0', '') + ' ч';
+  }
+  return (d < 10 ? d.toFixed(1) : Math.round(d)) + ' дн';
+}
+function _ctDays(ms) { return ms == null ? null : ms / _CT_DAY; }
+
+// Ядро: разбираем историю одной связки (проект, этап) на завершённые
+// инстансы и (если этап ещё открыт) — на незавершённый «WIP».
+function _ctWalk(events) {
+  // events отсортированы по created_at ASC
+  var firstStart = null, lastComplete = null, activeSince = null;
+  var activeMs = 0, returns = 0, completed = false;
+  for (var i = 0; i < events.length; i++) {
+    var st = _ctStatusOf(events[i]);
+    var t = new Date(events[i].created_at).getTime();
+    if (isNaN(t)) continue;
+    if (st === 'active') {
+      if (firstStart === null) firstStart = t;
+      if (activeSince === null) activeSince = t;
+    } else if (st === 'completed') {
+      if (activeSince !== null) { activeMs += (t - activeSince); activeSince = null; }
+      lastComplete = t; completed = true;
+    } else if (st === 'pending') {
+      if (activeSince !== null) { activeMs += (t - activeSince); activeSince = null; }
+      if (firstStart !== null) returns++;  // возврат после старта = rework
+    }
+  }
+  return {
+    firstStart: firstStart, lastComplete: lastComplete,
+    activeMs: activeMs, returns: returns, completed: completed,
+    stillActive: activeSince !== null  // открыт и сейчас в работе
+  };
+}
+
+let _ctData = null;
+
+async function loadCycleTime() {
+  var bodyEl = g('ct-body'), emptyEl = g('ct-empty');
+  if (typeof _allProjects === 'undefined' || !_allProjects.length) {
+    if (bodyEl) bodyEl.style.display = 'none';
+    if (emptyEl) emptyEl.style.display = 'block';
+    return;
+  }
+
+  var ids = _allProjects.map(function (p) { return p.id; });
+
+  // Грузим всю историю по всем проектам (активные + архив — у завершённых
+  // самые полные циклы) + участников для бенчмарка по людям.
+  var history = [], members = [];
+  try {
+    var res = await Promise.all([
+      sb.from('stage_history').select('project_id,stage_index,event,new_status,old_status,assignee_id,created_at')
+        .in('project_id', ids).order('created_at', { ascending: true }).limit(5000),
+      sb.from('team_members').select('id,name,color').eq('agency_id', currentUser.id)
+    ]);
+    history = (res[0] && res[0].data) || [];
+    members = (res[1] && res[1].data) || [];
+  } catch (e) { history = []; members = []; }
+
+  var memberName = {};
+  members.forEach(function (m) { memberName[m.id] = m.name; });
+  var projName = {};
+  _allProjects.forEach(function (p) { projName[p.id] = p.name; });
+
+  // Группируем историю по (project|stage_index)
+  var groups = {};
+  history.forEach(function (h) {
+    if (h.stage_index == null) return;
+    var k = h.project_id + '|' + h.stage_index;
+    (groups[k] || (groups[k] = [])).push(h);
+  });
+
+  var now = Date.now();
+  // Инстансы: завершённые (с измеримым lead time) и открытые (WIP)
+  var instances = [];   // {pid, idx, leadMs, activeMs, returns, completeAt}
+  var wip = [];         // {pid, idx, sinceMs (now-firstStart)}
+  Object.keys(groups).forEach(function (k) {
+    var parts = k.split('|');
+    var pid = parts[0], idx = parseInt(parts[1], 10);
+    var w = _ctWalk(groups[k]);
+    if (w.completed && w.firstStart !== null && w.lastComplete !== null && w.lastComplete >= w.firstStart) {
+      instances.push({
+        pid: pid, idx: idx,
+        leadMs: w.lastComplete - w.firstStart,
+        activeMs: w.activeMs,
+        returns: w.returns,
+        completeAt: w.lastComplete
+      });
+    } else if (!w.completed && w.firstStart !== null && w.stillActive) {
+      wip.push({ pid: pid, idx: idx, sinceMs: now - w.firstStart });
+    }
+  });
+
+  // Покрытие: сколько завершённых этапов вообще есть (project_stages) и
+  // у скольких из них есть измеримый lead time.
+  var totalCompletedStages = (typeof _allStages !== 'undefined')
+    ? _allStages.filter(function (s) { return s.status === 'completed'; }).length
+    : 0;
+  var measurable = instances.length;
+  var coveragePct = totalCompletedStages ? Math.round(measurable / totalCompletedStages * 100) : 0;
+
+  // Если нечего показывать
+  if (!instances.length) {
+    if (bodyEl) bodyEl.style.display = 'none';
+    if (emptyEl) {
+      emptyEl.style.display = 'block';
+      var sub = g('ct-empty-sub');
+      if (sub) {
+        if (totalCompletedStages > 0) {
+          sub.innerHTML = 'В системе есть завершённые этапы (' + totalCompletedStages + '), но у них нет записанной пары «старт→финиш» в истории — вероятно, они закрывались до включения журнала событий.<br>Новые завершённые этапы будут считаться корректно.';
+        } else {
+          sub.innerHTML = 'Метрика считается из истории переходов этапов.<br>Завершите хотя бы несколько этапов — и здесь появится аналитика.';
+        }
+      }
+    }
+    _ctRenderHero(null, coveragePct, measurable, totalCompletedStages, 0);
+    return;
+  }
+  if (emptyEl) emptyEl.style.display = 'none';
+  if (bodyEl) bodyEl.style.display = 'block';
+
+  // ── Агрегация по этапам (stage_index) ──
+  var byStage = {};  // idx -> {leads:[], actives:[], reworkCount, n}
+  instances.forEach(function (it) {
+    var b = byStage[it.idx] || (byStage[it.idx] = { leads: [], actives: [], rework: 0, n: 0 });
+    b.leads.push(it.leadMs);
+    b.actives.push(it.activeMs);
+    if (it.returns > 0) b.rework++;
+    b.n++;
+  });
+
+  var stageStats = Object.keys(byStage).map(function (k) {
+    var idx = parseInt(k, 10), b = byStage[k];
+    var leadsSorted = b.leads.slice().sort(function (a, c) { return a - c; });
+    var actSorted = b.actives.slice().sort(function (a, c) { return a - c; });
+    var p50 = _ctMedian(leadsSorted);
+    var p90 = b.n >= 5 ? _ctPctile(leadsSorted, 0.9) : null;     // p90 честен от ~5 точек
+    var p85 = b.n >= 4 ? _ctPctile(leadsSorted, 0.85) : null;     // порог для aging
+    var actMed = _ctMedian(actSorted);
+    var lossMs = (p50 != null && actMed != null) ? Math.max(0, p50 - actMed) : null; // потери на возвраты/ожидание
+    return {
+      idx: idx, name: _ctStageName(idx), n: b.n,
+      p50: p50, p90: p90, p85: p85, actMed: actMed, lossMs: lossMs,
+      reworkRate: b.n ? (b.rework / b.n) : 0,
+      lowSample: b.n < 3
+    };
+  }).sort(function (a, c) { return a.idx - c.idx; });
+
+  // ── Ожидаемый цикл проекта = сумма медиан этапов (с оговоркой про
+  // последовательность; этапы в реальности могут перекрываться). ──
+  var stagesForSum = stageStats.filter(function (s) { return s.p50 != null && s.n >= 2; });
+  var projectCycleMs = stagesForSum.reduce(function (s, st) { return s + st.p50; }, 0);
+  var sumForContribution = stagesForSum.reduce(function (s, st) { return s + st.p50; }, 0);
+
+  // ── Узкое место = этап с максимальной медианой (среди надёжных n>=3) ──
+  var reliable = stageStats.filter(function (s) { return s.n >= 3 && s.p50 != null; });
+  var pool = reliable.length ? reliable : stageStats.filter(function (s) { return s.p50 != null; });
+  var bottleneck = pool.length ? pool.reduce(function (mx, s) { return s.p50 > mx.p50 ? s : mx; }) : null;
+
+  // ── Aging WIP: открытые этапы дольше своего p85 ──
+  var agingRows = [];
+  wip.forEach(function (w) {
+    var st = byStage[w.idx];
+    var threshold = null;
+    var stStat = stageStats.find(function (s) { return s.idx === w.idx; });
+    if (stStat && stStat.p85 != null) threshold = stStat.p85;
+    var over = (threshold != null) && (w.sinceMs > threshold);
+    if (over) {
+      var proj = _allProjects.find(function (p) { return p.id === w.pid; });
+      var budget = (proj && proj.monthly_budget) || 0;
+      var daysIn = w.sinceMs / _CT_DAY;
+      var frozen = budget > 0 ? Math.round(budget / 30.44 * daysIn) : null;
+      agingRows.push({
+        pid: w.pid, name: projName[w.pid] || '—',
+        stage: _ctStageName(w.idx),
+        sinceMs: w.sinceMs, thresholdMs: threshold,
+        overPct: Math.round((w.sinceMs / threshold - 1) * 100),
+        frozen: frozen
+      });
+    }
+  });
+  agingRows.sort(function (a, c) { return c.sinceMs - a.sinceMs; });
+
+  // ── Тренд: медиана lead time завершённых инстансов по месяцу завершения ──
+  var byMonth = {};
+  instances.forEach(function (it) {
+    var d = new Date(it.completeAt);
+    var key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    (byMonth[key] || (byMonth[key] = [])).push(it.leadMs);
+  });
+  var monthsSorted = Object.keys(byMonth).sort();
+  var MONTHS_RU = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+  var trend = monthsSorted.map(function (k) {
+    var arr = byMonth[k].slice().sort(function (a, c) { return a - c; });
+    var p = k.split('-');
+    return {
+      label: MONTHS_RU[parseInt(p[1], 10) - 1] + ' ' + p[0].slice(2),
+      medDays: _ctDays(_ctMedian(arr)),
+      n: arr.length
+    };
+  });
+
+  // ── Бенчмарк по клиентам: средний цикл завершённого этапа ──
+  var byClient = {};
+  instances.forEach(function (it) {
+    var b = byClient[it.pid] || (byClient[it.pid] = { leads: [], rework: 0 });
+    b.leads.push(it.leadMs);
+    if (it.returns > 0) b.rework++;
+  });
+  var clientRows = Object.keys(byClient).map(function (pid) {
+    var b = byClient[pid];
+    var sorted = b.leads.slice().sort(function (a, c) { return a - c; });
+    var mean = b.leads.reduce(function (s, x) { return s + x; }, 0) / b.leads.length;
+    return {
+      pid: pid, name: projName[pid] || '—', n: b.leads.length,
+      meanMs: mean, medMs: _ctMedian(sorted),
+      reworkRate: b.leads.length ? b.rework / b.leads.length : 0
+    };
+  }).sort(function (a, c) { return c.medMs - a.medMs; });
+
+  _ctData = { stageStats: stageStats, projectCycleMs: projectCycleMs, sumForContribution: sumForContribution,
+    bottleneck: bottleneck, agingRows: agingRows, trend: trend, clientRows: clientRows,
+    measurable: measurable, totalCompletedStages: totalCompletedStages, coveragePct: coveragePct,
+    stagesContributing: stagesForSum.length };
+
+  // ── Рендер ──
+  _ctRenderHero(_ctData, coveragePct, measurable, totalCompletedStages, agingRows.length);
+  _ctRenderStageChart(stageStats);
+  _ctRenderStageTable(stageStats, sumForContribution);
+  _ctRenderAging(agingRows);
+  _ctRenderTrend(trend);
+  _ctRenderClients(clientRows);
+  _ctRenderMethod(_ctData);
+
+  // бейдж на вкладке = число застрявших
+  var badge = g('dtab-badge-ct');
+  if (badge) { badge.textContent = agingRows.length; badge.classList.toggle('visible', agingRows.length > 0); }
+}
+
+function _ctRenderHero(d, coveragePct, measurable, totalCompleted, agingCount) {
+  set('ct-coverage', coveragePct + '%');
+  var cf = g('ct-coverage-foot'); if (cf) cf.textContent = measurable + ' из ' + totalCompleted + ' завершённых';
+  var af = g('ct-aging-foot');
+  if (!d) {
+    set('ct-cycle-total', '—'); set('ct-bottleneck', '—');
+    var bf = g('ct-bottleneck-foot'); if (bf) bf.textContent = 'недостаточно данных';
+    var ctf = g('ct-cycle-total-foot'); if (ctf) ctf.textContent = 'недостаточно данных';
+    set('ct-aging', '0'); if (af) af.textContent = '—';
+    return;
+  }
+  set('ct-cycle-total', _ctFmtDur(d.projectCycleMs));
+  var ctf2 = g('ct-cycle-total-foot');
+  if (ctf2) ctf2.textContent = 'по ' + d.stagesContributing + ' этап. (n≥2)';
+  if (d.bottleneck) {
+    set('ct-bottleneck', d.bottleneck.name);
+    var bf2 = g('ct-bottleneck-foot');
+    if (bf2) bf2.textContent = 'медиана ' + _ctFmtDur(d.bottleneck.p50) + ' · n=' + d.bottleneck.n;
+  } else {
+    set('ct-bottleneck', '—');
+  }
+  set('ct-aging', String(agingCount));
+  if (af) af.textContent = agingCount ? 'требуют внимания' : 'всё в норме';
+}
+
+function _ctRenderStageChart(stats) {
+  var arr = stats.filter(function (s) { return s.p50 != null; });
+  if (!arr.length) return;
+  var labels = arr.map(function (s) { return s.name; });
+  var p50d = arr.map(function (s) { return +(_ctDays(s.p50)).toFixed(1); });
+  var p90d = arr.map(function (s) { return s.p90 != null ? +(_ctDays(s.p90)).toFixed(1) : null; });
+  var bottleneckIdx = _ctData && _ctData.bottleneck ? _ctData.bottleneck.idx : -1;
+  var barCol = arr.map(function (s) { return s.idx === bottleneckIdx ? 'rgba(224,82,82,.85)' : 'rgba(201,168,76,.7)'; });
+  mkChart('cCycleStages', 'bar', {
+    labels: labels,
+    datasets: [
+      { label: 'Медиана (p50)', data: p50d, backgroundColor: barCol, borderRadius: 4, order: 2 },
+      { label: 'Худший случай (p90)', data: p90d, type: 'line', borderColor: 'rgba(56,178,172,.9)', backgroundColor: 'rgba(56,178,172,.9)', borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, tension: .25, spanGaps: true, order: 1 }
+    ]
+  }, {
+    plugins: {
+      legend: { labels: { color: 'rgba(240,236,230,.4)', font: { size: 10, family: 'monospace' }, usePointStyle: true } },
+      tooltip: { callbacks: { label: function (c) { return c.dataset.label + ': ' + (c.parsed.y == null ? '—' : c.parsed.y + ' дн'); } } }
+    },
+    scales: {
+      x: { ...xCfg, ticks: { ...xCfg.ticks, maxRotation: 35, minRotation: 0, font: { size: 9 } } },
+      y: { ...yCfg, beginAtZero: true, ticks: { ...yCfg.ticks, callback: function (v) { return v + 'д'; } } }
+    }
+  });
+}
+
+function _ctRenderStageTable(stats, sumForContribution) {
+  var el = g('ct-stage-table'); if (!el) return;
+  var head = ['ЭТАП', 'N', 'МЕДИАНА', 'p90', 'ВКЛАД В ЦИКЛ', '% ВОЗВРАТОВ', 'ПОТЕРИ НА ВОЗВРАТ'];
+  var rows = stats.map(function (s) {
+    var contrib = (sumForContribution > 0 && s.p50 != null && s.n >= 2) ? Math.round(s.p50 / sumForContribution * 100) : null;
+    var rw = Math.round(s.reworkRate * 100);
+    var rwCol = rw >= 40 ? 'var(--red)' : (rw >= 20 ? 'var(--amber)' : 'var(--txt2)');
+    var nameCell = '<b>' + esc(s.name) + '</b>' + (s.lowSample ? ' <span style="font-size:9px;color:var(--amber);font-family:var(--font-mono);">мало данных</span>' : '');
+    return '<tr style="border-bottom:1px solid rgba(255,255,255,.04);">'
+      + '<td style="padding:9px 10px;">' + nameCell + '</td>'
+      + '<td style="text-align:right;padding:9px 10px;font-family:var(--font-mono);color:var(--txt2);">' + s.n + '</td>'
+      + '<td style="text-align:right;padding:9px 10px;font-family:var(--font-display);font-weight:700;color:var(--a2);">' + _ctFmtDur(s.p50) + '</td>'
+      + '<td style="text-align:right;padding:9px 10px;font-family:var(--font-display);color:var(--cyan);">' + (s.p90 != null ? _ctFmtDur(s.p90) : '—') + '</td>'
+      + '<td style="text-align:right;padding:9px 10px;font-family:var(--font-mono);color:var(--txt2);">' + (contrib != null ? contrib + '%' : '—') + '</td>'
+      + '<td style="text-align:right;padding:9px 10px;font-family:var(--font-mono);color:' + rwCol + ';">' + rw + '%</td>'
+      + '<td style="text-align:right;padding:9px 10px;font-family:var(--font-display);color:var(--txt2);">' + (s.lossMs != null ? _ctFmtDur(s.lossMs) : '—') + '</td>'
+      + '</tr>';
+  }).join('');
+  el.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:12px;min-width:560px;"><thead><tr>'
+    + head.map(function (h, i) { return '<th style="text-align:' + (i === 0 ? 'left' : 'right') + ';padding:8px 10px;font-size:9px;color:var(--txt2);font-family:var(--font-mono);letter-spacing:.08em;font-weight:400;border-bottom:1px solid var(--brd);">' + h + '</th>'; }).join('')
+    + '</tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+function _ctRenderAging(rows) {
+  var wrap = g('ct-aging-wrap'), el = g('ct-aging-list');
+  if (!wrap || !el) return;
+  if (!rows.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  el.innerHTML = rows.map(function (r) {
+    return '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 14px;background:rgba(224,82,82,.06);border:1px solid rgba(224,82,82,.18);border-radius:10px;margin-bottom:8px;">'
+      + '<div style="min-width:0;"><div style="font-weight:700;font-size:13px;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(r.name) + '</div>'
+      + '<div style="font-size:11px;color:var(--txt2);font-family:var(--font-mono);margin-top:2px;">' + esc(r.stage) + '</div></div>'
+      + '<div style="text-align:right;flex-shrink:0;">'
+      + '<div style="font-family:var(--font-display);font-weight:800;font-size:15px;color:var(--red);">' + _ctFmtDur(r.sinceMs) + '</div>'
+      + '<div style="font-size:10px;color:var(--amber);font-family:var(--font-mono);margin-top:2px;">+' + r.overPct + '% к норме' + (r.frozen != null ? ' · ~' + fmtM(r.frozen) + ' замор.' : '') + '</div>'
+      + '</div></div>';
+  }).join('');
+}
+
+function _ctRenderTrend(trend) {
+  var wrap = g('ct-trend-wrap');
+  var valid = trend.filter(function (t) { return t.medDays != null; });
+  if (valid.length < 2) { if (wrap) wrap.style.display = 'none'; return; }
+  if (wrap) wrap.style.display = 'block';
+  mkChart('cCycleTrend', 'line', {
+    labels: trend.map(function (t) { return t.label; }),
+    datasets: [{
+      label: 'Медиана цикла, дн',
+      data: trend.map(function (t) { return t.medDays != null ? +t.medDays.toFixed(1) : null; }),
+      borderColor: 'rgba(201,168,76,.9)', backgroundColor: 'rgba(201,168,76,.12)',
+      borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, tension: .3, fill: true, spanGaps: true
+    }]
+  }, {
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: function (c) { var t = trend[c.dataIndex]; return (c.parsed.y == null ? '—' : c.parsed.y + ' дн') + ' · n=' + (t ? t.n : 0); } } }
+    },
+    scales: {
+      x: { ...xCfg },
+      y: { ...yCfg, beginAtZero: true, ticks: { ...yCfg.ticks, callback: function (v) { return v + 'д'; } } }
+    }
+  });
+}
+
+function _ctRenderClients(rows) {
+  var el = g('ct-bench-client'); if (!el) return;
+  if (!rows.length) { el.innerHTML = '<div style="color:var(--txt2);font-size:12px;padding:8px 4px;">Недостаточно данных.</div>'; return; }
+  var maxMed = rows.reduce(function (m, r) { return Math.max(m, r.medMs); }, 0) || 1;
+  var head = ['КЛИЕНТ', 'ЭТАПОВ', 'МЕДИАНА', 'СРЕДНЕЕ', '% ВОЗВРАТОВ', ''];
+  var body = rows.map(function (r) {
+    var rw = Math.round(r.reworkRate * 100);
+    var rwCol = rw >= 40 ? 'var(--red)' : (rw >= 20 ? 'var(--amber)' : 'var(--txt2)');
+    var barW = Math.max(4, Math.round(r.medMs / maxMed * 100));
+    return '<tr style="border-bottom:1px solid rgba(255,255,255,.04);">'
+      + '<td style="padding:9px 10px;"><b>' + esc(r.name) + '</b></td>'
+      + '<td style="text-align:right;padding:9px 10px;font-family:var(--font-mono);color:var(--txt2);">' + r.n + '</td>'
+      + '<td style="text-align:right;padding:9px 10px;font-family:var(--font-display);font-weight:700;color:var(--a2);">' + _ctFmtDur(r.medMs) + '</td>'
+      + '<td style="text-align:right;padding:9px 10px;font-family:var(--font-display);color:var(--txt2);">' + _ctFmtDur(r.meanMs) + '</td>'
+      + '<td style="text-align:right;padding:9px 10px;font-family:var(--font-mono);color:' + rwCol + ';">' + rw + '%</td>'
+      + '<td style="padding:9px 10px;width:90px;"><div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;"><div style="height:100%;width:' + barW + '%;background:var(--a2);"></div></div></td>'
+      + '</tr>';
+  }).join('');
+  el.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:12px;min-width:520px;"><thead><tr>'
+    + head.map(function (h, i) { return '<th style="text-align:' + (i === 0 ? 'left' : 'right') + ';padding:8px 10px;font-size:9px;color:var(--txt2);font-family:var(--font-mono);letter-spacing:.08em;font-weight:400;border-bottom:1px solid var(--brd);">' + h + '</th>'; }).join('')
+    + '</tr></thead><tbody>' + body + '</tbody></table>';
+}
+
+function _ctRenderMethod(d) {
+  var el = g('ct-method'); if (!el) return;
+  el.innerHTML =
+    '<b>Длительность этапа (lead time)</b> — календарное время от события «Начат» до «Завершён». Это то, что реально ощущает клиент.<br>'
+    + '<b>Медиана (p50)</b> вместо среднего: среднее искажают редкие выбросы. <b>p90</b> — «худший реалистичный случай», считается от ≥5 завершений.<br>'
+    + '<b>Узкое место</b> — этап с наибольшей медианой (среди тех, где n≥3). Сокращение именно его сильнее всего ускоряет весь проект.<br>'
+    + '<b>% возвратов и потери на возврат</b> — доля этапов, возвращавшихся в работу, и разрыв между календарным и активным временем. Высокий % = проблема в процессе/согласовании, а не в скорости команды.<br>'
+    + '<b>Покрытие данными (' + (d ? d.coveragePct : 0) + '%)</b> — этапы, закрытые до включения журнала истории, в средние НЕ попадают, чтобы метрика не врала. По мере накопления событий покрытие растёт.<br>'
+    + '<span style="color:var(--txt3);">Оговорка: «цикл проекта» = сумма медиан этапов при условии их последовательности; в реальности этапы могут перекрываться, поэтому это верхняя оценка. «Замороженная ценность» = monthly_budget ÷ 30,44 × дней в этапе — это ориентир, не факт.</span>';
+}
+
 
 async function loadOverview() {
   if (!_allProjects || !_allProjects.length) return;
