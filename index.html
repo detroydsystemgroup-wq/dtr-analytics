@@ -28389,10 +28389,30 @@ function renderVsMarket(bench, m, p) {
             <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);text-transform:uppercase;letter-spacing:.08em;margin-top:2px;">${z.label}</div>
           </div>
           <div style="flex:1;padding:0 24px;">
-            <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">норма для вашего размера: ${normRange}</div>
-            <div style="position:relative;height:1px;background:rgba(255,255,255,.07);">
-              ${z.val && z.b ? `<div style="position:absolute;top:50%;left:${Math.min(z.val/z.b.g*60,100)}%;transform:translate(-50%,-50%);width:5px;height:5px;border-radius:50%;background:${zCol};"></div>` : ''}
+            <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">норма для вашего размера: ${normRange}</div>
+            <div style="position:relative;height:2px;background:rgba(255,255,255,.05);border-radius:1px;">
+              ${z.b ? (() => {
+                // Шкала: 0 → maxScale (= порог нормы * 2)
+                const maxScale = z.b.g * 2
+                const redEnd   = Math.min(z.b.y[0] / maxScale * 100, 100).toFixed(1)
+                const yelEnd   = Math.min(z.b.g    / maxScale * 100, 100).toFixed(1)
+                const valPct   = z.val ? Math.min(z.val / maxScale * 100, 98).toFixed(1) : null
+                return `
+                  <div style="position:absolute;top:0;left:0;height:100%;width:${redEnd}%;background:rgba(224,82,82,.35);border-radius:1px;"></div>
+                  <div style="position:absolute;top:0;left:${redEnd}%;height:100%;width:${(parseFloat(yelEnd)-parseFloat(redEnd)).toFixed(1)}%;background:rgba(232,153,58,.35);"></div>
+                  <div style="position:absolute;top:0;left:${yelEnd}%;height:100%;right:0;background:rgba(62,207,142,.25);border-radius:0 1px 1px 0;"></div>
+                  ${valPct !== null ? `<div style="position:absolute;top:50%;left:${valPct}%;transform:translate(-50%,-50%);width:6px;height:6px;border-radius:50%;background:${zCol};box-shadow:0 0 4px ${zCol};z-index:2;"></div>` : ''}
+                  <div style="position:absolute;top:-3px;left:${redEnd}%;width:1px;height:8px;background:rgba(255,255,255,.12);"></div>
+                  <div style="position:absolute;top:-3px;left:${yelEnd}%;width:1px;height:8px;background:rgba(255,255,255,.12);"></div>
+                `
+              })() : ''}
             </div>
+            ${z.b ? `<div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:7px;color:rgba(255,255,255,.12);margin-top:5px;letter-spacing:.05em;">
+              <span>0</span>
+              <span>${z.b.y[0]}%</span>
+              <span>${z.b.g}%</span>
+              <span>${(z.b.g*2)}%+</span>
+            </div>` : ''}
           </div>
           <div style="text-align:right;flex-shrink:0;min-width:100px;">
             <div style="font-family:'DM Sans',sans-serif;font-size:24px;font-weight:700;letter-spacing:-.03em;color:rgba(240,236,230,.9);font-variant-numeric:tabular-nums;">${z.val != null ? z.val.toFixed(2) + '%' : '—'}</div>
@@ -28455,7 +28475,7 @@ function renderSMMReelsGrid() {
   var html = ''
 
   // TABLE HEADER
-  html += '<div style="display:grid;grid-template-columns:28px 1fr'+visibleCols.map(function(){ return ' 90px' }).join('')+';gap:0;border-bottom:1px solid rgba(255,255,255,.06);padding:8px 0;">'
+  html += '<div style="display:grid;grid-template-columns:28px 1fr'+visibleCols.map(function(){ return ' 12%' }).join('')+';gap:0;border-bottom:1px solid rgba(255,255,255,.06);padding:8px 0;">'
   html += '<div></div>'
   html += '<div style="font-family:\'DM Mono\',monospace;font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.14em;text-transform:uppercase;padding-left:8px;">Название</div>'
   visibleCols.forEach(function(c) {
@@ -28479,7 +28499,7 @@ function renderSMMReelsGrid() {
     var rowOpen = linkHref
       ? '<a href="'+linkHref+'" target="_blank" rel="noopener" style="'
       : '<div style="'
-    var rowStyle = 'display:grid;grid-template-columns:28px 1fr'+visibleCols.map(function(){ return ' 90px' }).join('')+';gap:0;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.04);background:'+rowBg+';align-items:center;'+(linkHref?'cursor:pointer;text-decoration:none;':'')+(isTop?'border-left:2px solid #b8923a;padding-left:0;':'border-left:2px solid transparent;')+'"'
+    var rowStyle = 'display:grid;grid-template-columns:28px 1fr'+visibleCols.map(function(){ return ' 12%' }).join('')+';gap:0;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.04);background:'+rowBg+';align-items:center;'+(linkHref?'cursor:pointer;text-decoration:none;':'')+(isTop?'border-left:2px solid #b8923a;padding-left:0;':'border-left:2px solid transparent;')+'"'
     var rowClose = linkHref ? '</a>' : '</div>'
 
     html += rowOpen + rowStyle + '>'
@@ -28546,13 +28566,15 @@ function renderSMMRubricGrid() {
   var html = ''
 
   // TABLE HEADER
-  html += '<div style="display:grid;grid-template-columns:28px 1fr 80px 110px 110px 60px;gap:0;border-bottom:1px solid rgba(255,255,255,.06);padding:8px 0;">'
+  var RUB_GRID = '28px 1fr 10% 14% 14% 6%'
+  var COL_MONO = 'font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;'
+  html += '<div style="display:grid;grid-template-columns:'+RUB_GRID+';gap:0;border-bottom:1px solid rgba(255,255,255,.06);padding:8px 0;">'
   html += '<div></div>'
-  html += '<div style="font-family:\'DM Mono\',monospace;font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.14em;text-transform:uppercase;padding-left:8px;">Рубрика</div>'
-  html += '<div style="text-align:center;font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:'+(smmRubricSort==='er'?'rgba(255,255,255,.5)':'rgba(255,255,255,.18)');+'">ER %</div>'
-  html += '<div style="text-align:right;font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:'+(smmRubricSort==='reach'?'rgba(255,255,255,.5)':'rgba(255,255,255,.18)')+'">Охват</div>'
-  html += '<div style="text-align:right;font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:'+(smmRubricSort==='views'?'rgba(255,255,255,.5)':'rgba(255,255,255,.18)')+'">Просмотры</div>'
-  html += '<div style="text-align:right;font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.18);">Постов</div>'
+  html += '<div style="'+COL_MONO+'color:rgba(255,255,255,.18);padding-left:8px;">Рубрика</div>'
+  html += '<div style="'+COL_MONO+'text-align:right;padding-right:12px;color:'+(smmRubricSort==='er'?'#b8923a':'rgba(255,255,255,.18)')+';">ER %</div>'
+  html += '<div style="'+COL_MONO+'text-align:right;padding-right:12px;color:'+(smmRubricSort==='reach'?'#b8923a':'rgba(255,255,255,.18)')+';">Охват</div>'
+  html += '<div style="'+COL_MONO+'text-align:right;padding-right:12px;color:'+(smmRubricSort==='views'?'#b8923a':'rgba(255,255,255,.18)')+';">Просмотры</div>'
+  html += '<div style="'+COL_MONO+'text-align:right;color:rgba(255,255,255,.18);">Постов</div>'
   html += '</div>'
 
   rubs.forEach(function(r, i) {
@@ -28562,40 +28584,40 @@ function renderSMMRubricGrid() {
     var viPct = maxViews > 0 ? (r.views||0)/maxViews*100 : 0
     var rowBg = isTop ? 'rgba(184,146,58,.04)' : (i%2===0 ? 'transparent' : 'rgba(255,255,255,.012)')
 
-    html += '<div style="display:grid;grid-template-columns:28px 1fr 80px 110px 110px 60px;gap:0;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04);background:'+rowBg+';align-items:center;border-left:2px solid '+(isTop?'#b8923a':'transparent')+';transition:background .15s;" onmouseover="this.style.background=\'rgba(255,255,255,.02)\'" onmouseout="this.style.background=\''+rowBg+'\'">'
+    html += '<div style="display:grid;grid-template-columns:'+RUB_GRID+';gap:0;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04);background:'+rowBg+';align-items:center;border-left:2px solid '+(isTop?'#b8923a':'transparent')+';transition:background .15s;" onmouseover="this.style.background=\'rgba(255,255,255,.02)\'" onmouseout="this.style.background=\''+rowBg+'\'">'
 
     // Rank
-    html += '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:rgba(255,255,255,.18);text-align:center;">'+(i+1)+'</div>'
+    html += '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:rgba(255,255,255,.2);text-align:center;">'+(i+1)+'</div>'
 
     // Name
-    html += '<div style="padding-left:8px;">'
-    html += '<div style="font-family:\'DM Sans\',sans-serif;font-size:13px;font-weight:'+(isTop?'600':'400')+';color:'+(isTop?'rgba(240,236,230,.9)':'rgba(240,236,230,.65)')+';">'+esc(r.name)+'</div>'
+    html += '<div style="padding-left:8px;overflow:hidden;">'
+    html += '<div style="font-family:\'DM Sans\',sans-serif;font-size:13px;font-weight:'+(isTop?'600':'400')+';color:'+(isTop?'rgba(240,236,230,.9)':'rgba(240,236,230,.65)')+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+esc(r.name)+'</div>'
     html += '</div>'
 
     // ER
     var erActive = smmRubricSort === 'er'
-    html += '<div style="text-align:center;">'
-    html += '<div style="font-family:\'DM Mono\',monospace;font-size:'+(erActive?'12':'11')+'px;font-weight:'+(erActive?'600':'400')+';color:'+(erActive?'rgba(240,236,230,.9)':'rgba(240,236,230,.38)')+';font-variant-numeric:tabular-nums;margin-bottom:4px;">'+(r.er?r.er.toFixed(2)+'%':'—')+'</div>'
-    html += '<div style="height:1px;background:rgba(255,255,255,.05);position:relative;"><div style="position:absolute;top:0;left:0;height:100%;width:'+erPct.toFixed(1)+'%;background:'+(erActive?'#b8923a':'rgba(255,255,255,.2)')+';transition:width .8s;"></div></div>'
+    html += '<div style="text-align:right;padding-right:12px;">'
+    html += '<div style="font-family:\'DM Mono\',monospace;font-size:12px;font-weight:'+(erActive?'600':'400')+';color:'+(erActive?'rgba(240,236,230,.9)':'rgba(240,236,230,.35)')+';font-variant-numeric:tabular-nums;margin-bottom:4px;">'+(r.er?r.er.toFixed(2)+'%':'—')+'</div>'
+    html += '<div style="height:1px;background:rgba(255,255,255,.05);position:relative;"><div style="position:absolute;top:0;right:0;height:100%;width:'+erPct.toFixed(1)+'%;background:'+(erActive?'#b8923a':'rgba(255,255,255,.18)')+';transition:width .8s;"></div></div>'
     html += '</div>'
 
     // Reach
     var reActive = smmRubricSort === 'reach'
-    html += '<div style="text-align:right;padding-right:4px;">'
-    html += '<div style="font-family:\'DM Mono\',monospace;font-size:'+(reActive?'12':'11')+'px;font-weight:'+(reActive?'600':'400')+';color:'+(reActive?'rgba(240,236,230,.9)':'rgba(240,236,230,.38)')+';font-variant-numeric:tabular-nums;margin-bottom:4px;">'+fmt(r.reach)+'</div>'
-    html += '<div style="height:1px;background:rgba(255,255,255,.05);position:relative;"><div style="position:absolute;top:0;right:0;height:100%;width:'+rePct.toFixed(1)+'%;background:'+(reActive?'#b8923a':'rgba(255,255,255,.2)')+';transition:width .8s;"></div></div>'
+    html += '<div style="text-align:right;padding-right:12px;">'
+    html += '<div style="font-family:\'DM Mono\',monospace;font-size:12px;font-weight:'+(reActive?'600':'400')+';color:'+(reActive?'rgba(240,236,230,.9)':'rgba(240,236,230,.35)')+';font-variant-numeric:tabular-nums;margin-bottom:4px;">'+fmt(r.reach)+'</div>'
+    html += '<div style="height:1px;background:rgba(255,255,255,.05);position:relative;"><div style="position:absolute;top:0;right:0;height:100%;width:'+rePct.toFixed(1)+'%;background:'+(reActive?'#b8923a':'rgba(255,255,255,.18)')+';transition:width .8s;"></div></div>'
     html += '</div>'
 
     // Views
     var viActive = smmRubricSort === 'views'
-    html += '<div style="text-align:right;padding-right:4px;">'
-    html += '<div style="font-family:\'DM Mono\',monospace;font-size:'+(viActive?'12':'11')+'px;font-weight:'+(viActive?'600':'400')+';color:'+(viActive?'rgba(240,236,230,.9)':'rgba(240,236,230,.38)')+';font-variant-numeric:tabular-nums;margin-bottom:4px;">'+fmt(r.views)+'</div>'
-    html += '<div style="height:1px;background:rgba(255,255,255,.05);position:relative;"><div style="position:absolute;top:0;right:0;height:100%;width:'+viPct.toFixed(1)+'%;background:'+(viActive?'#b8923a':'rgba(255,255,255,.2)')+';transition:width .8s;"></div></div>'
+    html += '<div style="text-align:right;padding-right:12px;">'
+    html += '<div style="font-family:\'DM Mono\',monospace;font-size:12px;font-weight:'+(viActive?'600':'400')+';color:'+(viActive?'rgba(240,236,230,.9)':'rgba(240,236,230,.35)')+';font-variant-numeric:tabular-nums;margin-bottom:4px;">'+fmt(r.views)+'</div>'
+    html += '<div style="height:1px;background:rgba(255,255,255,.05);position:relative;"><div style="position:absolute;top:0;right:0;height:100%;width:'+viPct.toFixed(1)+'%;background:'+(viActive?'#b8923a':'rgba(255,255,255,.18)')+';transition:width .8s;"></div></div>'
     html += '</div>'
 
-    // Posts count
-    html += '<div style="text-align:right;padding-right:0;">'
-    html += '<div style="font-family:\'DM Mono\',monospace;font-size:11px;font-weight:400;color:rgba(240,236,230,.3);font-variant-numeric:tabular-nums;">'+(r.posts||'—')+'</div>'
+    // Posts
+    html += '<div style="text-align:right;">'
+    html += '<div style="font-family:\'DM Mono\',monospace;font-size:11px;color:rgba(240,236,230,.25);font-variant-numeric:tabular-nums;">'+(r.posts||'—')+'</div>'
     html += '</div>'
 
     html += '</div>'
