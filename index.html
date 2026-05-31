@@ -29827,6 +29827,11 @@ function openProjectSettings(id) {
   // Кнопка «Вернуть в работу» — только для архивных/завершённых проектов
   const reRow = document.getElementById('ps-reactivate-row')
   if (reRow) reRow.style.display = (p.status === 'archived') ? 'flex' : 'none'
+  const reBtn = document.getElementById('ps-reactivate-btn')
+  if (reBtn) {
+    reBtn.disabled = false; reBtn.style.opacity = '1'
+    reBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.21"/></svg> Вернуть в работу'
+  }
 
   openModal('modal-proj-settings')
   setTimeout(() => nameInp && nameInp.focus(), 80)
@@ -29984,7 +29989,7 @@ async function reactivateProject(btn) {
   const p = _allProjects.find(x => x.id === _psProjectId)
   const nm = p ? p.name : 'проект'
   if (!confirm('Вернуть проект «' + nm + '» в работу?\n\nАрхив будет снят и запущен новый цикл: все этапы сбросятся в «Ожидает». Отчёты и история сохранятся.')) return
-  if (btn) { btn.disabled = true; btn.style.opacity = '.6'; btn.textContent = 'Возвращаем...' }
+  if (btn) { btn.disabled = true; btn.style.opacity = '.6'; btn.innerHTML = 'Возвращаем...' }
   try {
     // Снять архив — проект снова активный (как у обычных проектов status = null)
     const { error: pErr } = await sb.from('projects').update({ status: null }).eq('id', _psProjectId)
@@ -29999,7 +30004,7 @@ async function reactivateProject(btn) {
     await loadProjects()
     showToast('Проект возвращён в работу — запущен новый цикл', 'ok')
   } catch(e) {
-    if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.textContent = 'Вернуть в работу' }
+    if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.21"/></svg> Вернуть в работу' }
     showToast('Ошибка: ' + (e.message || e), 'error')
   }
 }
