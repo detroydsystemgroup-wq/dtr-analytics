@@ -37384,6 +37384,18 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'))
 })
 
+// ── Делегирование событий для SMM-фильтров (переживает пересоздание DOM) ──
+document.addEventListener('change', function(e) {
+  if (e.target && e.target.id === 'smm-rubric-sort-select') {
+    smmRubricSort = e.target.value
+    renderSMMRubricGrid()
+  }
+  if (e.target && e.target.id === 'smm-sort-select') {
+    smmReelsSort = e.target.value
+    renderSMMReelsGrid()
+  }
+})
+
 // ══════════════════════════════════════════════
 // DRAG & DROP
 // ══════════════════════════════════════════════
