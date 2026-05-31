@@ -42195,24 +42195,21 @@ async function cpRenderMilestone(project) {
 #page-smm .smm-reels-grid {
   display: grid !important;
   grid-template-columns: repeat(5, minmax(0,1fr)) !important;
-  gap: 0 !important;
-  border: 0.5px solid rgba(255,255,255,.12) !important;
-  border-radius: 2px !important;
-  overflow: hidden !important;
+  gap: 12px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
 }
 #page-smm .smm-reel-card {
-  border-radius: 0 !important;
-  border: none !important;
-  border-right: 0.5px solid rgba(255,255,255,.1) !important;
-  background: #111111 !important;
-  box-shadow: none !important;
-  transform: none !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  position: relative !important;
+  cursor: pointer !important;
+  transition: transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .18s !important;
 }
-#page-smm .smm-reel-card:last-child { border-right: none !important; }
 #page-smm .smm-reel-card:hover {
-  transform: none !important;
-  box-shadow: none !important;
-  background: #171717 !important;
+  transform: translateY(-3px) scale(1.01) !important;
+  box-shadow: 0 16px 40px rgba(0,0,0,.5) !important;
 }
 #page-smm .smm-reel-card::before {
   height: 2px !important;
@@ -42407,7 +42404,7 @@ async function cpRenderMilestone(project) {
   border-right: 0.5px solid rgba(255,255,255,.1) !important;
 }
 
-/* ── REELS GRID — gap + rounded corners ── */
+/* ── REELS GRID ── */
 #page-smm .smm-reels-grid {
   gap: 12px !important;
   border: none !important;
@@ -42415,13 +42412,10 @@ async function cpRenderMilestone(project) {
   overflow: visible !important;
 }
 #page-smm .smm-reel-card {
-  border: 0.5px solid rgba(255,255,255,.1) !important;
-  border-right: 0.5px solid rgba(255,255,255,.1) !important;
-  border-radius: 12px !important;
+  border-radius: 14px !important;
   overflow: hidden !important;
-}
-#page-smm .smm-reel-card:last-child {
-  border-right: 0.5px solid rgba(255,255,255,.1) !important;
+  position: relative !important;
+  cursor: pointer !important;
 }
 
 /* ── STAT GRID — gap + rounded ── */
@@ -44071,6 +44065,52 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
   background: #111 !important;
   color: #f0ece6 !important;
 }
+
+/* ══ DTR REEL CARDS: FINAL OVERRIDE — no cascade ══ */
+/* Карточки: сетка с gap, rounded, без border-collapse */
+#page-smm #smm-reels-grid {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0,1fr)) !important;
+  gap: 12px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+  background: transparent !important;
+}
+/* Сброс всех предыдущих border/background правил для карточки */
+#page-smm #smm-reels-grid .smm-reel-card {
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  position: relative !important;
+  cursor: pointer !important;
+  background: #0e0e0e !important;
+  display: flex !important;
+  flex-direction: column !important;
+  transition: transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .18s !important;
+}
+#page-smm #smm-reels-grid .smm-reel-card:hover {
+  transform: translateY(-3px) scale(1.005) !important;
+  box-shadow: 0 16px 40px rgba(0,0,0,.5) !important;
+}
+/* Нижняя панель — не трогать flex-direction */
+#page-smm #smm-reels-grid .smm-reel-card > div:last-child {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+/* Accent line по рангу */
+#page-smm #smm-reels-grid .smm-reel-card::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important; left: 0 !important; right: 0 !important;
+  height: 2px !important;
+  z-index: 10 !important;
+  background: rgba(255,255,255,.06) !important;
+}
+#page-smm #smm-reels-grid .smm-reel-card.rrc-1::before { background: linear-gradient(90deg,#f59e0b,#fbbf24,#f59e0b) !important; }
+#page-smm #smm-reels-grid .smm-reel-card.rrc-2::before { background: linear-gradient(90deg,#9ca3af,#e5e7eb,#9ca3af) !important; }
+#page-smm #smm-reels-grid .smm-reel-card.rrc-3::before { background: linear-gradient(90deg,#b45309,#d97706,#b45309) !important; }
+
 </style>
 
 <script>
