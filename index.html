@@ -29820,6 +29820,10 @@ function openProjectSettings(id) {
     }
   }
 
+  // Кнопка «Вернуть в работу» — только для архивных/завершённых проектов
+  const reRow = document.getElementById('ps-reactivate-row')
+  if (reRow) reRow.style.display = (p.status === 'archived') ? 'flex' : 'none'
+
   openModal('modal-proj-settings')
   setTimeout(() => nameInp && nameInp.focus(), 80)
 }
@@ -29969,6 +29973,32 @@ async function deleteProject(id) {
   }
 }
 
+
+// ── Вернуть проект в работу: снять архив + новый цикл (сброс этапов) ──
+async function reactivateProject(btn) {
+  if (!_psProjectId) return
+  const p = _allProjects.find(x => x.id === _psProjectId)
+  const nm = p ? p.name : 'проект'
+  if (!confirm('Вернуть проект «' + nm + '» в работу?\n\nАрхив будет снят и запущен новый цикл: все этапы сбросятся в «Ожидает». Отчёты и история сохранятся.')) return
+  if (btn) { btn.disabled = true; btn.style.opacity = '.6'; btn.textContent = 'Возвращаем...' }
+  try {
+    // Снять архив — проект снова активный (как у обычных проектов status = null)
+    const { error: pErr } = await sb.from('projects').update({ status: null }).eq('id', _psProjectId)
+    if (pErr) throw pErr
+    // Новый цикл — сброс всех этапов в «Ожидает»
+    await sb.from('project_stages')
+      .update({ status: 'pending', completed_at: null, deadline: null, note: null })
+      .eq('project_id', _psProjectId)
+    sessionStorage.removeItem('complete_shown_' + _psProjectId)
+    if (p) p.status = null
+    closeModal('modal-proj-settings')
+    await loadProjects()
+    showToast('Проект возвращён в работу — запущен новый цикл', 'ok')
+  } catch(e) {
+    if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.textContent = 'Вернуть в работу' }
+    showToast('Ошибка: ' + (e.message || e), 'error')
+  }
+}
 
 // ── Image compress → base64 (Canvas, no Storage required) ──
 function compressImageToBase64(file, maxPx = 240) {
@@ -30192,6 +30222,18 @@ function showSQLHint() {
         </button>
       </div>
       <div id="ps-reset-pass-msg" style="font-size:11px;margin-top:8px;display:none;font-family:var(--font-mono);"></div>
+    </div>
+
+    <!-- Вернуть в работу (только для архивных/завершённых проектов) -->
+    <div id="ps-reactivate-row" style="display:none;align-items:center;justify-content:space-between;gap:12px;background:rgba(62,207,142,.05);border:1px solid rgba(62,207,142,.18);border-radius:12px;padding:14px 16px;">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:rgba(62,207,142,.85);margin-bottom:2px;">Вернуть в работу</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.3);">Снимет архив и запустит новый цикл. Отчёты и история сохранятся.</div>
+      </div>
+      <button id="ps-reactivate-btn" onclick="reactivateProject(this)" style="background:rgba(62,207,142,.1);border:1px solid rgba(62,207,142,.3);border-radius:10px;padding:9px 16px;color:#3ecf8e;font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;cursor:pointer;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:6px;" onmouseover="this.style.background='rgba(62,207,142,.2)';this.style.borderColor='rgba(62,207,142,.45)'" onmouseout="this.style.background='rgba(62,207,142,.1)';this.style.borderColor='rgba(62,207,142,.3)'">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.21"/></svg>
+        Вернуть в работу
+      </button>
     </div>
 
     <!-- Danger zone -->
