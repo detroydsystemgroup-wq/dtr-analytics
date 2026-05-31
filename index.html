@@ -16980,10 +16980,7 @@ button, a, [role="button"],
 
 /* SMM page — full screen, override cc-main padding */
 #page-smm.active ~ * { display: none; }
-.cc-main:has(#page-smm.active) {
-  padding: 0 !important;
-  overflow-x: hidden !important;
-}
+
 #page-smm.active {
   width: 100% !important;
   min-height: 100vh !important;
@@ -17070,6 +17067,14 @@ button, a, [role="button"],
 #page-smm .smm-chapter {
   padding: 14px 0 10px !important;
   border-bottom: 1px solid rgba(255,255,255,.05) !important;
+}
+
+/* SMM full-screen — no padding on main container */
+.cc-main.smm-fullscreen {
+  padding: 0 !important;
+}
+#page-smm.active {
+  width: 100% !important;
 }
 </style>
 <meta charset="UTF-8">
@@ -22685,7 +22690,7 @@ function renderSMMLb() {
 // Smart back navigation: client → page-client, agency → page-project
 function goBackToProject() {
   var mainEl = document.querySelector('.cc-main')
-  if (mainEl && mainEl.dataset.prevPadding !== undefined) { mainEl.style.padding = mainEl.dataset.prevPadding; mainEl.style.overflow = ''; }
+  if (mainEl) mainEl.classList.remove('smm-fullscreen')
   window.location.hash = ''
   if (_isClientCache === true) {
     showPage('page-client')
@@ -28058,9 +28063,8 @@ function openSMMReport(report) {
 
   showPage('page-smm')
   dtrSMMTab('smm', g('dtr-stab-smm'))
-  // Full screen mode for SMM
   var mainEl = document.querySelector('.cc-main')
-  if (mainEl) { mainEl.dataset.prevPadding = mainEl.style.padding; mainEl.style.padding = '0'; mainEl.style.overflow = 'hidden auto'; }
+  if (mainEl) mainEl.classList.add('smm-fullscreen')
   renderSMMPresentation()
   if (!isClient) fillSMMDataForm()
 
