@@ -7981,7 +7981,9 @@ input, select, textarea {
 </style>
 
 <script id="dtr-report-premium-js">
-// _isClient доступен через window — объявлен в основном скрипте
+// Гарантируем доступность _isClient до загрузки основного скрипта
+if (typeof window._isClient === 'undefined') window._isClient = false;
+var _isClient = false; // будет перезаписан основным скриптом
 // ── Replace emoji icons with SVG in cb-title ──
 // ── Add tooltips to chart blocks ──
 
@@ -28399,277 +28401,251 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 <!-- ═══════════════════════════════════════════
      PAGE: SMM REPORT
 ═══════════════════════════════════════════ -->
-<div class="page" id="page-smm">
+<div class="page" id="page-smm" style="background:#080808;min-height:100vh;">
 
-  <!-- ── SMM COMPACT TOPBAR ── -->
-  <div class="smm-topbar">
-    <!-- Left: brand + breadcrumb -->
-    <div class="smm-topbar-left">
-      <button class="smm-back-btn" onclick="goBackToProject()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+  <!-- ═══════════ TOPBAR ═══════════ -->
+  <div id="dtr-smm-topbar" style="
+    position:sticky;top:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 32px;height:52px;
+    background:rgba(8,8,8,.92);
+    border-bottom:1px solid rgba(255,255,255,.07);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    gap:16px;
+  ">
+    <!-- Left -->
+    <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
+      <button onclick="goBackToProject()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,255,255,.5);transition:all .15s;" onmouseover="this.style.color='#f0ece6'" onmouseout="this.style.color='rgba(255,255,255,.5)'">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
       </button>
-      <div class="smm-topbar-divider"></div>
-      <div class="smm-topbar-brand">
-        <span class="smm-topbar-agency">DeTroyd</span>
-        <span class="smm-topbar-dot">·</span>
-        <span class="smm-topbar-report">SMM Report</span>
+      <div style="width:1px;height:20px;background:rgba(255,255,255,.08);"></div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:#c9a84c;letter-spacing:-.01em;">DeTroyd</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.25);letter-spacing:.1em;text-transform:uppercase;">SMM Report</div>
+    </div>
+    <!-- Center -->
+    <div style="display:flex;align-items:center;gap:10px;flex:1;justify-content:center;">
+      <div id="smm-client-name" style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:#f0ece6;">—</div>
+      <div style="width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.2);"></div>
+      <div id="smm-period-lbl" style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.4);"></div>
+      <div style="display:flex;align-items:center;gap:5px;background:rgba(62,207,142,.08);border:1px solid rgba(62,207,142,.2);border-radius:20px;padding:3px 10px;">
+        <div style="width:5px;height:5px;border-radius:50%;background:#3ecf8e;animation:pulse 2s ease infinite;"></div>
+        <span style="font-family:'DM Mono',monospace;font-size:10px;color:#3ecf8e;letter-spacing:.04em;">Активный</span>
       </div>
     </div>
-
-    <!-- Center: client + period + status -->
-    <div class="smm-topbar-center">
-      <div class="smm-topbar-client" id="smm-client-name">—</div>
-      <div class="smm-topbar-sep"></div>
-      <div class="smm-topbar-period" id="smm-period-lbl">—</div>
-      <div class="smm-topbar-status" id="smm-status-dot">
-        <span class="smm-status-pulse"></span>
-        Активный
+    <!-- Right -->
+    <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+      <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:4px 10px;">
+        <div style="width:5px;height:5px;border-radius:50%;background:#3ecf8e;"></div>
+        <span id="header-user-smm" style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.4);"></span>
       </div>
-    </div>
-
-    <!-- Right: actions -->
-    <div class="smm-topbar-right">
-      <div class="user-pill" style="border-color:rgba(255,255,255,.08);">
-        <div style="width:5px;height:5px;border-radius:50%;background:var(--smm-green);animation:pulse 2s ease infinite;flex-shrink:0;"></div>
-        <span id="header-user-smm" style="font-size:11px;color:rgba(255,255,255,.45);"></span>
-      </div>
-      <button class="smm-topbar-btn smm-topbar-ai agency-only" onclick="exportSMMReportPDF()" id="smm-pdf-btn" title="Скачать PDF">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+      <button id="smm-pdf-btn" onclick="exportSMMReportPDF()" class="agency-only" style="display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:6px 12px;color:rgba(255,255,255,.55);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;" onmouseover="this.style.color='#f0ece6';this.style.borderColor='rgba(255,255,255,.2)'" onmouseout="this.style.color='rgba(255,255,255,.55)';this.style.borderColor='rgba(255,255,255,.1)'">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
         PDF
       </button>
-      <button class="smm-topbar-btn smm-topbar-ai agency-only" onclick="runSMMAnalysis()" id="smm-ai-btn">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3"/></svg>
+      <button id="smm-ai-btn" onclick="runSMMAnalysis()" class="agency-only" style="display:flex;align-items:center;gap:5px;background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.25);border-radius:7px;padding:6px 12px;color:#c9a84c;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;" onmouseover="this.style.background='rgba(184,146,58,.18)'" onmouseout="this.style.background='rgba(184,146,58,.1)'">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3"/></svg>
         AI Анализ
       </button>
-      <button class="smm-topbar-btn smm-topbar-save agency-only" onclick="saveSMMData(true)" id="smm-save-btn">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+      <button id="smm-save-btn" onclick="saveSMMData(true)" class="agency-only" style="display:flex;align-items:center;gap:5px;background:#166534;border:1px solid rgba(74,222,128,.25);border-radius:7px;padding:6px 14px;color:#4ade80;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#166534'">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
         Сохранить
       </button>
-      <button class="smm-topbar-btn smm-topbar-logout" onclick="doLogout()">Выйти</button>
+      <button onclick="doLogout()" style="background:transparent;border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:6px 12px;color:rgba(255,255,255,.35);font-family:'DM Sans',sans-serif;font-size:11px;cursor:pointer;transition:all .15s;" onmouseover="this.style.color='#e05252';this.style.borderColor='rgba(224,82,82,.3)'" onmouseout="this.style.color='rgba(255,255,255,.35)';this.style.borderColor='rgba(255,255,255,.08)'">Выйти</button>
     </div>
   </div>
 
-  <!-- Nav -->
-  <div class="smm-nav">
-    <div class="smm-nav-item sni-active" onclick="switchSMMTab('smm',this)">01 / SMM</div>
-    <div class="smm-nav-item" onclick="switchSMMTab('data',this)" id="smm-data-tab">⚙ Данные</div>
-    <div class="smm-nav-item" onclick="switchSMMTab('ai',this)">🤖 AI</div>
+  <!-- ═══════════ NAV TABS ═══════════ -->
+  <div id="dtr-smm-nav" style="
+    display:flex;align-items:center;gap:0;
+    padding:0 40px;
+    border-bottom:1px solid rgba(255,255,255,.06);
+    background:#080808;
+  ">
+    <button class="dtr-smm-tab dtr-smm-tab-active" id="dtr-stab-smm" onclick="dtrSMMTab('smm',this)" style="
+      background:transparent;border:none;border-bottom:2px solid #b8923a;
+      padding:14px 20px;font-family:'DM Mono',monospace;font-size:11px;
+      color:#c9a84c;letter-spacing:.06em;cursor:pointer;transition:all .15s;
+    ">01 / SMM</button>
+    <button class="dtr-smm-tab agency-only" id="dtr-stab-data" onclick="dtrSMMTab('data',this)" style="
+      background:transparent;border:none;border-bottom:2px solid transparent;
+      padding:14px 20px;font-family:'DM Mono',monospace;font-size:11px;
+      color:rgba(255,255,255,.3);letter-spacing:.06em;cursor:pointer;transition:all .15s;
+    " onmouseover="this.style.color='rgba(255,255,255,.6)'" onmouseout="if(!this.classList.contains('dtr-smm-tab-active'))this.style.color='rgba(255,255,255,.3)'">⚙ Данные</button>
+    <button class="dtr-smm-tab" id="dtr-stab-ai" onclick="dtrSMMTab('ai',this)" style="
+      background:transparent;border:none;border-bottom:2px solid transparent;
+      padding:14px 20px;font-family:'DM Mono',monospace;font-size:11px;
+      color:rgba(255,255,255,.3);letter-spacing:.06em;cursor:pointer;transition:all .15s;
+    " onmouseover="this.style.color='rgba(255,255,255,.6)'" onmouseout="if(!this.classList.contains('dtr-smm-tab-active'))this.style.color='rgba(255,255,255,.3)'">🤖 AI</button>
   </div>
 
-  <div class="smm-body">
+  <!-- ═══════════ BODY ═══════════ -->
+  <div style="padding:40px 48px 80px;max-width:1400px;margin:0 auto;">
 
-    <!-- ══ TAB: SMM (presentation) ══ -->
-    <div class="smm-sec ssa" id="ss-smm">
+    <!-- ══ TAB: SMM ══ -->
+    <div id="dtr-ss-smm" style="display:block;">
 
-      <!-- Section 01: Ключевые показатели -->
-      <div class="smm-sec-heading">
-        <div class="smm-sec-num">01</div>
-        <div class="smm-sec-title">Ключевые показатели SMM</div>
-        <div class="smm-sec-line"></div>
+      <!-- SEC 01: KPI -->
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px;">
+        <span style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.08em;">01</span>
+        <span style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:500;color:#f0ece6;letter-spacing:-.01em;">Ключевые показатели SMM</span>
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.1),transparent);"></div>
       </div>
 
-      <!-- GROUP 1: Объём контента -->
-      <div class="kpi-group-label">
-        <span class="kpi-group-icon">📱</span>
-        Объём опубликованного контента
-      </div>
-      <div class="kpi-group kpi-group-content">
-        <div class="kpi-card">
-          <div class="kpi-card-icon" style="background:rgba(184,146,58,.1);color:var(--smm-accent2);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
-          </div>
-          <div class="kpi-card-val" id="sv-reels-count" style="color:var(--smm-accent2);">—</div>
-          <div class="kpi-card-name">Reels</div>
-          <div class="kpi-card-sub">опубликовано</div>
+      <!-- Контент -->
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.25);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;">📱 Объём контента</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;">
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:20px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">REELS</div>
+          <div id="sv-reels-count" style="font-family:'DM Sans',sans-serif;font-size:36px;font-weight:800;color:#c9a84c;letter-spacing:-.04em;line-height:1;">—</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:4px;">опубликовано</div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-card-icon" style="background:rgba(34,211,238,.1);color:var(--smm-cyan);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          </div>
-          <div class="kpi-card-val" id="sv-stories" style="color:var(--smm-cyan);">—</div>
-          <div class="kpi-card-name">Stories</div>
-          <div class="kpi-card-sub">за период</div>
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:20px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">STORIES</div>
+          <div id="sv-stories" style="font-family:'DM Sans',sans-serif;font-size:36px;font-weight:800;color:#22d3ee;letter-spacing:-.04em;line-height:1;">—</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:4px;">за период</div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-card-icon" style="background:rgba(244,114,182,.1);color:var(--smm-pink);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-          </div>
-          <div class="kpi-card-val" id="sv-ad-creatives" style="color:var(--smm-pink);">—</div>
-          <div class="kpi-card-name">Рекл. Креативы</div>
-          <div class="kpi-card-sub">запущено</div>
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:20px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">КРЕАТИВЫ</div>
+          <div id="sv-ad-creatives" style="font-family:'DM Sans',sans-serif;font-size:36px;font-weight:800;color:#f472b6;letter-spacing:-.04em;line-height:1;">—</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:4px;">рекламных</div>
         </div>
       </div>
 
-      <!-- GROUP 2: Цифровые показатели -->
-      <div class="kpi-group-label" style="margin-top:24px;">
-        <span class="kpi-group-icon">📊</span>
-        Цифровые показатели
-      </div>
-      <div class="kpi-group kpi-group-digital">
-        <div class="kpi-card kpi-card-large">
-          <div class="kpi-card-icon" style="background:rgba(52,211,153,.1);color:var(--smm-green);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </div>
-          <div class="kpi-card-val" id="sv-reach" style="color:var(--smm-green);">—</div>
-          <div class="kpi-card-name">Охват</div>
-          <div class="kpi-card-sub">уникальных аккаунтов</div>
+      <!-- Цифровые -->
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.25);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;">📊 Цифровые показатели</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;">
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:20px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">ОХВАТ</div>
+          <div id="sv-reach" style="font-family:'DM Sans',sans-serif;font-size:36px;font-weight:800;color:#3ecf8e;letter-spacing:-.04em;line-height:1;">—</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:4px;">уникальных аккаунтов</div>
         </div>
-        <div class="kpi-card kpi-card-large">
-          <div class="kpi-card-icon" style="background:rgba(244,114,182,.1);color:var(--smm-pink);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-          </div>
-          <div class="kpi-card-val" id="sv-views" style="color:var(--smm-pink);">—</div>
-          <div class="kpi-card-name">Просмотры</div>
-          <div class="kpi-card-sub">суммарно</div>
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:20px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">ПРОСМОТРЫ</div>
+          <div id="sv-views" style="font-family:'DM Sans',sans-serif;font-size:36px;font-weight:800;color:#f472b6;letter-spacing:-.04em;line-height:1;">—</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:4px;">суммарно</div>
         </div>
-        <div class="kpi-card kpi-card-large">
-          <div class="kpi-card-icon" style="background:rgba(251,191,36,.1);color:var(--smm-amber);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-          </div>
-          <div class="kpi-card-val" id="sv-frequency" style="color:var(--smm-amber);">—</div>
-          <div class="kpi-card-name">Частота</div>
-          <div class="kpi-card-sub">просмотров</div>
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:20px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">ЧАСТОТА</div>
+          <div id="sv-frequency" style="font-family:'DM Sans',sans-serif;font-size:36px;font-weight:800;color:#fbbf24;letter-spacing:-.04em;line-height:1;">—</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:4px;">просмотров</div>
         </div>
       </div>
 
-      <!-- GROUP 3: Аудитория -->
-      <div class="kpi-group-label" style="margin-top:24px;">
-        <span class="kpi-group-icon">👥</span>
-        Аудитория Instagram
-      </div>
-      <div class="kpi-group kpi-group-audience">
-        <div class="kpi-card kpi-card-audience">
-          <div class="kpi-card-icon" style="background:rgba(129,140,248,.12);color:#a5b4fc;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <!-- Аудитория -->
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.25);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;">👥 Аудитория</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:32px;">
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:20px;display:flex;align-items:center;gap:16px;">
+          <div style="width:40px;height:40px;border-radius:10px;background:rgba(165,180,252,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="1.8" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           </div>
           <div>
-            <div class="kpi-card-name" style="margin-bottom:4px;">Подписчики сейчас</div>
-            <div class="kpi-card-val kpi-big" id="sv-subscribers" style="color:#a5b4fc;">—</div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">ПОДПИСЧИКИ СЕЙЧАС</div>
+            <div id="sv-subscribers" style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:800;color:#a5b4fc;letter-spacing:-.04em;line-height:1;">—</div>
           </div>
         </div>
-        <div class="kpi-card kpi-card-audience">
-          <div class="kpi-card-icon" style="background:rgba(251,191,36,.1);color:var(--smm-amber);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:20px;display:flex;align-items:center;gap:16px;">
+          <div style="width:40px;height:40px;border-radius:10px;background:rgba(251,191,36,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.8" stroke-linecap="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
           </div>
           <div>
-            <div class="kpi-card-name" style="margin-bottom:4px;">Прирост подписчиков</div>
-            <div class="kpi-card-val kpi-big" id="sv-followers" style="color:var(--smm-amber);">—</div>
-            <div id="sv-followers-delta" style="margin-top:4px;"></div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">ПРИРОСТ</div>
+            <div id="sv-followers" style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:800;color:#fbbf24;letter-spacing:-.04em;line-height:1;">—</div>
+            <div id="sv-followers-delta" style="margin-top:4px;font-family:'DM Mono',monospace;font-size:10px;"></div>
           </div>
         </div>
       </div>
 
-      <!-- Охват breakdown -->
-      <div class="smm-block" style="padding:0 !important;">
-
-        <!-- БАРЫ СВЕРХУ -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;padding:22px 28px 18px;">
-
-          <!-- Охват по форматам -->
-          <div style="padding-right:28px;border-right:1px solid rgba(255,255,255,.05);">
-            <div style="font-size:10px;font-family:'DM Mono',monospace;letter-spacing:.14em;color:rgba(255,255,255,.25);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:7px;">
-              <span style="width:10px;height:2px;background:#3ecf8e;border-radius:2px;display:inline-block;flex-shrink:0;"></span>
-              Охват по форматам
+      <!-- Охват/просмотры breakdown -->
+      <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:24px 28px;margin-bottom:32px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;">
+          <!-- Охват -->
+          <div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.25);letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:6px;">
+              <span style="width:8px;height:2px;background:#3ecf8e;border-radius:2px;display:inline-block;"></span>ОХВАТ ПО ФОРМАТАМ
             </div>
-            <div class="smm-prog-wrap">
-              <div class="smm-prog-hdr">
-                <span class="smm-prog-lbl">Reels</span>
-                <div style="display:flex;align-items:center;gap:12px;">
-                  <span style="font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:#c9a84c;letter-spacing:.01em;" id="sp-reels-pct">—</span>
-                  <span class="smm-prog-val" id="sp-reels">—</span>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.5);">Reels</span>
+                  <div style="display:flex;gap:10px;align-items:center;">
+                    <span id="sp-reels-pct" style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:#c9a84c;">—</span>
+                    <span id="sp-reels" style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.4);">—</span>
+                  </div>
                 </div>
+                <div style="height:4px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;"><div id="spf-reels" style="height:100%;width:0%;background:linear-gradient(90deg,#b8923a,#dec17a);border-radius:3px;transition:width 1s ease;"></div></div>
               </div>
-              <div class="smm-prog-bar"><div class="smm-prog-fill" id="spf-reels" style="background:linear-gradient(90deg,#b8923a,#dec17a);"></div></div>
-            </div>
-            <div class="smm-prog-wrap">
-              <div class="smm-prog-hdr">
-                <span class="smm-prog-lbl">Посты</span>
-                <div style="display:flex;align-items:center;gap:12px;">
-                  <span style="font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:#9b6fc0;letter-spacing:.01em;" id="sp-posts-pct">—</span>
-                  <span class="smm-prog-val" id="sp-posts">—</span>
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.5);">Посты</span>
+                  <div style="display:flex;gap:10px;align-items:center;">
+                    <span id="sp-posts-pct" style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:#9b6fc0;">—</span>
+                    <span id="sp-posts" style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.4);">—</span>
+                  </div>
                 </div>
+                <div style="height:4px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;"><div id="spf-posts" style="height:100%;width:0%;background:linear-gradient(90deg,#6b4fa0,#9b6fc0);border-radius:3px;transition:width 1s ease;"></div></div>
               </div>
-              <div class="smm-prog-bar"><div class="smm-prog-fill" id="spf-posts" style="background:linear-gradient(90deg,#6b4fa0,#9b6fc0);"></div></div>
-            </div>
-            <div class="smm-prog-wrap">
-              <div class="smm-prog-hdr">
-                <span class="smm-prog-lbl">Сторис</span>
-                <div style="display:flex;align-items:center;gap:12px;">
-                  <span style="font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:#38b2ac;letter-spacing:.01em;" id="sp-stories-pct">—</span>
-                  <span class="smm-prog-val" id="sp-stories">—</span>
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.5);">Сторис</span>
+                  <div style="display:flex;gap:10px;align-items:center;">
+                    <span id="sp-stories-pct" style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:#38b2ac;">—</span>
+                    <span id="sp-stories" style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.4);">—</span>
+                  </div>
                 </div>
+                <div style="height:4px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;"><div id="spf-stories" style="height:100%;width:0%;background:linear-gradient(90deg,#1a8a84,#38b2ac);border-radius:3px;transition:width 1s ease;"></div></div>
               </div>
-              <div class="smm-prog-bar"><div class="smm-prog-fill" id="spf-stories" style="background:linear-gradient(90deg,#1a8a84,#38b2ac);"></div></div>
             </div>
           </div>
-
-          <!-- Просмотры по форматам -->
-          <div style="padding-left:28px;">
-            <div style="font-size:10px;font-family:'DM Mono',monospace;letter-spacing:.14em;color:rgba(255,255,255,.25);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:7px;">
-              <span style="width:10px;height:2px;background:#c9a84c;border-radius:2px;display:inline-block;flex-shrink:0;"></span>
-              Просмотры по форматам
+          <!-- Просмотры -->
+          <div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.25);letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:6px;">
+              <span style="width:8px;height:2px;background:#c9a84c;border-radius:2px;display:inline-block;"></span>ПРОСМОТРЫ ПО ФОРМАТАМ
             </div>
-            <div class="smm-prog-wrap">
-              <div class="smm-prog-hdr">
-                <span class="smm-prog-lbl">Reels</span>
-                <div style="display:flex;align-items:center;gap:12px;">
-                  <span style="font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:#c9a84c;letter-spacing:.01em;" id="sv-reels-views-pct">—</span>
-                  <span class="smm-prog-val" id="sv-reels-views">—</span>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.5);">Reels</span>
+                  <div style="display:flex;gap:10px;align-items:center;">
+                    <span id="sv-reels-views-pct" style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:#c9a84c;">—</span>
+                    <span id="sv-reels-views" style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.4);">—</span>
+                  </div>
                 </div>
+                <div style="height:4px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;"><div id="spf-reels-views" style="height:100%;width:0%;background:linear-gradient(90deg,#b8923a,#dec17a);border-radius:3px;transition:width 1s ease;"></div></div>
               </div>
-              <div class="smm-prog-bar"><div class="smm-prog-fill" id="spf-reels-views" style="background:linear-gradient(90deg,#b8923a,#dec17a);"></div></div>
-            </div>
-            <div class="smm-prog-wrap">
-              <div class="smm-prog-hdr">
-                <span class="smm-prog-lbl">Посты</span>
-                <div style="display:flex;align-items:center;gap:12px;">
-                  <span style="font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:#9b6fc0;letter-spacing:.01em;" id="sv-posts-views-pct">—</span>
-                  <span class="smm-prog-val" id="sv-posts-views">—</span>
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                  <span style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.5);">Посты</span>
+                  <div style="display:flex;gap:10px;align-items:center;">
+                    <span id="sv-posts-views-pct" style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:#9b6fc0;">—</span>
+                    <span id="sv-posts-views" style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.4);">—</span>
+                  </div>
                 </div>
+                <div style="height:4px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;"><div id="spf-posts-views" style="height:100%;width:0%;background:linear-gradient(90deg,#6b4fa0,#9b6fc0);border-radius:3px;transition:width 1s ease;"></div></div>
               </div>
-              <div class="smm-prog-bar"><div class="smm-prog-fill" id="spf-posts-views" style="background:linear-gradient(90deg,#6b4fa0,#9b6fc0);"></div></div>
-            </div>
-            <div class="smm-prog-wrap" style="opacity:.35;">
-              <div class="smm-prog-hdr">
-                <span class="smm-prog-lbl">Сторис</span>
-                <div style="display:flex;align-items:center;gap:12px;">
-                  <span style="font-size:13px;font-weight:700;font-family:'DM Mono',monospace;color:rgba(255,255,255,.2);">—</span>
-                  <span class="smm-prog-val" style="color:rgba(255,255,255,.2);">нет данных</span>
-                </div>
-              </div>
-              <div class="smm-prog-bar"></div>
             </div>
           </div>
         </div>
-
-        <!-- ИТОГИ СНИЗУ -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid rgba(255,255,255,.05);">
-          <div style="padding:16px 28px;display:flex;align-items:center;gap:16px;border-right:1px solid rgba(255,255,255,.05);">
-            <div style="font-size:32px;font-weight:800;letter-spacing:-.06em;line-height:1;color:#3ecf8e;font-family:'DM Sans',sans-serif;" id="sv-total-reach">—</div>
-            <div>
-              <div style="font-size:10px;font-family:'DM Mono',monospace;letter-spacing:.1em;color:rgba(255,255,255,.25);text-transform:uppercase;margin-bottom:3px;">Охват</div>
-              <div style="font-size:11px;color:rgba(255,255,255,.3);font-family:'DM Sans',sans-serif;">уникальных аккаунтов</div>
-            </div>
+        <!-- Totals -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.06);">
+          <div style="display:flex;align-items:center;gap:14px;padding-right:24px;border-right:1px solid rgba(255,255,255,.06);">
+            <div id="sv-total-reach" style="font-family:'DM Sans',sans-serif;font-size:32px;font-weight:800;color:#3ecf8e;letter-spacing:-.05em;line-height:1;">—</div>
+            <div><div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.25);letter-spacing:.1em;text-transform:uppercase;">Охват</div><div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:2px;">уникальных аккаунтов</div></div>
           </div>
-          <div style="padding:16px 28px;display:flex;align-items:center;gap:16px;">
-            <div style="font-size:32px;font-weight:800;letter-spacing:-.06em;line-height:1;color:#c9a84c;font-family:'DM Sans',sans-serif;" id="sv-total-views">—</div>
-            <div>
-              <div style="font-size:10px;font-family:'DM Mono',monospace;letter-spacing:.1em;color:rgba(255,255,255,.25);text-transform:uppercase;margin-bottom:3px;">Просмотры</div>
-              <div style="font-size:11px;color:rgba(255,255,255,.3);font-family:'DM Sans',sans-serif;">суммарно</div>
-            </div>
+          <div style="display:flex;align-items:center;gap:14px;padding-left:24px;">
+            <div id="sv-total-views" style="font-family:'DM Sans',sans-serif;font-size:32px;font-weight:800;color:#c9a84c;letter-spacing:-.05em;line-height:1;">—</div>
+            <div><div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.25);letter-spacing:.1em;text-transform:uppercase;">Просмотры</div><div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:2px;">суммарно</div></div>
           </div>
         </div>
-
       </div>
 
-      <!-- Section 02: Метрики -->
-      <div class="smm-sec-heading" style="margin-top:36px;">
-        <div class="smm-sec-num">02</div>
-        <div class="smm-sec-title">Метрики эффективности</div>
-        <div class="smm-sec-line"></div>
-        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-          <span style="font-family:var(--font-mono);font-size:10px;color:var(--smm-muted);">Подписчиков:</span>
-          <select id="smm-bench-sel" onchange="renderSMMMetrics()" style="background:var(--smm-bg4);border:1px solid var(--smm-brd2);border-radius:6px;padding:5px 10px;color:var(--smm-accent2);font-family:var(--font-mono);font-size:10px;outline:none;cursor:pointer;">
+      <!-- SEC 02: Метрики -->
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;margin-top:40px;">
+        <span style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.08em;">02</span>
+        <span style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:500;color:#f0ece6;letter-spacing:-.01em;">Метрики эффективности</span>
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.1),transparent);"></div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);">Подписчиков:</span>
+          <select id="smm-bench-sel" onchange="renderSMMMetrics()" style="background:#1a1a1a;border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:4px 8px;color:#c9a84c;font-family:'DM Mono',monospace;font-size:9px;outline:none;cursor:pointer;">
             <option value="10000">до 10 000</option>
             <option value="30000">10 000 – 30 000</option>
             <option value="50000" selected>30 000 – 50 000</option>
@@ -28679,26 +28655,23 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
           </select>
         </div>
       </div>
-
-      <div class="smm-metrics-grid" id="smm-metrics-grid"></div>
-
-      <!-- vs Market block -->
-      <div style="margin-top:20px;background:var(--smm-bg2);border:1px solid var(--smm-brd);border-radius:14px;padding:20px 24px;">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-          <div style="width:6px;height:6px;border-radius:50%;background:var(--smm-accent2);"></div>
-          <div style="font-family:var(--font-mono);font-size:10px;color:var(--smm-accent2);letter-spacing:.14em;text-transform:uppercase;">Позиция относительно рынка</div>
+      <div id="smm-metrics-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;"></div>
+      <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:20px 24px;margin-bottom:32px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+          <div style="width:5px;height:5px;border-radius:50%;background:#c9a84c;"></div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:#c9a84c;letter-spacing:.12em;text-transform:uppercase;">Позиция относительно рынка</div>
         </div>
         <div id="smm-vs-market"></div>
       </div>
 
-      <!-- Section 03: Контент -->
-      <div class="smm-sec-heading" style="margin-top:36px;">
-        <div class="smm-sec-num">03</div>
-        <div class="smm-sec-title">Опубликованный контент</div>
-        <div class="smm-sec-line"></div>
-        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-          <span style="font-family:var(--font-mono);font-size:9px;color:var(--smm-muted);letter-spacing:.08em;">СОРТИРОВКА</span>
-          <select id="smm-sort-select" onchange="setSMMReelsSort(this.value)" style="background:var(--smm-bg4);border:1px solid var(--smm-accent);border-radius:6px;padding:5px 10px;color:var(--smm-accent2);font-family:var(--font-mono);font-size:10px;outline:none;cursor:pointer;">
+      <!-- SEC 03: Контент -->
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;margin-top:40px;">
+        <span style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.08em;">03</span>
+        <span style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:500;color:#f0ece6;letter-spacing:-.01em;">Опубликованный контент</span>
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.1),transparent);"></div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);">Сортировка:</span>
+          <select id="smm-sort-select" onchange="setSMMReelsSort(this.value)" style="background:#1a1a1a;border:1px solid #b8923a;border-radius:6px;padding:4px 8px;color:#c9a84c;font-family:'DM Mono',monospace;font-size:9px;outline:none;cursor:pointer;">
             <option value="er">ER %</option>
             <option value="views">Просмотры</option>
             <option value="reach">Охват</option>
@@ -28709,179 +28682,179 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
           </select>
         </div>
       </div>
-      <div class="smm-reels-grid" id="smm-reels-grid">
-        <div style="grid-column:1/-1;text-align:center;padding:48px;font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;color:var(--smm-muted);">Reels ещё не добавлены — перейдите в «Данные»</div>
+      <div id="smm-reels-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:32px;">
+        <div style="grid-column:1/-1;text-align:center;padding:48px;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.1em;color:rgba(255,255,255,.2);">Reels ещё не добавлены — перейдите в «Данные»</div>
       </div>
 
-      <!-- Section 04: Рубрики -->
-      <div class="smm-sec-heading" style="margin-top:36px;">
-        <div class="smm-sec-num">04</div>
-        <div class="smm-sec-title">Рубрики контента</div>
-        <div class="smm-sec-line"></div>
+      <!-- SEC 04: Рубрики -->
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;margin-top:40px;">
+        <span style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.08em;">04</span>
+        <span style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:500;color:#f0ece6;letter-spacing:-.01em;">Рубрики контента</span>
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.1),transparent);"></div>
       </div>
-
-      <!-- Winner hero banner -->
-      <div class="rb-winner-hero" id="smm-rubric-winner" style="display:none;">
-        <div class="rb-winner-left">
-          <div class="rb-winner-crown">👑</div>
-          <div class="rb-winner-body">
-            <div class="rb-winner-label">Самая эффективная рубрика</div>
-            <div class="rb-winner-name" id="smm-winner-name">—</div>
+      <div id="smm-rubric-winner" style="display:none;background:linear-gradient(135deg,rgba(184,146,58,.12),rgba(184,146,58,.04));border:1px solid rgba(184,146,58,.25);border-radius:14px;padding:20px 24px;margin-bottom:16px;display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:14px;">
+            <div style="font-size:28px;">👑</div>
+            <div>
+              <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(184,146,58,.6);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">Самая эффективная рубрика</div>
+              <div id="smm-winner-name" style="font-family:'DM Sans',sans-serif;font-size:20px;font-weight:700;color:#f0ece6;letter-spacing:-.02em;">—</div>
+            </div>
           </div>
-        </div>
-        <div class="rb-winner-stats" id="smm-winner-stats-row"></div>
-      </div>
-
-      <!-- Rubric grid -->
-      <div class="smm-rubric-grid" id="smm-rubric-grid">
-        <div style="grid-column:1/-1;text-align:center;padding:40px;font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;color:var(--smm-muted);">Рубрики ещё не добавлены</div>
-      </div>
-    </div>
-
-    <!-- ══ TAB: DATA INPUT ══ -->
-    <div class="smm-sec" id="ss-data">
-      <div class="smm-sec-heading">
-        <div class="smm-sec-num">⚙</div>
-        <div class="smm-sec-title">Ввод данных</div>
-        <div class="smm-sec-line"></div>
-      </div>
-
-      <!-- Общие показатели -->
-      <div style="font-family:var(--font-mono);font-size:10px;color:var(--smm-accent2);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px;">01 / Общие показатели</div>
-      <div class="smm-data-grid" style="margin-bottom:24px;">
-        <div class="smm-input-card">
-          <div class="smm-input-lbl">Reels опубликовано</div>
-          <input class="smm-inp" id="sd-reels-count" type="number" placeholder="0">
-        </div>
-        <div class="smm-input-card">
-          <div class="smm-input-lbl">Постов опубликовано</div>
-          <input class="smm-inp" id="sd-posts-count" type="number" placeholder="0">
-        </div>
-        <div class="smm-input-card">
-          <div class="smm-input-lbl">Сторис опубликовано</div>
-          <input class="smm-inp" id="sd-stories-count" type="number" placeholder="0">
-        </div>
-        <div class="smm-input-card">
-          <div class="smm-input-lbl">Охват (Reels)</div>
-          <input class="smm-inp" id="sd-reels-reach" type="number" placeholder="0">
-        </div>
-        <div class="smm-input-card">
-          <div class="smm-input-lbl">Охват (Посты)</div>
-          <input class="smm-inp" id="sd-posts-reach" type="number" placeholder="0">
-        </div>
-        <div class="smm-input-card">
-          <div class="smm-input-lbl">Охват (Сторис)</div>
-          <input class="smm-inp" id="sd-stories-reach" type="number" placeholder="0">
-        </div>
-        <div class="smm-input-card">
-          <div class="smm-input-lbl">Просмотры (Reels)</div>
-          <input class="smm-inp" id="sd-reels-views" type="number" placeholder="0">
-        </div>
-        <div class="smm-input-card">
-          <div class="smm-input-lbl">Просмотры (Посты)</div>
-          <input class="smm-inp" id="sd-posts-views" type="number" placeholder="0">
-        </div>
-        <div class="smm-input-card">
-          <div class="smm-input-lbl">Прирост подписчиков</div>
-          <div class="smm-inp-row">
-            <div><input class="smm-inp" id="sd-followers" type="number" placeholder="тек."><div class="smm-inp-hint">текущий</div></div>
-            <div><input class="smm-inp" id="sd-prev-followers" type="number" placeholder="пред."><div class="smm-inp-hint">прошлый</div></div>
-          </div>
-        </div>
-        <div class="smm-input-card">
-          <div class="smm-input-lbl">Подписчиков сейчас</div>
-          <input class="smm-inp" id="sd-subscribers-current" type="number" placeholder="0">
-        </div>
-        <div class="smm-input-card">
-          <div class="smm-input-lbl">Рекламные Креативы</div>
-          <input class="smm-inp" id="sd-ad-creatives" type="number" placeholder="0">
-        </div>
-        <div class="smm-input-card">
-          <div class="smm-input-lbl">Частота просмотров</div>
-          <input class="smm-inp" id="sd-frequency" type="number" step="0.1" placeholder="0.0">
-          <div class="smm-inp-hint">сколько раз смотрели 1 пост</div>
+          <div id="smm-winner-stats-row" style="display:flex;gap:16px;"></div>
         </div>
       </div>
+      <div id="smm-rubric-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px;">
+        <div style="grid-column:1/-1;text-align:center;padding:40px;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.1em;color:rgba(255,255,255,.2);">Рубрики ещё не добавлены</div>
+      </div>
 
-      <!-- Метрики -->
-      <div style="font-family:var(--font-mono);font-size:10px;color:var(--smm-accent2);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px;">02 / Метрики (ER · LR · TR · SHR · SR)</div>
+    </div><!-- /dtr-ss-smm -->
+
+    <!-- ══ TAB: DATA ══ -->
+    <div id="dtr-ss-data" style="display:none;">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px;">
+        <span style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.08em;">⚙</span>
+        <span style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:500;color:#f0ece6;letter-spacing:-.01em;">Ввод данных</span>
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.1),transparent);"></div>
+      </div>
+
+      <!-- 01 Общие -->
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:#c9a84c;letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px;">01 / Общие показатели</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;">
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">REELS</div>
+          <input class="smm-inp" id="sd-reels-count" type="number" placeholder="0" style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;color:#f0ece6;font-family:'DM Mono',monospace;font-size:13px;outline:none;">
+        </div>
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">ПОСТЫ</div>
+          <input class="smm-inp" id="sd-posts-count" type="number" placeholder="0" style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;color:#f0ece6;font-family:'DM Mono',monospace;font-size:13px;outline:none;">
+        </div>
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">СТОРИС</div>
+          <input class="smm-inp" id="sd-stories-count" type="number" placeholder="0" style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;color:#f0ece6;font-family:'DM Mono',monospace;font-size:13px;outline:none;">
+        </div>
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">КРЕАТИВЫ</div>
+          <input class="smm-inp" id="sd-ad-creatives" type="number" placeholder="0" style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;color:#f0ece6;font-family:'DM Mono',monospace;font-size:13px;outline:none;">
+        </div>
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">ОХВАТ REELS</div>
+          <input class="smm-inp" id="sd-reels-reach" type="number" placeholder="0" style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;color:#f0ece6;font-family:'DM Mono',monospace;font-size:13px;outline:none;">
+        </div>
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">ОХВАТ ПОСТЫ</div>
+          <input class="smm-inp" id="sd-posts-reach" type="number" placeholder="0" style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;color:#f0ece6;font-family:'DM Mono',monospace;font-size:13px;outline:none;">
+        </div>
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">ОХВАТ СТОРИС</div>
+          <input class="smm-inp" id="sd-stories-reach" type="number" placeholder="0" style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;color:#f0ece6;font-family:'DM Mono',monospace;font-size:13px;outline:none;">
+        </div>
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">ПРОСМ REELS</div>
+          <input class="smm-inp" id="sd-reels-views" type="number" placeholder="0" style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;color:#f0ece6;font-family:'DM Mono',monospace;font-size:13px;outline:none;">
+        </div>
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">ПРОСМ ПОСТЫ</div>
+          <input class="smm-inp" id="sd-posts-views" type="number" placeholder="0" style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;color:#f0ece6;font-family:'DM Mono',monospace;font-size:13px;outline:none;">
+        </div>
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">ПОДПИСЧИКИ</div>
+          <input class="smm-inp" id="sd-subscribers-current" type="number" placeholder="0" style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;color:#f0ece6;font-family:'DM Mono',monospace;font-size:13px;outline:none;">
+        </div>
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">ПРИРОСТ ТЕК.</div>
+          <input class="smm-inp" id="sd-followers" type="number" placeholder="0" style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;color:#f0ece6;font-family:'DM Mono',monospace;font-size:13px;outline:none;">
+        </div>
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">ПРИРОСТ ПРЕД.</div>
+          <input class="smm-inp" id="sd-prev-followers" type="number" placeholder="0" style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;color:#f0ece6;font-family:'DM Mono',monospace;font-size:13px;outline:none;">
+        </div>
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">ЧАСТОТА</div>
+          <input class="smm-inp" id="sd-frequency" type="number" step="0.1" placeholder="0.0" style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;color:#f0ece6;font-family:'DM Mono',monospace;font-size:13px;outline:none;">
+        </div>
+      </div>
+
+      <!-- 02 Метрики -->
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:#c9a84c;letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px;">02 / Метрики</div>
       <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px;">
-        <div class="smm-input-card">
-          <div class="smm-input-lbl">ER %</div>
-          <input class="smm-inp" id="sd-er" type="number" step="0.01" placeholder="0.00">
-          <input class="smm-inp" id="sd-prev-er" type="number" step="0.01" placeholder="пред." style="margin-top:6px;opacity:.6;">
-          <input class="smm-inp" id="sd-goal-er" type="number" step="0.01" placeholder="цель" style="margin-top:6px;border-color:rgba(52,211,153,.3);color:var(--smm-green);">
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;">
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:#c9a84c;font-weight:600;margin-bottom:8px;">ER %</div>
+          <input class="smm-inp" id="sd-er" type="number" step="0.01" placeholder="тек." style="width:100%;background:#1a1a1a;border:1px solid rgba(184,146,58,.3);border-radius:6px;padding:7px 10px;color:#c9a84c;font-family:'DM Mono',monospace;font-size:12px;outline:none;margin-bottom:6px;">
+          <input class="smm-inp" id="sd-prev-er" type="number" step="0.01" placeholder="пред." style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:7px 10px;color:rgba(255,255,255,.4);font-family:'DM Mono',monospace;font-size:11px;outline:none;margin-bottom:6px;">
+          <input class="smm-inp" id="sd-goal-er" type="number" step="0.01" placeholder="цель" style="width:100%;background:#1a1a1a;border:1px solid rgba(52,211,153,.25);border-radius:6px;padding:7px 10px;color:#3ecf8e;font-family:'DM Mono',monospace;font-size:11px;outline:none;">
         </div>
-        <div class="smm-input-card">
-          <div class="smm-input-lbl">LR %</div>
-          <input class="smm-inp" id="sd-lr" type="number" step="0.01" placeholder="0.00">
-          <input class="smm-inp" id="sd-prev-lr" type="number" step="0.01" placeholder="пред." style="margin-top:6px;opacity:.6;">
-          <input class="smm-inp" id="sd-goal-lr" type="number" step="0.01" placeholder="цель" style="margin-top:6px;border-color:rgba(52,211,153,.3);color:var(--smm-green);">
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;">
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:#22d3ee;font-weight:600;margin-bottom:8px;">LR %</div>
+          <input class="smm-inp" id="sd-lr" type="number" step="0.01" placeholder="тек." style="width:100%;background:#1a1a1a;border:1px solid rgba(34,211,238,.3);border-radius:6px;padding:7px 10px;color:#22d3ee;font-family:'DM Mono',monospace;font-size:12px;outline:none;margin-bottom:6px;">
+          <input class="smm-inp" id="sd-prev-lr" type="number" step="0.01" placeholder="пред." style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:7px 10px;color:rgba(255,255,255,.4);font-family:'DM Mono',monospace;font-size:11px;outline:none;margin-bottom:6px;">
+          <input class="smm-inp" id="sd-goal-lr" type="number" step="0.01" placeholder="цель" style="width:100%;background:#1a1a1a;border:1px solid rgba(52,211,153,.25);border-radius:6px;padding:7px 10px;color:#3ecf8e;font-family:'DM Mono',monospace;font-size:11px;outline:none;">
         </div>
-        <div class="smm-input-card">
-          <div class="smm-input-lbl">TR %</div>
-          <input class="smm-inp" id="sd-tr" type="number" step="0.01" placeholder="0.00">
-          <input class="smm-inp" id="sd-prev-tr" type="number" step="0.01" placeholder="пред." style="margin-top:6px;opacity:.6;">
-          <input class="smm-inp" id="sd-goal-tr" type="number" step="0.01" placeholder="цель" style="margin-top:6px;border-color:rgba(52,211,153,.3);color:var(--smm-green);">
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;">
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:#fbbf24;font-weight:600;margin-bottom:8px;">TR %</div>
+          <input class="smm-inp" id="sd-tr" type="number" step="0.01" placeholder="тек." style="width:100%;background:#1a1a1a;border:1px solid rgba(251,191,36,.3);border-radius:6px;padding:7px 10px;color:#fbbf24;font-family:'DM Mono',monospace;font-size:12px;outline:none;margin-bottom:6px;">
+          <input class="smm-inp" id="sd-prev-tr" type="number" step="0.01" placeholder="пред." style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:7px 10px;color:rgba(255,255,255,.4);font-family:'DM Mono',monospace;font-size:11px;outline:none;margin-bottom:6px;">
+          <input class="smm-inp" id="sd-goal-tr" type="number" step="0.01" placeholder="цель" style="width:100%;background:#1a1a1a;border:1px solid rgba(52,211,153,.25);border-radius:6px;padding:7px 10px;color:#3ecf8e;font-family:'DM Mono',monospace;font-size:11px;outline:none;">
         </div>
-        <div class="smm-input-card">
-          <div class="smm-input-lbl">SHR %</div>
-          <input class="smm-inp" id="sd-shr" type="number" step="0.01" placeholder="0.00">
-          <input class="smm-inp" id="sd-prev-shr" type="number" step="0.01" placeholder="пред." style="margin-top:6px;opacity:.6;">
-          <input class="smm-inp" id="sd-goal-shr" type="number" step="0.01" placeholder="цель" style="margin-top:6px;border-color:rgba(52,211,153,.3);color:var(--smm-green);">
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;">
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:#e879f9;font-weight:600;margin-bottom:8px;">SHR %</div>
+          <input class="smm-inp" id="sd-shr" type="number" step="0.01" placeholder="тек." style="width:100%;background:#1a1a1a;border:1px solid rgba(232,121,249,.3);border-radius:6px;padding:7px 10px;color:#e879f9;font-family:'DM Mono',monospace;font-size:12px;outline:none;margin-bottom:6px;">
+          <input class="smm-inp" id="sd-prev-shr" type="number" step="0.01" placeholder="пред." style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:7px 10px;color:rgba(255,255,255,.4);font-family:'DM Mono',monospace;font-size:11px;outline:none;margin-bottom:6px;">
+          <input class="smm-inp" id="sd-goal-shr" type="number" step="0.01" placeholder="цель" style="width:100%;background:#1a1a1a;border:1px solid rgba(52,211,153,.25);border-radius:6px;padding:7px 10px;color:#3ecf8e;font-family:'DM Mono',monospace;font-size:11px;outline:none;">
         </div>
-        <div class="smm-input-card">
-          <div class="smm-input-lbl">SR %</div>
-          <input class="smm-inp" id="sd-sr" type="number" step="0.01" placeholder="0.00">
-          <input class="smm-inp" id="sd-prev-sr" type="number" step="0.01" placeholder="пред." style="margin-top:6px;opacity:.6;">
-          <input class="smm-inp" id="sd-goal-sr" type="number" step="0.01" placeholder="цель" style="margin-top:6px;border-color:rgba(52,211,153,.3);color:var(--smm-green);">
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;">
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:#34d399;font-weight:600;margin-bottom:8px;">SR %</div>
+          <input class="smm-inp" id="sd-sr" type="number" step="0.01" placeholder="тек." style="width:100%;background:#1a1a1a;border:1px solid rgba(52,211,153,.3);border-radius:6px;padding:7px 10px;color:#34d399;font-family:'DM Mono',monospace;font-size:12px;outline:none;margin-bottom:6px;">
+          <input class="smm-inp" id="sd-prev-sr" type="number" step="0.01" placeholder="пред." style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:7px 10px;color:rgba(255,255,255,.4);font-family:'DM Mono',monospace;font-size:11px;outline:none;margin-bottom:6px;">
+          <input class="smm-inp" id="sd-goal-sr" type="number" step="0.01" placeholder="цель" style="width:100%;background:#1a1a1a;border:1px solid rgba(52,211,153,.25);border-radius:6px;padding:7px 10px;color:#3ecf8e;font-family:'DM Mono',monospace;font-size:11px;outline:none;">
         </div>
       </div>
 
-      <!-- Reels input -->
+      <!-- 03 Reels -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <div style="font-family:var(--font-mono);font-size:10px;color:var(--smm-accent2);letter-spacing:.14em;text-transform:uppercase;">03 / Reels (макс. 10)</div>
-        <button class="smm-run-ai-btn" onclick="openAddReel()" style="padding:7px 14px;font-size:10px;">+ Добавить Reel</button>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:#c9a84c;letter-spacing:.14em;text-transform:uppercase;">03 / Reels (макс. 20)</div>
+        <button onclick="openAddReel()" style="display:flex;align-items:center;gap:6px;background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.25);border-radius:7px;padding:7px 14px;color:#c9a84c;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;transition:all .15s;" onmouseover="this.style.background='rgba(184,146,58,.2)'" onmouseout="this.style.background='rgba(184,146,58,.1)'">+ Добавить Reel</button>
       </div>
-      <div id="smm-reels-input-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;"></div>
+      <div id="smm-reels-input-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;"></div>
 
-      <!-- Rubrics input -->
+      <!-- 04 Рубрики -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <div style="font-family:var(--font-mono);font-size:10px;color:var(--smm-accent2);letter-spacing:.14em;text-transform:uppercase;">04 / Рубрики контента</div>
-        <button class="smm-run-ai-btn" onclick="openAddRubric()" style="padding:7px 14px;font-size:10px;">+ Добавить рубрику</button>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:#c9a84c;letter-spacing:.14em;text-transform:uppercase;">04 / Рубрики контента</div>
+        <button onclick="openAddRubric()" style="display:flex;align-items:center;gap:6px;background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.25);border-radius:7px;padding:7px 14px;color:#c9a84c;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;transition:all .15s;" onmouseover="this.style.background='rgba(184,146,58,.2)'" onmouseout="this.style.background='rgba(184,146,58,.1)'">+ Добавить рубрику</button>
       </div>
-      <div id="smm-rubrics-input-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;"></div>
+      <div id="smm-rubrics-input-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;"></div>
 
-      <div style="display:flex;justify-content:flex-end;padding-top:16px;border-top:1px solid var(--smm-brd);">
-        <button class="smm-save-bar-btn" id="smm-save-data-btn" onclick="saveSMMData(true)" style="font-size:12px;padding:12px 28px;">
+      <div style="display:flex;justify-content:flex-end;padding-top:16px;border-top:1px solid rgba(255,255,255,.07);">
+        <button id="smm-save-data-btn" onclick="saveSMMData(true)" style="display:flex;align-items:center;gap:7px;background:#166534;border:1px solid rgba(74,222,128,.25);border-radius:8px;padding:11px 24px;color:#4ade80;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#166534'">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
           Сохранить и обновить отчёт
         </button>
       </div>
-    </div>
+    </div><!-- /dtr-ss-data -->
 
     <!-- ══ TAB: AI ══ -->
-    <div class="smm-sec" id="ss-ai">
-      <div class="smm-sec-heading">
-        <div class="smm-sec-num">AI</div>
-        <div class="smm-sec-title">Анализ данных</div>
-        <div class="smm-sec-line"></div>
-        <button class="smm-run-ai-btn" onclick="runSMMAnalysis()" id="smm-ai-btn2">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+    <div id="dtr-ss-ai" style="display:none;">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px;">
+        <span style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.08em;">AI</span>
+        <span style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:500;color:#f0ece6;letter-spacing:-.01em;">Анализ данных</span>
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.1),transparent);"></div>
+        <button id="smm-ai-btn2" onclick="runSMMAnalysis()" style="display:flex;align-items:center;gap:6px;background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.25);border-radius:7px;padding:8px 16px;color:#c9a84c;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;transition:all .15s;" onmouseover="this.style.background='rgba(184,146,58,.2)'" onmouseout="this.style.background='rgba(184,146,58,.1)'">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3"/></svg>
           Запустить анализ
         </button>
       </div>
-      <div style="font-family:var(--font-mono);font-size:11px;color:var(--smm-muted);margin-bottom:20px;" id="smm-ai-status">Готов к анализу</div>
+      <div id="smm-ai-status" style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.3);margin-bottom:20px;">Готов к анализу</div>
       <div id="smm-ai-output">
-        <div style="background:var(--smm-bg3);border:1px solid var(--smm-brd);border-radius:12px;padding:48px;text-align:center;">
-          <div style="font-family:var(--bebas);font-size:48px;color:var(--smm-muted);letter-spacing:.05em;margin-bottom:12px;">AI READY</div>
-          <div style="font-family:var(--font-mono);font-size:12px;color:var(--smm-muted);letter-spacing:.1em;">Заполните данные и нажмите «Запустить анализ»</div>
+        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:48px;text-align:center;">
+          <div style="font-family:'DM Mono',monospace;font-size:13px;color:rgba(255,255,255,.2);letter-spacing:.1em;">Заполните данные и нажмите «Запустить анализ»</div>
         </div>
       </div>
-    </div>
+    </div><!-- /dtr-ss-ai -->
 
     <div style="height:60px;"></div>
-  </div>
+  </div><!-- /body -->
+
+</div><!-- /page-smm -->
 </div>
 
 <!-- MODAL: Add Reel -->
@@ -36549,25 +36522,49 @@ function openSMMReport(report) {
   set('smm-period-lbl', report.period_label)
 
   const isClient = _isClientCache === true
-  document.querySelectorAll('#page-smm .agency-only').forEach(el => el.style.display = isClient ? 'none' : '')
-  if (isClient) { const dt = g('smm-data-tab'); if (dt) dt.style.display = 'none' }
+  // Handle agency-only elements visibility
+  document.querySelectorAll('#page-smm .agency-only').forEach(el => {
+    el.style.display = isClient ? 'none' : ''
+  })
+  // Hide data tab for clients
+  const dataTab = g('dtr-stab-data')
+  if (dataTab) dataTab.style.display = isClient ? 'none' : ''
 
   showPage('page-smm')
-  switchSMMTab('smm', document.querySelector('.smm-nav-item'))
+  dtrSMMTab('smm', g('dtr-stab-smm'))
   renderSMMPresentation()
   if (!isClient) fillSMMDataForm()
 
   if (report.ai_analysis?.text) {
     renderSMMAnalysis(report.ai_analysis.text)
-    if (g('smm-ai-status')) g('smm-ai-status').innerHTML = '<span style="color:var(--smm-green)">● Анализ готов</span>'
+    if (g('smm-ai-status')) g('smm-ai-status').innerHTML = '<span style="color:#3ecf8e">● Анализ готов</span>'
   }
 }
 
 function switchSMMTab(id, btn) {
-  document.querySelectorAll('.smm-nav-item').forEach(t => t.classList.remove('sni-active'))
-  document.querySelectorAll('.smm-sec').forEach(s => s.classList.remove('ssa'))
-  if (btn) btn.classList.add('sni-active')
-  const sec = g('ss-' + id); if (sec) sec.classList.add('ssa')
+  // Legacy shim — redirect to new function
+  dtrSMMTab(id, document.getElementById('dtr-stab-' + id))
+}
+
+function dtrSMMTab(id, btn) {
+  // Hide all panels
+  ;['dtr-ss-smm','dtr-ss-data','dtr-ss-ai'].forEach(function(pid) {
+    const el = g(pid); if (el) el.style.display = 'none';
+  })
+  // Show target
+  const target = g('dtr-ss-' + id)
+  if (target) target.style.display = 'block'
+  // Update tab styles
+  document.querySelectorAll('.dtr-smm-tab').forEach(function(t) {
+    t.style.borderBottomColor = 'transparent'
+    t.style.color = 'rgba(255,255,255,.3)'
+    t.classList.remove('dtr-smm-tab-active')
+  })
+  if (btn) {
+    btn.style.borderBottomColor = '#b8923a'
+    btn.style.color = '#c9a84c'
+    btn.classList.add('dtr-smm-tab-active')
+  }
 }
 
 function fillSMMDataForm() {
@@ -36642,35 +36639,6 @@ async function saveSMMData(showFeedback) {
 
 function renderSMMPresentation() {
   const m = smmData.metrics, p = smmData.prev
-
-  // ── Инжектируем заголовок секции 03 с селектом сортировки ──
-  // Находим smm-reels-grid и вставляем heading перед ним (работает независимо от кеша HTML)
-  const reelsGrid = g('smm-reels-grid')
-  if (reelsGrid && !g('smm-sec03-heading')) {
-    const h = document.createElement('div')
-    h.id = 'smm-sec03-heading'
-    h.className = 'smm-sec-heading'
-    h.style.cssText = 'margin-top:36px;display:flex;align-items:center;gap:16px;'
-    h.innerHTML = `
-      <div class="smm-sec-num" style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(240,236,230,.35);font-weight:400;">03</div>
-      <div class="smm-sec-title" style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:500;color:#f0ece6;letter-spacing:-.01em;">Опубликованный контент</div>
-      <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(240,236,230,.15),transparent);"></div>
-      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-        <span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(240,236,230,.3);letter-spacing:.08em;text-transform:uppercase;">Сортировка</span>
-        <select id="smm-sort-select" style="background:#1a1a1a;border:1px solid #b8923a;border-radius:6px;padding:5px 10px;color:#c9a84c;font-family:'DM Mono',monospace;font-size:10px;outline:none;cursor:pointer;">
-          <option value="er">ER %</option>
-          <option value="views">Просмотры</option>
-          <option value="reach">Охват</option>
-          <option value="tr">TR %</option>
-          <option value="cr">CR %</option>
-          <option value="shr">SHR %</option>
-          <option value="sr">SR %</option>
-        </select>
-      </div>`
-    reelsGrid.parentNode.insertBefore(h, reelsGrid)
-    g('smm-sort-select').addEventListener('change', function() { setSMMReelsSort(this.value) })
-  }
-
   const fmtBig = n => !n ? '—' : Number(n).toLocaleString('ru-RU')
   const delta = (cur, prev) => {
     if (!cur || !prev) return ''
@@ -37303,7 +37271,7 @@ ${topRub?('Лучшая рубрика: "'+topRub.name+'", ER '+topRub.er+'%'):'
     renderSMMAnalysis(text)
     await sb.from('smm_reports').update({ai_analysis:{text,generated_at:new Date().toISOString()}}).eq('id',currentSMMReport.id)
     if(g('smm-ai-status')) g('smm-ai-status').innerHTML='<span style="color:var(--smm-green)">● Готово</span>'
-    switchSMMTab('ai',document.querySelectorAll('.smm-nav-item')[2])
+    dtrSMMTab('ai', g('dtr-stab-ai'))
   } catch(err) {
     if(g('smm-ai-output')) g('smm-ai-output').innerHTML=`<div style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);border-radius:10px;padding:16px 18px;font-family:var(--font-mono);font-size:12px;color:var(--smm-red);">${esc(err.message)}</div>`
     if(g('smm-ai-status')) g('smm-ai-status').innerHTML='<span style="color:var(--smm-red)">● Ошибка</span>'
@@ -37338,9 +37306,9 @@ function exportSMMReportPDF() {
   if (btn) { btn.disabled = true; btn.textContent = 'Готовлю...' }
 
   // Переключаемся на вкладку SMM (презентация) для захвата
-  switchSMMTab('smm', document.querySelector('.smm-nav-item'))
+  dtrSMMTab('smm', g('dtr-stab-smm'))
 
-  const el = g('ss-smm')
+  const el = g('dtr-ss-smm')
   if (!el) { if (btn) { btn.disabled = false; btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg> PDF' }; return }
 
   const clientName = (currentProject?.name || 'SMM').replace(/[^а-яёА-ЯЁa-zA-Z0-9 _-]/g, '')
