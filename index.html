@@ -36915,27 +36915,22 @@ function renderSMMRubricGrid() {
   const grid   = g('smm-rubric-grid'); if (!grid) return
   const winner = g('smm-rubric-winner')
 
-  // Инжект селекта сортировки в заголовок секции 04 через JS
-  if (!g('smm-rubric-sort-select')) {
-    const heading = grid.previousElementSibling && grid.previousElementSibling.id === 'smm-rubric-winner'
-      ? grid.previousElementSibling.previousElementSibling
-      : grid.previousElementSibling
-    if (heading) {
-      const sortWrap = document.createElement('div')
-      sortWrap.style.cssText = 'display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:auto;'
-      sortWrap.innerHTML = '<span style="font-family:\'DM Mono\',monospace;font-size:9px;color:rgba(255,255,255,.3);">Сортировка:</span>' +
-        '<select id="smm-rubric-sort-select" style="background:#1a1a1a;border:1px solid #b8923a;border-radius:6px;padding:4px 8px;color:#c9a84c;font-family:\'DM Mono\',monospace;font-size:9px;outline:none;cursor:pointer;">' +
+  // Вставляем строку сортировки перед winner-баннером (один раз)
+  if (!g('smm-rubric-sort-bar')) {
+    const bar = document.createElement('div')
+    bar.id = 'smm-rubric-sort-bar'
+    bar.style.cssText = 'display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-bottom:12px;'
+    bar.innerHTML =
+      '<span style="font-family:\'DM Mono\',monospace;font-size:9px;color:rgba(255,255,255,.35);letter-spacing:.08em;text-transform:uppercase;">Сортировка</span>' +
+      '<select id="smm-rubric-sort-select" onchange="setSMMRubricSort(this.value)" style="background:#1a1a1a;border:1px solid #b8923a;border-radius:6px;padding:5px 10px;color:#c9a84c;font-family:\'DM Mono\',monospace;font-size:10px;outline:none;cursor:pointer;">' +
         '<option value="er">ER %</option>' +
         '<option value="reach">Охват</option>' +
         '<option value="views">Просмотры</option>' +
-        '</select>'
-      heading.style.display = 'flex'
-      heading.style.alignItems = 'center'
-      heading.appendChild(sortWrap)
-      g('smm-rubric-sort-select').addEventListener('change', function() { setSMMRubricSort(this.value) })
-    }
+      '</select>'
+    // Вставить перед winner или перед grid
+    const anchor = winner || grid
+    anchor.parentNode.insertBefore(bar, anchor)
   }
-  // Sync select value
   const sel = g('smm-rubric-sort-select')
   if (sel) sel.value = smmRubricSort
 
