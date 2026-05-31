@@ -44248,10 +44248,20 @@ async function loadTeamPanel() {
   var barsEl = document.getElementById('team-workload-bars');
   if (!listEl) return;
 
+  // Сначала получаем ID проектов если _allProjects не загружен
+  var _teamProjIds = (_allProjects && _allProjects.length)
+    ? _allProjects.filter(function(p){ return p.status !== 'archived'; }).map(function(p){ return p.id; })
+    : [];
+  if (!_teamProjIds.length) {
+    var _pRes = await sb.from('projects').select('id').eq('owner_id', currentUser.id).neq('status','archived');
+    _teamProjIds = (_pRes.data || []).map(function(p){ return p.id; });
+  }
+  var _teamProjFilter = _teamProjIds.length ? _teamProjIds : ['00000000-0000-0000-0000-000000000000'];
+
   var [membersRes, stagesRes] = await Promise.all([
     sb.from('team_members').select('*').eq('agency_id', currentUser.id).order('name'),
-    sb.from('project_stages').select('id,assignee_id,assignee_name,status,name,project_id')
-      .in('project_id', _allProjects.filter(function(p){ return p.status !== 'archived'; }).map(function(p){ return p.id; }))
+    sb.from('project_stages').select('id,assignee_id,assignee_name,status,name,project_id,stage_index')
+      .in('project_id', _teamProjFilter)
   ]);
 
   var members = membersRes.data || [];
@@ -44261,9 +44271,8 @@ async function loadTeamPanel() {
   if (!members.length) {
     listEl.innerHTML = '<div style="font-size:12px;color:var(--txt3);padding:12px 0;">Пока нет участников. Добавь первого.</div>';
   } else {
-    // Подгружаем задачи и историю для метрик
-    var activeIds = _allProjects.filter(function(p){ return p.status !== 'archived'; }).map(function(p){ return p.id; });
-    var projFilter = activeIds.length ? activeIds : ['00000000-0000-0000-0000-000000000000'];
+    // Подгружаем задачи и историю для метрик — используем уже загруженный _teamProjFilter
+    var projFilter = _teamProjFilter;
     var now2 = new Date();
     var day7  = new Date(now2 - 7  * 86400000);
     var day30 = new Date(now2 - 30 * 86400000);
