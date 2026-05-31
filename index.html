@@ -44253,7 +44253,7 @@ async function loadTeamPanel() {
     ? _allProjects.filter(function(p){ return p.status !== 'archived'; }).map(function(p){ return p.id; })
     : [];
   if (!_teamProjIds.length) {
-    var _pRes = await sb.from('projects').select('id').eq('owner_id', currentUser.id).neq('status','archived');
+    var _pRes = await sb.from('projects').select('id').eq('agency_id', currentUser.id).neq('status','archived');
     _teamProjIds = (_pRes.data || []).map(function(p){ return p.id; });
   }
   var _teamProjFilter = _teamProjIds.length ? _teamProjIds : ['00000000-0000-0000-0000-000000000000'];
@@ -44277,8 +44277,17 @@ async function loadTeamPanel() {
     var day7  = new Date(now2 - 7  * 86400000);
     var day30 = new Date(now2 - 30 * 86400000);
 
+    // Получаем stage_index-ы из этапов для fallback-запроса задач с NULL project_id
+    var stageIdxList2 = [...new Set(stages.map(function(s){ return s.stage_index; }))];
     var [tasksRes2, histRes2] = await Promise.all([
-      sb.from('stage_tasks').select('id,done,kanban_status,created_at,updated_at,done_at,time_logged,stage_index,project_id,returned_count').in('project_id', projFilter),
+      stageIdxList2.length
+        ? sb.from('stage_tasks')
+            .select('id,done,kanban_status,created_at,updated_at,done_at,time_logged,stage_index,project_id,returned_count')
+            .or('project_id.in.('+projFilter.join(',')+')'+(stageIdxList2.length?',project_id.is.null':''))
+            .in('stage_index', stageIdxList2)
+        : sb.from('stage_tasks')
+            .select('id,done,kanban_status,created_at,updated_at,done_at,time_logged,stage_index,project_id,returned_count')
+            .in('project_id', projFilter),
       sb.from('stage_history').select('stage_index,project_id,event,assignee_id').in('project_id', projFilter).limit(2000)
     ]);
     var allTasks2 = tasksRes2.data || [];
