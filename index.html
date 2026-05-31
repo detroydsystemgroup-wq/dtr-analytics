@@ -20189,9 +20189,9 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
     </div>
     <!-- Right -->
     <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
-      <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:4px 10px;">
+      <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:6px 12px;">
         <div style="width:5px;height:5px;border-radius:50%;background:#3ecf8e;"></div>
-        <span id="header-user-smm" style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.4);"></span>
+        <span id="header-user-smm" style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.4);"></span>
       </div>
       <button id="smm-pdf-btn" onclick="exportSMMReportPDF()" class="agency-only" style="display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:6px 12px;color:rgba(255,255,255,.55);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;" onmouseover="this.style.color='#f0ece6';this.style.borderColor='rgba(255,255,255,.2)'" onmouseout="this.style.color='rgba(255,255,255,.55)';this.style.borderColor='rgba(255,255,255,.1)'">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
@@ -27697,7 +27697,7 @@ async function cp2LoadReports(project) {
   if (g('cp2-perf-cnt')) g('cp2-perf-cnt').textContent = perfReports.length;
   if (g('cp2-smm-cnt')) g('cp2-smm-cnt').textContent = smmReports.length;
 
-  // Overview reports list (combined, max 4)
+  // Overview reports list (combined, max 6)
   var combined = [];
   perfReports.forEach(function(r){ combined.push({ id:r.id, type:'perf', title:r.title||r.period_d_label||'Отчёт', date:r.created_at }); });
   smmReports.forEach(function(r){
@@ -27749,7 +27749,7 @@ async function cp2LoadReports(project) {
     perf: perfReports.map(function(r){ return {id:r.id,type:'perf',title:r.title||r.period_d_label||'Отчёт',date:r.created_at}; }),
     smm:  smmReports.map(function(r){ return {id:r.id,type:'smm',title:smmTitle(r),date:r.created_at}; })
   };
-  renderReportList(combined.slice(0, 4), 'cp2-reports-list');
+  renderReportList(combined.slice(0, 6), 'cp2-reports-list');
   renderReportList(perfReports.map(function(r){ return {id:r.id,type:'perf',title:r.title||r.period_d_label||'Отчёт',date:r.created_at}; }), 'cp2-perf-list');
   renderReportList(smmReports.map(function(r){ return {id:r.id,type:'smm',title:smmTitle(r),date:r.created_at}; }), 'cp2-smm-list');
 }
