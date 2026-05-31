@@ -28686,35 +28686,8 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
         <div style="grid-column:1/-1;text-align:center;padding:48px;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.1em;color:rgba(255,255,255,.2);">Reels ещё не добавлены — перейдите в «Данные»</div>
       </div>
 
-      <!-- SEC 04: Рубрики -->
-      <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;margin-top:40px;">
-        <span style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.08em;">04</span>
-        <span style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:500;color:#f0ece6;letter-spacing:-.01em;">Рубрики контента</span>
-        <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.1),transparent);"></div>
-        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
-          <span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);">Сортировка:</span>
-          <select id="smm-rubric-sort-select" onchange="setSMMRubricSort(this.value)" style="background:#1a1a1a;border:1px solid #b8923a;border-radius:6px;padding:4px 8px;color:#c9a84c;font-family:'DM Mono',monospace;font-size:9px;outline:none;cursor:pointer;">
-            <option value="er">ER %</option>
-            <option value="reach">Охват</option>
-            <option value="views">Просмотры</option>
-          </select>
-        </div>
-      </div>
-      <div id="smm-rubric-winner" style="display:none;background:linear-gradient(135deg,rgba(184,146,58,.12),rgba(184,146,58,.04));border:1px solid rgba(184,146,58,.25);border-radius:14px;padding:20px 24px;margin-bottom:16px;display:none;">
-        <div style="display:flex;align-items:center;justify-content:space-between;">
-          <div style="display:flex;align-items:center;gap:14px;">
-            <div style="font-size:28px;">👑</div>
-            <div>
-              <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(184,146,58,.6);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">Самая эффективная рубрика</div>
-              <div id="smm-winner-name" style="font-family:'DM Sans',sans-serif;font-size:20px;font-weight:700;color:#f0ece6;letter-spacing:-.02em;">—</div>
-            </div>
-          </div>
-          <div id="smm-winner-stats-row" style="display:flex;gap:16px;"></div>
-        </div>
-      </div>
-      <div id="smm-rubric-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px;">
-        <div style="grid-column:1/-1;text-align:center;padding:40px;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.1em;color:rgba(255,255,255,.2);">Рубрики ещё не добавлены</div>
-      </div>
+      <!-- SEC 04: Рубрики — полностью строится через JS -->
+      <div id="dtr-rubric-root"></div>
 
     </div><!-- /dtr-ss-smm -->
 
@@ -36912,125 +36885,131 @@ function setSMMRubricSort(field) {
 }
 
 function renderSMMRubricGrid() {
-  const grid   = g('smm-rubric-grid'); if (!grid) return
-  const winner = g('smm-rubric-winner')
+  const root = g('dtr-rubric-root')
+  if (!root) return
 
-  // Вставляем строку сортировки перед winner-баннером (один раз)
-  if (!g('smm-rubric-sort-bar')) {
-    const bar = document.createElement('div')
-    bar.id = 'smm-rubric-sort-bar'
-    bar.style.cssText = 'display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-bottom:12px;'
-    bar.innerHTML =
-      '<span style="font-family:\'DM Mono\',monospace;font-size:9px;color:rgba(255,255,255,.35);letter-spacing:.08em;text-transform:uppercase;">Сортировка</span>' +
-      '<select id="smm-rubric-sort-select" onchange="setSMMRubricSort(this.value)" style="background:#1a1a1a;border:1px solid #b8923a;border-radius:6px;padding:5px 10px;color:#c9a84c;font-family:\'DM Mono\',monospace;font-size:10px;outline:none;cursor:pointer;">' +
-        '<option value="er">ER %</option>' +
-        '<option value="reach">Охват</option>' +
-        '<option value="views">Просмотры</option>' +
-      '</select>'
-    // Вставить перед winner или перед grid
-    const anchor = winner || grid
-    anchor.parentNode.insertBefore(bar, anchor)
-  }
-  const sel = g('smm-rubric-sort-select')
-  if (sel) sel.value = smmRubricSort
-
+  const fmtFull = n => !n ? '—' : Number(n).toLocaleString('ru-RU')
   const rubs = [...smmData.rubrics].sort((a,b) => (b[smmRubricSort]||0) - (a[smmRubricSort]||0))
+  const best = rubs[0]
 
+  // ── Строим HTML целиком ──
+  let html = ''
+
+  // Заголовок секции
+  html += '<div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;margin-top:40px;">'
+  html +=   '<span style="font-family:\'DM Mono\',monospace;font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.08em;">04</span>'
+  html +=   '<span style="font-family:\'DM Sans\',sans-serif;font-size:16px;font-weight:500;color:#f0ece6;letter-spacing:-.01em;">Рубрики контента</span>'
+  html +=   '<div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.1),transparent);"></div>'
+  html +=   '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">'
+  html +=     '<span style="font-family:\'DM Mono\',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.06em;text-transform:uppercase;">Сортировка</span>'
+  html +=     '<select id="smm-rubric-sort-select" style="background:#1a1a1a;border:1px solid #b8923a;border-radius:6px;padding:5px 10px;color:#c9a84c;font-family:\'DM Mono\',monospace;font-size:10px;outline:none;cursor:pointer;">'
+  html +=       '<option value="er"' + (smmRubricSort==='er' ? ' selected' : '') + '>ER %</option>'
+  html +=       '<option value="reach"' + (smmRubricSort==='reach' ? ' selected' : '') + '>Охват</option>'
+  html +=       '<option value="views"' + (smmRubricSort==='views' ? ' selected' : '') + '>Просмотры</option>'
+  html +=     '</select>'
+  html +=   '</div>'
+  html += '</div>'
+
+  // Пусто
   if (!rubs.length) {
-    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px;font-family:\'DM Mono\',monospace;font-size:12px;letter-spacing:.1em;color:var(--smm-muted);">Добавьте рубрики во вкладке «Данные»</div>'
-    if (winner) winner.style.display = 'none'
+    html += '<div style="text-align:center;padding:48px;font-family:\'DM Mono\',monospace;font-size:12px;letter-spacing:.1em;color:rgba(255,255,255,.2);">Добавьте рубрики во вкладке «Данные»</div>'
+    root.innerHTML = html
     return
   }
 
-  const best     = rubs[0]
-  const maxER    = Math.max(...rubs.map(r => r.er    || 0), .01)
-  const maxReach = Math.max(...rubs.map(r => r.reach || 0), 1)
-  const maxViews = Math.max(...rubs.map(r => r.views || 0), 1)
-  const fmtFull  = n => !n ? '—' : Number(n).toLocaleString('ru-RU')
+  // Winner banner
+  if (best && best.er > 0) {
+    const stats = [
+      { val: best.er.toFixed(1) + '%', lbl: 'ER',         color: '#fbbf24' },
+      { val: fmtFull(best.reach),       lbl: 'Охват',      color: '#34d399' },
+      { val: fmtFull(best.views),       lbl: 'Просмотры',  color: '#a5b4fc' },
+      { val: best.posts || '—',          lbl: 'Постов',     color: 'rgba(255,255,255,.6)' },
+    ].filter(s => s.val && s.val !== '—')
 
-  // ── Winner hero banner ──
-  if (winner && best.er > 0) {
-    winner.style.display = 'flex'
-    if (g('smm-winner-name')) g('smm-winner-name').textContent = best.name
+    html += '<div style="background:linear-gradient(135deg,rgba(184,146,58,.1),rgba(184,146,58,.03));border:1px solid rgba(184,146,58,.25);border-radius:14px;padding:18px 22px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;">'
+    html +=   '<div style="display:flex;align-items:center;gap:14px;">'
+    html +=     '<div style="font-size:26px;">👑</div>'
+    html +=     '<div>'
+    html +=       '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:rgba(184,146,58,.55);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;">Самая эффективная рубрика</div>'
+    html +=       '<div style="font-family:\'DM Sans\',sans-serif;font-size:18px;font-weight:700;color:#f0ece6;letter-spacing:-.02em;">' + esc(best.name) + '</div>'
+    html +=     '</div>'
+    html +=   '</div>'
+    html +=   '<div style="display:flex;gap:12px;flex-wrap:wrap;">'
+    stats.forEach(function(s) {
+      html += '<div style="text-align:center;background:rgba(255,255,255,.04);border-radius:8px;padding:8px 14px;">'
+      html +=   '<div style="font-family:\'DM Mono\',monospace;font-size:14px;font-weight:700;color:' + s.color + ';line-height:1;">' + s.val + '</div>'
+      html +=   '<div style="font-family:\'DM Mono\',monospace;font-size:8px;color:rgba(255,255,255,.3);letter-spacing:.08em;text-transform:uppercase;margin-top:3px;">' + s.lbl + '</div>'
+      html += '</div>'
+    })
+    html +=   '</div>'
+    html += '</div>'
+  }
 
-    const statsRow = g('smm-winner-stats-row')
-    if (statsRow) {
-      const stats = [
-        { val: best.er.toFixed(1) + '%', lbl: 'ER', color: '#fbbf24' },
-        { val: fmtFull(best.reach),      lbl: 'Охват', color: '#34d399' },
-        { val: fmtFull(best.views),      lbl: 'Просмотры', color: '#a5b4fc' },
-        { val: best.posts || '—',         lbl: 'Постов', color: 'rgba(255,255,255,.6)' },
-      ].filter(s => s.val && s.val !== '—')
-      statsRow.innerHTML = stats.map(s => `
-        <div class="rb-winner-stat">
-          <div class="rb-winner-stat-val" style="color:${s.color};">${s.val}</div>
-          <div class="rb-winner-stat-lbl">${s.lbl}</div>
-        </div>`).join('')
-    }
-  } else if (winner) { winner.style.display = 'none' }
+  // Карточки
+  const maxER    = Math.max.apply(null, rubs.map(function(r){ return r.er    || 0 }).concat([.01]))
+  const maxReach = Math.max.apply(null, rubs.map(function(r){ return r.reach || 0 }).concat([1]))
+  const maxViews = Math.max.apply(null, rubs.map(function(r){ return r.views || 0 }).concat([1]))
 
-  // ── Cards ──
-  grid.innerHTML = rubs.map((r, i) => {
-    const pal    = SMM_PALETTES[i % SMM_PALETTES.length]
-    const isWin  = best && r.name === best.name && best.er > 0
-    const erPct  = maxER    > 0 ? (r.er    / maxER    * 100).toFixed(1) : 0
-    const rePct  = maxReach > 0 ? (r.reach / maxReach * 100).toFixed(1) : 0
-    const viPct  = maxViews > 0 ? ((r.views || 0) / maxViews * 100).toFixed(1) : 0
+  const palettes = [
+    { a: '#c9a84c' }, { a: '#3ecf8e' }, { a: '#a78bfa' },
+    { a: '#38b2ac' }, { a: '#f472b6' }, { a: '#fbbf24' },
+    { a: '#60a5fa' }, { a: '#fb923c' }, { a: '#e879f9' }
+  ]
 
+  html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px;">'
+  rubs.forEach(function(r, i) {
+    const pal   = palettes[i % palettes.length]
+    const isWin = best && r.name === best.name && best.er > 0
+    const col   = isWin ? '#5dcaa5' : pal.a
+    const erPct = maxER    > 0 ? (r.er    / maxER    * 100).toFixed(1) : 0
+    const rePct = maxReach > 0 ? (r.reach / maxReach * 100).toFixed(1) : 0
+    const viPct = maxViews > 0 ? ((r.views||0) / maxViews * 100).toFixed(1) : 0
+
+    html += '<div style="background:#111;border:1px solid rgba(255,255,255,.08);border-top:2px solid ' + col + ';border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;">'
+
+    // Header
+    html += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">'
+    html +=   '<div>'
+    html +=     '<div style="font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:.1em;color:rgba(255,255,255,.3);text-transform:uppercase;margin-bottom:5px;">' + (isWin ? '👑 ЛУЧШАЯ РУБРИКА' : 'РУБРИКА') + '</div>'
+    html +=     '<div style="font-family:\'DM Sans\',sans-serif;font-size:14px;font-weight:600;color:#f0ece6;letter-spacing:-.01em;">' + esc(r.name) + '</div>'
+    html +=   '</div>'
+    html +=   '<div style="text-align:right;flex-shrink:0;">'
+    html +=     '<div style="font-family:\'DM Sans\',sans-serif;font-size:20px;font-weight:700;color:' + col + ';line-height:1;">' + (r.posts || 0) + '</div>'
+    html +=     '<div style="font-family:\'DM Mono\',monospace;font-size:8px;color:rgba(255,255,255,.3);letter-spacing:.06em;margin-top:2px;">ПОСТОВ</div>'
+    html +=   '</div>'
+    html += '</div>'
+
+    // Divider
+    html += '<div style="height:1px;background:rgba(255,255,255,.06);"></div>'
+
+    // Metrics
     const metrics = [
-      { name: 'Engagement Rate', val: r.er ? r.er.toFixed(1) + '%' : '—', pct: erPct, color: pal.a },
-      { name: 'Охват',           val: fmtFull(r.reach),                   pct: rePct, color: '#34d399' },
-      { name: 'Просмотры',       val: fmtFull(r.views),                   pct: viPct, color: 'rgba(255,255,255,.4)' },
+      { lbl: 'ER', val: r.er ? r.er.toFixed(2) + '%' : '—', pct: erPct, color: col },
+      { lbl: 'Охват', val: fmtFull(r.reach), pct: rePct, color: '#34d399' },
+      { lbl: 'Просмотры', val: fmtFull(r.views), pct: viPct, color: '#a5b4fc' },
     ]
+    html += '<div style="display:flex;flex-direction:column;gap:9px;">'
+    metrics.forEach(function(mt) {
+      html += '<div>'
+      html +=   '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">'
+      html +=     '<span style="font-family:\'DM Mono\',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.07em;text-transform:uppercase;">' + mt.lbl + '</span>'
+      html +=     '<span style="font-family:\'DM Mono\',monospace;font-size:12px;font-weight:600;color:' + mt.color + ';">' + mt.val + '</span>'
+      html +=   '</div>'
+      html +=   '<div style="height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;">'
+      html +=     '<div style="height:3px;width:' + mt.pct + '%;background:' + mt.color + ';border-radius:2px;transition:width .6s ease;"></div>'
+      html +=   '</div>'
+      html += '</div>'
+    })
+    html += '</div>'
 
-    return `<div style="
-      background:#111111;
-      border:0.5px solid rgba(255,255,255,.1);
-      border-top:2px solid ${isWin ? '#5DCAA5' : pal.a};
-      border-radius:12px;
-      overflow:hidden;
-      padding:18px 20px;
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-      transition:background .15s;
-    " onmouseover="this.style.background='#171717'" onmouseout="this.style.background='#111111'">
+    html += '</div>' // card
+  })
+  html += '</div>' // grid
 
-      <!-- Header -->
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
-        <div>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;color:rgba(240,236,230,.3);text-transform:uppercase;margin-bottom:5px;">
-            ${isWin ? '👑 ЛУЧШАЯ РУБРИКА' : 'РУБРИКА'}
-          </div>
-          <div style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;color:#f0ece6;letter-spacing:-.01em;text-transform:uppercase;">
-            ${esc(r.name)}
-          </div>
-        </div>
-        <div style="text-align:right;flex-shrink:0;">
-          <div style="font-family:'DM Sans',sans-serif;font-size:22px;font-weight:500;color:${isWin ? '#5DCAA5' : pal.a};line-height:1;">${r.posts || 0}</div>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(240,236,230,.3);letter-spacing:.06em;margin-top:2px;">ПОСТОВ</div>
-        </div>
-      </div>
-
-      <!-- Divider -->
-      <div style="height:0.5px;background:rgba(255,255,255,.08);"></div>
-
-      <!-- Metrics -->
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        ${metrics.map(m => `
-          <div>
-            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
-              <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.07em;color:rgba(240,236,230,.35);text-transform:uppercase;">${m.name}</span>
-              <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:${m.color === 'rgba(255,255,255,.4)' ? 'rgba(240,236,230,.6)' : m.color};">${m.val}</span>
-            </div>
-            <div style="height:3px;background:rgba(255,255,255,.06);border-radius:1px;">
-              <div style="height:3px;width:${m.pct}%;background:${m.color === 'rgba(255,255,255,.4)' ? 'rgba(240,236,230,.3)' : m.color};border-radius:1px;transition:width .6s ease;"></div>
-            </div>
-          </div>`).join('')}
-      </div>
-    </div>`
-  }).join('')
+  root.innerHTML = html
 }
+
+
 
 function renderReelsInputList() {
   const list = g('smm-reels-input-list'); if (!list) return
