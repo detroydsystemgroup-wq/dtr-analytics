@@ -30550,55 +30550,54 @@ async function sendTelegramStageNotification(stageIndex, newStatus, note, stageN
   const rec = trackerData.find(s => s.stage_index === stageIndex)
   const name = stageName || (rec && rec.name) || STAGES[stageIndex]?.name || ('Этап ' + (stageIndex + 1))
 
-  // Escape MarkdownV2
   const esc = s => String(s||'').replace(/[_*\[\]()~`>#+\-=|{}.!]/g, '\\$&')
 
-  const total  = trackerData.length || (currentProject?.stage_count) || 9
-  const done   = trackerData.filter(s => s.status === 'completed').length
-  const pct    = total > 0 ? Math.round(done / total * 100) : 0
+  const total   = trackerData.length || (currentProject?.stage_count) || 9
+  const done    = trackerData.filter(s => s.status === 'completed').length
+  const pct     = total > 0 ? Math.round(done / total * 100) : 0
 
-  const now      = new Date()
-  const dateStr  = now.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })
-  const timeStr  = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+  const now     = new Date()
+  const dateStr = now.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })
+  const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
 
   const isCompleted = newStatus === 'completed'
   const isActive    = newStatus === 'active'
 
   const headerEmoji = isCompleted ? '\u{1F389}' : isActive ? '\u{1F680}' : '\u21A9\uFE0F'
-  const statusIcon  = isCompleted ? '\u2705' : isActive ? '\u{1F535}' : '\u23F8'
-  const statusWord  = isCompleted ? 'завершён' : isActive ? 'начат' : 'возвращён в ожидание'
+  const statusLabel = isCompleted ? 'ЭТАП ЗАВЕРШЁН:' : isActive ? 'ЭТАП НАЧАТ:' : 'ЭТАП ОТЛОЖЕН:'
+  const stageEmoji  = isCompleted ? '\u2705' : isActive ? '\u{1F4CC}' : '\u23F8'
 
   let text = ''
 
-  // Заголовок
+  // Заголовок — название проекта жирным
   text += headerEmoji + ' *' + esc(currentProject.name) + '*\n'
   text += '\n'
 
-  // Статус этапа
-  text += statusIcon + ' Этап *' + statusWord + '*\n'
-  text += '\u{1F4CC} ' + esc(name) + '\n'
+  // Статус + название этапа
+  text += '*' + esc(statusLabel) + '*\n'
+  text += stageEmoji + ' ' + esc(name) + '\n'
   text += '\n'
 
   // Прогресс
   text += '\u{1F4CA} Прогресс: *' + pct + '%* \u2014 ' + done + ' из ' + total + ' этапов\n'
-  text += '\n'
 
-  // Заметка
+  // Заметка в цитате
   if (note) {
-    text += '\u{1F4AC} _' + esc(note) + '_\n'
     text += '\n'
+    text += '> \u{1F4AC} _' + esc(note) + '_\n'
   }
 
   // Ссылка
   if (link && /^https?:\/\//i.test(link)) {
-    text += '\u{1F517} [Открыть материал](' + link + ')\n'
     text += '\n'
+    text += '\u{1F517} [Открыть материал](' + link + ')\n'
   }
 
-  // Подпись
+  // Дата и подпись
+  text += '\n'
   text += '_' + esc(dateStr) + ', ' + esc(timeStr) + ' \u00B7 DTR Analytics_\n'
   text += '\n'
-  text += 'С уважением, операционный департамент DeTroyd'
+  text += 'С уважением, операционный департамент \- *DeTroyd System Group*'
 
   try {
     await fetch(TG_EDGE_URL, {
