@@ -22154,6 +22154,8 @@ function showPage(id) {
 
 // Безопасный возврат на дашборд — loadProjects async с обработкой ошибки
 function backToDashboard() {
+  // Восстанавливаем агентские элементы (могли быть скрыты при просмотре клиентского портала)
+  if (_isClientCache !== true) document.querySelectorAll('.agency-only').forEach(el => el.style.display = '')
   showPage('page-dashboard')
   loadProjects().catch(e => console.warn('backToDashboard: loadProjects failed:', e))
 }
@@ -22288,6 +22290,9 @@ async function afterLogin() {
   }
 
   // Agency — normal dashboard
+  // Гарантируем, что агентские элементы видимы (могли быть скрыты, если ранее
+  // открывали клиентский портал/предпросмотр — иначе кнопки «застревают» скрытыми)
+  document.querySelectorAll('.agency-only').forEach(el => el.style.display = '')
   showPage('page-dashboard')
   loadProjects()
   // Handle deep link AFTER login flow completes
