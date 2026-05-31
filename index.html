@@ -7981,7 +7981,7 @@ input, select, textarea {
 </style>
 
 <script id="dtr-report-premium-js">
-// ── Add data-tip to KPI cards after runAnalysis ──
+// _isClient доступен через window — объявлен в основном скрипте
 // ── Replace emoji icons with SVG in cb-title ──
 // ── Add tooltips to chart blocks ──
 
@@ -28433,6 +28433,10 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
         <div style="width:5px;height:5px;border-radius:50%;background:var(--smm-green);animation:pulse 2s ease infinite;flex-shrink:0;"></div>
         <span id="header-user-smm" style="font-size:11px;color:rgba(255,255,255,.45);"></span>
       </div>
+      <button class="smm-topbar-btn smm-topbar-ai agency-only" onclick="exportSMMReportPDF()" id="smm-pdf-btn" title="Скачать PDF">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+        PDF
+      </button>
       <button class="smm-topbar-btn smm-topbar-ai agency-only" onclick="runSMMAnalysis()" id="smm-ai-btn">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3"/></svg>
         AI Анализ
@@ -28687,15 +28691,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
         <div id="smm-vs-market"></div>
       </div>
 
-      <!-- Section 03: Контент -->
-      <div class="smm-sec-heading" style="margin-top:36px;">
-        <div class="smm-sec-num">03</div>
-        <div class="smm-sec-title">Опубликованный контент</div>
-        <div class="smm-sec-line"></div>
-      </div>
-      <div class="smm-reels-grid" id="smm-reels-grid">
-        <div style="grid-column:1/-1;text-align:center;padding:48px;font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;color:var(--smm-muted);">Reels ещё не добавлены — перейдите в «Данные»</div>
-      </div>
+      <!-- Section 03: Контент -->\n      <div class="smm-sec-heading" style="margin-top:36px;">\n        <div class="smm-sec-num">03</div>\n        <div class="smm-sec-title">Опубликованный контент</div>\n        <div class="smm-sec-line"></div>\n        <!-- Сортировка Reels -->\n        <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">\n          <span style="font-family:var(--font-mono);font-size:9px;color:var(--smm-muted);letter-spacing:.08em;margin-right:4px;">СОРТИРОВКА</span>\n          <button id="smm-sort-er" onclick="setSMMReelsSort('er',this)" style="font-family:var(--font-mono);font-size:9px;padding:4px 9px;border-radius:5px;border:1px solid var(--smm-accent);background:rgba(184,146,58,.15);color:var(--smm-accent2);cursor:pointer;letter-spacing:.06em;">ER</button>\n          <button id="smm-sort-views" onclick="setSMMReelsSort('views',this)" style="font-family:var(--font-mono);font-size:9px;padding:4px 9px;border-radius:5px;border:1px solid var(--smm-brd);background:transparent;color:var(--smm-muted);cursor:pointer;letter-spacing:.06em;">Просмотры</button>\n          <button id="smm-sort-reach" onclick="setSMMReelsSort('reach',this)" style="font-family:var(--font-mono);font-size:9px;padding:4px 9px;border-radius:5px;border:1px solid var(--smm-brd);background:transparent;color:var(--smm-muted);cursor:pointer;letter-spacing:.06em;">Охват</button>\n        </div>\n      </div>\n      <div class="smm-reels-grid" id="smm-reels-grid">\n        <div style="grid-column:1/-1;text-align:center;padding:48px;font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;color:var(--smm-muted);">Reels ещё не добавлены — перейдите в «Данные»</div>\n      </div>
 
       <!-- Section 04: Рубрики -->
       <div class="smm-sec-heading" style="margin-top:36px;">
@@ -28941,9 +28937,12 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
     <div class="ps-grid">
       <div class="ps-field full"><label style="color:var(--smm-muted2);">Название рубрики</label><input type="text" id="rb-name" placeholder="Рецепты" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
       <div class="ps-field"><label style="color:var(--smm-muted2);">Публикаций</label><input type="number" id="rb-posts" placeholder="0" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
-      <div class="ps-field"><label style="color:var(--smm-muted2);">Средний ER %</label><input type="number" id="rb-er" step="0.01" placeholder="0.00" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
-      <div class="ps-field"><label style="color:var(--smm-muted2);">Охват</label><input type="number" id="rb-reach" placeholder="0" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
+      <div class="ps-field"><label style="color:var(--smm-muted2);">Охват</label><input type="number" id="rb-reach" placeholder="0" oninput="rbAutoER()" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
+      <div class="ps-field"><label style="color:var(--smm-muted2);">Лайки</label><input type="number" id="rb-likes" placeholder="0" oninput="rbAutoER()" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
+      <div class="ps-field"><label style="color:var(--smm-muted2);">Комментарии</label><input type="number" id="rb-comments" placeholder="0" oninput="rbAutoER()" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
+      <div class="ps-field"><label style="color:var(--smm-muted2);">Сохранения</label><input type="number" id="rb-saves" placeholder="0" oninput="rbAutoER()" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
       <div class="ps-field"><label style="color:var(--smm-muted2);">Просмотры</label><input type="number" id="rb-views" placeholder="0" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
+      <div class="ps-field"><label style="color:var(--smm-accent2);font-weight:600;">ER % <span style="font-size:9px;color:var(--smm-muted);font-weight:400;">(авто или вручную)</span></label><input type="number" id="rb-er" step="0.01" placeholder="авто" style="background:var(--smm-bg4);border-color:var(--smm-accent);color:var(--smm-accent2);font-weight:600;"></div>
     </div>
     <div class="modal-footer">
       <button class="btn-ghost" onclick="closeModal('modal-rubric')">Отмена</button>
@@ -29837,7 +29836,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
     </div>
     <div class="modal-footer">
       <button class="btn-ghost" onclick="closeModal('modal-smm-create')">Отмена</button>
-      <button class="btn-primary" style="flex:1;" onclick="createSMMReport()">Создать</button>
+      <button class="btn-primary" style="flex:1;" id="smm-create-btn" onclick="createSMMReport()">Создать</button>
     </div>
   </div>
 </div>
@@ -30198,7 +30197,7 @@ let editingStageIndex = null
 let selectedStageStatus = 'pending'
 let trackerChannel = null
 let _isClientCache = null
-let _isClient = false
+var _isClient = false
 
 // ══════════════════════════════════════════════
 // UTILS
@@ -36369,12 +36368,16 @@ function openCreateSMMReport() {
 
 async function createSMMReport() {
   const period = (g('smm-period-inp').value || '').trim()
-  if (!period) return
+  if (!period) { showToast('Укажи период отчёта', 'warn'); return }
+  if (period.length < 3) { showToast('Период слишком короткий', 'warn'); return }
+  const btn = g('smm-create-btn')
+  if (btn) { btn.disabled = true; btn.textContent = 'Создаю...' }
   const { data, error } = await sb.from('smm_reports').insert({
     project_id: currentProject.id, period_label: period,
     metrics:{}, prev_metrics:{}, goals:{}, reels:[], rubrics:[]
   }).select().single()
-  if (error) { alert(error.message); return }
+  if (btn) { btn.disabled = false; btn.textContent = 'Создать' }
+  if (error) { showToast('Ошибка: ' + error.message, 'error'); return }
   g('smm-period-inp').value = ''
   closeModal('modal-smm-create')
   openSMMReport(data)
@@ -36796,9 +36799,28 @@ function renderVsMarket(bench, m, p) {
   `
 }
 
+let smmReelsSort = 'er' // 'er' | 'views' | 'reach'
+
+function setSMMReelsSort(field, btn) {
+  smmReelsSort = field
+  // Update button styles
+  ;['smm-sort-er','smm-sort-views','smm-sort-reach'].forEach(id => {
+    const b = g(id); if (!b) return
+    b.style.borderColor = 'var(--smm-brd)'
+    b.style.background = 'transparent'
+    b.style.color = 'var(--smm-muted)'
+  })
+  if (btn) {
+    btn.style.borderColor = 'var(--smm-accent)'
+    btn.style.background = 'rgba(184,146,58,.15)'
+    btn.style.color = 'var(--smm-accent2)'
+  }
+  renderSMMReelsGrid()
+}
+
 function renderSMMReelsGrid() {
   const grid = g('smm-reels-grid'); if (!grid) return
-  const reels = [...smmData.reels].sort((a,b) => b.er - a.er)
+  const reels = [...smmData.reels].sort((a,b) => (b[smmReelsSort]||0) - (a[smmReelsSort]||0))
   if (!reels.length) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px;font-family:\'DM Mono\',monospace;font-size:12px;letter-spacing:.1em;color:var(--smm-muted);">Добавьте Reels во вкладке «Данные»</div>'; return }
 
   // Full numbers — no abbreviation
@@ -37162,11 +37184,34 @@ async function addReel() {
 }
 async function deleteReel(idx) { smmData.reels.splice(idx,1); renderReelsInputList(); await saveSMMData(false) }
 
-function openAddRubric() { openModal('modal-rubric', 'rb-name') }
+function openAddRubric() {
+  ;['rb-name','rb-posts','rb-er','rb-reach','rb-views','rb-likes','rb-comments','rb-saves'].forEach(id => setVal(id,''))
+  openModal('modal-rubric', 'rb-name')
+}
+
+function rbAutoER() {
+  const reach = +getVal('rb-reach') || 0
+  const likes = +getVal('rb-likes') || 0
+  const comments = +getVal('rb-comments') || 0
+  const saves = +getVal('rb-saves') || 0
+  if (reach > 0) {
+    const er = ((likes + comments + saves) / reach * 100).toFixed(2)
+    setVal('rb-er', er)
+  }
+}
+
 async function addRubric() {
   const name=getVal('rb-name'); if(!name) return
-  smmData.rubrics.push({ name, posts:+getVal('rb-posts')||0, er:+getVal('rb-er')||0, reach:+getVal('rb-reach')||0, views:+getVal('rb-views')||0 })
-  ;['rb-name','rb-posts','rb-er','rb-reach','rb-views'].forEach(id=>setVal(id,''))
+  const reach = +getVal('rb-reach')||0
+  const likes = +getVal('rb-likes')||0
+  const comments = +getVal('rb-comments')||0
+  const saves = +getVal('rb-saves')||0
+  // ER: авто если есть охват и хотя бы одна реакция, иначе ручное поле
+  const autoER = reach > 0 ? +((likes+comments+saves)/reach*100).toFixed(2) : null
+  const manualER = +getVal('rb-er')||0
+  const finalER = autoER !== null ? autoER : manualER
+  smmData.rubrics.push({ name, posts:+getVal('rb-posts')||0, er:finalER, reach, views:+getVal('rb-views')||0, likes, comments, saves })
+  ;['rb-name','rb-posts','rb-er','rb-reach','rb-views','rb-likes','rb-comments','rb-saves'].forEach(id=>setVal(id,''))
   closeModal('modal-rubric'); renderRubricsInputList(); await saveSMMData(false)
 }
 async function deleteRubric(idx) { smmData.rubrics.splice(idx,1); renderRubricsInputList(); await saveSMMData(false) }
@@ -37186,7 +37231,8 @@ async function runSMMAnalysis() {
   const zoneText = k => { const z = getSMMZone(m[k], bench[k]); return getSMMZoneLabel(z) || '—' }
   const normText = k => bench[k] ? `норма ${bench[k].y[0]}–${bench[k].g}%` : ''
 
-  const prompt=`Ты — старший SMM-аналитик агентства DeTroyd для кафе и ресторанов. Пиши конкретно, без воды.
+  const projectNiche = currentProject.category ? `в нише «${currentProject.category}»` : ''
+  const prompt=`Ты — старший SMM-аналитик агентства DeTroyd ${projectNiche}. Пиши конкретно, без воды.
 Клиент: ${currentProject.name}. Период: ${currentSMMReport.period_label}.
 
 МЕТРИКИ vs НОРМЫ РЫНКА:
@@ -37242,6 +37288,39 @@ function renderSMMAnalysis(text) {
   }).join('')
   const out=g('smm-ai-output');if(out) out.innerHTML=html
 }
+
+function exportSMMReportPDF() {
+  const btn = g('smm-pdf-btn')
+  if (btn) { btn.disabled = true; btn.textContent = 'Готовлю...' }
+
+  // Переключаемся на вкладку SMM (презентация) для захвата
+  switchSMMTab('smm', document.querySelector('.smm-nav-item'))
+
+  const el = g('ss-smm')
+  if (!el) { if (btn) { btn.disabled = false; btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg> PDF' }; return }
+
+  const clientName = (currentProject?.name || 'SMM').replace(/[^а-яёА-ЯЁa-zA-Z0-9 _-]/g, '')
+  const period = (currentSMMReport?.period_label || '').replace(/[^а-яёА-ЯЁa-zA-Z0-9 _-]/g, '')
+  const filename = `SMM_${clientName}_${period}.pdf`.replace(/\s+/g, '_')
+
+  const opt = {
+    margin: [10, 10, 10, 10],
+    filename,
+    image: { type: 'jpeg', quality: 0.95 },
+    html2canvas: { scale: 2, useCORS: true, logging: false, backgroundColor: '#080808' },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+  }
+
+  html2pdf().set(opt).from(el).save().then(() => {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg> PDF' }
+    showToast('PDF сохранён: ' + filename, 'success')
+  }).catch(err => {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg> PDF' }
+    showToast('Ошибка PDF: ' + err.message, 'error')
+  })
+}
+
 
 // ══════════════════════════════════════════════
 // MODALS
