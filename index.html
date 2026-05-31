@@ -17096,11 +17096,6 @@ html body main.cc-main.smm-fullscreen {
   overflow-y: auto !important;
 }
 /* Модалки Reel и Рубрики должны работать поверх fullscreen */
-#modal-reel,
-#modal-rubric {
-  z-index: 99999 !important;
-  position: fixed !important;
-}
 </style>
 <meta charset="UTF-8">
 <meta name="build" content="dtr-v31052026-1117">
@@ -20410,10 +20405,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
     <div style="height:60px;"></div>
   </div><!-- /body -->
 
-</div><!-- /page-smm -->
-</div>
-
-<!-- MODAL: Add Reel -->
+  <!-- MODAL: Add Reel -->
 <div class="modal-overlay" id="modal-reel">
   <div class="modal" style="max-width:560px;background:var(--smm-bg3);border-color:var(--smm-brd2);">
     <div class="modal-title" style="font-family:var(--bebas);font-size:24px;letter-spacing:.04em;color:var(--smm-text);">Добавить Reel</div>
@@ -20498,6 +20490,9 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
       <button class="btn-primary" style="flex:1;background:var(--smm-accent);" onclick="addRubric()">Добавить</button>
     </div>
   </div>
+</div>
+
+</div><!-- /page-smm -->
 </div>
 
 <!-- ═══════════════════════════════════════════
@@ -28980,8 +28975,6 @@ function exportSMMReportPDF() {
 function openModal(id, focusId) {
   const m = g(id)
   if (!m) return
-  // Teleport to body to avoid overflow/stacking-context issues in fullscreen
-  if (m.parentNode !== document.body) document.body.appendChild(m)
   m.classList.add('open')
   if (focusId) {
     const el = g(focusId)
