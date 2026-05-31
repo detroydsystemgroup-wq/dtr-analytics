@@ -28691,7 +28691,27 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
         <div id="smm-vs-market"></div>
       </div>
 
-      <!-- Section 03: Контент -->\n      <div class="smm-sec-heading" style="margin-top:36px;">\n        <div class="smm-sec-num">03</div>\n        <div class="smm-sec-title">Опубликованный контент</div>\n        <div class="smm-sec-line"></div>\n        <!-- Сортировка Reels -->\n        <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">\n          <span style="font-family:var(--font-mono);font-size:9px;color:var(--smm-muted);letter-spacing:.08em;margin-right:4px;">СОРТИРОВКА</span>\n          <button id="smm-sort-er" onclick="setSMMReelsSort('er',this)" style="font-family:var(--font-mono);font-size:9px;padding:4px 9px;border-radius:5px;border:1px solid var(--smm-accent);background:rgba(184,146,58,.15);color:var(--smm-accent2);cursor:pointer;letter-spacing:.06em;">ER</button>\n          <button id="smm-sort-views" onclick="setSMMReelsSort('views',this)" style="font-family:var(--font-mono);font-size:9px;padding:4px 9px;border-radius:5px;border:1px solid var(--smm-brd);background:transparent;color:var(--smm-muted);cursor:pointer;letter-spacing:.06em;">Просмотры</button>\n          <button id="smm-sort-reach" onclick="setSMMReelsSort('reach',this)" style="font-family:var(--font-mono);font-size:9px;padding:4px 9px;border-radius:5px;border:1px solid var(--smm-brd);background:transparent;color:var(--smm-muted);cursor:pointer;letter-spacing:.06em;">Охват</button>\n        </div>\n      </div>\n      <div class="smm-reels-grid" id="smm-reels-grid">\n        <div style="grid-column:1/-1;text-align:center;padding:48px;font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;color:var(--smm-muted);">Reels ещё не добавлены — перейдите в «Данные»</div>\n      </div>
+      <!-- Section 03: Контент -->
+      <div class="smm-sec-heading" style="margin-top:36px;">
+        <div class="smm-sec-num">03</div>
+        <div class="smm-sec-title">Опубликованный контент</div>
+        <div class="smm-sec-line"></div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+          <span style="font-family:var(--font-mono);font-size:9px;color:var(--smm-muted);letter-spacing:.08em;">СОРТИРОВКА</span>
+          <select id="smm-sort-select" onchange="setSMMReelsSort(this.value)" style="background:var(--smm-bg4);border:1px solid var(--smm-accent);border-radius:6px;padding:5px 10px;color:var(--smm-accent2);font-family:var(--font-mono);font-size:10px;outline:none;cursor:pointer;">
+            <option value="er">ER %</option>
+            <option value="views">Просмотры</option>
+            <option value="reach">Охват</option>
+            <option value="tr">TR %</option>
+            <option value="cr">CR %</option>
+            <option value="shr">SHR %</option>
+            <option value="sr">SR %</option>
+          </select>
+        </div>
+      </div>
+      <div class="smm-reels-grid" id="smm-reels-grid">
+        <div style="grid-column:1/-1;text-align:center;padding:48px;font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;color:var(--smm-muted);">Reels ещё не добавлены — перейдите в «Данные»</div>
+      </div>
 
       <!-- Section 04: Рубрики -->
       <div class="smm-sec-heading" style="margin-top:36px;">
@@ -36801,20 +36821,11 @@ function renderVsMarket(bench, m, p) {
 
 let smmReelsSort = 'er' // 'er' | 'views' | 'reach'
 
-function setSMMReelsSort(field, btn) {
+function setSMMReelsSort(field) {
   smmReelsSort = field
-  // Update button styles
-  ;['smm-sort-er','smm-sort-views','smm-sort-reach'].forEach(id => {
-    const b = g(id); if (!b) return
-    b.style.borderColor = 'var(--smm-brd)'
-    b.style.background = 'transparent'
-    b.style.color = 'var(--smm-muted)'
-  })
-  if (btn) {
-    btn.style.borderColor = 'var(--smm-accent)'
-    btn.style.background = 'rgba(184,146,58,.15)'
-    btn.style.color = 'var(--smm-accent2)'
-  }
+  // Sync select value in case called programmatically
+  const sel = g('smm-sort-select')
+  if (sel && sel.value !== field) sel.value = field
   renderSMMReelsGrid()
 }
 
@@ -37176,9 +37187,13 @@ async function addReel() {
   const views=+getVal('rl-views')||0, reach=+getVal('rl-reach')||views
   const likes=+getVal('rl-likes')||0, comments=+getVal('rl-comments')||0
   const saves=+getVal('rl-saves')||0, shares=+getVal('rl-shares')||0
-  const er = reach>0 ? +((likes+comments+saves)/reach*100).toFixed(2) : 0
+  const er  = reach>0 ? +((likes+comments+saves)/reach*100).toFixed(2) : 0
+  const tr  = reach>0 ? +(comments/reach*100).toFixed(2) : 0
+  const cr  = reach>0 ? +(saves/reach*100).toFixed(2) : 0
+  const shr = reach>0 ? +(shares/reach*100).toFixed(2) : 0
+  const sr  = reach>0 ? +(saves/reach*100).toFixed(2) : 0
   const cover = getVal('rl-cover') || ''
-  smmData.reels.push({ link:getVal('rl-link'), cover, title:getVal('rl-title'), views, reach, likes, comments, saves, shares, er })
+  smmData.reels.push({ link:getVal('rl-link'), cover, title:getVal('rl-title'), views, reach, likes, comments, saves, shares, er, tr, cr, shr, sr })
   ;['rl-link','rl-cover','rl-title','rl-views','rl-reach','rl-likes','rl-comments','rl-saves','rl-shares'].forEach(id=>setVal(id,''))
   closeModal('modal-reel'); renderReelsInputList(); await saveSMMData(false)
 }
