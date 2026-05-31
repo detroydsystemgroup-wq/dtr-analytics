@@ -38643,7 +38643,12 @@ async function loadOverview() {
   });
   // Задачи возвращённые из done в waiting
   // Возвраты задач — точный счёт через returned_count
-  var reworkTasksCount = allTasks.reduce(function(s, t){ return s + (t.returned_count || 0); }, 0);
+  // Фоллбэк: done_at есть но done=false и kanban_status=waiting = возврат
+  var reworkTasksCount = allTasks.reduce(function(s, t) {
+    if (t.returned_count > 0) return s + t.returned_count;
+    if (t.done_at && !t.done && t.kanban_status === 'waiting') return s + 1;
+    return s;
+  }, 0);
   var reworkCount = reworkStages.length + reworkTasksCount;
 
   // ─────────────────────────────
@@ -44695,9 +44700,14 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
       return byAssignee && (h.event === 'Завершён' || h.event === 'completed');
     }).length;
 
-    // Возвраты задач (done→waiting) через returned_count
+    // Возвраты задач (done→waiting):
+    // 1. Точный счёт через returned_count (если колонка есть)
+    // 2. Фоллбэк: задача имеет done_at но done=false — значит была возвращена
     var taskReturns = myTasks.reduce(function(s, t) {
-      return s + (t.returned_count || 0);
+      if (t.returned_count > 0) return s + t.returned_count;
+      // Фоллбэк: есть done_at но задача не выполнена = вернули
+      if (t.done_at && !t.done && t.kanban_status === 'waiting') return s + 1;
+      return s;
     }, 0);
 
     var returns = stageReturns + taskReturns;
