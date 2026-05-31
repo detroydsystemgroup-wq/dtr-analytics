@@ -20246,7 +20246,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
         <div style="display:flex;align-items:center;gap:8px;"><span style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.14em;text-transform:uppercase;">Сортировка</span><select id="smm-sort-select" onchange="setSMMReelsSort(this.value)" style="background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.12);border-radius:0;padding:2px 8px 2px 0;color:rgba(255,255,255,.3);font-family:'DM Mono',monospace;font-size:9px;outline:none;cursor:pointer;letter-spacing:.04em;"><option value="er">ER %</option><option value="views">Просмотры</option><option value="reach">Охват</option><option value="tr">TR %</option><option value="cr">CR %</option><option value="shr">SHR %</option><option value="sr">SR %</option></select></div>
       </div>
 
-      <div style="padding-top:4px;" id="dtr-reels-v1"></div>
+      <div style="padding-top:4px;overflow:hidden;" id="dtr-reels-v1"></div>
 
       <div style="display:flex;align-items:baseline;gap:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:0;margin-top:72px;">
         <span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.18);letter-spacing:.12em;flex-shrink:0;">04</span>
@@ -20255,7 +20255,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
         <div style="display:flex;align-items:center;gap:8px;"><span style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.14em;text-transform:uppercase;">Сортировка</span><select id="smm-rubric-sort-select" onchange="setSMMRubricSort(this.value)" style="background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.12);border-radius:0;padding:2px 8px 2px 0;color:rgba(255,255,255,.3);font-family:'DM Mono',monospace;font-size:9px;outline:none;cursor:pointer;letter-spacing:.04em;"><option value="er">ER %</option><option value="reach">Охват</option><option value="views">Просмотры</option></select></div>
       </div>
 
-      <div style="padding-top:4px;" id="dtr-rub-v9"></div>
+      <div style="padding-top:4px;overflow:hidden;" id="dtr-rub-v9"></div>
 
     </div>
     </div><!-- /dtr-ss-smm -->
@@ -28475,12 +28475,12 @@ function renderSMMReelsGrid() {
   var html = ''
 
   // TABLE HEADER
-  html += '<div style="display:grid;grid-template-columns:28px 1fr'+visibleCols.map(function(){ return ' 12%' }).join('')+';gap:0;border-bottom:1px solid rgba(255,255,255,.06);padding:8px 0;">'
+  html += '<div style="display:grid;grid-template-columns:28px 1fr'+visibleCols.map(function(){ return ' minmax(0,11%)' }).join('')+';gap:0;border-bottom:1px solid rgba(255,255,255,.06);padding:8px 0 8px 0;overflow:hidden;">'
   html += '<div></div>'
   html += '<div style="font-family:\'DM Mono\',monospace;font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.14em;text-transform:uppercase;padding-left:8px;">Название</div>'
   visibleCols.forEach(function(c) {
     var isActive = c.f === smmReelsSort
-    html += '<div style="text-align:right;font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:'+(isActive?'rgba(255,255,255,.5)':'rgba(255,255,255,.18)')+';padding-right:0;">'+(isActive?'<span style="color:#b8923a;">'+c.l+'</span>':c.l)+'</div>'
+    html += '<div style="text-align:right;font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:'+(isActive?'rgba(255,255,255,.5)':'rgba(255,255,255,.18)')+';padding-right:4px;">'+(isActive?'<span style="color:#b8923a;">'+c.l+'</span>':c.l)+'</div>'
   })
   html += '</div>'
 
@@ -28499,7 +28499,7 @@ function renderSMMReelsGrid() {
     var rowOpen = linkHref
       ? '<a href="'+linkHref+'" target="_blank" rel="noopener" style="'
       : '<div style="'
-    var rowStyle = 'display:grid;grid-template-columns:28px 1fr'+visibleCols.map(function(){ return ' 12%' }).join('')+';gap:0;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.04);background:'+rowBg+';align-items:center;'+(linkHref?'cursor:pointer;text-decoration:none;':'')+(isTop?'border-left:2px solid #b8923a;padding-left:0;':'border-left:2px solid transparent;')+'"'
+    var rowStyle = 'display:grid;grid-template-columns:28px 1fr'+visibleCols.map(function(){ return ' minmax(0,11%)' }).join('')+';gap:0;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.04);overflow:hidden;background:'+rowBg+';align-items:center;'+(linkHref?'cursor:pointer;text-decoration:none;':'')+(isTop?'border-left:2px solid #b8923a;padding-left:0;':'border-left:2px solid transparent;')+'"'
     var rowClose = linkHref ? '</a>' : '</div>'
 
     html += rowOpen + rowStyle + '>'
@@ -28522,7 +28522,7 @@ function renderSMMReelsGrid() {
       var pct = maxVals[c.f]>0 ? val/maxVals[c.f]*100 : 0
       var isActive = c.f === smmReelsSort
       var display = fmtPct(c.f, r)
-      html += '<div style="text-align:right;padding-right:0;">'
+      html += '<div style="text-align:right;padding-right:4px;">'
       html += '<div style="font-family:\'DM Mono\',monospace;font-size:'+(isActive?'12':'11')+'px;font-weight:'+(isActive?'600':'400')+';color:'+(isActive?'rgba(240,236,230,.9)':'rgba(240,236,230,.38)')+';font-variant-numeric:tabular-nums;margin-bottom:4px;">'+display+'</div>'
       html += '<div style="height:1px;background:rgba(255,255,255,.05);position:relative;">'
       html += '<div style="position:absolute;top:0;right:0;height:100%;width:'+pct.toFixed(1)+'%;background:'+(isActive?'#b8923a':'rgba(255,255,255,.2)')+';transition:width .8s;"></div>'
@@ -28566,7 +28566,7 @@ function renderSMMRubricGrid() {
   var html = ''
 
   // TABLE HEADER
-  var RUB_GRID = '28px 1fr 10% 14% 14% 6%'
+  var RUB_GRID = '28px 1fr 10% 13% 13% 8%'
   var COL_MONO = 'font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;'
   html += '<div style="display:grid;grid-template-columns:'+RUB_GRID+';gap:0;border-bottom:1px solid rgba(255,255,255,.06);padding:8px 0;">'
   html += '<div></div>'
@@ -28616,7 +28616,7 @@ function renderSMMRubricGrid() {
     html += '</div>'
 
     // Posts
-    html += '<div style="text-align:right;">'
+    html += '<div style="text-align:right;padding-right:4px;">'
     html += '<div style="font-family:\'DM Mono\',monospace;font-size:11px;color:rgba(240,236,230,.25);font-variant-numeric:tabular-nums;">'+(r.posts||'—')+'</div>'
     html += '</div>'
 
