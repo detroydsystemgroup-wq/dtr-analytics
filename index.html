@@ -44340,32 +44340,87 @@ function renderProfitSplitCards(netProfit) {
   var cfg = _profitSplitConfig || PROFIT_SPLIT_DEFAULTS;
   var isPositive = netProfit > 0;
 
-  wrap.innerHTML = cfg.map(function(item) {
+  wrap.innerHTML = cfg.map(function(item, i) {
     var amount = Math.round(netProfit * item.pct / 100);
     var amtStr = formatMoney(Math.abs(amount));
     var sign   = amount >= 0 ? '+' : '-';
     var amtColor = isPositive ? item.color : 'var(--red)';
 
+    // Аватарка — фото или инициал/emoji
+    var avatarInner = item.avatar_url
+      ? '<img src="' + item.avatar_url + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px;display:block;">'
+      : '<span style="font-size:' + (item.key === 'charity' ? '22' : '18') + 'px;line-height:1;">' + item.emoji + '</span>';
+
+    var avatarEl = '<div onclick="openProfitAvatarUpload(' + i + ')" title="Изменить фото" style="width:48px;height:48px;border-radius:12px;background:' + item.color + '18;border:1.5px solid ' + item.color + '33;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;flex-shrink:0;position:relative;transition:opacity .18s;" onmouseover="this.style.opacity=.75" onmouseout="this.style.opacity=1">' +
+      avatarInner +
+      '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);border-radius:10px;opacity:0;transition:opacity .18s;font-size:14px;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0">📷</div>' +
+    '</div>';
+
     return '<div style="background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:20px 22px;position:relative;overflow:hidden;">' +
-      // Фоновый акцент
       '<div style="position:absolute;top:0;left:0;right:0;height:3px;background:' + item.color + ';opacity:.7;border-radius:16px 16px 0 0;"></div>' +
-      // Иконка + доля
-      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">' +
-        '<div style="font-size:22px;">' + item.emoji + '</div>' +
-        '<div style="font-family:var(--font-mono);font-size:13px;color:' + item.color + ';background:' + item.color + '15;border:1px solid ' + item.color + '30;border-radius:8px;padding:4px 10px;">' + item.pct + '%</div>' +
+      '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:10px;">' +
+        avatarEl +
+        '<div style="font-family:var(--font-mono);font-size:13px;color:' + item.color + ';background:' + item.color + '15;border:1px solid ' + item.color + '30;border-radius:8px;padding:4px 10px;flex-shrink:0;">' + item.pct + '%</div>' +
       '</div>' +
-      // Имя
-      '<div style="font-size:13px;color:rgba(255,255,255,.6);margin-bottom:6px;letter-spacing:.01em;">' + item.label + '</div>' +
-      // Сумма
+      '<div style="font-size:13px;color:rgba(255,255,255,.6);margin-bottom:6px;">' + item.label + '</div>' +
       '<div style="font-family:var(--font-mono);font-size:20px;color:' + amtColor + ';letter-spacing:-.01em;line-height:1.2;">' +
         (isPositive ? sign : '') + amtStr + ' сум' +
       '</div>' +
-      // Полоска
       '<div style="margin-top:14px;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;">' +
         '<div style="width:' + item.pct + '%;height:100%;background:' + item.color + ';border-radius:2px;opacity:.8;"></div>' +
       '</div>' +
     '</div>';
   }).join('');
+
+  // Скрытый input для загрузки файла
+  if (!document.getElementById('ps-avatar-file-input')) {
+    var inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = 'image/*';
+    inp.id = 'ps-avatar-file-input';
+    inp.style.display = 'none';
+    inp.onchange = function(){ handleProfitAvatarUpload(this); };
+    document.body.appendChild(inp);
+  }
+}
+
+var _profitAvatarIdx = null;
+
+function openProfitAvatarUpload(idx) {
+  _profitAvatarIdx = idx;
+  var inp = document.getElementById('ps-avatar-file-input');
+  if (inp) { inp.value = ''; inp.click(); }
+}
+
+async function handleProfitAvatarUpload(input) {
+  var file = input.files[0];
+  if (!file || _profitAvatarIdx === null) return;
+  if (file.size > 2 * 1024 * 1024) { alert('Максимум 2MB'); return; }
+
+  var ext = file.name.split('.').pop();
+  var path = 'profit-split/' + currentUser.id + '/' + _profitAvatarIdx + '.' + ext;
+
+  var { data, error } = await sb.storage.from('reel-covers').upload(path, file, { upsert: true });
+  if (error) { alert('Ошибка загрузки: ' + error.message); return; }
+
+  var { data: urlData } = sb.storage.from('reel-covers').getPublicUrl(path);
+  var url = urlData.publicUrl + '?t=' + Date.now(); // cache bust
+
+  var cfg = _profitSplitConfig || PROFIT_SPLIT_DEFAULTS;
+  cfg[_profitAvatarIdx].avatar_url = url;
+  _profitSplitConfig = cfg;
+
+  // Сохранить
+  try {
+    await sb.from('agency_settings').upsert({
+      agency_id: currentUser.id, key: 'profit_split', value: JSON.stringify(cfg)
+    }, { onConflict: 'agency_id,key' });
+  } catch(e) {
+    localStorage.setItem('profit_split_' + currentUser.id, JSON.stringify(cfg));
+  }
+
+  // Перерендерить
+  var profitEl = document.getElementById('bi-profit');
+  if (profitEl && profitEl.dataset.raw) renderProfitSplitCards(parseInt(profitEl.dataset.raw));
 }
 
 function openProfitSplitSettings() {
