@@ -27898,6 +27898,8 @@ async function cp2LoadActivity(project, limit, containerId) {
   if (!el) return;
 
   var lim = limit || 5;
+  // Грузим с запасом — финальная обрезка до lim будет после объединения и сортировки
+  var fetchLim = Math.max(lim * 4, 20);
 
   // Имена этапов + список stage_index проекта (для имён и fallback по задачам с NULL project_id)
   var stageNamesRes = await sb.from('project_stages').select('stage_index,name').eq('project_id', project.id);
@@ -27914,16 +27916,16 @@ async function cp2LoadActivity(project, limit, containerId) {
         .or('project_id.eq.' + project.id + ',project_id.is.null')
         .in('stage_index', stageIdxList)
         .order('updated_at', {ascending:false})
-        .limit(lim)
+        .limit(fetchLim)
     : sb.from('stage_tasks').select('id,title,done,priority,stage_index,created_at,updated_at')
         .eq('project_id', project.id)
         .order('updated_at', {ascending:false})
-        .limit(lim);
+        .limit(fetchLim);
 
   var historyQuery = sb.from('stage_history').select('event,stage_index,note,created_at')
         .eq('project_id', project.id)
         .order('created_at', {ascending:false})
-        .limit(lim);
+        .limit(fetchLim);
 
   var tasksRes, histRes;
   try {
