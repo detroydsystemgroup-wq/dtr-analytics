@@ -36895,131 +36895,139 @@ function setSMMRubricSort(field) {
 }
 
 function renderSMMRubricGrid() {
-  const root = g('dtr-rub-v9')
+  var root = g('dtr-rub-v9')
   if (!root) return
 
-  const fmtFull = n => !n ? '—' : Number(n).toLocaleString('ru-RU')
-  const rubs = [...smmData.rubrics].sort((a,b) => (b[smmRubricSort]||0) - (a[smmRubricSort]||0))
-  const best = rubs[0]
+  var fmtFull = function(n) { return !n ? '—' : Number(n).toLocaleString('ru-RU') }
+  var rubs = smmData.rubrics.slice().sort(function(a,b){ return (b[smmRubricSort]||0) - (a[smmRubricSort]||0) })
+  var best = rubs[0]
 
-  // ── Строим HTML целиком ──
-  let html = ''
+  var sortCfg = {
+    er:    { label: 'ER %',      color: '#fbbf24', crown: 'Лучший ER' },
+    reach: { label: 'Охват',     color: '#34d399', crown: 'Макс. охват' },
+    views: { label: 'Просмотры', color: '#a5b4fc', crown: 'Макс. просмотры' }
+  }
+  var cfg = sortCfg[smmRubricSort] || sortCfg.er
 
-  // Заголовок секции
+  var html = ''
+
+  // Заголовок
   html += '<div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;margin-top:40px;">'
-  html +=   '<span style="font-family:\'DM Mono\',monospace;font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.08em;">04</span>'
-  html +=   '<span style="font-family:\'DM Sans\',sans-serif;font-size:16px;font-weight:500;color:#f0ece6;letter-spacing:-.01em;">Рубрики контента</span>'
-  html +=   '<div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.1),transparent);"></div>'
-  html +=   '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">'
-  html +=     '<span style="font-family:\'DM Mono\',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.06em;text-transform:uppercase;">Сортировка</span>'
-  html +=     '<select id="smm-rubric-sort-select" style="background:#1a1a1a;border:1px solid #b8923a;border-radius:6px;padding:5px 10px;color:#c9a84c;font-family:\'DM Mono\',monospace;font-size:10px;outline:none;cursor:pointer;">'
-  html +=       '<option value="er"' + (smmRubricSort==='er' ? ' selected' : '') + '>ER %</option>'
-  html +=       '<option value="reach"' + (smmRubricSort==='reach' ? ' selected' : '') + '>Охват</option>'
-  html +=       '<option value="views"' + (smmRubricSort==='views' ? ' selected' : '') + '>Просмотры</option>'
-  html +=     '</select>'
-  html +=   '</div>'
-  html += '</div>'
+  html += '<span style="font-family:DM Mono,monospace;font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.08em;">04</span>'
+  html += '<span style="font-family:DM Sans,sans-serif;font-size:16px;font-weight:500;color:#f0ece6;">Рубрики контента</span>'
+  html += '<div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.1),transparent);"></div>'
+  html += '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">'
+  html += '<span style="font-family:DM Mono,monospace;font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.06em;">Сортировка</span>'
+  html += '<select id="smm-rubric-sort-select" style="background:#1a1a1a;border:1px solid #b8923a;border-radius:6px;padding:5px 10px;color:#c9a84c;font-family:DM Mono,monospace;font-size:10px;outline:none;cursor:pointer;">'
+  html += '<option value="er"'    + (smmRubricSort==='er'    ? ' selected' : '') + '>ER %</option>'
+  html += '<option value="reach"' + (smmRubricSort==='reach' ? ' selected' : '') + '>Охват</option>'
+  html += '<option value="views"' + (smmRubricSort==='views' ? ' selected' : '') + '>Просмотры</option>'
+  html += '</select></div></div>'
 
-  // Пусто
   if (!rubs.length) {
-    html += '<div style="text-align:center;padding:48px;font-family:\'DM Mono\',monospace;font-size:12px;letter-spacing:.1em;color:rgba(255,255,255,.2);">Добавьте рубрики во вкладке «Данные»</div>'
+    html += '<div style="text-align:center;padding:48px;font-family:DM Mono,monospace;font-size:12px;color:rgba(255,255,255,.2);">Добавьте рубрики во вкладке «Данные»</div>'
     root.innerHTML = html
     return
   }
 
   // Winner banner
-  if (best && best.er > 0) {
-    const stats = [
-      { val: best.er.toFixed(1) + '%', lbl: 'ER',         color: '#fbbf24' },
-      { val: fmtFull(best.reach),       lbl: 'Охват',      color: '#34d399' },
-      { val: fmtFull(best.views),       lbl: 'Просмотры',  color: '#a5b4fc' },
-      { val: best.posts || '—',          lbl: 'Постов',     color: 'rgba(255,255,255,.6)' },
-    ].filter(s => s.val && s.val !== '—')
-
-    html += '<div style="background:linear-gradient(135deg,rgba(184,146,58,.1),rgba(184,146,58,.03));border:1px solid rgba(184,146,58,.25);border-radius:14px;padding:18px 22px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;">'
-    html +=   '<div style="display:flex;align-items:center;gap:14px;">'
-    html +=     '<div style="font-size:26px;">👑</div>'
-    html +=     '<div>'
-    html +=       '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:rgba(184,146,58,.55);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;">Самая эффективная рубрика</div>'
-    html +=       '<div style="font-family:\'DM Sans\',sans-serif;font-size:18px;font-weight:700;color:#f0ece6;letter-spacing:-.02em;">' + esc(best.name) + '</div>'
-    html +=     '</div>'
-    html +=   '</div>'
-    html +=   '<div style="display:flex;gap:12px;flex-wrap:wrap;">'
-    stats.forEach(function(s) {
-      html += '<div style="text-align:center;background:rgba(255,255,255,.04);border-radius:8px;padding:8px 14px;">'
-      html +=   '<div style="font-family:\'DM Mono\',monospace;font-size:14px;font-weight:700;color:' + s.color + ';line-height:1;">' + s.val + '</div>'
-      html +=   '<div style="font-family:\'DM Mono\',monospace;font-size:8px;color:rgba(255,255,255,.3);letter-spacing:.08em;text-transform:uppercase;margin-top:3px;">' + s.lbl + '</div>'
+  var winVal = best[smmRubricSort] || 0
+  if (winVal > 0) {
+    var winDisplay = smmRubricSort === 'er' ? best.er.toFixed(2)+'%' : fmtFull(winVal)
+    html += '<div style="position:relative;overflow:hidden;background:linear-gradient(135deg,'+cfg.color+'18,'+cfg.color+'04);border:2px solid '+cfg.color+'55;border-radius:16px;padding:20px 24px;margin-bottom:20px;">'
+    html += '<div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,'+cfg.color+','+cfg.color+'44,transparent);"></div>'
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;">'
+    html += '<div style="display:flex;align-items:center;gap:16px;">'
+    html += '<div style="width:52px;height:52px;border-radius:12px;background:'+cfg.color+'20;border:1px solid '+cfg.color+'44;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">👑</div>'
+    html += '<div>'
+    html += '<div style="font-family:DM Mono,monospace;font-size:9px;color:'+cfg.color+';letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px;opacity:.8;">👑 '+cfg.crown+'</div>'
+    html += '<div style="font-family:DM Sans,sans-serif;font-size:22px;font-weight:800;color:#f0ece6;letter-spacing:-.03em;line-height:1;">'+esc(best.name)+'</div>'
+    html += '</div></div>'
+    html += '<div style="text-align:right;flex-shrink:0;">'
+    html += '<div style="font-family:DM Mono,monospace;font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;margin-bottom:4px;">'+cfg.label+'</div>'
+    html += '<div style="font-family:DM Sans,sans-serif;font-size:40px;font-weight:900;color:'+cfg.color+';letter-spacing:-.05em;line-height:1;">'+winDisplay+'</div>'
+    html += '</div></div>'
+    // Доп. метрики
+    var extras = []
+    if (best.er)    extras.push({ lbl:'ER',        val:best.er.toFixed(2)+'%',  c:'#fbbf24', f:'er'    })
+    if (best.reach) extras.push({ lbl:'Охват',      val:fmtFull(best.reach),     c:'#34d399', f:'reach' })
+    if (best.views) extras.push({ lbl:'Просмотры',  val:fmtFull(best.views),     c:'#a5b4fc', f:'views' })
+    if (best.posts) extras.push({ lbl:'Постов',     val:String(best.posts),      c:'rgba(255,255,255,.5)', f:'' })
+    if (extras.length > 1) {
+      html += '<div style="display:flex;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07);">'
+      extras.forEach(function(e) {
+        var active = e.f === smmRubricSort
+        html += '<div style="padding:6px 12px;border-radius:7px;background:'+(active?e.c+'22':'rgba(255,255,255,.04)')+';border:1px solid '+(active?e.c+'55':'rgba(255,255,255,.06)')+';min-width:60px;">'
+        html += '<div style="font-family:DM Mono,monospace;font-size:13px;font-weight:700;color:'+(active?e.c:'rgba(255,255,255,.55)')+';line-height:1;">'+e.val+'</div>'
+        html += '<div style="font-family:DM Mono,monospace;font-size:8px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em;margin-top:3px;">'+e.lbl+'</div>'
+        html += '</div>'
+      })
       html += '</div>'
-    })
-    html +=   '</div>'
+    }
     html += '</div>'
   }
 
   // Карточки
-  const maxER    = Math.max.apply(null, rubs.map(function(r){ return r.er    || 0 }).concat([.01]))
-  const maxReach = Math.max.apply(null, rubs.map(function(r){ return r.reach || 0 }).concat([1]))
-  const maxViews = Math.max.apply(null, rubs.map(function(r){ return r.views || 0 }).concat([1]))
-
-  const palettes = [
-    { a: '#c9a84c' }, { a: '#3ecf8e' }, { a: '#a78bfa' },
-    { a: '#38b2ac' }, { a: '#f472b6' }, { a: '#fbbf24' },
-    { a: '#60a5fa' }, { a: '#fb923c' }, { a: '#e879f9' }
-  ]
+  var maxER    = Math.max.apply(null, rubs.map(function(r){ return r.er    ||0 }).concat([.01]))
+  var maxReach = Math.max.apply(null, rubs.map(function(r){ return r.reach ||0 }).concat([1]))
+  var maxViews = Math.max.apply(null, rubs.map(function(r){ return r.views ||0 }).concat([1]))
+  var pals = ['#c9a84c','#3ecf8e','#a78bfa','#38b2ac','#f472b6','#fbbf24','#60a5fa','#fb923c','#e879f9']
 
   html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px;">'
   rubs.forEach(function(r, i) {
-    const pal   = palettes[i % palettes.length]
-    const isWin = best && r.name === best.name && best.er > 0
-    const col   = isWin ? '#5dcaa5' : pal.a
-    const erPct = maxER    > 0 ? (r.er    / maxER    * 100).toFixed(1) : 0
-    const rePct = maxReach > 0 ? (r.reach / maxReach * 100).toFixed(1) : 0
-    const viPct = maxViews > 0 ? ((r.views||0) / maxViews * 100).toFixed(1) : 0
+    var isWin = best && r.name === best.name && winVal > 0
+    var col   = isWin ? cfg.color : pals[i % pals.length]
+    var erPct = maxER    > 0 ? (r.er    /maxER    *100).toFixed(1) : 0
+    var rePct = maxReach > 0 ? (r.reach /maxReach *100).toFixed(1) : 0
+    var viPct = maxViews > 0 ? ((r.views||0)/maxViews*100).toFixed(1) : 0
 
-    html += '<div style="background:#111;border:1px solid rgba(255,255,255,.08);border-top:2px solid ' + col + ';border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;">'
+    var cardStyle = isWin
+      ? 'background:linear-gradient(145deg,'+col+'14,#0e0e0e 60%);border:2px solid '+col+'66;border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:0 0 28px '+col+'18;'
+      : 'background:#111;border:1px solid rgba(255,255,255,.07);border-top:2px solid '+col+';border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;'
 
-    // Header
+    html += '<div style="'+cardStyle+'">'
+
+    // Победительский badge
+    if (isWin) {
+      html += '<div style="display:inline-flex;align-items:center;gap:5px;background:'+col+'22;border:1px solid '+col+'55;border-radius:6px;padding:3px 9px;align-self:flex-start;">'
+      html += '<span style="font-size:10px;">👑</span><span style="font-family:DM Mono,monospace;font-size:8px;color:'+col+';letter-spacing:.08em;text-transform:uppercase;font-weight:700;">'+cfg.crown+'</span>'
+      html += '</div>'
+    }
+
+    // Шапка карточки
     html += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">'
-    html +=   '<div>'
-    html +=     '<div style="font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:.1em;color:rgba(255,255,255,.3);text-transform:uppercase;margin-bottom:5px;">' + (isWin ? '👑 ЛУЧШАЯ РУБРИКА' : 'РУБРИКА') + '</div>'
-    html +=     '<div style="font-family:\'DM Sans\',sans-serif;font-size:14px;font-weight:600;color:#f0ece6;letter-spacing:-.01em;">' + esc(r.name) + '</div>'
-    html +=   '</div>'
-    html +=   '<div style="text-align:right;flex-shrink:0;">'
-    html +=     '<div style="font-family:\'DM Sans\',sans-serif;font-size:20px;font-weight:700;color:' + col + ';line-height:1;">' + (r.posts || 0) + '</div>'
-    html +=     '<div style="font-family:\'DM Mono\',monospace;font-size:8px;color:rgba(255,255,255,.3);letter-spacing:.06em;margin-top:2px;">ПОСТОВ</div>'
-    html +=   '</div>'
-    html += '</div>'
-
-    // Divider
+    html += '<div style="font-family:DM Sans,sans-serif;font-size:'+(isWin?'16':'14')+'px;font-weight:'+(isWin?'800':'600')+';color:#f0ece6;letter-spacing:-.01em;">'+esc(r.name)+'</div>'
+    html += '<div style="text-align:right;flex-shrink:0;">'
+    html += '<div style="font-family:DM Sans,sans-serif;font-size:20px;font-weight:700;color:'+col+';line-height:1;">'+(r.posts||0)+'</div>'
+    html += '<div style="font-family:DM Mono,monospace;font-size:8px;color:rgba(255,255,255,.25);letter-spacing:.06em;">ПОСТОВ</div>'
+    html += '</div></div>'
     html += '<div style="height:1px;background:rgba(255,255,255,.06);"></div>'
 
-    // Metrics
-    const metrics = [
-      { lbl: 'ER', val: r.er ? r.er.toFixed(2) + '%' : '—', pct: erPct, color: col },
-      { lbl: 'Охват', val: fmtFull(r.reach), pct: rePct, color: '#34d399' },
-      { lbl: 'Просмотры', val: fmtFull(r.views), pct: viPct, color: '#a5b4fc' },
+    // Метрики — активная крупнее и подсвечена
+    var metrics = [
+      { lbl:'ER',        val:r.er    ? r.er.toFixed(2)+'%' : '—', pct:erPct, c:'#fbbf24', f:'er'    },
+      { lbl:'Охват',     val:fmtFull(r.reach),                     pct:rePct, c:'#34d399', f:'reach' },
+      { lbl:'Просмотры', val:fmtFull(r.views),                     pct:viPct, c:'#a5b4fc', f:'views' },
     ]
-    html += '<div style="display:flex;flex-direction:column;gap:9px;">'
+    html += '<div style="display:flex;flex-direction:column;gap:8px;">'
     metrics.forEach(function(mt) {
-      html += '<div>'
-      html +=   '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">'
-      html +=     '<span style="font-family:\'DM Mono\',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.07em;text-transform:uppercase;">' + mt.lbl + '</span>'
-      html +=     '<span style="font-family:\'DM Mono\',monospace;font-size:12px;font-weight:600;color:' + mt.color + ';">' + mt.val + '</span>'
-      html +=   '</div>'
-      html +=   '<div style="height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;">'
-      html +=     '<div style="height:3px;width:' + mt.pct + '%;background:' + mt.color + ';border-radius:2px;transition:width .6s ease;"></div>'
-      html +=   '</div>'
+      var active = mt.f === smmRubricSort
+      html += '<div style="'+(active?'background:'+mt.c+'0f;border-radius:6px;padding:5px 7px;margin:-1px -3px;':'')+'">'
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">'
+      html += '<span style="font-family:DM Mono,monospace;font-size:9px;color:'+(active?mt.c:'rgba(255,255,255,.3)')+';letter-spacing:.07em;text-transform:uppercase;font-weight:'+(active?'700':'400')+';'+(active?'':'')+'">'+mt.lbl+(active?' ★':'')+'</span>'
+      html += '<span style="font-family:DM Mono,monospace;font-size:'+(active?'14':'12')+'px;font-weight:'+(active?'800':'500')+';color:'+(active?mt.c:'rgba(255,255,255,.4)')+';">'+mt.val+'</span>'
       html += '</div>'
+      html += '<div style="height:'+(active?'4':'2')+'px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;">'
+      html += '<div style="height:100%;width:'+mt.pct+'%;background:'+(active?mt.c:'rgba(255,255,255,.12)')+';border-radius:2px;transition:width .6s;"></div>'
+      html += '</div></div>'
     })
-    html += '</div>'
-
-    html += '</div>' // card
+    html += '</div></div>'
   })
-  html += '</div>' // grid
+  html += '</div>'
 
   root.innerHTML = html
-  var sortSel = g('smm-rubric-sort-select')
-  if (sortSel) sortSel.addEventListener('change', function() { setSMMRubricSort(this.value) })
 }
+
 
 
 
