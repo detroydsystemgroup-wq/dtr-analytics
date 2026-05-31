@@ -17076,6 +17076,13 @@ button, a, [role="button"],
 #page-smm.active {
   width: 100% !important;
 }
+
+/* FORCE: SMM full width */
+html body .cc-main.smm-fullscreen,
+html body main.cc-main.smm-fullscreen {
+  padding: 0 !important;
+  max-width: none !important;
+}
 </style>
 <meta charset="UTF-8">
 <meta name="build" content="dtr-v31052026-1117">
@@ -22690,7 +22697,11 @@ function renderSMMLb() {
 // Smart back navigation: client → page-client, agency → page-project
 function goBackToProject() {
   var mainEl = document.querySelector('.cc-main')
-  if (mainEl) mainEl.classList.remove('smm-fullscreen')
+  if (mainEl) {
+    mainEl.classList.remove('smm-fullscreen')
+    mainEl.style.removeProperty('padding')
+    mainEl.style.removeProperty('max-width')
+  }
   window.location.hash = ''
   if (_isClientCache === true) {
     showPage('page-client')
@@ -28064,7 +28075,12 @@ function openSMMReport(report) {
   showPage('page-smm')
   dtrSMMTab('smm', g('dtr-stab-smm'))
   var mainEl = document.querySelector('.cc-main')
-  if (mainEl) mainEl.classList.add('smm-fullscreen')
+  if (mainEl) {
+    mainEl.classList.add('smm-fullscreen')
+    mainEl.setAttribute('style', mainEl.getAttribute('style') || '')
+    mainEl.style.setProperty('padding', '0', 'important')
+    mainEl.style.setProperty('max-width', 'none', 'important')
+  }
   renderSMMPresentation()
   if (!isClient) fillSMMDataForm()
 
