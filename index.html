@@ -19442,12 +19442,6 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
           <div id="ct-bench-client" style="margin-top:6px;overflow-x:auto;"></div>
         </div>
 
-        <!-- methodology -->
-        <div style="margin-top:8px;padding:16px 18px;background:rgba(255,255,255,.02);border:1px solid var(--brd);border-radius:var(--r-lg);">
-          <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--txt2);margin-bottom:10px;">КАК ЭТО СЧИТАЕТСЯ (ЧЕСТНО)</div>
-          <div id="ct-method" style="font-family:var(--font-body);font-size:12px;line-height:1.7;color:var(--txt2);"></div>
-        </div>
-
       </div>
     </div>
 
@@ -31346,7 +31340,6 @@ async function loadCycleTime() {
   _ctRenderAging(agingRows);
   _ctRenderTrend(trend);
   _ctRenderClients(clientRows);
-  _ctRenderMethod(_ctData);
 
   // бейдж на вкладке = число застрявших
   var badge = g('dtab-badge-ct');
