@@ -35255,7 +35255,7 @@ function openEditStage(i) {
   const sel = g('stage-assignee-inp')
   if (sel) {
     sel.innerHTML = '<option value="">— Не назначен —</option>'
-    sb.from('team_members').select('id,name,role').eq('agency_id', currentUser.id).order('name')
+    sb.from('team_members').select('id,name,role,color,avatar_url').eq('agency_id', currentUser.id).order('name')
       .then(function(res) {
         var members = res.data || []
         members.forEach(function(m) {
@@ -37587,9 +37587,30 @@ function showSQLHint() {
 
 <!-- MODAL: Project Settings -->
 <div class="modal-overlay" id="modal-team-member">
-  <div class="modal" style="max-width:400px;">
+  <div class="modal" style="max-width:420px;">
     <div class="modal-title" id="team-member-modal-title">Добавить участника</div>
-    <div class="field"><label>Имя</label><input type="text" id="tm-name-inp" placeholder="Иван Иванов"></div>
+
+    <!-- Аватарка -->
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;padding:14px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;">
+      <div id="tm-avatar-preview" onclick="document.getElementById('tm-photo-file').click()" title="Загрузить фото"
+        style="width:56px;height:56px;border-radius:50%;background:#b8923a22;border:2px solid #b8923a44;display:flex;align-items:center;justify-content:center;font-size:22px;color:#b8923a;cursor:pointer;overflow:hidden;flex-shrink:0;transition:opacity .2s;"
+        onmouseover="this.style.opacity='.75'" onmouseout="this.style.opacity='1'">
+        <span id="tm-avatar-letter">?</span>
+      </div>
+      <div style="flex:1;">
+        <button onclick="document.getElementById('tm-photo-file').click()"
+          style="background:rgba(184,146,58,.08);border:1px solid rgba(184,146,58,.2);border-radius:8px;padding:7px 14px;font-family:var(--font-mono);font-size:10px;color:var(--a3);cursor:pointer;letter-spacing:.06em;transition:all .18s;"
+          onmouseover="this.style.background='rgba(184,146,58,.18)'" onmouseout="this.style.background='rgba(184,146,58,.08)'">
+          📷 Загрузить фото
+        </button>
+        <div id="tm-photo-status" style="font-size:10px;color:var(--txt3);margin-top:5px;font-family:var(--font-mono);">PNG, JPG · до 2MB</div>
+      </div>
+      <button id="tm-photo-remove" onclick="tmRemovePhoto()" style="display:none;background:rgba(224,82,82,.08);border:1px solid rgba(224,82,82,.2);border-radius:8px;padding:6px 10px;font-size:11px;color:var(--red);cursor:pointer;" title="Удалить фото">✕</button>
+    </div>
+    <input type="file" id="tm-photo-file" accept="image/*" style="display:none" onchange="tmHandlePhoto(this)">
+    <input type="hidden" id="tm-photo-url" value="">
+
+    <div class="field"><label>Имя</label><input type="text" id="tm-name-inp" placeholder="Иван Иванов" oninput="tmUpdateAvatarLetter()"></div>
     <div class="field"><label>Роль</label><input type="text" id="tm-role-inp" placeholder="SMM-менеджер, дизайнер..."></div>
     <div class="field"><label>Цвет</label>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;" id="tm-color-wrap">
@@ -37605,7 +37626,7 @@ function showSQLHint() {
     <input type="hidden" id="tm-id-val" value="">
     <div class="modal-footer">
       <button class="btn-ghost" onclick="closeModal('modal-team-member')">Отмена</button>
-      <button class="btn-primary" style="flex:1;" onclick="saveTeamMember()">Сохранить</button>
+      <button class="btn-primary" style="flex:1;" id="tm-save-btn" onclick="saveTeamMember()">Сохранить</button>
     </div>
   </div>
 </div>
@@ -38740,7 +38761,7 @@ async function loadOverview() {
   // RENDER: Workload by team members (v2 — 3 columns)
   var wEl2 = document.getElementById('sv-workload-v2');
   if (wEl2) {
-    sb.from('team_members').select('id,name,color').eq('agency_id', currentUser.id).order('name')
+    sb.from('team_members').select('id,name,color,avatar_url').eq('agency_id', currentUser.id).order('name')
       .then(function(mRes) {
         var members = mRes.data || [];
         if (!members.length) {
@@ -38805,7 +38826,9 @@ async function loadOverview() {
               return '<div style="display:grid;grid-template-columns:200px 1fr 1fr 1fr;border-top:1px solid rgba(255,255,255,.06);">' +
                 // Имя
                 '<div style="display:flex;align-items:center;gap:10px;padding:14px 20px;">' +
-                  '<div style="width:32px;height:32px;border-radius:50%;background:' + r.m.color + '18;border:1.5px solid ' + r.m.color + '44;display:flex;align-items:center;justify-content:center;font-size:12px;color:' + r.m.color + ';flex-shrink:0;">' + r.m.name[0].toUpperCase() + '</div>' +
+                  (r.m.avatar_url
+                  ? '<div style="width:32px;height:32px;border-radius:50%;overflow:hidden;border:1.5px solid ' + r.m.color + '44;flex-shrink:0;"><img src="' + r.m.avatar_url + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+                  : '<div style="width:32px;height:32px;border-radius:50%;background:' + r.m.color + '18;border:1.5px solid ' + r.m.color + '44;display:flex;align-items:center;justify-content:center;font-size:12px;color:' + r.m.color + ';flex-shrink:0;">' + r.m.name[0].toUpperCase() + '</div>') +
                   '<div>' +
                     '<div style="font-size:13px;color:var(--txt);">' + r.m.name + '</div>' +
                     '<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);margin-top:2px;">' + r.total + ' этапов</div>' +
@@ -44021,25 +44044,121 @@ function tmSetColor(c) {
   document.querySelectorAll('#tm-color-wrap div').forEach(function(d) {
     d.style.border = d.dataset.color === c ? '2px solid white' : '2px solid transparent';
   });
+  // Обновить цвет в превью аватарки
+  var prev = document.getElementById('tm-avatar-preview');
+  if (prev) {
+    prev.style.background = c + '22';
+    prev.style.borderColor = c + '44';
+    var span = prev.querySelector('span');
+    if (span) span.style.color = c;
+  }
 }
 
 function openAddTeamMember(member) {
   document.getElementById('tm-name-inp').value = member ? member.name : '';
   document.getElementById('tm-role-inp').value = member ? (member.role || '') : '';
   document.getElementById('tm-id-val').value = member ? member.id : '';
+  document.getElementById('tm-photo-url').value = member ? (member.avatar_url || '') : '';
   document.getElementById('team-member-modal-title').textContent = member ? 'Редактировать' : 'Добавить участника';
   tmSetColor(member ? (member.color || '#b8923a') : '#b8923a');
+  // Аватарка превью
+  var prev = document.getElementById('tm-avatar-preview');
+  var letter = document.getElementById('tm-avatar-letter');
+  var removeBtn = document.getElementById('tm-photo-remove');
+  var status = document.getElementById('tm-photo-status');
+  var color = member ? (member.color || '#b8923a') : '#b8923a';
+  if (member && member.avatar_url) {
+    prev.innerHTML = '<img src="' + member.avatar_url + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+    if (removeBtn) removeBtn.style.display = 'block';
+    if (status) status.textContent = 'Фото загружено';
+  } else {
+    var initials = member ? member.name[0].toUpperCase() : '?';
+    prev.innerHTML = '<span id="tm-avatar-letter" style="font-size:22px;color:' + color + ';">' + initials + '</span>';
+    if (removeBtn) removeBtn.style.display = 'none';
+    if (status) status.textContent = 'PNG, JPG · до 2MB';
+  }
+  document.getElementById('tm-photo-file').value = '';
   openModal('modal-team-member');
   setTimeout(function(){ document.getElementById('tm-name-inp').focus(); }, 80);
 }
 
+function tmUpdateAvatarLetter() {
+  var nameVal = document.getElementById('tm-name-inp').value;
+  var photoUrl = document.getElementById('tm-photo-url').value;
+  if (photoUrl) return; // если фото есть — не перезаписываем
+  var prev = document.getElementById('tm-avatar-preview');
+  var color = document.getElementById('tm-color-val').value || '#b8923a';
+  prev.innerHTML = '<span style="font-size:22px;color:' + color + ';">' + (nameVal ? nameVal[0].toUpperCase() : '?') + '</span>';
+}
+
+async function tmHandlePhoto(input) {
+  var file = input.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) {
+    alert('Файл слишком большой. Максимум 2MB.');
+    return;
+  }
+  var status = document.getElementById('tm-photo-status');
+  var saveBtn = document.getElementById('tm-save-btn');
+  if (status) status.textContent = 'Загружаю...';
+  if (saveBtn) saveBtn.disabled = true;
+
+  var ext = file.name.split('.').pop();
+  var memberId = document.getElementById('tm-id-val').value || ('new_' + Date.now());
+  var path = 'team/' + currentUser.id + '/' + memberId + '.' + ext;
+
+  var { data, error } = await sb.storage.from('avatars').upload(path, file, { upsert: true });
+  if (error) {
+    // Попробуем bucket 'team-avatars' если 'avatars' не существует
+    var r2 = await sb.storage.from('team-avatars').upload(path, file, { upsert: true });
+    if (r2.error) {
+      if (status) status.textContent = 'Ошибка: ' + (r2.error.message || 'нет bucket');
+      if (saveBtn) saveBtn.disabled = false;
+      // Показываем инструкцию
+      if (status) status.innerHTML = '<span style="color:var(--amber);">Создай bucket <b>avatars</b> в Supabase Storage → Public</span>';
+      return;
+    }
+    data = r2.data;
+    var bucket = 'team-avatars';
+  } else {
+    var bucket = 'avatars';
+  }
+
+  var { data: urlData } = sb.storage.from(bucket).getPublicUrl(path);
+  var publicUrl = urlData.publicUrl;
+  document.getElementById('tm-photo-url').value = publicUrl;
+
+  // Превью
+  var prev = document.getElementById('tm-avatar-preview');
+  prev.innerHTML = '<img src="' + publicUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+  var removeBtn = document.getElementById('tm-photo-remove');
+  if (removeBtn) removeBtn.style.display = 'block';
+  if (status) status.textContent = 'Фото загружено ✓';
+  if (saveBtn) saveBtn.disabled = false;
+}
+
+function tmRemovePhoto() {
+  document.getElementById('tm-photo-url').value = '';
+  document.getElementById('tm-photo-file').value = '';
+  var prev = document.getElementById('tm-avatar-preview');
+  var nameVal = document.getElementById('tm-name-inp').value;
+  var color = document.getElementById('tm-color-val').value || '#b8923a';
+  prev.innerHTML = '<span style="font-size:22px;color:' + color + ';">' + (nameVal ? nameVal[0].toUpperCase() : '?') + '</span>';
+  var removeBtn = document.getElementById('tm-photo-remove');
+  if (removeBtn) removeBtn.style.display = 'none';
+  var status = document.getElementById('tm-photo-status');
+  if (status) status.textContent = 'PNG, JPG · до 2MB';
+}
+
+/* SQL (если нет колонки): ALTER TABLE team_members ADD COLUMN IF NOT EXISTS avatar_url text; */
 async function saveTeamMember() {
   var name = document.getElementById('tm-name-inp').value.trim();
   var role = document.getElementById('tm-role-inp').value.trim();
   var color = document.getElementById('tm-color-val').value || '#b8923a';
   var id = document.getElementById('tm-id-val').value;
+  var avatarUrl = document.getElementById('tm-photo-url').value.trim();
   if (!name) return;
-  var payload = { name: name, role: role, color: color, agency_id: currentUser.id };
+  var payload = { name: name, role: role, color: color, agency_id: currentUser.id, avatar_url: avatarUrl || null };
   if (id) {
     await sb.from('team_members').update(payload).eq('id', id);
   } else {
@@ -44075,8 +44194,11 @@ async function loadTeamPanel() {
   } else {
     listEl.innerHTML = members.map(function(m) {
       var assigned = stages.filter(function(s){ return s.assignee_id === m.id && s.status !== 'completed'; }).length;
+      var avatarHtml = m.avatar_url
+        ? '<div style="width:32px;height:32px;border-radius:50%;overflow:hidden;border:1.5px solid ' + m.color + '44;flex-shrink:0;"><img src="' + m.avatar_url + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+        : '<div style="width:32px;height:32px;border-radius:50%;background:' + m.color + '22;border:1.5px solid ' + m.color + '44;display:flex;align-items:center;justify-content:center;font-size:13px;color:' + m.color + ';flex-shrink:0;">' + m.name[0] + '</div>';
       return '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg3);border:1px solid var(--brd);border-radius:10px;">' +
-        '<div style="width:32px;height:32px;border-radius:50%;background:' + m.color + '22;border:1.5px solid ' + m.color + '44;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:' + m.color + ';flex-shrink:0;">' + m.name[0] + '</div>' +
+        avatarHtml +
         '<div style="flex:1;min-width:0;">' +
           '<div style="font-size:13px;color:var(--txt);">' + m.name + '</div>' +
           (m.role ? '<div style="font-size:11px;color:var(--txt3);margin-top:1px;">' + m.role + '</div>' : '') +
