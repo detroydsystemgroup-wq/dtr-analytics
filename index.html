@@ -35377,13 +35377,16 @@ async function saveStage() {
   // Log history if status changed
   if (prevStatus !== selectedStageStatus) {
     const eventMap = { active: 'Начат', completed: 'Завершён', pending: 'Возвращён в ожидание' }
+    // Берём assignee_id текущего этапа — кто был ответственен В МОМЕНТ события
+    const _assigneeId = payload.assignee_id || (existing && existing.assignee_id) || null
     await sb.from('stage_history').insert({
       project_id: currentProject.id,
       stage_index: editingStageIndex,
       event: eventMap[selectedStageStatus] || selectedStageStatus,
       old_status: prevStatus || null,
       new_status: selectedStageStatus,
-      note: note || null
+      note: note || null,
+      assignee_id: _assigneeId
     })
   }
 
@@ -44593,15 +44596,15 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
     // Задачи — для velocity и времени выполнения
     // Привязка: задача → stage_index → project_stages.assignee_id
     sb.from('stage_tasks')
-      .select('id,done,kanban_status,created_at,done_at,time_logged,stage_index,project_id')
+      .select('id,done,kanban_status,created_at,updated_at,done_at,time_logged,stage_index,project_id')
       .in('project_id', projFilter),
 
     // История этапов — для коэффициента возвратов
     sb.from('stage_history')
-      .select('stage_index,project_id,event,created_at')
+      .select('stage_index,project_id,event,created_at,assignee_id')
       .in('project_id', projFilter)
       .order('created_at', {ascending: false})
-      .limit(1000)
+      .limit(5000)
   ]);
 
   var stages  = stagesRes.data  || [];
@@ -44609,10 +44612,13 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
   var history = histRes.data    || [];
 
   // Строим карту stage_index+project_id → assignee_id
-  var stageMap = {};
+  var stageMap = {};        // ключ: project_id_stageIndex
+  var stageMapIdx = {};     // фоллбэк: только stage_index (для задач без project_id)
   stages.forEach(function(s) {
     if (s.assignee_id) {
       stageMap[s.project_id + '_' + s.stage_index] = s.assignee_id;
+      // фоллбэк — последний assignee для данного stage_index
+      stageMapIdx[s.stage_index] = s.assignee_id;
     }
   });
 
@@ -44625,7 +44631,10 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
 
     // ── 2. Задачи этого сотрудника (через stage → assignee) ──
     var myTasks = tasks.filter(function(t) {
-      var aid = stageMap[t.project_id + '_' + t.stage_index];
+      // Приоритет: точное совпадение project_id+stage_index
+      // Фоллбэк: только stage_index (для задач со старым NULL project_id)
+      var key = t.project_id ? (t.project_id + '_' + t.stage_index) : null;
+      var aid = (key && stageMap[key]) || (!t.project_id && stageMapIdx[t.stage_index]);
       return aid === m.id;
     });
 
@@ -44636,12 +44645,14 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
     // ── 3. Среднее время выполнения задачи (дни) ──
     // Формула: AVG(done_at - created_at) для завершённых задач с обоими датами
     var timeSamples = doneTasks.filter(function(t){
-      return t.done_at && t.created_at;
+      return (t.done_at || t.updated_at) && t.created_at;
     });
     var avgDays = null;
     if (timeSamples.length > 0) {
       var totalMs = timeSamples.reduce(function(s, t) {
-        return s + (new Date(t.done_at) - new Date(t.created_at));
+        var endDate = t.done_at || t.updated_at;
+        var diff = new Date(endDate) - new Date(t.created_at);
+        return s + (diff > 0 ? diff : 0); // игнорируем отрицательные diff
       }, 0);
       avgDays = totalMs / timeSamples.length / 86400000; // мс → дни
     }
@@ -44653,15 +44664,16 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
       : null;
 
     // ── 5. Velocity: задач закрыто за 7 и 30 дней ──
-    // Формула: COUNT(done_at в диапазоне) / период_дней * 7 или 30
-    var done7  = doneTasks.filter(function(t){ return t.done_at && new Date(t.done_at) >= day7;  }).length;
-    var done30 = doneTasks.filter(function(t){ return t.done_at && new Date(t.done_at) >= day30; }).length;
-
-    // Если done_at нет — фоллбэк на updated_at задач со статусом done
-    if (done30 === 0) {
-      done7  = doneTasks.filter(function(t){ return new Date(t.created_at) >= day7;  }).length;
-      done30 = doneTasks.filter(function(t){ return new Date(t.created_at) >= day30; }).length;
-    }
+    // Формула: COUNT(done_at в диапазоне) — только если done_at есть
+    // Фоллбэк: updated_at (дата последнего изменения) — корректнее чем created_at
+    var done7  = doneTasks.filter(function(t){
+      var d = t.done_at || (t.done ? t.updated_at : null);
+      return d && new Date(d) >= day7;
+    }).length;
+    var done30 = doneTasks.filter(function(t){
+      var d = t.done_at || (t.done ? t.updated_at : null);
+      return d && new Date(d) >= day30;
+    }).length;
 
     // ── 6. Коэффициент возвратов этапов (Rework Rate) ──
     // Формула: возвраты = events 'Возвращён в ожидание' для этапов этого сотрудника
@@ -44670,13 +44682,15 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
     myStages.forEach(function(s){ myStageKeys[s.project_id + '_' + s.stage_index] = true; });
 
     var returns = history.filter(function(h) {
-      return myStageKeys[h.project_id + '_' + h.stage_index] &&
-             (h.event === 'Возвращён в ожидание' || h.event === 'pending');
+      // Если в истории есть assignee_id — используем его (точно)
+      // Иначе фоллбэк на текущее назначение этапа
+      var byAssignee = h.assignee_id ? h.assignee_id === m.id : myStageKeys[h.project_id + '_' + h.stage_index];
+      return byAssignee && (h.event === 'Возвращён в ожидание' || h.event === 'pending');
     }).length;
 
     var completions = history.filter(function(h) {
-      return myStageKeys[h.project_id + '_' + h.stage_index] &&
-             (h.event === 'Завершён' || h.event === 'completed');
+      var byAssignee = h.assignee_id ? h.assignee_id === m.id : myStageKeys[h.project_id + '_' + h.stage_index];
+      return byAssignee && (h.event === 'Завершён' || h.event === 'completed');
     }).length;
 
     var reworkRate = (completions + returns) > 0
@@ -44692,9 +44706,22 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
     var speedScore    = avgDays !== null ? Math.max(0, Math.min(100, Math.round((1 - avgDays/10) * 100))) : null;
     var velocityScore = done30 > 0 ? Math.min(100, Math.round(done30 / 20 * 100)) : null;
     var qualityScore  = reworkRate !== null ? (100 - reworkRate) : null;
-    var effScore      = hasAnyData
-      ? Math.round((speedScore !== null ? speedScore : 50) * 0.40 + (velocityScore || 0) * 0.35 + (qualityScore !== null ? qualityScore : 100) * 0.25)
-      : null;
+
+    // Score: считаем только по доступным компонентам, не занижаем за отсутствие данных
+    var effScore = null;
+    if (hasAnyData) {
+      var scoreComponents = [];
+      if (speedScore    !== null) scoreComponents.push({ val: speedScore,    w: 0.40 });
+      if (velocityScore !== null) scoreComponents.push({ val: velocityScore, w: 0.35 });
+      if (qualityScore  !== null) scoreComponents.push({ val: qualityScore,  w: 0.25 });
+      if (scoreComponents.length > 0) {
+        // Нормируем веса чтобы сумма = 1
+        var totalW = scoreComponents.reduce(function(s,c){ return s + c.w; }, 0);
+        effScore = Math.round(
+          scoreComponents.reduce(function(s,c){ return s + c.val * (c.w / totalW); }, 0)
+        );
+      }
+    }
 
     return {
       m: m,
