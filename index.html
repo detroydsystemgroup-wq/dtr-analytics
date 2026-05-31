@@ -20132,8 +20132,9 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
           <div id="sv-followers-delta" style="margin-top:10px;font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.04em;"></div>
         </div>
         <div style="padding:28px 0 28px 32px;">
-          <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.18em;text-transform:uppercase;margin-bottom:16px;">Охват итого</div>
-          <div id="sv-total-reach-hero" style="font-family:'DM Sans',sans-serif;font-size:52px;font-weight:700;color:rgba(240,236,230,.85);letter-spacing:-.055em;line-height:1;font-variant-numeric:tabular-nums;">—</div>
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.18em;text-transform:uppercase;margin-bottom:16px;">ER %</div>
+          <div id="sv-er-hero" style="font-family:'DM Sans',sans-serif;font-size:52px;font-weight:700;color:rgba(240,236,230,.85);letter-spacing:-.055em;line-height:1;font-variant-numeric:tabular-nums;">—</div>
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.15);text-transform:uppercase;letter-spacing:.12em;margin-top:8px;">вовлечённость</div>
         </div>
       </div>
 
@@ -28229,8 +28230,8 @@ function renderSMMPresentation() {
   if(g('sv-followers-delta')) g('sv-followers-delta').innerHTML = delta(m.followers, p.followers)
   if(g('sv-posts')) g('sv-posts').textContent = totalPubs || '—'
   if(g('sv-total-reach')) g('sv-total-reach').textContent = fmtBig(totalReach)
-  if(g('sv-total-reach-hero')) g('sv-total-reach-hero').textContent = fmtBig(totalReach)
   if(g('sv-total-views')) g('sv-total-views').textContent = fmtBig(totalViews)
+  if(g('sv-er-hero')) g('sv-er-hero').textContent = m.er ? (+m.er).toFixed(2)+'%' : '—'
 
   // ── Reach bars with % ──
   const totalReachFmt = totalReach || 1
