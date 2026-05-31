@@ -26533,6 +26533,22 @@ button, a, [role="button"],
         <div id="sv-workload-v2" style="padding:0;overflow:hidden;border-radius:0 0 12px 12px;"></div>
       </div>
 
+      <!-- Эффективность сотрудников -->
+      <div class="sv-section-block" style="margin:20px 12px 0;">
+        <div class="sv-section-hdr">
+          <div class="sv-section-hdr-left">
+            <div class="sv-section-icon" style="background:rgba(184,146,58,.1);color:#c9a84c;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <div>
+              <div class="sv-section-title">Эффективность сотрудников</div>
+              <div class="sv-section-sub">Скорость · Нагрузка · Возвраты · Velocity</div>
+            </div>
+          </div>
+        </div>
+        <div id="sv-efficiency-body" style="padding:0;overflow:hidden;border-radius:0 0 12px 12px;"></div>
+      </div>
+
       <div style="height:60px;"></div>
     </div>
 
@@ -38889,6 +38905,13 @@ async function loadOverview() {
   }
 
   if (typeof loadSMMLb === 'function') loadSMMLb();
+
+  // Загружаем блок эффективности
+  sb.from('team_members').select('id,name,color,avatar_url').eq('agency_id', currentUser.id).order('name')
+    .then(function(mRes) {
+      var members = mRes.data || [];
+      if (members.length) loadEfficiencyBlock(members, activeProjIds);
+    });
 }
 
 function svRenderProjTable(projData, overdueMap, today, MONTHS) {
@@ -44541,6 +44564,240 @@ function formatMoney(n) {
   return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 }
 
+
+// ═══════════════════════════════════════════════════════════
+// EFFICIENCY BLOCK — Эффективность сотрудников
+// ═══════════════════════════════════════════════════════════
+
+async function loadEfficiencyBlock(members, activeProjectIds) {
+  var el = document.getElementById('sv-efficiency-body');
+  if (!el || !members || !members.length) return;
+
+  el.innerHTML = '<div style="padding:20px;font-size:12px;color:var(--txt3);">Загрузка...</div>';
+
+  var now = new Date();
+  var day7  = new Date(now - 7  * 86400000);
+  var day30 = new Date(now - 30 * 86400000);
+
+  // Загружаем все нужные данные параллельно
+  var projFilter = activeProjectIds.length
+    ? activeProjectIds
+    : ['00000000-0000-0000-0000-000000000000'];
+
+  var [stagesRes, tasksRes, histRes] = await Promise.all([
+    // Этапы с assignee_id — для нагрузки и возвратов этапов
+    sb.from('project_stages')
+      .select('id,assignee_id,status,stage_index,project_id,updated_at')
+      .in('project_id', projFilter),
+
+    // Задачи — для velocity и времени выполнения
+    // Привязка: задача → stage_index → project_stages.assignee_id
+    sb.from('stage_tasks')
+      .select('id,done,kanban_status,created_at,done_at,time_logged,stage_index,project_id')
+      .in('project_id', projFilter),
+
+    // История этапов — для коэффициента возвратов
+    sb.from('stage_history')
+      .select('stage_index,project_id,event,created_at')
+      .in('project_id', projFilter)
+      .order('created_at', {ascending: false})
+      .limit(1000)
+  ]);
+
+  var stages  = stagesRes.data  || [];
+  var tasks   = tasksRes.data   || [];
+  var history = histRes.data    || [];
+
+  // Строим карту stage_index+project_id → assignee_id
+  var stageMap = {};
+  stages.forEach(function(s) {
+    if (s.assignee_id) {
+      stageMap[s.project_id + '_' + s.stage_index] = s.assignee_id;
+    }
+  });
+
+  // Считаем метрики для каждого сотрудника
+  var rows = members.map(function(m) {
+
+    // ── 1. Этапы этого сотрудника ──
+    var myStages = stages.filter(function(s){ return s.assignee_id === m.id; });
+    var completedStages = myStages.filter(function(s){ return s.status === 'completed'; });
+
+    // ── 2. Задачи этого сотрудника (через stage → assignee) ──
+    var myTasks = tasks.filter(function(t) {
+      var aid = stageMap[t.project_id + '_' + t.stage_index];
+      return aid === m.id;
+    });
+
+    var doneTasks = myTasks.filter(function(t){
+      return t.kanban_status === 'done' || t.done === true;
+    });
+
+    // ── 3. Среднее время выполнения задачи (дни) ──
+    // Формула: AVG(done_at - created_at) для завершённых задач с обоими датами
+    var timeSamples = doneTasks.filter(function(t){
+      return t.done_at && t.created_at;
+    });
+    var avgDays = null;
+    if (timeSamples.length > 0) {
+      var totalMs = timeSamples.reduce(function(s, t) {
+        return s + (new Date(t.done_at) - new Date(t.created_at));
+      }, 0);
+      avgDays = totalMs / timeSamples.length / 86400000; // мс → дни
+    }
+
+    // ── 4. Среднее время активной работы (time_logged, минуты) ──
+    var loggedSamples = doneTasks.filter(function(t){ return t.time_logged > 0; });
+    var avgLogged = loggedSamples.length > 0
+      ? loggedSamples.reduce(function(s,t){ return s + t.time_logged; }, 0) / loggedSamples.length
+      : null;
+
+    // ── 5. Velocity: задач закрыто за 7 и 30 дней ──
+    // Формула: COUNT(done_at в диапазоне) / период_дней * 7 или 30
+    var done7  = doneTasks.filter(function(t){ return t.done_at && new Date(t.done_at) >= day7;  }).length;
+    var done30 = doneTasks.filter(function(t){ return t.done_at && new Date(t.done_at) >= day30; }).length;
+
+    // Если done_at нет — фоллбэк на updated_at задач со статусом done
+    if (done30 === 0) {
+      done7  = doneTasks.filter(function(t){ return new Date(t.created_at) >= day7;  }).length;
+      done30 = doneTasks.filter(function(t){ return new Date(t.created_at) >= day30; }).length;
+    }
+
+    // ── 6. Коэффициент возвратов этапов (Rework Rate) ──
+    // Формула: возвраты = events 'Возвращён в ожидание' для этапов этого сотрудника
+    // Rework Rate = возвраты / (завершения + возвраты)
+    var myStageKeys = {};
+    myStages.forEach(function(s){ myStageKeys[s.project_id + '_' + s.stage_index] = true; });
+
+    var returns = history.filter(function(h) {
+      return myStageKeys[h.project_id + '_' + h.stage_index] &&
+             (h.event === 'Возвращён в ожидание' || h.event === 'pending');
+    }).length;
+
+    var completions = history.filter(function(h) {
+      return myStageKeys[h.project_id + '_' + h.stage_index] &&
+             (h.event === 'Завершён' || h.event === 'completed');
+    }).length;
+
+    var reworkRate = (completions + returns) > 0
+      ? Math.round(returns / (completions + returns) * 100)
+      : null;
+
+    // ── 7. Эффективность (score 0–100) ──
+    // Формула: (скорость_норм × 40) + (velocity_норм × 35) + (качество × 25)
+    // скорость_норм = чем меньше avgDays — тем выше (норма 3 дня → 100%)
+    // velocity_норм = done30 / 20 (норма 20 задач в месяц → 100%)
+    // качество = 100 - reworkRate
+    var hasAnyData    = myTasks.length > 0 || completedStages.length > 0;
+    var speedScore    = avgDays !== null ? Math.max(0, Math.min(100, Math.round((1 - avgDays/10) * 100))) : null;
+    var velocityScore = done30 > 0 ? Math.min(100, Math.round(done30 / 20 * 100)) : null;
+    var qualityScore  = reworkRate !== null ? (100 - reworkRate) : null;
+    var effScore      = hasAnyData
+      ? Math.round((speedScore !== null ? speedScore : 50) * 0.40 + (velocityScore || 0) * 0.35 + (qualityScore !== null ? qualityScore : 100) * 0.25)
+      : null;
+
+    return {
+      m: m,
+      myTasks: myTasks.length,
+      doneTasks: doneTasks.length,
+      completedStages: completedStages.length,
+      avgDays: avgDays,
+      avgLogged: avgLogged,
+      done7: done7,
+      done30: done30,
+      returns: returns,
+      reworkRate: reworkRate,
+      effScore: effScore
+    };
+  }); // показываем всех сотрудников даже без данных
+
+  if (!rows.length) {
+    el.innerHTML = '<div style="padding:20px;font-size:12px;color:var(--txt3);">Добавь сотрудников во вкладке «Команда»</div>';
+    return;
+  }
+
+  // ── Шапка ──
+  var COLS = [
+    { label: 'Сотрудник',        w: '200px' },
+    { label: 'Ср. время задачи', w: '1fr',   hint: 'Среднее время от создания до завершения задачи' },
+    { label: 'Ср. в работе',     w: '1fr',   hint: 'Среднее залогированное время на завершённую задачу' },
+    { label: 'За 7 дн.',         w: '1fr',   hint: 'Задач закрыто за последние 7 дней' },
+    { label: 'За 30 дн.',        w: '1fr',   hint: 'Задач закрыто за последние 30 дней' },
+    { label: 'Возвраты',         w: '1fr',   hint: 'Доля этапов возвращённых назад (ниже = лучше)' },
+    { label: 'Эффект.',          w: '1fr',   hint: 'Итоговый score: 40% скорость + 35% velocity + 25% качество' },
+  ];
+
+  var gridCols = COLS.map(function(c){ return c.w; }).join(' ');
+  var brd = 'border-left:1px solid rgba(255,255,255,.06);';
+
+  var hdr = '<div style="display:grid;grid-template-columns:' + gridCols + ';border-bottom:1px solid rgba(255,255,255,.06);">' +
+    COLS.map(function(c, i) {
+      return '<div style="padding:9px ' + (i===0?'20px':'14px') + ';font-size:10px;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase;' + (i>0?brd:'') + '" title="' + (c.hint||'') + '">' + c.label + '</div>';
+    }).join('') +
+  '</div>';
+
+  // ── Строки ──
+  function fmtDays(d) {
+    if (d === null) return '—';
+    if (d < 1) return Math.round(d * 24) + ' ч';
+    return d.toFixed(1).replace('.', ',') + ' д';
+  }
+  function fmtMin(m) {
+    if (m === null) return '—';
+    if (m < 60) return Math.round(m) + ' мин';
+    return Math.floor(m/60) + 'ч ' + Math.round(m%60) + 'м';
+  }
+  function scoreColor(s) {
+    return s >= 75 ? 'var(--green)' : s >= 50 ? 'var(--amber)' : 'var(--red)';
+  }
+  function reworkColor(r) {
+    return r === null ? 'var(--txt3)' : r === 0 ? 'var(--green)' : r <= 15 ? 'var(--amber)' : 'var(--red)';
+  }
+
+  function cell(val, color, sub) {
+    return '<div style="' + brd + 'padding:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;">' +
+      '<div style="font-family:var(--font-mono);font-size:16px;color:' + color + ';line-height:1;">' + val + '</div>' +
+      (sub ? '<div style="font-size:10px;color:var(--txt3);margin-top:1px;">' + sub + '</div>' : '') +
+    '</div>';
+  }
+
+  var rowsHtml = rows.map(function(r) {
+    var avatarEl = r.m.avatar_url
+      ? '<div style="width:36px;height:36px;border-radius:9px;overflow:hidden;border:1.5px solid ' + r.m.color + '44;flex-shrink:0;"><img src="' + r.m.avatar_url + '" style="width:100%;height:100%;object-fit:cover;"></div>'
+      : '<div style="width:36px;height:36px;border-radius:9px;background:' + r.m.color + '18;border:1.5px solid ' + r.m.color + '44;display:flex;align-items:center;justify-content:center;font-size:14px;color:' + r.m.color + ';flex-shrink:0;">' + r.m.name[0].toUpperCase() + '</div>';
+
+    var reworkVal = r.reworkRate !== null ? r.reworkRate + '%' : '—';
+    var scoreVal  = r.effScore + '%';
+
+    // Полоска score
+    var scoreFill = '<div style="width:' + Math.min(100,r.effScore) + '%;height:100%;background:' + scoreColor(r.effScore) + ';border-radius:2px;"></div>';
+    var scoreCell = '<div style="' + brd + 'padding:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">' +
+      (r.effScore !== null
+        ? '<div style="font-family:var(--font-mono);font-size:16px;color:' + scoreColor(r.effScore) + ';">' + scoreVal + '</div>' +
+          '<div style="width:60px;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;">' + scoreFill + '</div>'
+        : '<div style="font-family:var(--font-mono);font-size:16px;color:rgba(255,255,255,.2);">—</div>') +
+    '</div>';
+
+    return '<div style="display:grid;grid-template-columns:' + gridCols + ';border-top:1px solid rgba(255,255,255,.06);">' +
+      // Имя
+      '<div style="display:flex;align-items:center;gap:10px;padding:12px 20px;">' +
+        avatarEl +
+        '<div>' +
+          '<div style="font-size:13px;color:var(--txt);">' + r.m.name + '</div>' +
+          '<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);margin-top:2px;">' + (r.doneTasks > 0 || r.completedStages > 0 ? r.doneTasks + ' зад. / ' + r.completedStages + ' эт.' : 'нет данных') + '</div>' +
+        '</div>' +
+      '</div>' +
+      cell(fmtDays(r.avgDays), r.avgDays === null ? 'var(--txt3)' : r.avgDays <= 3 ? 'var(--green)' : r.avgDays <= 7 ? 'var(--amber)' : 'var(--red)', r.avgDays !== null ? (r.avgDays <= 3 ? 'быстро' : r.avgDays <= 7 ? 'норма' : 'медленно') : null) +
+      cell(fmtMin(r.avgLogged), 'var(--txt2)', r.avgLogged !== null ? 'на задачу' : null) +
+      cell(r.done7 || '—', r.done7 > 0 ? 'var(--green)' : 'var(--txt3)', r.done7 > 0 ? 'задач' : null) +
+      cell(r.done30 || '—', r.done30 > 0 ? 'var(--a2)' : 'var(--txt3)', r.done30 > 0 ? 'задач' : null) +
+      cell(reworkVal, reworkColor(r.reworkRate), r.returns > 0 ? r.returns + ' возвр.' : r.reworkRate === 0 ? 'отлично' : null) +
+      scoreCell +
+    '</div>';
+  }).join('');
+
+  el.innerHTML = hdr + rowsHtml;
+}
 
 // Загружаем команду при переходе на вкладку — show/hide теперь в оригинальном switchDashTab
 var _origSwitchDashTab2 = window.switchDashTab;
