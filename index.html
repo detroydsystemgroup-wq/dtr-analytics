@@ -26630,11 +26630,13 @@ button, a, [role="button"],
 
       <!-- MODAL: Profit Split Settings -->
       <div class="modal-overlay" id="modal-profit-split" style="z-index:2000;">
-        <div class="modal" style="max-width:400px;">
+        <div class="modal" style="max-width:440px;max-height:calc(100vh - 60px);overflow-y:auto;">
           <div class="modal-title">Настройка долей</div>
           <div style="font-size:12px;color:var(--txt3);margin-bottom:20px;margin-top:-12px;">Сумма всех долей должна быть 100%</div>
-          <div id="profit-split-fields" style="display:flex;flex-direction:column;gap:12px;"></div>
-          <div style="margin-top:16px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;display:flex;justify-content:space-between;align-items:center;">
+          <div id="profit-split-fields" style="display:flex;flex-direction:column;gap:10px;"></div>
+          <!-- Добавить категорию -->
+          <button onclick="addProfitSplitItem()" style="margin-top:12px;width:100%;padding:10px;background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.12);border-radius:10px;color:rgba(255,255,255,.4);font-size:12px;cursor:pointer;transition:all .18s;letter-spacing:.02em;" onmouseover="this.style.borderColor='rgba(255,255,255,.25)';this.style.color='rgba(255,255,255,.7)'" onmouseout="this.style.borderColor='rgba(255,255,255,.12)';this.style.color='rgba(255,255,255,.4)'">+ Добавить категорию</button>
+          <div style="margin-top:14px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;display:flex;justify-content:space-between;align-items:center;">
             <span style="font-size:12px;color:var(--txt3);">Итого:</span>
             <span id="profit-split-total" style="font-family:var(--font-mono);font-size:14px;color:var(--txt);">100%</span>
           </div>
@@ -44424,51 +44426,88 @@ async function handleProfitAvatarUpload(input) {
 }
 
 function openProfitSplitSettings() {
-  var cfg = _profitSplitConfig || PROFIT_SPLIT_DEFAULTS;
-  var fieldsEl = document.getElementById('profit-split-fields');
-  if (!fieldsEl) return;
-
-  fieldsEl.innerHTML = cfg.map(function(item, i) {
-    return '<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;">' +
-      '<div style="font-size:18px;flex-shrink:0;">' + item.emoji + '</div>' +
-      '<div style="flex:1;font-size:13px;color:var(--txt);">' + item.label + '</div>' +
-      '<div style="display:flex;align-items:center;gap:8px;">' +
-        '<input type="number" min="0" max="100" value="' + item.pct + '" data-idx="' + i + '"' +
-          ' style="width:60px;text-align:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px;font-family:var(--font-mono);font-size:13px;color:var(--txt);"' +
-          ' oninput="updateProfitSplitTotal()">' +
-        '<span style="font-size:12px;color:var(--txt3);">%</span>' +
-      '</div>' +
-    '</div>';
-  }).join('');
-
+  renderProfitSplitFields();
   updateProfitSplitTotal();
   openModal('modal-profit-split');
 }
 
+function renderProfitSplitFields() {
+  var cfg = _profitSplitConfig || PROFIT_SPLIT_DEFAULTS;
+  var fieldsEl = document.getElementById('profit-split-fields');
+  if (!fieldsEl) return;
+  var isDefault = [0,1,2]; // индексы дефолтных — нельзя удалить
+
+  fieldsEl.innerHTML = cfg.map(function(item, i) {
+    var canDelete = i >= PROFIT_SPLIT_DEFAULTS.length;
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;">' +
+      // Emoji — редактируемый
+      '<input type="text" value="' + item.emoji + '" data-field="emoji" data-idx="' + i + '" maxlength="2"' +
+        ' style="width:36px;text-align:center;font-size:18px;background:transparent;border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:4px;color:var(--txt);cursor:text;"' +
+        ' oninput="updateProfitSplitTotal()" title="Emoji категории">' +
+      // Название
+      '<input type="text" value="' + item.label + '" data-field="label" data-idx="' + i + '" placeholder="Название..."' +
+        ' style="flex:1;background:transparent;border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:6px 10px;font-size:13px;color:var(--txt);min-width:0;"' +
+        ' oninput="updateProfitSplitTotal()">' +
+      // Процент
+      '<input type="number" min="0" max="100" value="' + item.pct + '" data-field="pct" data-idx="' + i + '"' +
+        ' style="width:56px;text-align:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px;font-family:var(--font-mono);font-size:13px;color:var(--txt);"' +
+        ' oninput="updateProfitSplitTotal()">' +
+      '<span style="font-size:12px;color:var(--txt3);flex-shrink:0;">%</span>' +
+      // Удалить (только для добавленных)
+      (canDelete
+        ? '<button onclick="removeProfitSplitItem(' + i + ')" style="background:transparent;border:1px solid rgba(224,82,82,.25);border-radius:7px;width:28px;height:28px;color:var(--red);cursor:pointer;font-size:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">✕</button>'
+        : '<div style="width:28px;flex-shrink:0;"></div>') +
+    '</div>';
+  }).join('');
+}
+
+function addProfitSplitItem() {
+  var cfg = JSON.parse(JSON.stringify(_profitSplitConfig || PROFIT_SPLIT_DEFAULTS));
+  cfg.push({ key: 'custom_' + Date.now(), label: '', emoji: '📌', pct: 0, color: '#7f77dd' });
+  _profitSplitConfig = cfg;
+  renderProfitSplitFields();
+  updateProfitSplitTotal();
+  // Фокус на новое поле названия
+  var fields = document.querySelectorAll('#profit-split-fields input[data-field="label"]');
+  if (fields.length) fields[fields.length-1].focus();
+}
+
+function removeProfitSplitItem(idx) {
+  var cfg = JSON.parse(JSON.stringify(_profitSplitConfig || PROFIT_SPLIT_DEFAULTS));
+  cfg.splice(idx, 1);
+  _profitSplitConfig = cfg;
+  renderProfitSplitFields();
+  updateProfitSplitTotal();
+}
+
 function updateProfitSplitTotal() {
-  var inputs = document.querySelectorAll('#profit-split-fields input[type=number]');
+  var inputs = document.querySelectorAll('#profit-split-fields input[data-field="pct"]');
   var total = 0;
   inputs.forEach(function(inp){ total += parseInt(inp.value) || 0; });
   var el = document.getElementById('profit-split-total');
   if (el) {
     el.textContent = total + '%';
-    el.style.color = total === 100 ? 'var(--green)' : 'var(--red)';
+    el.style.color = total === 100 ? 'var(--green)' : total > 100 ? 'var(--red)' : 'var(--amber)';
   }
 }
 
 async function saveProfitSplit() {
-  var inputs = document.querySelectorAll('#profit-split-fields input[type=number]');
+  var pctInputs = document.querySelectorAll('#profit-split-fields input[data-field="pct"]');
   var total = 0;
-  inputs.forEach(function(inp){ total += parseInt(inp.value) || 0; });
+  pctInputs.forEach(function(inp){ total += parseInt(inp.value) || 0; });
   if (total !== 100) {
     alert('Сумма долей должна быть равна 100%. Сейчас: ' + total + '%');
     return;
   }
 
   var cfg = JSON.parse(JSON.stringify(_profitSplitConfig || PROFIT_SPLIT_DEFAULTS));
-  inputs.forEach(function(inp) {
+  // Читаем все поля
+  document.querySelectorAll('#profit-split-fields input[data-field]').forEach(function(inp) {
     var idx = parseInt(inp.dataset.idx);
-    cfg[idx].pct = parseInt(inp.value) || 0;
+    var field = inp.dataset.field;
+    if (field === 'pct') cfg[idx].pct = parseInt(inp.value) || 0;
+    else if (field === 'label') cfg[idx].label = inp.value.trim() || cfg[idx].label;
+    else if (field === 'emoji') cfg[idx].emoji = inp.value.trim() || cfg[idx].emoji;
   });
 
   // Сохранить в agency_settings
