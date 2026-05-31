@@ -19449,7 +19449,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
           <div style="font-size:16px;font-weight:500;color:var(--txt);">Команда агентства</div>
           <div style="font-size:11px;color:var(--txt3);margin-top:2px;">Сотрудники назначаются на этапы проектов</div>
         </div>
-        <button class="btn-primary" style="padding:8px 16px;" onclick="openAddTeamMember()">+ Добавить</button>
+        <button onclick="openAddTeamMember()" style="display:flex;align-items:center;gap:6px;background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.25);border-radius:7px;padding:8px 16px;color:#c9a84c;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.04em;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;" onmouseover="this.style.background='rgba(184,146,58,.2)';this.style.borderColor='rgba(184,146,58,.45)'" onmouseout="this.style.background='rgba(184,146,58,.1)';this.style.borderColor='rgba(184,146,58,.25)'">+ Добавить</button>
       </div>
       <div id="team-members-list" style="display:flex;flex-direction:column;gap:8px;"></div>
       <div style="margin-top:28px;">
