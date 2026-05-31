@@ -44257,24 +44257,147 @@ async function loadTeamPanel() {
   var members = membersRes.data || [];
   var stages  = stagesRes.data || [];
 
-  // Список участников
+  // Список участников — загружаем метрики эффективности
   if (!members.length) {
     listEl.innerHTML = '<div style="font-size:12px;color:var(--txt3);padding:12px 0;">Пока нет участников. Добавь первого.</div>';
   } else {
+    // Подгружаем задачи и историю для метрик
+    var activeIds = _allProjects.filter(function(p){ return p.status !== 'archived'; }).map(function(p){ return p.id; });
+    var projFilter = activeIds.length ? activeIds : ['00000000-0000-0000-0000-000000000000'];
+    var now2 = new Date();
+    var day7  = new Date(now2 - 7  * 86400000);
+    var day30 = new Date(now2 - 30 * 86400000);
+
+    var [tasksRes2, histRes2] = await Promise.all([
+      sb.from('stage_tasks').select('id,done,kanban_status,created_at,updated_at,done_at,time_logged,stage_index,project_id,returned_count').in('project_id', projFilter),
+      sb.from('stage_history').select('stage_index,project_id,event,assignee_id').in('project_id', projFilter).limit(2000)
+    ]);
+    var allTasks2 = tasksRes2.data || [];
+    var hist2 = histRes2.data || [];
+
+    // Карта этап → assignee
+    var stageMap2 = {};
+    stages.forEach(function(s){ if (s.assignee_id) stageMap2[s.project_id+'_'+s.stage_index] = s.assignee_id; });
+
     listEl.innerHTML = members.map(function(m) {
       var assigned = stages.filter(function(s){ return s.assignee_id === m.id && s.status !== 'completed'; }).length;
+
+      // Метрики
+      var myTasks2 = allTasks2.filter(function(t){
+        var aid = t.project_id ? stageMap2[t.project_id+'_'+t.stage_index] : null;
+        return aid === m.id;
+      });
+      var doneTasks2 = myTasks2.filter(function(t){ return t.kanban_status === 'done' || t.done; });
+
+      // Цикл задачи
+      var timeSamples2 = doneTasks2.filter(function(t){ return (t.done_at||t.updated_at) && t.created_at; });
+      var avgDays2 = null;
+      if (timeSamples2.length) {
+        var ms = timeSamples2.reduce(function(s,t){ var d=(new Date(t.done_at||t.updated_at)-new Date(t.created_at)); return s+(d>0?d:0); },0);
+        avgDays2 = ms / timeSamples2.length / 86400000;
+      }
+      var cycleTxt = avgDays2 === null ? '—' : avgDays2 < 1 ? Math.round(avgDays2*24)+'ч' : avgDays2.toFixed(1).replace('.',',')+'д';
+      var cycleHint = avgDays2 === null ? '' : avgDays2 <= 1 ? 'быстро' : avgDays2 <= 3 ? 'норма' : 'медленно';
+      var cycleHintColor = avgDays2 === null ? 'var(--txt3)' : avgDays2 <= 3 ? 'var(--green)' : avgDays2 <= 7 ? 'var(--amber)' : 'var(--red)';
+
+      // За 7 дней
+      var done7_2 = doneTasks2.filter(function(t){ var d=t.done_at||(t.done?t.updated_at:null); return d&&new Date(d)>=day7; }).length;
+
+      // Возвраты
+      var myStageKeys2 = {};
+      stages.filter(function(s){ return s.assignee_id === m.id; }).forEach(function(s){ myStageKeys2[s.project_id+'_'+s.stage_index]=true; });
+      var stRet2 = hist2.filter(function(h){ var ba=h.assignee_id?h.assignee_id===m.id:myStageKeys2[h.project_id+'_'+h.stage_index]; return ba&&(h.event==='Возвращён в ожидание'||h.event==='pending'); }).length;
+      var stCmp2 = hist2.filter(function(h){ var ba=h.assignee_id?h.assignee_id===m.id:myStageKeys2[h.project_id+'_'+h.stage_index]; return ba&&(h.event==='Завершён'||h.event==='completed'); }).length;
+      var taskRet2 = myTasks2.reduce(function(s,t){ if(t.returned_count>0)return s+t.returned_count; if(t.done_at&&!t.done&&t.kanban_status==='waiting')return s+1; return s; },0);
+      var totalRet2 = stRet2 + taskRet2;
+      var totalDone2 = stCmp2 + doneTasks2.length;
+      var rework2 = (totalDone2+totalRet2)>0 ? Math.round(totalRet2/(totalDone2+totalRet2)*100) : null;
+      var reworkTxt = rework2===null ? '—' : rework2+'%';
+      var reworkColor = rework2===null?'var(--txt2)':rework2===0?'var(--green)':rework2<=15?'var(--amber)':'var(--red)';
+
+      // Score
+      var hasData = myTasks2.length > 0 || stages.filter(function(s){return s.assignee_id===m.id;}).length > 0;
+      var speedScore2 = avgDays2!==null ? Math.max(0,Math.min(100,Math.round((1-avgDays2/10)*100))) : null;
+      var velScore2   = done7_2>0 ? Math.min(100,Math.round(done7_2/5*100)) : null;
+      var qualScore2  = rework2!==null ? (100-rework2) : null;
+      var effScore2 = null;
+      if (hasData) {
+        var comps2 = [];
+        if (speedScore2!==null) comps2.push({v:speedScore2,w:.40});
+        if (velScore2!==null)   comps2.push({v:velScore2,  w:.35});
+        if (qualScore2!==null)  comps2.push({v:qualScore2, w:.25});
+        if (comps2.length) {
+          var tw2 = comps2.reduce(function(s,c){return s+c.w;},0);
+          effScore2 = Math.round(comps2.reduce(function(s,c){return s+c.v*(c.w/tw2);},0));
+        }
+      }
+      var scoreColor = effScore2===null?'var(--txt3)':effScore2>=75?'var(--green)':effScore2>=50?'var(--amber)':'var(--red)';
+      var accentColor = effScore2===null?'rgba(255,255,255,.15)':effScore2>=75?'#3ecf8e':effScore2>=50?'#f59e0b':'#e05252';
+      var scoreBg = effScore2===null?'rgba(255,255,255,.03)':effScore2>=75?'rgba(62,207,142,.06)':effScore2>=50?'rgba(245,158,11,.06)':'rgba(224,82,82,.06)';
+
+      // Аватарка
       var avatarHtml = m.avatar_url
-        ? '<div style="width:40px;height:40px;border-radius:10px;overflow:hidden;border:1.5px solid ' + m.color + '44;flex-shrink:0;"><img src="' + m.avatar_url + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
-        : '<div style="width:40px;height:40px;border-radius:10px;background:' + m.color + '22;border:1.5px solid ' + m.color + '44;display:flex;align-items:center;justify-content:center;font-size:15px;color:' + m.color + ';flex-shrink:0;">' + m.name[0] + '</div>';
-      return '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg3);border:1px solid var(--brd);border-radius:10px;">' +
-        avatarHtml +
-        '<div style="flex:1;min-width:0;">' +
-          '<div style="font-size:13px;color:var(--txt);">' + m.name + '</div>' +
-          (m.role ? '<div style="font-size:11px;color:var(--txt3);margin-top:1px;">' + m.role + '</div>' : '') +
+        ? '<div style="width:52px;height:52px;border-radius:12px;overflow:hidden;border:1.5px solid '+m.color+'55;flex-shrink:0;"><img src="'+m.avatar_url+'" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+        : '<div style="width:52px;height:52px;border-radius:12px;background:'+m.color+'22;border:1.5px solid '+m.color+'55;display:flex;align-items:center;justify-content:center;font-size:20px;color:'+m.color+';flex-shrink:0;font-weight:500;">'+m.name[0].toUpperCase()+'</div>';
+
+      var mJson = JSON.stringify(m).replace(/"/g, '&quot;');
+
+      if (!hasData) {
+        // Карточка без данных
+        return '<div style="background:var(--bg3);border:1px solid var(--brd);border-left:3px solid rgba(255,255,255,.1);border-radius:12px;overflow:hidden;">' +
+          '<div style="padding:14px 16px;display:flex;align-items:center;gap:14px;">' +
+            avatarHtml +
+            '<div style="flex:1;min-width:0;">' +
+              '<div style="font-size:15px;color:var(--txt);font-weight:500;">'+m.name+'</div>' +
+              '<div style="font-size:12px;color:var(--txt3);margin-top:2px;">'+(m.role||'Нет роли')+' · '+assigned+' этапов</div>' +
+            '</div>' +
+            '<div style="font-size:12px;color:var(--txt3);margin-right:4px;">нет данных</div>' +
+            '<button onclick="openAddTeamMember('+mJson+')" style="font-size:11px;padding:5px 10px;border-radius:7px;border:1px solid var(--brd);background:transparent;color:var(--txt2);cursor:pointer;">Изм.</button>' +
+            '<button onclick="deleteTeamMember(\''+m.id+'\')" style="font-size:11px;padding:5px 10px;border-radius:7px;border:1px solid rgba(224,82,82,.3);background:transparent;color:var(--red);cursor:pointer;">✕</button>' +
+          '</div>' +
+          '<div style="padding:10px 16px;border-top:1px solid var(--brd);font-size:11px;color:var(--txt3);">Назначь на этапы — тогда появится статистика</div>' +
+        '</div>';
+      }
+
+      // Полная карточка с метриками
+      return '<div style="background:var(--bg3);border:1px solid var(--brd);border-left:3px solid '+accentColor+';border-radius:12px;overflow:hidden;">' +
+        // Шапка
+        '<div style="padding:14px 16px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--brd);">' +
+          avatarHtml +
+          '<div style="flex:1;min-width:0;">' +
+            '<div style="font-size:15px;color:var(--txt);font-weight:500;">'+m.name+'</div>' +
+            '<div style="font-size:12px;color:var(--txt3);margin-top:2px;">'+(m.role||'Нет роли')+' · '+assigned+' этапов</div>' +
+          '</div>' +
+          '<div style="text-align:right;margin-right:8px;">' +
+            '<div style="font-size:22px;font-weight:500;color:'+accentColor+';line-height:1;">'+(effScore2!==null?effScore2+'%':'—')+'</div>' +
+            '<div style="font-size:10px;color:var(--txt3);margin-top:2px;">эффективность</div>' +
+          '</div>' +
+          '<button onclick="openAddTeamMember('+mJson+')" style="font-size:11px;padding:5px 10px;border-radius:7px;border:1px solid var(--brd);background:transparent;color:var(--txt2);cursor:pointer;">Изм.</button>' +
+          '<button onclick="deleteTeamMember(\''+m.id+'\')" style="font-size:11px;padding:5px 10px;border-radius:7px;border:1px solid rgba(224,82,82,.3);background:transparent;color:var(--red);cursor:pointer;">✕</button>' +
         '</div>' +
-        '<div style="font-size:11px;color:var(--txt3);">' + assigned + ' этапов</div>' +
-        '<button onclick="openAddTeamMember(' + JSON.stringify(m).replace(/"/g, '&quot;') + ')" style="font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid var(--brd);background:transparent;color:var(--txt2);cursor:pointer;">Изм.</button>' +
-        '<button onclick="deleteTeamMember(\'' + m.id + '\')" style="font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid rgba(224,82,82,.3);background:transparent;color:var(--red);cursor:pointer;">✕</button>' +
+        // Плитки метрик
+        '<div style="display:grid;grid-template-columns:repeat(4,1fr);">' +
+          '<div style="padding:11px 14px;border-right:1px solid var(--brd);">' +
+            '<div style="font-size:10px;color:var(--txt3);margin-bottom:4px;">Цикл задачи</div>' +
+            '<div style="font-size:16px;font-weight:500;color:var(--txt);">'+cycleTxt+'</div>' +
+            (cycleHint ? '<div style="font-size:10px;color:'+cycleHintColor+';margin-top:2px;">'+cycleHint+'</div>' : '') +
+          '</div>' +
+          '<div style="padding:11px 14px;border-right:1px solid var(--brd);">' +
+            '<div style="font-size:10px;color:var(--txt3);margin-bottom:4px;">За 7 дней</div>' +
+            '<div style="font-size:16px;font-weight:500;color:'+(done7_2>0?accentColor:'var(--txt3)') + ';">'+( done7_2>0?done7_2:'—')+'</div>' +
+            (done7_2>0 ? '<div style="font-size:10px;color:var(--txt3);margin-top:2px;">задач</div>' : '') +
+          '</div>' +
+          '<div style="padding:11px 14px;border-right:1px solid var(--brd);">' +
+            '<div style="font-size:10px;color:var(--txt3);margin-bottom:4px;">Возвраты</div>' +
+            '<div style="font-size:16px;font-weight:500;color:'+reworkColor+';">'+reworkTxt+'</div>' +
+            (totalRet2>0 ? '<div style="font-size:10px;color:var(--txt3);margin-top:2px;">'+totalRet2+' возвр.</div>' : (rework2===0?'<div style="font-size:10px;color:var(--green);margin-top:2px;">отлично</div>':'')) +
+          '</div>' +
+          '<div style="padding:11px 14px;background:'+scoreBg+';">' +
+            '<div style="font-size:10px;color:var(--txt3);margin-bottom:4px;">Эффективность</div>' +
+            '<div style="font-size:16px;font-weight:500;color:'+accentColor+';">'+( effScore2!==null?effScore2+'%':'—')+'</div>' +
+            '<div style="height:3px;background:rgba(255,255,255,.08);border-radius:2px;margin-top:6px;overflow:hidden;"><div style="width:'+(effScore2||0)+'%;height:100%;background:'+accentColor+';border-radius:2px;"></div></div>' +
+          '</div>' +
+        '</div>' +
       '</div>';
     }).join('');
   }
@@ -44767,7 +44890,7 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
   // ── Шапка ──
   var COLS = [
     { label: 'Сотрудник',        w: '200px' },
-    { label: 'Ср. время задачи', w: '1fr',   hint: 'Среднее время от создания до завершения задачи' },
+    { label: 'Цикл задачи',      w: '1fr',   hint: 'Среднее время от создания задачи до завершения (календарное)' },
     { label: 'Ср. в работе',     w: '1fr',   hint: 'Среднее залогированное время на завершённую задачу' },
     { label: 'За 7 дн.',         w: '1fr',   hint: 'Задач закрыто за последние 7 дней' },
     { label: 'За 30 дн.',        w: '1fr',   hint: 'Задач закрыто за последние 30 дней' },
