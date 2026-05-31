@@ -27758,7 +27758,9 @@ async function cp2LoadActivity(project, limit, containerId) {
   var el = g(containerId);
   if (!el) return;
 
-  // Берём этапы проекта для имён и fallback по stage_index
+  var lim = limit || 5;
+
+  // Имена этапов + список stage_index проекта (для имён и fallback по задачам с NULL project_id)
   var stageNamesRes = await sb.from('project_stages').select('stage_index,name').eq('project_id', project.id);
   var stageNames = {};
   var stageIdxList = [];
@@ -27767,29 +27769,87 @@ async function cp2LoadActivity(project, limit, containerId) {
     stageIdxList.push(s.stage_index);
   });
 
-  // Задачи: с project_id проекта ИЛИ NULL + нужный stage_index
-  var tasksRes = stageIdxList.length
-    ? await sb.from('stage_tasks').select('id,title,done,priority,stage_index,created_at,updated_at')
+  // Параллельно: задачи (канбан) + события этапов (stage_history)
+  var tasksQuery = stageIdxList.length
+    ? sb.from('stage_tasks').select('id,title,done,priority,stage_index,created_at,updated_at')
         .or('project_id.eq.' + project.id + ',project_id.is.null')
         .in('stage_index', stageIdxList)
         .order('updated_at', {ascending:false})
-        .limit(limit || 5)
-    : await sb.from('stage_tasks').select('id,title,done,priority,stage_index,created_at,updated_at')
+        .limit(lim)
+    : sb.from('stage_tasks').select('id,title,done,priority,stage_index,created_at,updated_at')
         .eq('project_id', project.id)
         .order('updated_at', {ascending:false})
-        .limit(limit || 5);
+        .limit(lim);
 
-  var tasks = tasksRes.data || [];
+  var historyQuery = sb.from('stage_history').select('event,stage_index,note,created_at')
+        .eq('project_id', project.id)
+        .order('created_at', {ascending:false})
+        .limit(lim);
 
-  if (!tasks.length) {
+  var tasksRes, histRes;
+  try {
+    var both = await Promise.all([tasksQuery, historyQuery]);
+    tasksRes = both[0]; histRes = both[1];
+  } catch (e) {
+    tasksRes = { data: [] }; histRes = { data: [] };
+  }
+
+  var tasks  = (tasksRes  && tasksRes.data)  || [];
+  var events = (histRes   && histRes.data)   || [];
+
+  function _stName(idx) {
+    return stageNames[idx]
+      || (typeof STAGES !== 'undefined' && STAGES[idx] && STAGES[idx].name)
+      || ('Этап ' + (idx + 1));
+  }
+
+  // Единый список активностей: задачи + события этапов
+  var items = [];
+
+  tasks.forEach(function(t) {
+    items.push({
+      kind: 'task',
+      time: t.updated_at || t.created_at,
+      done: !!t.done,
+      title: t.title || '',
+      priority: t.priority,
+      stageName: _stName(t.stage_index)
+    });
+  });
+
+  var EV_VERB = {
+    'Начат': 'начала этап',
+    'Завершён': 'завершила этап',
+    'Возвращён в ожидание': 'вернула в ожидание'
+  };
+  events.forEach(function(h) {
+    items.push({
+      kind: 'stage',
+      time: h.created_at,
+      event: h.event,
+      verb: EV_VERB[h.event] || (h.event || 'обновила этап'),
+      note: h.note || '',
+      stageName: _stName(h.stage_index)
+    });
+  });
+
+  // Сортировка по времени (свежие сверху) + ограничение
+  items.sort(function(a, b) {
+    return new Date(b.time || 0) - new Date(a.time || 0);
+  });
+  items = items.slice(0, lim);
+
+  if (!items.length) {
     el.innerHTML = '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.15);text-align:center;padding:16px 0;">Пока нет активности</div>';
     return;
   }
 
   if (g('cp2-updates-dot')) g('cp2-updates-dot').style.display = 'block';
 
-  var doneIcon = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3ecf8e" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>';
-  var openIcon = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/></svg>';
+  var doneIcon  = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3ecf8e" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  var openIcon  = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/></svg>';
+  var startIcon = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+  var backIcon  = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.21"/></svg>';
 
   function fmtTime(dateStr) {
     var d = new Date(dateStr);
@@ -27801,20 +27861,29 @@ async function cp2LoadActivity(project, limit, containerId) {
       : diff === 1 ? 'Вчера' : diff + ' дн. назад';
   }
 
-  el.innerHTML = tasks.map(function(t) {
-    var isDone   = t.done;
-    var icon     = isDone ? doneIcon : openIcon;
-    var cls      = isDone ? 'done' : 'task-open';
-    var stName   = stageNames[t.stage_index] || ('Этап ' + (t.stage_index + 1));
-    var hiPri    = t.priority === 'high' ? '<span style="font-family:var(--font-mono);font-size:9px;background:rgba(224,82,82,.12);color:#e05252;border:1px solid rgba(224,82,82,.2);padding:1px 6px;border-radius:4px;margin-left:6px;">срочно</span>' : '';
-    var timeStr  = fmtTime(t.updated_at || t.created_at);
+  el.innerHTML = items.map(function(it) {
+    var icon, cls, text, tag;
+    if (it.kind === 'stage') {
+      icon = it.event === 'Завершён' ? doneIcon
+           : it.event === 'Возвращён в ожидание' ? backIcon
+           : startIcon;
+      cls  = it.event === 'Завершён' ? 'done' : 'task-open';
+      text = 'Команда ' + esc(it.verb) + (it.note ? ' — ' + esc(it.note) : '');
+      tag  = esc(it.stageName);
+    } else {
+      icon = it.done ? doneIcon : openIcon;
+      cls  = it.done ? 'done' : 'task-open';
+      var hiPri = it.priority === 'high' ? '<span style="font-family:var(--font-mono);font-size:9px;background:rgba(224,82,82,.12);color:#e05252;border:1px solid rgba(224,82,82,.2);padding:1px 6px;border-radius:4px;margin-left:6px;">срочно</span>' : '';
+      text = esc(it.title) + hiPri;
+      tag  = esc(it.stageName);
+    }
     return '<div class="cp-act-row">' +
       '<div class="cp-act-icon ' + cls + '">' + icon + '</div>' +
       '<div class="cp-act-body">' +
-        '<div class="cp-act-text">' + esc(t.title) + hiPri + '</div>' +
-        '<div class="cp-act-tag">' + esc(stName) + '</div>' +
+        '<div class="cp-act-text">' + text + '</div>' +
+        '<div class="cp-act-tag">' + tag + '</div>' +
       '</div>' +
-      '<div class="cp-act-time">' + timeStr + '</div>' +
+      '<div class="cp-act-time">' + fmtTime(it.time) + '</div>' +
     '</div>';
   }).join('');
 }
