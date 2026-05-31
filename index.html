@@ -37594,7 +37594,7 @@ function showSQLHint() {
     <!-- Аватарка -->
     <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;padding:14px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;">
       <div id="tm-avatar-preview" onclick="document.getElementById('tm-photo-file').click()" title="Загрузить фото"
-        style="width:56px;height:56px;border-radius:50%;background:#b8923a22;border:2px solid #b8923a44;display:flex;align-items:center;justify-content:center;font-size:22px;color:#b8923a;cursor:pointer;overflow:hidden;flex-shrink:0;transition:opacity .2s;"
+        style="width:56px;height:56px;border-radius:14px;background:#b8923a22;border:2px solid #b8923a44;display:flex;align-items:center;justify-content:center;font-size:22px;color:#b8923a;cursor:pointer;overflow:hidden;flex-shrink:0;transition:opacity .2s;"
         onmouseover="this.style.opacity='.75'" onmouseout="this.style.opacity='1'">
         <span id="tm-avatar-letter">?</span>
       </div>
@@ -38828,8 +38828,8 @@ async function loadOverview() {
                 // Имя
                 '<div style="display:flex;align-items:center;gap:10px;padding:14px 20px;">' +
                   (r.m.avatar_url
-                  ? '<div style="width:32px;height:32px;border-radius:50%;overflow:hidden;border:1.5px solid ' + r.m.color + '44;flex-shrink:0;"><img src="' + r.m.avatar_url + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
-                  : '<div style="width:32px;height:32px;border-radius:50%;background:' + r.m.color + '18;border:1.5px solid ' + r.m.color + '44;display:flex;align-items:center;justify-content:center;font-size:12px;color:' + r.m.color + ';flex-shrink:0;">' + r.m.name[0].toUpperCase() + '</div>') +
+                  ? '<div style="width:40px;height:40px;border-radius:10px;overflow:hidden;border:1.5px solid ' + r.m.color + '44;flex-shrink:0;"><img src="' + r.m.avatar_url + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+                  : '<div style="width:40px;height:40px;border-radius:10px;background:' + r.m.color + '18;border:1.5px solid ' + r.m.color + '44;display:flex;align-items:center;justify-content:center;font-size:15px;color:' + r.m.color + ';flex-shrink:0;">' + r.m.name[0].toUpperCase() + '</div>') +
                   '<div>' +
                     '<div style="font-size:13px;color:var(--txt);">' + r.m.name + '</div>' +
                     '<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);margin-top:2px;">' + r.total + ' этапов</div>' +
@@ -44050,6 +44050,7 @@ function tmSetColor(c) {
   if (prev) {
     prev.style.background = c + '22';
     prev.style.borderColor = c + '44';
+    prev.style.borderRadius = '14px';
     var span = prev.querySelector('span');
     if (span) span.style.color = c;
   }
@@ -44069,7 +44070,7 @@ function openAddTeamMember(member) {
   var status = document.getElementById('tm-photo-status');
   var color = member ? (member.color || '#b8923a') : '#b8923a';
   if (member && member.avatar_url) {
-    prev.innerHTML = '<img src="' + member.avatar_url + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+    prev.innerHTML = '<img src="' + member.avatar_url + '" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">';
     if (removeBtn) removeBtn.style.display = 'block';
     if (status) status.textContent = 'Фото загружено';
   } else {
@@ -44122,7 +44123,7 @@ async function tmHandlePhoto(input) {
 
   // Превью
   var prev = document.getElementById('tm-avatar-preview');
-  prev.innerHTML = '<img src="' + publicUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+  prev.innerHTML = '<img src="' + publicUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">';
   var removeBtn = document.getElementById('tm-photo-remove');
   if (removeBtn) removeBtn.style.display = 'block';
   if (status) status.textContent = 'Фото загружено ✓';
@@ -44187,8 +44188,8 @@ async function loadTeamPanel() {
     listEl.innerHTML = members.map(function(m) {
       var assigned = stages.filter(function(s){ return s.assignee_id === m.id && s.status !== 'completed'; }).length;
       var avatarHtml = m.avatar_url
-        ? '<div style="width:32px;height:32px;border-radius:50%;overflow:hidden;border:1.5px solid ' + m.color + '44;flex-shrink:0;"><img src="' + m.avatar_url + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
-        : '<div style="width:32px;height:32px;border-radius:50%;background:' + m.color + '22;border:1.5px solid ' + m.color + '44;display:flex;align-items:center;justify-content:center;font-size:13px;color:' + m.color + ';flex-shrink:0;">' + m.name[0] + '</div>';
+        ? '<div style="width:40px;height:40px;border-radius:10px;overflow:hidden;border:1.5px solid ' + m.color + '44;flex-shrink:0;"><img src="' + m.avatar_url + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+        : '<div style="width:40px;height:40px;border-radius:10px;background:' + m.color + '22;border:1.5px solid ' + m.color + '44;display:flex;align-items:center;justify-content:center;font-size:15px;color:' + m.color + ';flex-shrink:0;">' + m.name[0] + '</div>';
       return '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg3);border:1px solid var(--brd);border-radius:10px;">' +
         avatarHtml +
         '<div style="flex:1;min-width:0;">' +
@@ -44224,27 +44225,48 @@ async function loadTeamPanel() {
   }
 
   if (barsEl) {
-    barsEl.innerHTML = memberLoad.map(function(r) {
-      var pctActive  = Math.round(r.active  / r.total * 100);
-      var pctPending = Math.round(r.pending / r.total * 100);
-      var pctDone    = Math.round(r.completed / r.total * 100);
-      var loadColor  = r.active >= 4 ? 'var(--red)' : r.active >= 2 ? 'var(--amber)' : 'var(--green)';
-      return '<div style="display:grid;grid-template-columns:120px 1fr 80px;align-items:center;gap:12px;">' +
-        '<div style="display:flex;align-items:center;gap:8px;min-width:0;">' +
-          '<div style="width:22px;height:22px;border-radius:50%;background:' + r.m.color + '22;border:1.5px solid ' + r.m.color + '44;display:flex;align-items:center;justify-content:center;font-size:10px;color:' + r.m.color + ';flex-shrink:0;">' + r.m.name[0] + '</div>' +
-          '<div style="font-size:12px;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + r.m.name + '</div>' +
+    var sumP = memberLoad.reduce(function(s,r){return s+r.pending;},0);
+    var sumA = memberLoad.reduce(function(s,r){return s+r.active;},0);
+    var sumD = memberLoad.reduce(function(s,r){return s+r.completed;},0);
+    var maxT = Math.max.apply(null, memberLoad.map(function(r){return r.total;})) || 1;
+
+    function lc(n){ return n>=5?'var(--red)':n>=3?'var(--amber)':n>0?'var(--green)':'rgba(255,255,255,.2)'; }
+
+    function tcell(count, color, bl) {
+      var pct = Math.round(count / maxT * 100);
+      var bls = bl ? 'border-left:1px solid rgba(255,255,255,.06);' : '';
+      return '<div style="' + bls + 'padding:14px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">' +
+        '<div style="font-size:20px;font-family:var(--font-mono);color:' + (count>0?color:'rgba(255,255,255,.15)') + ';line-height:1;">' + (count>0?count:'—') + '</div>' +
+        (count>0 ? '<div style="width:48px;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;"><div style="width:'+pct+'%;height:100%;background:'+color+';border-radius:2px;"></div></div>' : '') +
+      '</div>';
+    }
+
+    var hdr = '<div style="display:grid;grid-template-columns:200px 1fr 1fr 1fr;border-bottom:1px solid rgba(255,255,255,.06);">' +
+      '<div style="padding:8px 16px;font-size:10px;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase;">Сотрудник</div>' +
+      '<div style="padding:8px 20px;font-size:10px;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase;text-align:center;border-left:1px solid rgba(255,255,255,.06);">В ожидании <span style="color:var(--txt2);font-family:var(--font-mono);">' + sumP + '</span></div>' +
+      '<div style="padding:8px 20px;font-size:10px;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase;text-align:center;border-left:1px solid rgba(255,255,255,.06);">В работе <span style="color:var(--amber);font-family:var(--font-mono);">' + sumA + '</span></div>' +
+      '<div style="padding:8px 20px;font-size:10px;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase;text-align:center;border-left:1px solid rgba(255,255,255,.06);">Завершено <span style="color:var(--green);font-family:var(--font-mono);">' + sumD + '</span></div>' +
+    '</div>';
+
+    var rows = memberLoad.map(function(r) {
+      var avatarEl = r.m.avatar_url
+        ? '<div style="width:40px;height:40px;border-radius:10px;overflow:hidden;border:1.5px solid '+r.m.color+'44;flex-shrink:0;"><img src="'+r.m.avatar_url+'" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+        : '<div style="width:40px;height:40px;border-radius:10px;background:'+r.m.color+'18;border:1.5px solid '+r.m.color+'44;display:flex;align-items:center;justify-content:center;font-size:15px;color:'+r.m.color+';flex-shrink:0;">'+r.m.name[0].toUpperCase()+'</div>';
+      return '<div style="display:grid;grid-template-columns:200px 1fr 1fr 1fr;border-top:1px solid rgba(255,255,255,.06);">' +
+        '<div style="display:flex;align-items:center;gap:10px;padding:12px 16px;">' +
+          avatarEl +
+          '<div>' +
+            '<div style="font-size:13px;color:var(--txt);">' + r.m.name + '</div>' +
+            '<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);margin-top:2px;">' + r.total + ' этапов</div>' +
+          '</div>' +
         '</div>' +
-        '<div style="height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;display:flex;">' +
-          '<div style="width:' + pctDone + '%;background:#3ecf8e;opacity:.6;"></div>' +
-          '<div style="width:' + pctActive + '%;background:' + r.m.color + ';"></div>' +
-          '<div style="width:' + pctPending + '%;background:rgba(255,255,255,.12);"></div>' +
-        '</div>' +
-        '<div style="font-size:11px;font-family:var(--font-mono);text-align:right;">' +
-          '<span style="color:' + loadColor + ';">' + r.active + ' акт.</span>' +
-          '<span style="color:var(--txt3);"> · ' + r.total + '</span>' +
-        '</div>' +
+        tcell(r.pending,   'rgba(200,196,190,.6)', true) +
+        tcell(r.active,    lc(r.active),           true) +
+        tcell(r.completed, 'var(--green)',          true) +
       '</div>';
     }).join('');
+
+    barsEl.innerHTML = hdr + rows;
   }
 }
 
