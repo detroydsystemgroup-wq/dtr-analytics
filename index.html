@@ -27226,7 +27226,7 @@ async function saveStage() {
     const eventMap = { active: 'Начат', completed: 'Завершён', pending: 'Возвращён в ожидание' }
     // Берём assignee_id текущего этапа — кто был ответственен В МОМЕНТ события
     const _assigneeId = payload.assignee_id || (existing && existing.assignee_id) || null
-    await sb.from('stage_history').insert({
+    const { error: _histErr } = await sb.from('stage_history').insert({
       project_id: currentProject.id,
       stage_index: editingStageIndex,
       event: eventMap[selectedStageStatus] || selectedStageStatus,
@@ -27235,6 +27235,14 @@ async function saveStage() {
       note: note || null,
       assignee_id: _assigneeId
     })
+    if (_histErr) {
+      // Не роняем сохранение этапа (UPDATE уже прошёл), но не молчим о сбое истории
+      console.error('[DTR] Запись в stage_history не удалась:', _histErr.message)
+      if (/column|does not exist|schema/i.test(_histErr.message || '')) {
+        console.warn('[DTR] Вероятно, в таблице stage_history не хватает колонок. SQL: ALTER TABLE stage_history ADD COLUMN IF NOT EXISTS old_status text, ADD COLUMN IF NOT EXISTS new_status text, ADD COLUMN IF NOT EXISTS assignee_id uuid;')
+      }
+      if (typeof showToast === 'function') showToast('Этап обновлён, но событие не попало в историю: ' + _histErr.message, 'error')
+    }
   }
 
   // Send Telegram notification if status changed to active or completed
