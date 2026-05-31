@@ -36813,6 +36813,12 @@ function setSMMReelsSort(field) {
 
 function renderSMMReelsGrid() {
   const grid = g('smm-reels-grid'); if (!grid) return
+  // Вешаем обработчик на select (один раз)
+  var reelSel = g('smm-sort-select')
+  if (reelSel && !reelSel._dtrBound) {
+    reelSel._dtrBound = true
+    reelSel.addEventListener('change', function() { setSMMReelsSort(this.value) })
+  }
   const reels = [...smmData.reels].sort((a,b) => (b[smmReelsSort]||0) - (a[smmReelsSort]||0))
   if (!reels.length) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px;font-family:\'DM Mono\',monospace;font-size:12px;letter-spacing:.1em;color:var(--smm-muted);">Добавьте Reels во вкладке «Данные»</div>'; return }
 
@@ -37011,6 +37017,8 @@ function renderSMMRubricGrid() {
   html += '</div>' // grid
 
   root.innerHTML = html
+  var sortSel = g('smm-rubric-sort-select')
+  if (sortSel) sortSel.addEventListener('change', function() { setSMMRubricSort(this.value) })
 }
 
 
