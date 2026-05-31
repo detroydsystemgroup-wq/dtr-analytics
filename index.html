@@ -20015,6 +20015,9 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 
 </div>
 
+<!-- 4. СЕЙЧАС В РАБОТЕ — актуальный этап и его статус -->
+<div id="cp2-cur-stage" style="display:none;margin-bottom:18px;padding:18px 20px;border-radius:16px;border:1px solid rgba(184,146,58,.2);background:linear-gradient(135deg,rgba(184,146,58,.08),rgba(34,211,238,.04));position:relative;overflow:hidden;"></div>
+
 <!-- 5. ОТЧЁТЫ + АКТИВНОСТЬ — оперативная информация рядом -->
 <div class="cp-cols">
 <div class="cp-card"><div class="cp-card-header"><div class="cp-card-title">Отчёты</div><div class="cp-card-count" id="cp2-reports-count" style="color:var(--a2);">—</div></div><div id="cp2-reports-list"></div></div>
@@ -27471,6 +27474,7 @@ async function showClientPortal(project) {
 
   await Promise.all([
     cp2LoadTracker(project),
+    cp2RenderCurrentStage(project),
     cp2LoadReports(project),
     cp2LoadActivity(project, 5, 'cp2-activity-feed'),
     cp2LoadSMM(project),
@@ -27752,6 +27756,89 @@ async function cp2LoadReports(project) {
   renderReportList(combined.slice(0, 6), 'cp2-reports-list');
   renderReportList(perfReports.map(function(r){ return {id:r.id,type:'perf',title:r.title||r.period_d_label||'Отчёт',date:r.created_at}; }), 'cp2-perf-list');
   renderReportList(smmReports.map(function(r){ return {id:r.id,type:'smm',title:smmTitle(r),date:r.created_at}; }), 'cp2-smm-list');
+}
+
+async function cp2RenderCurrentStage(project) {
+  var el = g('cp2-cur-stage');
+  if (!el) return;
+
+  var res = await sb.from('project_stages')
+    .select('stage_index,status,deadline,note,name')
+    .eq('project_id', project.id)
+    .order('stage_index');
+  var arr = (res && res.data) || [];
+  if (!arr.length) { el.style.display = 'none'; return; }
+
+  var total = arr.length;
+  var done  = arr.filter(function(s){ return s.status === 'completed'; }).length;
+
+  function stName(s) {
+    return s.name
+      || (typeof STAGES !== 'undefined' && STAGES[s.stage_index] && STAGES[s.stage_index].name)
+      || ('Этап ' + (s.stage_index + 1));
+  }
+  function stIcon(s) {
+    return (typeof STAGES !== 'undefined' && STAGES[s.stage_index] && STAGES[s.stage_index].icon) || '';
+  }
+  function fmtDeadline(dl) {
+    if (!dl) return '';
+    var d = new Date(dl); d.setHours(0,0,0,0);
+    var today = new Date(); today.setHours(0,0,0,0);
+    var diff = Math.round((d - today) / 86400000);
+    var M = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+    if (diff < 0)   return 'просрочен на ' + Math.abs(diff) + ' дн.';
+    if (diff === 0) return 'срок сегодня';
+    if (diff === 1) return 'срок завтра';
+    if (diff <= 7)  return 'срок через ' + diff + ' дн.';
+    return 'срок ' + new Date(dl).getDate() + ' ' + M[new Date(dl).getMonth()];
+  }
+  function statusBadge(s) {
+    if (s.status === 'completed') return { txt:'Завершён', col:'#34d399', bg:'rgba(52,211,153,.12)', bd:'rgba(52,211,153,.25)' };
+    if (s.status === 'active')    return { txt:'В работе',  col:'#c9a84c', bg:'rgba(184,146,58,.14)', bd:'rgba(184,146,58,.3)' };
+    return { txt:'Ожидает', col:'rgba(255,255,255,.45)', bg:'rgba(255,255,255,.05)', bd:'rgba(255,255,255,.12)' };
+  }
+
+  // Актуальные этапы: все активные. Если активных нет — ближайший незавершённый.
+  var actives = arr.filter(function(s){ return s.status === 'active'; });
+  var headline, items;
+  if (actives.length) {
+    headline = actives.length > 1 ? 'Сейчас в работе' : 'Сейчас в работе';
+    items = actives;
+  } else {
+    var nextPending = arr.find(function(s){ return s.status !== 'completed'; });
+    if (nextPending) { headline = 'Следующий этап'; items = [nextPending]; }
+    else { headline = 'Все этапы завершены'; items = []; }
+  }
+
+  var rowsHtml = items.map(function(s) {
+    var b   = statusBadge(s);
+    var dl  = fmtDeadline(s.deadline);
+    var num = (s.stage_index + 1 < 10 ? '0' : '') + (s.stage_index + 1);
+    return '<div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid rgba(255,255,255,.05);">' +
+        '<div style="font-family:var(--font-mono);font-size:11px;color:rgba(184,146,58,.55);flex-shrink:0;width:22px;">' + num + '</div>' +
+        '<div style="width:26px;height:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#c9a84c;">' + stIcon(s) + '</div>' +
+        '<div style="flex:1;min-width:0;">' +
+          '<div style="font-family:var(--font-display);font-size:15px;font-weight:600;color:#eeedf8;line-height:1.2;">' + esc(stName(s)) + '</div>' +
+          (s.note ? '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(s.note) + '</div>' : '') +
+        '</div>' +
+        (dl ? '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.35);white-space:nowrap;flex-shrink:0;">' + dl + '</div>' : '') +
+        '<div style="font-family:var(--font-mono);font-size:10px;font-weight:600;color:' + b.col + ';background:' + b.bg + ';border:1px solid ' + b.bd + ';padding:3px 9px;border-radius:6px;white-space:nowrap;flex-shrink:0;letter-spacing:.04em;">' + b.txt + '</div>' +
+      '</div>';
+  }).join('');
+
+  if (!items.length) {
+    rowsHtml = '<div style="padding:12px 0 2px;border-top:1px solid rgba(255,255,255,.05);font-family:var(--font-display);font-size:15px;font-weight:600;color:#34d399;">Все ' + total + ' этапов завершены</div>';
+  }
+
+  el.innerHTML =
+    '<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#b8923a,#22d3ee);"></div>' +
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">' +
+      '<div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(184,146,58,.7);">' + headline + '</div>' +
+      '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.3);">' + done + ' / ' + total + ' завершено</div>' +
+    '</div>' +
+    rowsHtml;
+
+  el.style.display = 'block';
 }
 
 async function cp2LoadActivity(project, limit, containerId) {
