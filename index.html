@@ -19129,6 +19129,10 @@ function toggleObOnboarding() {
               <div class="sv-section-sub">Скорость · Нагрузка · Возвраты · Velocity</div>
             </div>
           </div>
+          <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;">
+            <button id="eff-scope-active" onclick="setEffScope('active', this)" style="font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:5px 11px;border-radius:7px;cursor:pointer;transition:all .15s;white-space:nowrap;background:rgba(184,146,58,.14);border:1px solid rgba(184,146,58,.35);color:#c9a84c;">Только активные</button>
+            <button id="eff-scope-all" onclick="setEffScope('all', this)" style="font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:5px 11px;border-radius:7px;cursor:pointer;transition:all .15s;white-space:nowrap;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.4);">Все проекты</button>
+          </div>
         </div>
         <div id="sv-efficiency-body" style="padding:0;overflow:hidden;border-radius:0 0 12px 12px;"></div>
       </div>
@@ -35287,6 +35291,30 @@ function formatMoney(n) {
 // EFFICIENCY BLOCK — Эффективность сотрудников
 // ═══════════════════════════════════════════════════════════
 
+// ── Переключатель охвата таблицы эффективности: 'active' | 'all' ──
+function _effApplyScopeStyles() {
+  var scope = (typeof window._effScope !== 'undefined') ? window._effScope : 'active';
+  [['eff-scope-active','active'], ['eff-scope-all','all']].forEach(function(pair){
+    var b = document.getElementById(pair[0]);
+    if (!b) return;
+    var on = scope === pair[1];
+    b.style.background  = on ? 'rgba(184,146,58,.14)'  : 'rgba(255,255,255,.04)';
+    b.style.borderColor = on ? 'rgba(184,146,58,.35)'  : 'rgba(255,255,255,.08)';
+    b.style.color       = on ? '#c9a84c'               : 'rgba(255,255,255,.4)';
+  });
+}
+
+function setEffScope(scope, btn) {
+  window._effScope = (scope === 'all') ? 'all' : 'active';
+  _effApplyScopeStyles();
+  if (typeof currentUser === 'undefined' || !currentUser) return;
+  sb.from('team_members').select('id,name,color,avatar_url').eq('agency_id', currentUser.id).order('name')
+    .then(function(mRes){
+      var m = mRes.data || [];
+      if (m.length) loadEfficiencyBlock(m, null);
+    });
+}
+
 async function loadEfficiencyBlock(members, activeProjectIds) {
   var el = document.getElementById('sv-efficiency-body');
   if (!el || !members || !members.length) return;
@@ -35298,9 +35326,31 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
   var day30 = new Date(now - 30 * 86400000);
 
   // Загружаем все нужные данные параллельно
-  var projFilter = activeProjectIds.length
-    ? activeProjectIds
-    : ['00000000-0000-0000-0000-000000000000'];
+  // Охват: 'active' (по умолчанию) или 'all' — управляется переключателем над таблицей
+  var _scope = (typeof window._effScope !== 'undefined') ? window._effScope : 'active';
+  _effApplyScopeStyles();
+
+  var projFilter;
+  if (_scope === 'all') {
+    // Все проекты агентства, включая завершённые/архивные
+    if (typeof _allProjects !== 'undefined' && _allProjects.length) {
+      projFilter = _allProjects.map(function(p){ return p.id; });
+    } else {
+      var _allRes = await sb.from('projects').select('id').eq('agency_id', currentUser.id);
+      projFilter = (_allRes.data || []).map(function(p){ return p.id; });
+    }
+  } else {
+    // Только активные (неархивные)
+    if (activeProjectIds && activeProjectIds.length) {
+      projFilter = activeProjectIds;
+    } else if (typeof _allProjects !== 'undefined' && _allProjects.length) {
+      projFilter = _allProjects.filter(function(p){ return p.status !== 'archived'; }).map(function(p){ return p.id; });
+    } else {
+      var _actRes = await sb.from('projects').select('id,status').eq('agency_id', currentUser.id).neq('status','archived');
+      projFilter = (_actRes.data || []).map(function(p){ return p.id; });
+    }
+  }
+  if (!projFilter.length) projFilter = ['00000000-0000-0000-0000-000000000000'];
 
   var [stagesRes, tasksRes, histRes] = await Promise.all([
     // Этапы с assignee_id — для нагрузки и возвратов этапов
