@@ -33456,6 +33456,7 @@ let _biAllRows  = []
 let _biChartBar = null
 let _biChartDonut = null
 let _biSelectedId = null
+var _finTaskHoursAll = null  // объявляем глобально во избежание ReferenceError
 
 // ── Compute P&L row for one project ──
 function _biComputeRow(p) {
@@ -44107,21 +44108,12 @@ async function tmHandlePhoto(input) {
   var memberId = document.getElementById('tm-id-val').value || ('new_' + Date.now());
   var path = 'team/' + currentUser.id + '/' + memberId + '.' + ext;
 
-  var { data, error } = await sb.storage.from('avatars').upload(path, file, { upsert: true });
+  var bucket = 'reel-covers';
+  var { data, error } = await sb.storage.from(bucket).upload(path, file, { upsert: true });
   if (error) {
-    // Попробуем bucket 'team-avatars' если 'avatars' не существует
-    var r2 = await sb.storage.from('team-avatars').upload(path, file, { upsert: true });
-    if (r2.error) {
-      if (status) status.textContent = 'Ошибка: ' + (r2.error.message || 'нет bucket');
-      if (saveBtn) saveBtn.disabled = false;
-      // Показываем инструкцию
-      if (status) status.innerHTML = '<span style="color:var(--amber);">Создай bucket <b>avatars</b> в Supabase Storage → Public</span>';
-      return;
-    }
-    data = r2.data;
-    var bucket = 'team-avatars';
-  } else {
-    var bucket = 'avatars';
+    if (status) status.innerHTML = '<span style="color:var(--red);">Ошибка загрузки: ' + (error.message || 'неизвестно') + '</span>';
+    if (saveBtn) saveBtn.disabled = false;
+    return;
   }
 
   var { data: urlData } = sb.storage.from(bucket).getPublicUrl(path);
