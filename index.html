@@ -17083,6 +17083,20 @@ html body main.cc-main.smm-fullscreen {
   padding: 0 !important;
   max-width: none !important;
 }
+
+/* SMM fullscreen: hide sidebar, header, shell gap */
+.smm-fs-active .cc-sidebar,
+.smm-fs-active .app-header {
+  display: none !important;
+}
+.smm-fs-active .cc-shell {
+  display: block !important;
+}
+.smm-fs-active .cc-main.smm-fullscreen {
+  width: 100vw !important;
+  min-height: 100vh !important;
+  overflow-y: auto !important;
+}
 </style>
 <meta charset="UTF-8">
 <meta name="build" content="dtr-v31052026-1117">
@@ -22702,6 +22716,8 @@ function goBackToProject() {
     mainEl.style.removeProperty('padding')
     mainEl.style.removeProperty('max-width')
   }
+  var dashEl = document.getElementById('page-dashboard')
+  if (dashEl) dashEl.classList.remove('smm-fs-active')
   window.location.hash = ''
   if (_isClientCache === true) {
     showPage('page-client')
@@ -28081,6 +28097,8 @@ function openSMMReport(report) {
     mainEl.style.setProperty('padding', '0', 'important')
     mainEl.style.setProperty('max-width', 'none', 'important')
   }
+  var dashEl = document.getElementById('page-dashboard')
+  if (dashEl) dashEl.classList.add('smm-fs-active')
   renderSMMPresentation()
   if (!isClient) fillSMMDataForm()
 
