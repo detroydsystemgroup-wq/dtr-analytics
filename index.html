@@ -28691,6 +28691,14 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
         <span style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.08em;">04</span>
         <span style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:500;color:#f0ece6;letter-spacing:-.01em;">Рубрики контента</span>
         <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.1),transparent);"></div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);">Сортировка:</span>
+          <select id="smm-rubric-sort-select" onchange="setSMMRubricSort(this.value)" style="background:#1a1a1a;border:1px solid #b8923a;border-radius:6px;padding:4px 8px;color:#c9a84c;font-family:'DM Mono',monospace;font-size:9px;outline:none;cursor:pointer;">
+            <option value="er">ER %</option>
+            <option value="reach">Охват</option>
+            <option value="views">Просмотры</option>
+          </select>
+        </div>
       </div>
       <div id="smm-rubric-winner" style="display:none;background:linear-gradient(135deg,rgba(184,146,58,.12),rgba(184,146,58,.04));border:1px solid rgba(184,146,58,.25);border-radius:14px;padding:20px 24px;margin-bottom:16px;display:none;">
         <div style="display:flex;align-items:center;justify-content:space-between;">
@@ -36894,10 +36902,19 @@ function renderSMMReelsGrid() {
   }).join('')
 }
 
+let smmRubricSort = 'er' // 'er' | 'reach' | 'views'
+
+function setSMMRubricSort(field) {
+  smmRubricSort = field
+  const sel = g('smm-rubric-sort-select')
+  if (sel && sel.value !== field) sel.value = field
+  renderSMMRubricGrid()
+}
+
 function renderSMMRubricGrid() {
   const grid   = g('smm-rubric-grid'); if (!grid) return
   const winner = g('smm-rubric-winner')
-  const rubs   = [...smmData.rubrics].sort((a,b) => b.er - a.er)
+  const rubs   = [...smmData.rubrics].sort((a,b) => (b[smmRubricSort]||0) - (a[smmRubricSort]||0))
 
   if (!rubs.length) {
     grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px;font-family:\'DM Mono\',monospace;font-size:12px;letter-spacing:.1em;color:var(--smm-muted);">Добавьте рубрики во вкладке «Данные»</div>'
