@@ -475,14 +475,14 @@
 
 #page-dashboard .cc-shell {
   display: flex!important;
-  height: 100vh !important;
+  height: calc(100vh - 60px) !important;
   overflow: hidden !important
 }
 
 #page-dashboard .cc-sidebar {
   position: sticky !important;
   top: 0 !important;
-  height: 100vh !important;
+  height: 100% !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
   flex-shrink: 0 !important;
@@ -498,7 +498,7 @@
 
 #page-dashboard .cc-main {
   flex: 1 !important;
-  height: 100vh !important;
+  height: 100% !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
   background: #070709 !important
@@ -6231,7 +6231,6 @@ canvas {
   height: calc(100vh - 52px);
   display: flex;
   overflow: hidden;
-  overflow-y: auto;
   overflow-x: hidden
 }
 
