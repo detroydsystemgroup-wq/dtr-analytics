@@ -16971,6 +16971,10 @@ button, a, [role="button"],
 @media(max-width:640px) {
 #page-client.active{flex-direction:column}.cp-sidebar{width:100%;height:auto;position:relative;border-right:none;border-bottom:1px solid rgba(255,255,255,.06)}.cp-sb-nav{display:flex;gap:4px;overflow-x:auto;padding:8px}.cp-sb-kpi{display:none}.cp-hero-strip{grid-template-columns:1fr}.cp-hero-divider{display:none}
 }
+
+/* Reel card — play button reveal on hover */
+#page-smm .reel-play-btn { opacity: 0; transition: opacity .2s; }
+#page-smm [data-href]:hover .reel-play-btn { opacity: 1 !important; }
 </style>
 <meta charset="UTF-8">
 <meta name="build" content="dtr-v31052026-1117">
@@ -28368,7 +28372,13 @@ function renderSMMReelsGrid() {
       : '1px solid rgba(255,255,255,.08)'
     var cardShadow = isWin ? '0 0 24px '+cfg.color+'22' : 'none'
 
-    html += '<div style="position:relative;border-radius:14px;overflow:hidden;border:'+cardBorder+';box-shadow:'+cardShadow+';background:#0d0d0d;display:flex;flex-direction:column;">'
+    // Вся карточка — ссылка если есть href, иначе div
+    var cardTag     = linkHref ? 'a' : 'div'
+    var cardHref    = linkHref ? ' href="'+linkHref+'" target="_blank" rel="noopener"' : ''
+    var cardCursor  = linkHref ? 'cursor:pointer;' : ''
+    var cardDecor   = linkHref ? 'text-decoration:none;' : ''
+
+    html += '<'+cardTag+cardHref+' style="position:relative;border-radius:14px;overflow:hidden;border:'+cardBorder+';box-shadow:'+cardShadow+';background:#0d0d0d;display:flex;flex-direction:column;'+cardCursor+cardDecor+'transition:transform .2s cubic-bezier(.16,1,.3,1),box-shadow .2s,border-color .2s;" onmouseover="this.style.transform=\'translateY(-4px)\';this.style.boxShadow=\'0 16px 40px rgba(0,0,0,.55)\''+( linkHref ? ';this.style.borderColor=\'rgba(255,255,255,.22)\'' : '')+'" onmouseout="this.style.transform=\'translateY(0)\';this.style.boxShadow=\''+cardShadow+'\''+( linkHref ? ';this.style.borderColor=\''+( isWin ? cfg.color+'99' : 'rgba(255,255,255,.08)')+'\'' : '')+'">'
 
     // Accent line top
     html += '<div style="position:absolute;top:0;left:0;right:0;height:2px;z-index:4;background:'+accentLine+';"></div>'
@@ -28390,14 +28400,22 @@ function renderSMMReelsGrid() {
       html += '<div style="position:absolute;top:10px;left:10px;z-index:3;font-family:\'DM Mono\',monospace;font-size:9px;font-weight:700;color:rgba(255,255,255,.5);background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.12);border-radius:5px;padding:2px 6px;">#'+rank+'</div>'
     }
 
-    // Play button
+    // Play button (visible only when link exists)
     if (linkHref) {
-      html += '<a href="'+linkHref+'" target="_blank" rel="noopener" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.18);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;color:#fff;text-decoration:none;">'
-      html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></a>'
+      html += '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3;width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.45);backdrop-filter:blur(12px);border:1.5px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;color:#fff;opacity:0;transition:opacity .2s;" class="reel-play-btn">'
+      html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg></div>'
+    }
+
+    // Link indicator badge (top-right corner, always visible when has link)
+    if (linkHref) {
+      html += '<div style="position:absolute;bottom:10px;right:10px;z-index:3;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:3px 7px;display:flex;align-items:center;gap:4px;">'
+      html += '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>'
+      html += '<span style="font-family:\'DM Mono\',monospace;font-size:7px;color:rgba(255,255,255,.55);letter-spacing:.06em;">ОТКРЫТЬ</span>'
+      html += '</div>'
     }
 
     // Title at bottom
-    html += '<div style="position:absolute;bottom:0;left:0;right:0;z-index:2;padding:10px 12px;">'
+    html += '<div style="position:absolute;bottom:'+(linkHref?'34':'0')+'px;left:0;right:0;z-index:2;padding:10px 12px;">'
     html += '<div style="font-family:\'DM Sans\',sans-serif;font-size:11px;font-weight:600;color:#f0ece6;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">'+esc(title)+'</div>'
     html += '</div>'
     html += '</div>' // end cover
