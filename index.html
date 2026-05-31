@@ -27997,12 +27997,22 @@ async function cp2LoadActivity(project, limit, containerId) {
 
   function fmtTime(dateStr) {
     var d = new Date(dateStr);
-    var today = new Date(); today.setHours(0,0,0,0);
-    var dd = new Date(dateStr); dd.setHours(0,0,0,0);
-    var diff = Math.floor((today - dd) / 86400000);
-    return diff === 0
-      ? 'Сегодня, ' + d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})
-      : diff === 1 ? 'Вчера' : diff + ' дн. назад';
+    if (isNaN(d)) return '';
+    var now = new Date();
+    var sec = Math.floor((now - d) / 1000);
+    if (sec < 0) sec = 0;
+    var min = Math.floor(sec / 60);
+    var hr  = Math.floor(min / 60);
+    if (sec < 60)  return 'только что';
+    if (min < 60)  return min + ' мин. назад';
+    if (hr  < 24)  return hr + ' ч. назад';
+    var startToday = new Date(); startToday.setHours(0,0,0,0);
+    var dayDiff = Math.floor((startToday - new Date(d).setHours(0,0,0,0)) / 86400000);
+    var hhmm = d.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
+    if (dayDiff === 1) return 'Вчера, ' + hhmm;
+    if (dayDiff < 7)   return dayDiff + ' дн. назад';
+    var M = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+    return d.getDate() + ' ' + M[d.getMonth()] + ', ' + hhmm;
   }
 
   el.innerHTML = items.map(function(it) {
@@ -28073,12 +28083,22 @@ async function cp2RenderActivityFull(project) {
 
   function fmtTime(dateStr) {
     var d = new Date(dateStr);
-    var today = new Date(); today.setHours(0,0,0,0);
-    var dd = new Date(dateStr); dd.setHours(0,0,0,0);
-    var diff = Math.floor((today - dd) / 86400000);
-    return diff === 0
-      ? 'Сегодня, ' + d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})
-      : diff === 1 ? 'Вчера' : diff + ' дн. назад';
+    if (isNaN(d)) return '';
+    var now = new Date();
+    var sec = Math.floor((now - d) / 1000);
+    if (sec < 0) sec = 0;
+    var min = Math.floor(sec / 60);
+    var hr  = Math.floor(min / 60);
+    if (sec < 60)  return 'только что';
+    if (min < 60)  return min + ' мин. назад';
+    if (hr  < 24)  return hr + ' ч. назад';
+    var startToday = new Date(); startToday.setHours(0,0,0,0);
+    var dayDiff = Math.floor((startToday - new Date(d).setHours(0,0,0,0)) / 86400000);
+    var hhmm = d.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
+    if (dayDiff === 1) return 'Вчера, ' + hhmm;
+    if (dayDiff < 7)   return dayDiff + ' дн. назад';
+    var M = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+    return d.getDate() + ' ' + M[d.getMonth()] + ', ' + hhmm;
   }
 
   // Группируем задачи по stage_index
