@@ -16977,6 +16977,18 @@ button, a, [role="button"],
 #page-smm [data-href]:hover .reel-play-btn { opacity: 1 !important; }
 
 /* ══ SMM Serious Redesign — монохром + золото ══ */
+
+/* SMM page — full screen, override cc-main padding */
+#page-smm.active ~ * { display: none; }
+.cc-main:has(#page-smm.active) {
+  padding: 0 !important;
+  overflow-x: hidden !important;
+}
+#page-smm.active {
+  width: 100% !important;
+  min-height: 100vh !important;
+}
+
 #page-smm {
   background: #080808 !important;
 }
@@ -22672,6 +22684,8 @@ function renderSMMLb() {
 
 // Smart back navigation: client → page-client, agency → page-project
 function goBackToProject() {
+  var mainEl = document.querySelector('.cc-main')
+  if (mainEl && mainEl.dataset.prevPadding !== undefined) { mainEl.style.padding = mainEl.dataset.prevPadding; mainEl.style.overflow = ''; }
   window.location.hash = ''
   if (_isClientCache === true) {
     showPage('page-client')
@@ -28044,6 +28058,9 @@ function openSMMReport(report) {
 
   showPage('page-smm')
   dtrSMMTab('smm', g('dtr-stab-smm'))
+  // Full screen mode for SMM
+  var mainEl = document.querySelector('.cc-main')
+  if (mainEl) { mainEl.dataset.prevPadding = mainEl.style.padding; mainEl.style.padding = '0'; mainEl.style.overflow = 'hidden auto'; }
   renderSMMPresentation()
   if (!isClient) fillSMMDataForm()
 
