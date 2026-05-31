@@ -3454,7 +3454,7 @@ svg {
 /* Metric cards (ER, LR, C/R etc) */
 #page-smm #smm-metrics-grid {
   display: grid !important;
-  grid-template-columns: repeat(5, 1fr) !important;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
   gap: 10px !important;
 }
 #page-smm .smm-metric-card {
@@ -16983,13 +16983,15 @@ button, a, [role="button"],
 
 /* Убираем padding из body-wrapper — наш wrapper сам управляет отступами */
 #page-smm #dtr-ss-smm > div {
-  padding: 48px 56px 80px !important;
+  padding: 48px 64px 80px !important;
+  width: 100% !important;
+  max-width: none !important;
 }
 
 /* Metric cards ER/LR/CR — строгий стиль */
 #page-smm #smm-metrics-grid {
   display: grid !important;
-  grid-template-columns: repeat(5, 1fr) !important;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
   gap: 0 !important;
   border-top: 1px solid rgba(255,255,255,.07) !important;
   margin-top: 24px !important;
@@ -19945,13 +19947,13 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 <!-- ═══════════════════════════════════════════
      PAGE: SMM REPORT
 ═══════════════════════════════════════════ -->
-<div class="page" id="page-smm" style="background:#080808;min-height:100vh;">
+<div class="page" id="page-smm" style="background:#080808;min-height:100vh;width:100%;">
 
   <!-- ═══════════ TOPBAR ═══════════ -->
   <div id="dtr-smm-topbar" style="
     position:sticky;top:0;z-index:100;
     display:flex;align-items:center;justify-content:space-between;
-    padding:0 32px;height:52px;
+    padding:0 64px;height:52px;
     background:rgba(8,8,8,.92);
     border-bottom:1px solid rgba(255,255,255,.07);
     backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
@@ -20001,7 +20003,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
   <!-- ═══════════ NAV TABS ═══════════ -->
   <div id="dtr-smm-nav" style="
     display:flex;align-items:center;gap:0;
-    padding:0 40px;
+    padding:0 64px;
     border-bottom:1px solid rgba(255,255,255,.06);
     background:#080808;
   ">
@@ -20023,11 +20025,11 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
   </div>
 
   <!-- ═══════════ BODY ═══════════ -->
-  <div style="padding:40px 48px 80px;max-width:1400px;margin:0 auto;">
+  <div style="width:100%;">
 
     <!-- ══ TAB: SMM ══ -->
     <div id="dtr-ss-smm" style="display:block;">
-    <div style="padding:48px 56px 80px;max-width:1200px;margin:0 auto;">
+    <div style="padding:48px 64px 80px;width:100%;">
 
       <div style="display:flex;align-items:baseline;gap:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:0;margin-top:0;">
         <span style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.18);letter-spacing:.08em;flex-shrink:0;">01</span>
@@ -28439,7 +28441,7 @@ function renderSMMReelsGrid() {
     {f:'sr',c:'#4ade80',l:'SR'},
   ]
 
-  html += '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:32px;">'
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:32px;">'
 
   reels.slice(0,20).forEach(function(r, i) {
     var rank      = i + 1
