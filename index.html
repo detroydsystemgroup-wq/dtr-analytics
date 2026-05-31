@@ -30600,11 +30600,28 @@ async function sendTelegramStageNotification(stageIndex, newStatus, note, stageN
   text += 'С уважением, операционный департамент \- *DeTroyd System Group*'
 
   try {
-    await fetch(TG_EDGE_URL, {
+    const _tgRes = await fetch(TG_EDGE_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY },
       body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'MarkdownV2' })
     })
+    if (!_tgRes.ok) {
+      const _tgBody = await _tgRes.text()
+      console.warn('[TG] Error', _tgRes.status, _tgBody)
+      // Фоллбэк — отправить без форматирования если MarkdownV2 не прошёл
+      const plainText = (headerEmoji + ' ' + currentProject.name + '\n\n' +
+        statusLabel + '\n' + name + '\n\n' +
+        'Прогресс: ' + pct + '% — ' + done + ' из ' + total + ' этапов' +
+        (note ? '\n\n' + note : '') +
+        (link && /^https?:\/\//i.test(link) ? '\n\nМатериал: ' + link : '') +
+        '\n\n' + dateStr + ', ' + timeStr + ' · DTR Analytics' +
+        '\n\nС уважением, операционный департамент - DeTroyd System Group')
+      await fetch(TG_EDGE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY },
+        body: JSON.stringify({ chat_id: chatId, text: plainText })
+      })
+    }
   } catch(e) {
     console.warn('Telegram notification failed:', e.message)
   }
