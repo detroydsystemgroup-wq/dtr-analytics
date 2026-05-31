@@ -20068,189 +20068,191 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
     <div style="padding:48px 64px 80px;width:100%;">
 
       <div style="display:flex;align-items:baseline;gap:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:0;margin-top:0;">
-        <span style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.18);letter-spacing:.08em;flex-shrink:0;">01</span>
-        <span style="font-family:'DM Sans',sans-serif;font-size:20px;font-weight:600;color:rgba(255,255,255,.88);letter-spacing:-.025em;line-height:1;">Ключевые показатели</span>
+        <span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.18);letter-spacing:.12em;flex-shrink:0;">01</span>
+        <span style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:600;color:rgba(255,255,255,.88);letter-spacing:-.025em;line-height:1;">Ключевые показатели</span>
+      </div>
+
+      <!-- sub-label: объём контента -->
+      <div style="padding:12px 0 10px;border-bottom:1px solid rgba(255,255,255,.04);">
+        <span style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.2em;text-transform:uppercase;">Объём контента</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid rgba(255,255,255,.05);">
+        <div style="padding:28px 32px 28px 0;border-right:1px solid rgba(255,255,255,.05);">
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.18em;text-transform:uppercase;margin-bottom:16px;">Reels</div>
+          <div id="sv-reels-count" style="font-family:'DM Sans',sans-serif;font-size:52px;font-weight:700;color:#b8923a;letter-spacing:-.055em;line-height:1;font-variant-numeric:tabular-nums;">—</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.2);margin-top:10px;letter-spacing:.06em;">опубликовано</div>
+        </div>
+        <div style="padding:28px 32px;border-right:1px solid rgba(255,255,255,.05);">
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.18em;text-transform:uppercase;margin-bottom:16px;">Stories</div>
+          <div id="sv-stories" style="font-family:'DM Sans',sans-serif;font-size:52px;font-weight:700;color:rgba(240,236,230,.85);letter-spacing:-.055em;line-height:1;font-variant-numeric:tabular-nums;">—</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.2);margin-top:10px;letter-spacing:.06em;">за период</div>
+        </div>
+        <div style="padding:28px 0 28px 32px;">
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.18em;text-transform:uppercase;margin-bottom:16px;">Креативы</div>
+          <div id="sv-ad-creatives" style="font-family:'DM Sans',sans-serif;font-size:52px;font-weight:700;color:rgba(240,236,230,.85);letter-spacing:-.055em;line-height:1;font-variant-numeric:tabular-nums;">—</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.2);margin-top:10px;letter-spacing:.06em;">рекламных</div>
+        </div>
+      </div>
+
+      <!-- sub-label: охват и просмотры -->
+      <div style="padding:12px 0 10px;border-bottom:1px solid rgba(255,255,255,.04);">
+        <span style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.2em;text-transform:uppercase;">Охват и просмотры</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid rgba(255,255,255,.05);">
+        <div style="padding:28px 32px 28px 0;border-right:1px solid rgba(255,255,255,.05);">
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.18em;text-transform:uppercase;margin-bottom:16px;">Охват</div>
+          <div id="sv-reach" style="font-family:'DM Sans',sans-serif;font-size:52px;font-weight:700;color:#b8923a;letter-spacing:-.055em;line-height:1;font-variant-numeric:tabular-nums;">—</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.2);margin-top:10px;letter-spacing:.06em;">уникальных аккаунтов</div>
+        </div>
+        <div style="padding:28px 32px;border-right:1px solid rgba(255,255,255,.05);">
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.18em;text-transform:uppercase;margin-bottom:16px;">Просмотры</div>
+          <div id="sv-views" style="font-family:'DM Sans',sans-serif;font-size:52px;font-weight:700;color:rgba(240,236,230,.85);letter-spacing:-.055em;line-height:1;font-variant-numeric:tabular-nums;">—</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.2);margin-top:10px;letter-spacing:.06em;">суммарно</div>
+        </div>
+        <div style="padding:28px 0 28px 32px;">
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.18em;text-transform:uppercase;margin-bottom:16px;">Частота</div>
+          <div id="sv-frequency" style="font-family:'DM Sans',sans-serif;font-size:52px;font-weight:700;color:rgba(240,236,230,.85);letter-spacing:-.055em;line-height:1;font-variant-numeric:tabular-nums;">—</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.2);margin-top:10px;letter-spacing:.06em;">просмотров на человека</div>
+        </div>
+      </div>
+
+      <!-- sub-label: аудитория -->
+      <div style="padding:12px 0 10px;border-bottom:1px solid rgba(255,255,255,.04);">
+        <span style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.2em;text-transform:uppercase;">Аудитория</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid rgba(255,255,255,.05);">
+        <div style="padding:28px 32px 28px 0;border-right:1px solid rgba(255,255,255,.05);">
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.18em;text-transform:uppercase;margin-bottom:16px;">Подписчики сейчас</div>
+          <div id="sv-subscribers" style="font-family:'DM Sans',sans-serif;font-size:52px;font-weight:700;color:#b8923a;letter-spacing:-.055em;line-height:1;font-variant-numeric:tabular-nums;">—</div>
+        </div>
+        <div style="padding:28px 32px;border-right:1px solid rgba(255,255,255,.05);">
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.18em;text-transform:uppercase;margin-bottom:16px;">Прирост</div>
+          <div id="sv-followers" style="font-family:'DM Sans',sans-serif;font-size:52px;font-weight:700;color:rgba(240,236,230,.85);letter-spacing:-.055em;line-height:1;font-variant-numeric:tabular-nums;">—</div>
+          <div id="sv-followers-delta" style="margin-top:10px;font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.04em;"></div>
+        </div>
+        <div style="padding:28px 0 28px 32px;">
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.18em;text-transform:uppercase;margin-bottom:16px;">Охват итого</div>
+          <div id="sv-total-reach-hero" style="font-family:'DM Sans',sans-serif;font-size:52px;font-weight:700;color:rgba(240,236,230,.85);letter-spacing:-.055em;line-height:1;font-variant-numeric:tabular-nums;">—</div>
+        </div>
+      </div>
+
+      <!-- sub-label: распределение -->
+      <div style="padding:12px 0 10px;border-bottom:1px solid rgba(255,255,255,.04);">
+        <span style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.2em;text-transform:uppercase;">Распределение по форматам</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid rgba(255,255,255,.05);">
+
+        <!-- Охват -->
+        <div style="padding:28px 48px 28px 0;border-right:1px solid rgba(255,255,255,.05);">
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.18em;text-transform:uppercase;margin-bottom:24px;">Охват</div>
+          <div style="display:flex;flex-direction:column;gap:0;">
+            <div style="padding:12px 0;border-top:1px solid rgba(255,255,255,.04);">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+                <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;color:rgba(255,255,255,.3);text-transform:uppercase;">Reels</span>
+                <div style="display:flex;align-items:baseline;gap:14px;">
+                  <span id="sp-reels-pct" style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:700;color:rgba(240,236,230,.9);letter-spacing:-.02em;font-variant-numeric:tabular-nums;">—</span>
+                  <span id="sp-reels" style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.18);font-variant-numeric:tabular-nums;">—</span>
+                </div>
+              </div>
+              <div style="height:1px;background:rgba(255,255,255,.05);position:relative;">
+                <div id="spf-reels" style="position:absolute;top:0;left:0;height:100%;width:0%;background:#b8923a;transition:width 1.4s cubic-bezier(.16,1,.3,1);"></div>
+              </div>
+            </div>
+            <div style="padding:12px 0;border-top:1px solid rgba(255,255,255,.04);">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+                <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;color:rgba(255,255,255,.3);text-transform:uppercase;">Посты</span>
+                <div style="display:flex;align-items:baseline;gap:14px;">
+                  <span id="sp-posts-pct" style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:700;color:rgba(240,236,230,.9);letter-spacing:-.02em;font-variant-numeric:tabular-nums;">—</span>
+                  <span id="sp-posts" style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.18);font-variant-numeric:tabular-nums;">—</span>
+                </div>
+              </div>
+              <div style="height:1px;background:rgba(255,255,255,.05);position:relative;">
+                <div id="spf-posts" style="position:absolute;top:0;left:0;height:100%;width:0%;background:rgba(255,255,255,.3);transition:width 1.4s cubic-bezier(.16,1,.3,1);"></div>
+              </div>
+            </div>
+            <div style="padding:12px 0;border-top:1px solid rgba(255,255,255,.04);">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+                <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;color:rgba(255,255,255,.3);text-transform:uppercase;">Сторис</span>
+                <div style="display:flex;align-items:baseline;gap:14px;">
+                  <span id="sp-stories-pct" style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:700;color:rgba(240,236,230,.9);letter-spacing:-.02em;font-variant-numeric:tabular-nums;">—</span>
+                  <span id="sp-stories" style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.18);font-variant-numeric:tabular-nums;">—</span>
+                </div>
+              </div>
+              <div style="height:1px;background:rgba(255,255,255,.05);position:relative;">
+                <div id="spf-stories" style="position:absolute;top:0;left:0;height:100%;width:0%;background:rgba(255,255,255,.15);transition:width 1.4s cubic-bezier(.16,1,.3,1);"></div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.05);display:flex;align-items:baseline;gap:10px;">
+            <div id="sv-total-reach" style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:700;color:rgba(240,236,230,.6);letter-spacing:-.04em;font-variant-numeric:tabular-nums;">—</div>
+            <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.15);text-transform:uppercase;letter-spacing:.12em;">охват итого</div>
+          </div>
+        </div>
+
+        <!-- Просмотры -->
+        <div style="padding:28px 0 28px 48px;">
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.18em;text-transform:uppercase;margin-bottom:24px;">Просмотры</div>
+          <div style="display:flex;flex-direction:column;gap:0;">
+            <div style="padding:12px 0;border-top:1px solid rgba(255,255,255,.04);">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+                <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;color:rgba(255,255,255,.3);text-transform:uppercase;">Reels</span>
+                <div style="display:flex;align-items:baseline;gap:14px;">
+                  <span id="sv-reels-views-pct" style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:700;color:rgba(240,236,230,.9);letter-spacing:-.02em;font-variant-numeric:tabular-nums;">—</span>
+                  <span id="sv-reels-views" style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.18);font-variant-numeric:tabular-nums;">—</span>
+                </div>
+              </div>
+              <div style="height:1px;background:rgba(255,255,255,.05);position:relative;">
+                <div id="spf-reels-views" style="position:absolute;top:0;left:0;height:100%;width:0%;background:#b8923a;transition:width 1.4s cubic-bezier(.16,1,.3,1);"></div>
+              </div>
+            </div>
+            <div style="padding:12px 0;border-top:1px solid rgba(255,255,255,.04);">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+                <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;color:rgba(255,255,255,.3);text-transform:uppercase;">Посты</span>
+                <div style="display:flex;align-items:baseline;gap:14px;">
+                  <span id="sv-posts-views-pct" style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:700;color:rgba(240,236,230,.9);letter-spacing:-.02em;font-variant-numeric:tabular-nums;">—</span>
+                  <span id="sv-posts-views" style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.18);font-variant-numeric:tabular-nums;">—</span>
+                </div>
+              </div>
+              <div style="height:1px;background:rgba(255,255,255,.05);position:relative;">
+                <div id="spf-posts-views" style="position:absolute;top:0;left:0;height:100%;width:0%;background:rgba(255,255,255,.3);transition:width 1.4s cubic-bezier(.16,1,.3,1);"></div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.05);display:flex;align-items:baseline;gap:10px;">
+            <div id="sv-total-views" style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:700;color:rgba(240,236,230,.6);letter-spacing:-.04em;font-variant-numeric:tabular-nums;">—</div>
+            <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.15);text-transform:uppercase;letter-spacing:.12em;">просмотров итого</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:baseline;gap:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:0;margin-top:72px;">
+        <span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.18);letter-spacing:.12em;flex-shrink:0;">02</span>
+        <span style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:600;color:rgba(255,255,255,.88);letter-spacing:-.025em;line-height:1;">Метрики эффективности</span>
         <div style="flex:1;"></div>
-        
-      </div>
-
-      <div style="padding:14px 0 10px;border-bottom:1px solid rgba(255,255,255,.05);">
-          <span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.22);letter-spacing:.2em;text-transform:uppercase;">Объём контента</span>
-        </div>
-      <div style="display:flex;gap:0;border-bottom:1px solid rgba(255,255,255,.05);">
-        <div style="flex:1;padding:24px 0;border-right:1px solid rgba(255,255,255,.05);padding-right:32px;padding-left:0;">
-              <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.22);letter-spacing:.16em;text-transform:uppercase;margin-bottom:14px;">Reels</div>
-              <div id="sv-reels-count" style="font-family:'DM Sans',sans-serif;font-size:44px;font-weight:800;color:#b8923a;letter-spacing:-.055em;line-height:1;font-variant-numeric:tabular-nums;">—</div>
-              <div style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.22);margin-top:8px;">опубликовано</div>
-            </div>
-        <div style="width:32px;flex-shrink:0;"></div>
-        <div style="flex:1;padding:24px 0;border-right:1px solid rgba(255,255,255,.05);padding-right:32px;padding-left:0;">
-              <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.22);letter-spacing:.16em;text-transform:uppercase;margin-bottom:14px;">Stories</div>
-              <div id="sv-stories" style="font-family:'DM Sans',sans-serif;font-size:44px;font-weight:800;color:rgba(255,255,255,.82);letter-spacing:-.055em;line-height:1;font-variant-numeric:tabular-nums;">—</div>
-              <div style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.22);margin-top:8px;">за период</div>
-            </div>
-        <div style="width:32px;flex-shrink:0;"></div>
-        <div style="flex:1;padding:24px 0;padding-right:0;padding-left:0;">
-              <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.22);letter-spacing:.16em;text-transform:uppercase;margin-bottom:14px;">Креативы</div>
-              <div id="sv-ad-creatives" style="font-family:'DM Sans',sans-serif;font-size:44px;font-weight:800;color:rgba(255,255,255,.82);letter-spacing:-.055em;line-height:1;font-variant-numeric:tabular-nums;">—</div>
-              <div style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.22);margin-top:8px;">рекламных</div>
-            </div>
-      </div>
-
-      <div style="padding:14px 0 10px;border-bottom:1px solid rgba(255,255,255,.05);">
-          <span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.22);letter-spacing:.2em;text-transform:uppercase;">Охват и просмотры</span>
-        </div>
-      <div style="display:flex;gap:0;border-bottom:1px solid rgba(255,255,255,.05);">
-        <div style="flex:1;padding:24px 0;border-right:1px solid rgba(255,255,255,.05);padding-right:32px;padding-left:0;">
-              <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.22);letter-spacing:.16em;text-transform:uppercase;margin-bottom:14px;">Охват</div>
-              <div id="sv-reach" style="font-family:'DM Sans',sans-serif;font-size:44px;font-weight:800;color:#b8923a;letter-spacing:-.055em;line-height:1;font-variant-numeric:tabular-nums;">—</div>
-              <div style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.22);margin-top:8px;">уникальных аккаунтов</div>
-            </div>
-        <div style="width:32px;flex-shrink:0;"></div>
-        <div style="flex:1;padding:24px 0;border-right:1px solid rgba(255,255,255,.05);padding-right:32px;padding-left:0;">
-              <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.22);letter-spacing:.16em;text-transform:uppercase;margin-bottom:14px;">Просмотры</div>
-              <div id="sv-views" style="font-family:'DM Sans',sans-serif;font-size:44px;font-weight:800;color:rgba(255,255,255,.82);letter-spacing:-.055em;line-height:1;font-variant-numeric:tabular-nums;">—</div>
-              <div style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.22);margin-top:8px;">суммарно</div>
-            </div>
-        <div style="width:32px;flex-shrink:0;"></div>
-        <div style="flex:1;padding:24px 0;padding-right:0;padding-left:0;">
-              <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.22);letter-spacing:.16em;text-transform:uppercase;margin-bottom:14px;">Частота</div>
-              <div id="sv-frequency" style="font-family:'DM Sans',sans-serif;font-size:44px;font-weight:800;color:rgba(255,255,255,.82);letter-spacing:-.055em;line-height:1;font-variant-numeric:tabular-nums;">—</div>
-              <div style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.22);margin-top:8px;">просмотров</div>
-            </div>
-      </div>
-
-      <div style="padding:14px 0 10px;border-bottom:1px solid rgba(255,255,255,.05);">
-          <span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.22);letter-spacing:.2em;text-transform:uppercase;">Аудитория</span>
-        </div>
-      <div style="display:flex;gap:0;border-bottom:1px solid rgba(255,255,255,.05);">
-        <div style="flex:1;padding:24px 32px 24px 0;border-right:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:20px;">
-          <div>
-            <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.22);letter-spacing:.16em;text-transform:uppercase;margin-bottom:14px;">Подписчики сейчас</div>
-            <div id="sv-subscribers" style="font-family:'DM Sans',sans-serif;font-size:44px;font-weight:800;color:#b8923a;letter-spacing:-.055em;line-height:1;font-variant-numeric:tabular-nums;">—</div>
-          </div>
-        </div>
-        <div style="width:32px;flex-shrink:0;"></div>
-        <div style="flex:1;padding:24px 0;">
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.22);letter-spacing:.16em;text-transform:uppercase;margin-bottom:14px;">Прирост</div>
-          <div id="sv-followers" style="font-family:'DM Sans',sans-serif;font-size:44px;font-weight:800;color:rgba(255,255,255,.82);letter-spacing:-.055em;line-height:1;font-variant-numeric:tabular-nums;">—</div>
-          <div id="sv-followers-delta" style="margin-top:8px;font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.35);"></div>
-        </div>
-        <div style="width:32px;flex-shrink:0;"></div>
-        <div style="flex:1;padding:24px 0;">
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.22);letter-spacing:.16em;text-transform:uppercase;margin-bottom:14px;">Охват итого</div>
-          <div id="sv-total-reach" style="font-family:'DM Sans',sans-serif;font-size:44px;font-weight:800;color:rgba(255,255,255,.82);letter-spacing:-.055em;line-height:1;font-variant-numeric:tabular-nums;">—</div>
-        </div>
-      </div>
-
-      <div style="padding:14px 0 10px;border-bottom:1px solid rgba(255,255,255,.05);">
-          <span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.22);letter-spacing:.2em;text-transform:uppercase;">Распределение по форматам</span>
-        </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;padding:28px 0;border-bottom:1px solid rgba(255,255,255,.05);">
-        <div>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.18);letter-spacing:.16em;text-transform:uppercase;margin-bottom:20px;">Охват</div>
-          <div style="display:flex;flex-direction:column;gap:16px;">
-            <div>
-              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
-                <span style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.45);">Reels</span>
-                <div style="display:flex;align-items:baseline;gap:12px;">
-                  <span id="sp-reels-pct" style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:#b8923a;font-variant-numeric:tabular-nums;">—</span>
-                  <span id="sp-reels" style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.22);">—</span>
-                </div>
-              </div>
-              <div style="height:1px;background:rgba(255,255,255,.08);">
-                <div id="spf-reels" style="height:100%;width:0%;background:#b8923a;transition:width 1.2s cubic-bezier(.16,1,.3,1);"></div>
-              </div>
-            </div>
-            <div>
-              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
-                <span style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.45);">Посты</span>
-                <div style="display:flex;align-items:baseline;gap:12px;">
-                  <span id="sp-posts-pct" style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:rgba(255,255,255,.6);font-variant-numeric:tabular-nums;">—</span>
-                  <span id="sp-posts" style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.22);">—</span>
-                </div>
-              </div>
-              <div style="height:1px;background:rgba(255,255,255,.08);">
-                <div id="spf-posts" style="height:100%;width:0%;background:rgba(255,255,255,.4);transition:width 1.2s cubic-bezier(.16,1,.3,1);"></div>
-              </div>
-            </div>
-            <div>
-              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
-                <span style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.45);">Сторис</span>
-                <div style="display:flex;align-items:baseline;gap:12px;">
-                  <span id="sp-stories-pct" style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:rgba(255,255,255,.45);font-variant-numeric:tabular-nums;">—</span>
-                  <span id="sp-stories" style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.22);">—</span>
-                </div>
-              </div>
-              <div style="height:1px;background:rgba(255,255,255,.08);">
-                <div id="spf-stories" style="height:100%;width:0%;background:rgba(255,255,255,.25);transition:width 1.2s cubic-bezier(.16,1,.3,1);"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.18);letter-spacing:.16em;text-transform:uppercase;margin-bottom:20px;">Просмотры</div>
-          <div style="display:flex;flex-direction:column;gap:16px;">
-            <div>
-              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
-                <span style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.45);">Reels</span>
-                <div style="display:flex;align-items:baseline;gap:12px;">
-                  <span id="sv-reels-views-pct" style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:#b8923a;font-variant-numeric:tabular-nums;">—</span>
-                  <span id="sv-reels-views" style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.22);">—</span>
-                </div>
-              </div>
-              <div style="height:1px;background:rgba(255,255,255,.08);">
-                <div id="spf-reels-views" style="height:100%;width:0%;background:#b8923a;transition:width 1.2s cubic-bezier(.16,1,.3,1);"></div>
-              </div>
-            </div>
-            <div>
-              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
-                <span style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.45);">Посты</span>
-                <div style="display:flex;align-items:baseline;gap:12px;">
-                  <span id="sv-posts-views-pct" style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:rgba(255,255,255,.6);font-variant-numeric:tabular-nums;">—</span>
-                  <span id="sv-posts-views" style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.22);">—</span>
-                </div>
-              </div>
-              <div style="height:1px;background:rgba(255,255,255,.08);">
-                <div id="spf-posts-views" style="height:100%;width:0%;background:rgba(255,255,255,.4);transition:width 1.2s cubic-bezier(.16,1,.3,1);"></div>
-              </div>
-            </div>
-          </div>
-          <div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,.05);display:flex;align-items:baseline;gap:12px;">
-            <div id="sv-total-views" style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:800;color:rgba(255,255,255,.55);letter-spacing:-.04em;font-variant-numeric:tabular-nums;">—</div>
-            <div style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.2);">просмотров итого</div>
-          </div>
-        </div>
-      </div>
-
-      <div style="display:flex;align-items:baseline;gap:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:0;margin-top:64px;">
-        <span style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.18);letter-spacing:.08em;flex-shrink:0;">02</span>
-        <span style="font-family:'DM Sans',sans-serif;font-size:20px;font-weight:600;color:rgba(255,255,255,.88);letter-spacing:-.025em;line-height:1;">Метрики эффективности</span>
-        <div style="flex:1;"></div>
-        <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.2);letter-spacing:.1em;">РАЗМЕР АУДИТОРИИ</span><select id="smm-bench-sel" onchange="renderSMMMetrics()" style="background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.15);border-radius:0;padding:2px 8px 2px 0;color:rgba(255,255,255,.35);font-family:'DM Mono',monospace;font-size:10px;outline:none;cursor:pointer;letter-spacing:.04em;"><option value="10000">до 10 000</option><option value="30000">10 000 – 30 000</option><option value="50000" selected>30 000 – 50 000</option><option value="70000">50 000 – 70 000</option><option value="100000">70 000 – 100 000</option><option value="150000">100 000+</option></select></div>
+        <div style="display:flex;align-items:center;gap:8px;"><span style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.14em;text-transform:uppercase;">Размер аудитории</span><select id="smm-bench-sel" onchange="renderSMMMetrics()" style="background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.12);border-radius:0;padding:2px 8px 2px 0;color:rgba(255,255,255,.3);font-family:'DM Mono',monospace;font-size:9px;outline:none;cursor:pointer;letter-spacing:.04em;"><option value="10000">до 10 000</option><option value="30000">10 000 – 30 000</option><option value="50000" selected>30 000 – 50 000</option><option value="70000">50 000 – 70 000</option><option value="100000">70 000 – 100 000</option><option value="150000">100 000+</option></select></div>
       </div>
 
       <div style="padding-top:4px;" id="smm-metrics-grid"></div>
 
-      <div style="padding:14px 0 10px;border-bottom:1px solid rgba(255,255,255,.05);">
-          <span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.22);letter-spacing:.2em;text-transform:uppercase;">Позиция относительно рынка</span>
-        </div>
+      <div style="padding:12px 0 10px;border-bottom:1px solid rgba(255,255,255,.04);">
+        <span style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.2em;text-transform:uppercase;">Позиция относительно рынка</span>
+      </div>
       <div style="padding:20px 0;" id="smm-vs-market"></div>
 
-      <div style="display:flex;align-items:baseline;gap:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:0;margin-top:64px;">
-        <span style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.18);letter-spacing:.08em;flex-shrink:0;">03</span>
-        <span style="font-family:'DM Sans',sans-serif;font-size:20px;font-weight:600;color:rgba(255,255,255,.88);letter-spacing:-.025em;line-height:1;">Опубликованный контент</span>
+      <div style="display:flex;align-items:baseline;gap:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:0;margin-top:72px;">
+        <span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.18);letter-spacing:.12em;flex-shrink:0;">03</span>
+        <span style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:600;color:rgba(255,255,255,.88);letter-spacing:-.025em;line-height:1;">Опубликованный контент</span>
         <div style="flex:1;"></div>
-        <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.2);letter-spacing:.1em;">СОРТИРОВКА</span><select id="smm-sort-select" onchange="setSMMReelsSort(this.value)" style="background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.15);border-radius:0;padding:2px 8px 2px 0;color:rgba(255,255,255,.35);font-family:'DM Mono',monospace;font-size:10px;outline:none;cursor:pointer;letter-spacing:.04em;"><option value="er">ER %</option><option value="views">Просмотры</option><option value="reach">Охват</option><option value="tr">TR %</option><option value="cr">CR %</option><option value="shr">SHR %</option><option value="sr">SR %</option></select></div>
+        <div style="display:flex;align-items:center;gap:8px;"><span style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.14em;text-transform:uppercase;">Сортировка</span><select id="smm-sort-select" onchange="setSMMReelsSort(this.value)" style="background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.12);border-radius:0;padding:2px 8px 2px 0;color:rgba(255,255,255,.3);font-family:'DM Mono',monospace;font-size:9px;outline:none;cursor:pointer;letter-spacing:.04em;"><option value="er">ER %</option><option value="views">Просмотры</option><option value="reach">Охват</option><option value="tr">TR %</option><option value="cr">CR %</option><option value="shr">SHR %</option><option value="sr">SR %</option></select></div>
       </div>
 
       <div style="padding-top:4px;" id="dtr-reels-v1"></div>
 
-      <div style="display:flex;align-items:baseline;gap:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:0;margin-top:64px;">
-        <span style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.18);letter-spacing:.08em;flex-shrink:0;">04</span>
-        <span style="font-family:'DM Sans',sans-serif;font-size:20px;font-weight:600;color:rgba(255,255,255,.88);letter-spacing:-.025em;line-height:1;">Рубрики контента</span>
+      <div style="display:flex;align-items:baseline;gap:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:0;margin-top:72px;">
+        <span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.18);letter-spacing:.12em;flex-shrink:0;">04</span>
+        <span style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:600;color:rgba(255,255,255,.88);letter-spacing:-.025em;line-height:1;">Рубрики контента</span>
         <div style="flex:1;"></div>
-        <div style="display:flex;align-items:center;gap:10px;"><span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.2);letter-spacing:.1em;">СОРТИРОВКА</span><select id="smm-rubric-sort-select" onchange="setSMMRubricSort(this.value)" style="background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.15);border-radius:0;padding:2px 8px 2px 0;color:rgba(255,255,255,.35);font-family:'DM Mono',monospace;font-size:10px;outline:none;cursor:pointer;letter-spacing:.04em;"><option value="er">ER %</option><option value="reach">Охват</option><option value="views">Просмотры</option></select></div>
+        <div style="display:flex;align-items:center;gap:8px;"><span style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.14em;text-transform:uppercase;">Сортировка</span><select id="smm-rubric-sort-select" onchange="setSMMRubricSort(this.value)" style="background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.12);border-radius:0;padding:2px 8px 2px 0;color:rgba(255,255,255,.3);font-family:'DM Mono',monospace;font-size:9px;outline:none;cursor:pointer;letter-spacing:.04em;"><option value="er">ER %</option><option value="reach">Охват</option><option value="views">Просмотры</option></select></div>
       </div>
 
       <div style="padding-top:4px;" id="dtr-rub-v9"></div>
@@ -28226,6 +28228,7 @@ function renderSMMPresentation() {
   if(g('sv-followers-delta')) g('sv-followers-delta').innerHTML = delta(m.followers, p.followers)
   if(g('sv-posts')) g('sv-posts').textContent = totalPubs || '—'
   if(g('sv-total-reach')) g('sv-total-reach').textContent = fmtBig(totalReach)
+  if(g('sv-total-reach-hero')) g('sv-total-reach-hero').textContent = fmtBig(totalReach)
   if(g('sv-total-views')) g('sv-total-views').textContent = fmtBig(totalViews)
 
   // ── Reach bars with % ──
@@ -28415,212 +28418,99 @@ function renderSMMReelsGrid() {
   var root = g('dtr-reels-v1')
   if (!root) return
 
-  // Синхронизируем select
   var sel = g('smm-sort-select')
   if (sel && sel.value !== smmReelsSort) sel.value = smmReelsSort
 
-  var fmtFull = function(n) { return !n ? '—' : Number(n).toLocaleString('ru-RU') }
-  var fmtVal  = function(f, r) {
-    if (f === 'er' || f === 'tr' || f === 'cr' || f === 'shr' || f === 'sr')
-      return r[f] ? (+r[f]).toFixed(2) + '%' : '—'
-    return fmtFull(r[f])
+  var fmt = function(n) { return !n ? '—' : Number(n).toLocaleString('ru-RU') }
+  var fmtPct = function(f, r) {
+    if (['er','tr','cr','shr','sr'].indexOf(f) !== -1) return r[f] ? (+r[f]).toFixed(2)+'%' : '—'
+    return fmt(r[f])
   }
 
-  var sortCfg = {
-    er:   { label:'ER %',      color:'#fbbf24', crown:'Лучший ER'        },
-    views:{ label:'Просмотры', color:'#a5b4fc', crown:'Макс. просмотры'  },
-    reach:{ label:'Охват',     color:'#34d399', crown:'Макс. охват'      },
-    tr:   { label:'TR %',      color:'#38bdf8', crown:'Лучший TR'        },
-    cr:   { label:'CR %',      color:'#fb923c', crown:'Лучший CR'        },
-    shr:  { label:'SHR %',     color:'#e879f9', crown:'Лучший SHR'      },
-    sr:   { label:'SR %',      color:'#4ade80', crown:'Лучший SR'        },
-  }
+  var COLS = [
+    { f:'er',    l:'ER',          col:'#b8923a' },
+    { f:'views', l:'Просмотры',   col:'rgba(255,255,255,.5)' },
+    { f:'reach', l:'Охват',       col:'rgba(255,255,255,.5)' },
+    { f:'tr',    l:'TR',          col:'rgba(255,255,255,.4)' },
+    { f:'cr',    l:'CR',          col:'rgba(255,255,255,.4)' },
+    { f:'shr',   l:'SHR',         col:'rgba(255,255,255,.4)' },
+    { f:'sr',    l:'SR',          col:'rgba(255,255,255,.4)' },
+  ]
 
-  var reels = smmData.reels.slice().sort(function(a,b){ return (b[smmReelsSort]||0) - (a[smmReelsSort]||0) })
-  var cfg   = sortCfg[smmReelsSort] || sortCfg.er
-  var best  = reels[0]
-  var winVal = best ? +(best[smmReelsSort] || 0) : 0
+  var reels = smmData.reels.slice().sort(function(a,b){ return (b[smmReelsSort]||0)-(a[smmReelsSort]||0) })
 
-  var html = ''
-
-  // ── EMPTY ──
   if (!reels.length) {
-    root.innerHTML = '<div style="text-align:center;padding:48px;font-family:\'DM Mono\',monospace;font-size:12px;color:rgba(255,255,255,.2);">Добавьте Reels во вкладке «Данные»</div>'
+    root.innerHTML = '<div style="padding:56px 0;text-align:center;font-family:\'DM Mono\',monospace;font-size:10px;color:rgba(255,255,255,.15);letter-spacing:.1em;">Добавьте Reels во вкладке «Данные»</div>'
     return
   }
 
-  // ── WINNER BANNER ──
-  if (winVal > 0) {
-    var winTitle   = best.title || 'Reel #1'
-    var winDisplay = fmtVal(smmReelsSort, best)
-    // Доп метрики победителя
-    var extras = []
-    var allMeta = [
-      {f:'er',c:'#fbbf24',l:'ER'},
-      {f:'views',c:'#a5b4fc',l:'Просмотры'},
-      {f:'reach',c:'#34d399',l:'Охват'},
-      {f:'tr',c:'#38bdf8',l:'TR'},
-      {f:'cr',c:'#fb923c',l:'CR'},
-    ]
-    allMeta.forEach(function(m) {
-      if (m.f !== smmReelsSort && (best[m.f]||0) > 0) extras.push(m)
-    })
-    extras = extras.slice(0,4)
+  // Active sort config
+  var activeLbl = { er:'ER',views:'Просмотры',reach:'Охват',tr:'TR',cr:'CR',shr:'SHR',sr:'SR' }[smmReelsSort] || 'ER'
 
-    html += '<div style="position:relative;overflow:hidden;background:linear-gradient(135deg,'+cfg.color+'18,'+cfg.color+'04);border:2px solid '+cfg.color+'55;border-radius:16px;padding:20px 24px;margin-bottom:20px;">'
-    html += '<div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,'+cfg.color+','+cfg.color+'44,transparent);"></div>'
-    html += '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;">'
-    html += '<div style="display:flex;align-items:center;gap:16px;">'
-    html += '<div style="width:52px;height:52px;border-radius:12px;background:'+cfg.color+'20;border:1px solid '+cfg.color+'44;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">👑</div>'
-    html += '<div>'
-    html += '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:'+cfg.color+';letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px;opacity:.8;">👑 '+cfg.crown+'</div>'
-    html += '<div style="font-family:\'DM Sans\',sans-serif;font-size:22px;font-weight:800;color:#f0ece6;letter-spacing:-.03em;line-height:1;">'+esc(winTitle)+'</div>'
-    html += '</div></div>'
-    html += '<div style="text-align:right;flex-shrink:0;">'
-    html += '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;margin-bottom:4px;">'+cfg.label+'</div>'
-    html += '<div style="font-family:\'DM Sans\',sans-serif;font-size:40px;font-weight:900;color:'+cfg.color+';letter-spacing:-.05em;line-height:1;">'+winDisplay+'</div>'
-    html += '</div></div>'
-    if (extras.length) {
-      html += '<div style="display:flex;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07);">'
-      extras.forEach(function(m) {
-        html += '<div style="padding:6px 12px;border-radius:7px;background:'+m.c+'14;border:1px solid '+m.c+'44;min-width:60px;">'
-        html += '<div style="font-family:\'DM Mono\',monospace;font-size:11px;font-weight:700;color:'+m.c+';line-height:1;">'+fmtVal(m.f,best)+'</div>'
-        html += '<div style="font-family:\'DM Mono\',monospace;font-size:8px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em;margin-top:3px;">'+m.l+'</div>'
-        html += '</div>'
-      })
-      html += '</div>'
-    }
-    html += '</div>'
-  }
+  // Visible columns: active + 3 most data-rich others
+  var visibleCols = COLS.filter(function(c){ return c.f === smmReelsSort }).concat(
+    COLS.filter(function(c){ return c.f !== smmReelsSort && reels.some(function(r){ return (r[c.f]||0)>0 }) }).slice(0,3)
+  )
 
-  // ── CARDS GRID ──
-  var gradients = [
-    'linear-gradient(160deg,#1a1a3e,#2d1b69 50%,#0f0f1e)',
-    'linear-gradient(160deg,#0f2027,#203a43 50%,#2c5364)',
-    'linear-gradient(160deg,#1a0f0f,#3d1515 50%,#1a0505)',
-    'linear-gradient(160deg,#0f1a0f,#1a3d1a 50%,#051a05)',
-    'linear-gradient(160deg,#1a1500,#3d3000 50%,#1a0a00)',
-    'linear-gradient(160deg,#0f0f2a,#1a0a3d 50%,#060612)',
-    'linear-gradient(160deg,#1a0a1a,#3d0a3d 50%,#0a000a)',
-  ]
-  // Вторичные метрики (не активная, только с данными)
-  var secMeta = [
-    {f:'er',c:'#fbbf24',l:'ER'},
-    {f:'views',c:'#a5b4fc',l:'Views'},
-    {f:'reach',c:'#34d399',l:'Reach'},
-    {f:'tr',c:'#38bdf8',l:'TR'},
-    {f:'cr',c:'#fb923c',l:'CR'},
-    {f:'shr',c:'#e879f9',l:'SHR'},
-    {f:'sr',c:'#4ade80',l:'SR'},
-  ]
+  var html = ''
 
-  html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:32px;">'
+  // TABLE HEADER
+  html += '<div style="display:grid;grid-template-columns:28px 1fr'+visibleCols.map(function(){ return ' 90px' }).join('')+';gap:0;border-bottom:1px solid rgba(255,255,255,.06);padding:8px 0;">'
+  html += '<div></div>'
+  html += '<div style="font-family:\'DM Mono\',monospace;font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.14em;text-transform:uppercase;padding-left:8px;">Название</div>'
+  visibleCols.forEach(function(c) {
+    var isActive = c.f === smmReelsSort
+    html += '<div style="text-align:right;font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:'+(isActive?'rgba(255,255,255,.5)':'rgba(255,255,255,.18)')+';padding-right:0;">'+(isActive?'<span style="color:#b8923a;">'+c.l+'</span>':c.l)+'</div>'
+  })
+  html += '</div>'
 
-  reels.slice(0,20).forEach(function(r, i) {
-    var rank      = i + 1
-    var isWin     = rank === 1 && winVal > 0
-    var rankEmoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : null
-    var accentLine = rank === 1
-      ? 'linear-gradient(90deg,#f59e0b,#fbbf24,#f59e0b)'
-      : rank === 2
-        ? 'linear-gradient(90deg,#9ca3af,#e5e7eb,#9ca3af)'
-        : rank === 3
-          ? 'linear-gradient(90deg,#b45309,#d97706,#b45309)'
-          : 'rgba(255,255,255,.06)'
-
-    var hasCover   = r.cover && r.cover.trim()
-    var coverBg    = hasCover
-      ? 'url(\''+r.cover+'\') center/cover no-repeat,#111'
-      : gradients[i % gradients.length]
-    var title      = r.title || 'Reel #' + rank
-    var linkHref   = r.link && /^https?:\/\//i.test(r.link) ? r.link : null
-
-    var activeCfg  = sortCfg[smmReelsSort] || sortCfg.er
-    var activeVal  = fmtVal(smmReelsSort, r)
-    var hasActive  = (r[smmReelsSort] || 0) > 0
-
-    var sec = secMeta.filter(function(m){ return m.f !== smmReelsSort && (r[m.f]||0) > 0 }).slice(0,2)
-
-    // Карточка — border победителя
-    var cardBorder = isWin
-      ? '2px solid '+cfg.color+'99'
-      : '1px solid rgba(255,255,255,.08)'
-    var cardShadow = isWin ? '0 0 24px '+cfg.color+'22' : 'none'
-
-    // Вся карточка — ссылка если есть href, иначе div
-    var cardTag     = linkHref ? 'a' : 'div'
-    var cardHref    = linkHref ? ' href="'+linkHref+'" target="_blank" rel="noopener"' : ''
-    var cardCursor  = linkHref ? 'cursor:pointer;' : ''
-    var cardDecor   = linkHref ? 'text-decoration:none;' : ''
-
-    html += '<'+cardTag+cardHref+' style="position:relative;border-radius:14px;overflow:hidden;border:'+cardBorder+';box-shadow:'+cardShadow+';background:#0d0d0d;display:flex;flex-direction:column;'+cardCursor+cardDecor+'transition:transform .2s cubic-bezier(.16,1,.3,1),box-shadow .2s,border-color .2s;" onmouseover="this.style.transform=\'translateY(-4px)\';this.style.boxShadow=\'0 16px 40px rgba(0,0,0,.55)\''+( linkHref ? ';this.style.borderColor=\'rgba(255,255,255,.22)\'' : '')+'" onmouseout="this.style.transform=\'translateY(0)\';this.style.boxShadow=\''+cardShadow+'\''+( linkHref ? ';this.style.borderColor=\''+( isWin ? cfg.color+'99' : 'rgba(255,255,255,.08)')+'\'' : '')+'">'
-
-    // Accent line top
-    html += '<div style="position:absolute;top:0;left:0;right:0;height:2px;z-index:4;background:'+accentLine+';"></div>'
-
-    // Cover 9:16
-    html += '<div style="position:relative;aspect-ratio:9/16;background:'+coverBg+';overflow:hidden;flex-shrink:0;">'
-    // Overlay gradient
-    html += '<div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.3) 0%,transparent 30%,transparent 55%,rgba(0,0,0,.85) 100%);z-index:1;"></div>'
-
-    // Winner badge
-    if (isWin) {
-      html += '<div style="position:absolute;top:10px;right:10px;z-index:3;background:'+cfg.color+';color:#000;font-family:\'DM Mono\',monospace;font-size:7px;font-weight:800;letter-spacing:.06em;padding:3px 7px;border-radius:5px;text-transform:uppercase;">👑 '+cfg.crown+'</div>'
-    }
-
-    // Rank pill
-    if (rankEmoji) {
-      html += '<div style="position:absolute;top:10px;left:10px;z-index:3;font-size:18px;line-height:1;">'+rankEmoji+'</div>'
-    } else {
-      html += '<div style="position:absolute;top:10px;left:10px;z-index:3;font-family:\'DM Mono\',monospace;font-size:9px;font-weight:700;color:rgba(255,255,255,.5);background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.12);border-radius:5px;padding:2px 6px;">#'+rank+'</div>'
-    }
-
-    // Play button (visible only when link exists)
-    if (linkHref) {
-      html += '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3;width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.45);backdrop-filter:blur(12px);border:1.5px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;color:#fff;opacity:0;transition:opacity .2s;" class="reel-play-btn">'
-      html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg></div>'
-    }
-
-    // Link indicator badge (top-right corner, always visible when has link)
-    if (linkHref) {
-      html += '<div style="position:absolute;bottom:10px;right:10px;z-index:3;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:3px 7px;display:flex;align-items:center;gap:4px;">'
-      html += '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>'
-      html += '<span style="font-family:\'DM Mono\',monospace;font-size:7px;color:rgba(255,255,255,.55);letter-spacing:.06em;">ОТКРЫТЬ</span>'
-      html += '</div>'
-    }
-
-    // Title at bottom
-    html += '<div style="position:absolute;bottom:'+(linkHref?'34':'0')+'px;left:0;right:0;z-index:2;padding:10px 12px;">'
-    html += '<div style="font-family:\'DM Sans\',sans-serif;font-size:11px;font-weight:600;color:#f0ece6;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">'+esc(title)+'</div>'
-    html += '</div>'
-    html += '</div>' // end cover
-
-    // Stats panel
-    html += '<div style="padding:10px 12px;background:#0d0d0d;border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:5px;">'
-
-    // Active metric — highlighted
-    html += '<div style="display:flex;align-items:center;justify-content:space-between;background:'+activeCfg.color+(hasActive?'18':'0a')+';border:1px solid '+activeCfg.color+(hasActive?'50':'20')+';border-radius:7px;padding:5px 9px;">'
-    html += '<span style="font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:'+activeCfg.color+(hasActive?'':'99')+';">'+activeCfg.label+' ★</span>'
-    html += '<span style="font-family:\'DM Mono\',monospace;font-size:12px;font-weight:800;color:'+(hasActive?activeCfg.color:'rgba(255,255,255,.25)')+';">'+activeVal+'</span>'
-    html += '</div>'
-
-    // Secondary metrics
-    if (sec.length) {
-      html += '<div style="display:flex;gap:4px;">'
-      sec.forEach(function(m) {
-        html += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:4px 5px;">'
-        html += '<span style="font-family:\'DM Mono\',monospace;font-size:7px;color:rgba(255,255,255,.3);letter-spacing:.06em;text-transform:uppercase;">'+m.l+'</span>'
-        html += '<span style="font-family:\'DM Mono\',monospace;font-size:9px;font-weight:600;color:'+m.c+';margin-top:2px;">'+fmtVal(m.f,r)+'</span>'
-        html += '</div>'
-      })
-      html += '</div>'
-    }
-
-    html += '</div>' // end stats
-    html += '</div>' // end card
+  // TABLE ROWS
+  var maxVals = {}
+  visibleCols.forEach(function(c) {
+    maxVals[c.f] = Math.max.apply(null, reels.map(function(r){ return r[c.f]||0 }).concat([.001]))
   })
 
-  html += '</div>' // end grid
+  reels.slice(0,20).forEach(function(r, i) {
+    var isTop = i === 0
+    var title = r.title || ('Reel #'+(i+1))
+    var linkHref = r.link && /^https?:\/\//i.test(r.link) ? r.link : null
+    var rowBg = isTop ? 'rgba(184,146,58,.04)' : (i%2===0 ? 'transparent' : 'rgba(255,255,255,.012)')
+
+    var rowOpen = linkHref
+      ? '<a href="'+linkHref+'" target="_blank" rel="noopener" style="'
+      : '<div style="'
+    var rowStyle = 'display:grid;grid-template-columns:28px 1fr'+visibleCols.map(function(){ return ' 90px' }).join('')+';gap:0;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.04);background:'+rowBg+';align-items:center;'+(linkHref?'cursor:pointer;text-decoration:none;':'')+(isTop?'border-left:2px solid #b8923a;padding-left:0;':'border-left:2px solid transparent;')+'"'
+    var rowClose = linkHref ? '</a>' : '</div>'
+
+    html += rowOpen + rowStyle + '>'
+
+    // Rank
+    html += '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:rgba(255,255,255,.18);text-align:center;">'+(i+1)+'</div>'
+
+    // Title + cover thumb
+    html += '<div style="display:flex;align-items:center;gap:10px;padding-left:8px;overflow:hidden;">'
+    if (r.cover && r.cover.trim()) {
+      html += '<div style="width:24px;height:32px;border-radius:2px;background:url(\''+r.cover+'\') center/cover no-repeat;flex-shrink:0;"></div>'
+    }
+    html += '<div style="font-family:\'DM Sans\',sans-serif;font-size:12px;font-weight:'+(isTop?'600':'400')+';color:'+(isTop?'rgba(240,236,230,.9)':'rgba(240,236,230,.65)')+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+esc(title)+'</div>'
+    if (linkHref) html += '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>'
+    html += '</div>'
+
+    // Metric cells
+    visibleCols.forEach(function(c) {
+      var val = r[c.f]||0
+      var pct = maxVals[c.f]>0 ? val/maxVals[c.f]*100 : 0
+      var isActive = c.f === smmReelsSort
+      var display = fmtPct(c.f, r)
+      html += '<div style="text-align:right;padding-right:0;">'
+      html += '<div style="font-family:\'DM Mono\',monospace;font-size:'+(isActive?'12':'11')+'px;font-weight:'+(isActive?'600':'400')+';color:'+(isActive?'rgba(240,236,230,.9)':'rgba(240,236,230,.38)')+';font-variant-numeric:tabular-nums;margin-bottom:4px;">'+display+'</div>'
+      html += '<div style="height:1px;background:rgba(255,255,255,.05);position:relative;">'
+      html += '<div style="position:absolute;top:0;right:0;height:100%;width:'+pct.toFixed(1)+'%;background:'+(isActive?'#b8923a':'rgba(255,255,255,.2)')+';transition:width .8s;"></div>'
+      html += '</div></div>'
+    })
+
+    html += rowClose
+  })
 
   root.innerHTML = html
 }
@@ -28638,122 +28528,78 @@ function renderSMMRubricGrid() {
   var root = g('dtr-rub-v9')
   if (!root) return
 
-  var fmtFull = function(n) { return !n ? '—' : Number(n).toLocaleString('ru-RU') }
-  var rubs = smmData.rubrics.slice().sort(function(a,b){ return (b[smmRubricSort]||0) - (a[smmRubricSort]||0) })
-  var best = rubs[0]
+  var fmt = function(n) { return !n ? '—' : Number(n).toLocaleString('ru-RU') }
+  var rubs = smmData.rubrics.slice().sort(function(a,b){ return (b[smmRubricSort]||0)-(a[smmRubricSort]||0) })
 
-  var sortCfg = {
-    er:    { label: 'ER %',      color: '#fbbf24', crown: 'Лучший ER' },
-    reach: { label: 'Охват',     color: '#34d399', crown: 'Макс. охват' },
-    views: { label: 'Просмотры', color: '#a5b4fc', crown: 'Макс. просмотры' }
-  }
-  var cfg = sortCfg[smmRubricSort] || sortCfg.er
-
-  // Синхронизируем select (статический HTML) с текущим значением сортировки
   var selEl = g('smm-rubric-sort-select')
   if (selEl && selEl.value !== smmRubricSort) selEl.value = smmRubricSort
 
-  var html = ''
-
   if (!rubs.length) {
-    root.innerHTML = '<div style="text-align:center;padding:48px;font-family:DM Mono,monospace;font-size:12px;color:rgba(255,255,255,.2);">Добавьте рубрики во вкладке «Данные»</div>'
+    root.innerHTML = '<div style="padding:56px 0;text-align:center;font-family:\'DM Mono\',monospace;font-size:10px;color:rgba(255,255,255,.15);letter-spacing:.1em;">Добавьте рубрики во вкладке «Данные»</div>'
     return
   }
 
-  // Winner banner
-  var winVal = best[smmRubricSort] || 0
-  if (winVal > 0) {
-    var winDisplay = smmRubricSort === 'er' ? best.er.toFixed(2)+'%' : fmtFull(winVal)
-    html += '<div style="position:relative;overflow:hidden;background:linear-gradient(135deg,'+cfg.color+'18,'+cfg.color+'04);border:2px solid '+cfg.color+'55;border-radius:16px;padding:20px 24px;margin-bottom:20px;">'
-    html += '<div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,'+cfg.color+','+cfg.color+'44,transparent);"></div>'
-    html += '<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;">'
-    html += '<div style="display:flex;align-items:center;gap:16px;">'
-    html += '<div style="width:52px;height:52px;border-radius:12px;background:'+cfg.color+'20;border:1px solid '+cfg.color+'44;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">👑</div>'
-    html += '<div>'
-    html += '<div style="font-family:DM Mono,monospace;font-size:9px;color:'+cfg.color+';letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px;opacity:.8;">👑 '+cfg.crown+'</div>'
-    html += '<div style="font-family:DM Sans,sans-serif;font-size:22px;font-weight:800;color:#f0ece6;letter-spacing:-.03em;line-height:1;">'+esc(best.name)+'</div>'
-    html += '</div></div>'
-    html += '<div style="text-align:right;flex-shrink:0;">'
-    html += '<div style="font-family:DM Mono,monospace;font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;margin-bottom:4px;">'+cfg.label+'</div>'
-    html += '<div style="font-family:DM Sans,sans-serif;font-size:40px;font-weight:900;color:'+cfg.color+';letter-spacing:-.05em;line-height:1;">'+winDisplay+'</div>'
-    html += '</div></div>'
-    // Доп. метрики
-    var extras = []
-    if (best.er)    extras.push({ lbl:'ER',        val:best.er.toFixed(2)+'%',  c:'#fbbf24', f:'er'    })
-    if (best.reach) extras.push({ lbl:'Охват',      val:fmtFull(best.reach),     c:'#34d399', f:'reach' })
-    if (best.views) extras.push({ lbl:'Просмотры',  val:fmtFull(best.views),     c:'#a5b4fc', f:'views' })
-    if (best.posts) extras.push({ lbl:'Постов',     val:String(best.posts),      c:'rgba(255,255,255,.5)', f:'' })
-    if (extras.length > 1) {
-      html += '<div style="display:flex;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07);">'
-      extras.forEach(function(e) {
-        var active = e.f === smmRubricSort
-        html += '<div style="padding:6px 12px;border-radius:7px;background:'+(active?e.c+'22':'rgba(255,255,255,.04)')+';border:1px solid '+(active?e.c+'55':'rgba(255,255,255,.06)')+';min-width:60px;">'
-        html += '<div style="font-family:DM Mono,monospace;font-size:13px;font-weight:700;color:'+(active?e.c:'rgba(255,255,255,.55)')+';line-height:1;">'+e.val+'</div>'
-        html += '<div style="font-family:DM Mono,monospace;font-size:8px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em;margin-top:3px;">'+e.lbl+'</div>'
-        html += '</div>'
-      })
-      html += '</div>'
-    }
-    html += '</div>'
-  }
+  var maxER    = Math.max.apply(null, rubs.map(function(r){ return r.er||0 }).concat([.001]))
+  var maxReach = Math.max.apply(null, rubs.map(function(r){ return r.reach||0 }).concat([1]))
+  var maxViews = Math.max.apply(null, rubs.map(function(r){ return r.views||0 }).concat([1]))
 
-  // Карточки
-  var maxER    = Math.max.apply(null, rubs.map(function(r){ return r.er    ||0 }).concat([.01]))
-  var maxReach = Math.max.apply(null, rubs.map(function(r){ return r.reach ||0 }).concat([1]))
-  var maxViews = Math.max.apply(null, rubs.map(function(r){ return r.views ||0 }).concat([1]))
-  var pals = ['#c9a84c','#3ecf8e','#a78bfa','#38b2ac','#f472b6','#fbbf24','#60a5fa','#fb923c','#e879f9']
+  var html = ''
 
-  html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px;">'
-  rubs.forEach(function(r, i) {
-    var isWin = best && r.name === best.name && winVal > 0
-    var col   = isWin ? cfg.color : pals[i % pals.length]
-    var erPct = maxER    > 0 ? (r.er    /maxER    *100).toFixed(1) : 0
-    var rePct = maxReach > 0 ? (r.reach /maxReach *100).toFixed(1) : 0
-    var viPct = maxViews > 0 ? ((r.views||0)/maxViews*100).toFixed(1) : 0
-
-    var cardStyle = isWin
-      ? 'background:linear-gradient(145deg,'+col+'14,#0e0e0e 60%);border:2px solid '+col+'66;border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:0 0 28px '+col+'18;'
-      : 'background:#111;border:1px solid rgba(255,255,255,.07);border-top:2px solid '+col+';border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;'
-
-    html += '<div style="'+cardStyle+'">'
-
-    // Победительский badge
-    if (isWin) {
-      html += '<div style="display:inline-flex;align-items:center;gap:5px;background:'+col+'22;border:1px solid '+col+'55;border-radius:6px;padding:3px 9px;align-self:flex-start;">'
-      html += '<span style="font-size:10px;">👑</span><span style="font-family:DM Mono,monospace;font-size:8px;color:'+col+';letter-spacing:.08em;text-transform:uppercase;font-weight:700;">'+cfg.crown+'</span>'
-      html += '</div>'
-    }
-
-    // Шапка карточки
-    html += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">'
-    html += '<div style="font-family:DM Sans,sans-serif;font-size:'+(isWin?'16':'14')+'px;font-weight:'+(isWin?'800':'600')+';color:#f0ece6;letter-spacing:-.01em;">'+esc(r.name)+'</div>'
-    html += '<div style="text-align:right;flex-shrink:0;">'
-    html += '<div style="font-family:DM Sans,sans-serif;font-size:20px;font-weight:700;color:'+col+';line-height:1;">'+(r.posts||0)+'</div>'
-    html += '<div style="font-family:DM Mono,monospace;font-size:8px;color:rgba(255,255,255,.25);letter-spacing:.06em;">ПОСТОВ</div>'
-    html += '</div></div>'
-    html += '<div style="height:1px;background:rgba(255,255,255,.06);"></div>'
-
-    // Метрики — активная крупнее и подсвечена
-    var metrics = [
-      { lbl:'ER',        val:r.er    ? r.er.toFixed(2)+'%' : '—', pct:erPct, c:'#fbbf24', f:'er'    },
-      { lbl:'Охват',     val:fmtFull(r.reach),                     pct:rePct, c:'#34d399', f:'reach' },
-      { lbl:'Просмотры', val:fmtFull(r.views),                     pct:viPct, c:'#a5b4fc', f:'views' },
-    ]
-    html += '<div style="display:flex;flex-direction:column;gap:8px;">'
-    metrics.forEach(function(mt) {
-      var active = mt.f === smmRubricSort
-      html += '<div style="'+(active?'background:'+mt.c+'0f;border-radius:6px;padding:5px 7px;margin:-1px -3px;':'')+'">'
-      html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">'
-      html += '<span style="font-family:DM Mono,monospace;font-size:9px;color:'+(active?mt.c:'rgba(255,255,255,.3)')+';letter-spacing:.07em;text-transform:uppercase;font-weight:'+(active?'700':'400')+';'+(active?'':'')+'">'+mt.lbl+(active?' ★':'')+'</span>'
-      html += '<span style="font-family:DM Mono,monospace;font-size:'+(active?'14':'12')+'px;font-weight:'+(active?'800':'500')+';color:'+(active?mt.c:'rgba(255,255,255,.4)')+';">'+mt.val+'</span>'
-      html += '</div>'
-      html += '<div style="height:'+(active?'4':'2')+'px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;">'
-      html += '<div style="height:100%;width:'+mt.pct+'%;background:'+(active?mt.c:'rgba(255,255,255,.12)')+';border-radius:2px;transition:width .6s;"></div>'
-      html += '</div></div>'
-    })
-    html += '</div></div>'
-  })
+  // TABLE HEADER
+  html += '<div style="display:grid;grid-template-columns:28px 1fr 80px 110px 110px 60px;gap:0;border-bottom:1px solid rgba(255,255,255,.06);padding:8px 0;">'
+  html += '<div></div>'
+  html += '<div style="font-family:\'DM Mono\',monospace;font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.14em;text-transform:uppercase;padding-left:8px;">Рубрика</div>'
+  html += '<div style="text-align:center;font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:'+(smmRubricSort==='er'?'rgba(255,255,255,.5)':'rgba(255,255,255,.18)');+'">ER %</div>'
+  html += '<div style="text-align:right;font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:'+(smmRubricSort==='reach'?'rgba(255,255,255,.5)':'rgba(255,255,255,.18)')+'">Охват</div>'
+  html += '<div style="text-align:right;font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:'+(smmRubricSort==='views'?'rgba(255,255,255,.5)':'rgba(255,255,255,.18)')+'">Просмотры</div>'
+  html += '<div style="text-align:right;font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.18);">Постов</div>'
   html += '</div>'
+
+  rubs.forEach(function(r, i) {
+    var isTop = i === 0
+    var erPct = maxER    > 0 ? (r.er   ||0)/maxER   *100 : 0
+    var rePct = maxReach > 0 ? (r.reach||0)/maxReach*100 : 0
+    var viPct = maxViews > 0 ? (r.views||0)/maxViews*100 : 0
+    var rowBg = isTop ? 'rgba(184,146,58,.04)' : (i%2===0 ? 'transparent' : 'rgba(255,255,255,.012)')
+
+    html += '<div style="display:grid;grid-template-columns:28px 1fr 80px 110px 110px 60px;gap:0;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04);background:'+rowBg+';align-items:center;border-left:2px solid '+(isTop?'#b8923a':'transparent')+';transition:background .15s;" onmouseover="this.style.background=\'rgba(255,255,255,.02)\'" onmouseout="this.style.background=\''+rowBg+'\'">'
+
+    // Rank
+    html += '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:rgba(255,255,255,.18);text-align:center;">'+(i+1)+'</div>'
+
+    // Name
+    html += '<div style="padding-left:8px;">'
+    html += '<div style="font-family:\'DM Sans\',sans-serif;font-size:13px;font-weight:'+(isTop?'600':'400')+';color:'+(isTop?'rgba(240,236,230,.9)':'rgba(240,236,230,.65)')+';">'+esc(r.name)+'</div>'
+    html += '</div>'
+
+    // ER
+    var erActive = smmRubricSort === 'er'
+    html += '<div style="text-align:center;">'
+    html += '<div style="font-family:\'DM Mono\',monospace;font-size:'+(erActive?'12':'11')+'px;font-weight:'+(erActive?'600':'400')+';color:'+(erActive?'rgba(240,236,230,.9)':'rgba(240,236,230,.38)')+';font-variant-numeric:tabular-nums;margin-bottom:4px;">'+(r.er?r.er.toFixed(2)+'%':'—')+'</div>'
+    html += '<div style="height:1px;background:rgba(255,255,255,.05);position:relative;"><div style="position:absolute;top:0;left:0;height:100%;width:'+erPct.toFixed(1)+'%;background:'+(erActive?'#b8923a':'rgba(255,255,255,.2)')+';transition:width .8s;"></div></div>'
+    html += '</div>'
+
+    // Reach
+    var reActive = smmRubricSort === 'reach'
+    html += '<div style="text-align:right;padding-right:4px;">'
+    html += '<div style="font-family:\'DM Mono\',monospace;font-size:'+(reActive?'12':'11')+'px;font-weight:'+(reActive?'600':'400')+';color:'+(reActive?'rgba(240,236,230,.9)':'rgba(240,236,230,.38)')+';font-variant-numeric:tabular-nums;margin-bottom:4px;">'+fmt(r.reach)+'</div>'
+    html += '<div style="height:1px;background:rgba(255,255,255,.05);position:relative;"><div style="position:absolute;top:0;right:0;height:100%;width:'+rePct.toFixed(1)+'%;background:'+(reActive?'#b8923a':'rgba(255,255,255,.2)')+';transition:width .8s;"></div></div>'
+    html += '</div>'
+
+    // Views
+    var viActive = smmRubricSort === 'views'
+    html += '<div style="text-align:right;padding-right:4px;">'
+    html += '<div style="font-family:\'DM Mono\',monospace;font-size:'+(viActive?'12':'11')+'px;font-weight:'+(viActive?'600':'400')+';color:'+(viActive?'rgba(240,236,230,.9)':'rgba(240,236,230,.38)')+';font-variant-numeric:tabular-nums;margin-bottom:4px;">'+fmt(r.views)+'</div>'
+    html += '<div style="height:1px;background:rgba(255,255,255,.05);position:relative;"><div style="position:absolute;top:0;right:0;height:100%;width:'+viPct.toFixed(1)+'%;background:'+(viActive?'#b8923a':'rgba(255,255,255,.2)')+';transition:width .8s;"></div></div>'
+    html += '</div>'
+
+    // Posts count
+    html += '<div style="text-align:right;padding-right:0;">'
+    html += '<div style="font-family:\'DM Mono\',monospace;font-size:11px;font-weight:400;color:rgba(240,236,230,.3);font-variant-numeric:tabular-nums;">'+(r.posts||'—')+'</div>'
+    html += '</div>'
+
+    html += '</div>'
+  })
 
   root.innerHTML = html
 }
