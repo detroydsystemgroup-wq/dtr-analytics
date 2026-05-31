@@ -27922,7 +27922,7 @@ async function cp2LoadActivity(project, limit, containerId) {
   var historyQuery = sb.from('stage_history').select('event,stage_index,note,created_at')
         .eq('project_id', project.id)
         .order('created_at', {ascending:false})
-        .limit(lim);
+        .limit(Math.max(lim * 4, 25));
 
   var tasksRes, histRes;
   try {
@@ -27934,6 +27934,12 @@ async function cp2LoadActivity(project, limit, containerId) {
 
   var tasks  = (tasksRes  && tasksRes.data)  || [];
   var events = (histRes   && histRes.data)   || [];
+
+  // Отсекаем «осиротевшие» события: stage_index которых больше нет в текущих этапах проекта
+  // (остаются от прежней структуры, иначе показывают старые дефолтные названия)
+  if (stageIdxList.length) {
+    events = events.filter(function(h) { return stageIdxList.indexOf(h.stage_index) !== -1; });
+  }
 
   function _stName(idx) {
     return stageNames[idx]
