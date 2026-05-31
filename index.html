@@ -20365,15 +20365,34 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
       <!-- 03 Reels -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
         <div style="font-family:'DM Mono',monospace;font-size:9px;color:#c9a84c;letter-spacing:.14em;text-transform:uppercase;">03 / Reels (макс. 20)</div>
-        <button onclick="openAddReel()" style="display:flex;align-items:center;gap:6px;background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.25);border-radius:7px;padding:7px 14px;color:#c9a84c;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;transition:all .15s;" onmouseover="this.style.background='rgba(184,146,58,.2)'" onmouseout="this.style.background='rgba(184,146,58,.1)'">+ Добавить Reel</button>
+        <div style="display:flex;gap:6px;">
+          <button onclick="toggleReelsView()" id="reels-view-btn" style="display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:6px 12px;color:rgba(255,255,255,.35);font-family:'DM Mono',monospace;font-size:9px;cursor:pointer;transition:all .15s;" onmouseover="this.style.color='rgba(255,255,255,.6)'" onmouseout="this.style.color='rgba(255,255,255,.35)'">⊞ таблица</button>
+          <button onclick="openPasteImport()" style="display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:6px 12px;color:rgba(255,255,255,.35);font-family:'DM Mono',monospace;font-size:9px;cursor:pointer;transition:all .15s;" onmouseover="this.style.color='rgba(255,255,255,.6)'" onmouseout="this.style.color='rgba(255,255,255,.35)'">⇧ вставить из Excel</button>
+          <button onclick="openAddReel()" style="display:flex;align-items:center;gap:6px;background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.25);border-radius:7px;padding:7px 14px;color:#c9a84c;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;transition:all .15s;" onmouseover="this.style.background='rgba(184,146,58,.2)'" onmouseout="this.style.background='rgba(184,146,58,.1)'">+ Добавить Reel</button>
+        </div>
+      </div>
+      <!-- Paste import panel -->
+      <div id="paste-import-panel" style="display:none;background:#0d0d0f;border:1px solid rgba(184,146,58,.2);border-radius:10px;padding:16px;margin-bottom:12px;">
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:#c9a84c;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;">Вставить из Excel / Google Sheets</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.25);margin-bottom:10px;line-height:1.6;">Скопируй столбцы: <span style="color:rgba(255,255,255,.45);">Название · Просмотры · Охват · Лайки · Комментарии · Сохранения · Репосты</span><br>Порядок столбцов важен. Первая строка — заголовки (пропустится автоматически).</div>
+        <textarea id="paste-import-ta" placeholder="Ctrl+V сюда..." style="width:100%;height:100px;background:#111;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:10px;color:rgba(240,236,230,.8);font-family:'DM Mono',monospace;font-size:11px;outline:none;resize:vertical;box-sizing:border-box;" onpaste="setTimeout(()=>parsePasteImport(),50)"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <button onclick="parsePasteImport()" style="background:rgba(184,146,58,.15);border:1px solid rgba(184,146,58,.3);border-radius:6px;padding:7px 16px;color:#c9a84c;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;">Импортировать</button>
+          <button onclick="g('paste-import-panel').style.display='none';g('paste-import-ta').value=''" style="background:transparent;border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:7px 14px;color:rgba(255,255,255,.3);font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;">Отмена</button>
+        </div>
+        <div id="paste-import-result" style="font-family:'DM Mono',monospace;font-size:10px;color:#3ecf8e;margin-top:8px;display:none;"></div>
       </div>
       <div id="smm-reels-input-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;"></div>
 
       <!-- 04 Рубрики -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
         <div style="font-family:'DM Mono',monospace;font-size:9px;color:#c9a84c;letter-spacing:.14em;text-transform:uppercase;">04 / Рубрики контента</div>
-        <button onclick="openAddRubric()" style="display:flex;align-items:center;gap:6px;background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.25);border-radius:7px;padding:7px 14px;color:#c9a84c;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;transition:all .15s;" onmouseover="this.style.background='rgba(184,146,58,.2)'" onmouseout="this.style.background='rgba(184,146,58,.1)'">+ Добавить рубрику</button>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span id="rubrics-auto-badge" style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(52,211,153,.6);letter-spacing:.06em;display:none;">● авто из Reels</span>
+          <button onclick="openAddRubric()" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:6px 12px;color:rgba(255,255,255,.35);font-family:'DM Mono',monospace;font-size:9px;cursor:pointer;transition:all .15s;" onmouseover="this.style.color='rgba(255,255,255,.6)'" onmouseout="this.style.color='rgba(255,255,255,.35)'" title="Добавить рубрику вручную">+ вручную</button>
+        </div>
       </div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.2);margin-bottom:12px;line-height:1.6;">Рубрики агрегируются автоматически из Reels. Назначай рубрику при добавлении Reel — статистика посчитается сама.</div>
       <div id="smm-rubrics-input-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;"></div>
 
       <div style="display:flex;justify-content:flex-end;padding-top:16px;border-top:1px solid rgba(255,255,255,.07);">
@@ -20458,6 +20477,18 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
     <div class="ps-grid" style="margin-top:14px;">
       <div class="ps-field full"><label style="color:var(--smm-muted2);">Ссылка на Reel <span style="opacity:.5;font-size:9px;">необязательно</span></label><input type="url" id="rl-link" placeholder="https://www.instagram.com/reel/..." style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
       <div class="ps-field full"><label style="color:var(--smm-muted2);">Описание / заголовок</label><input type="text" id="rl-title" placeholder="Краткое описание контента" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
+      <div class="ps-field full">
+        <label style="color:var(--smm-muted2);">Рубрика <span style="opacity:.5;font-size:9px;">необязательно</span></label>
+        <div style="display:flex;gap:6px;">
+          <select id="rl-rubric" style="flex:1;background:var(--smm-bg4);border:1px solid var(--smm-brd);border-radius:6px;padding:8px 10px;color:var(--smm-text);font-family:'DM Mono',monospace;font-size:12px;outline:none;cursor:pointer;">
+            <option value="">— без рубрики —</option>
+          </select>
+          <button type="button" onclick="rlAddNewRubric()" style="background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.25);border-radius:6px;padding:8px 12px;color:#c9a84c;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;white-space:nowrap;" title="Создать новую рубрику">+ Новая</button>
+        </div>
+        <div id="rl-new-rubric-wrap" style="display:none;margin-top:6px;">
+          <input type="text" id="rl-new-rubric-name" placeholder="Название рубрики" style="width:100%;background:var(--smm-bg4);border:1px solid rgba(184,146,58,.4);border-radius:6px;padding:8px 10px;color:#c9a84c;font-family:'DM Mono',monospace;font-size:12px;outline:none;box-sizing:border-box;" onkeydown="if(event.key==='Enter')rlConfirmNewRubric()">
+        </div>
+      </div>
       <div class="ps-field"><label style="color:var(--smm-muted2);">Просмотры</label><input type="number" id="rl-views" placeholder="0" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
       <div class="ps-field"><label style="color:var(--smm-muted2);">Охват</label><input type="number" id="rl-reach" placeholder="0" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
       <div class="ps-field"><label style="color:var(--smm-muted2);">Лайки</label><input type="number" id="rl-likes" placeholder="0" style="background:var(--smm-bg4);border-color:var(--smm-brd);color:var(--smm-text);"></div>
@@ -28153,6 +28184,7 @@ function fillSMMDataForm() {
     ['sd-sr', m.sr], ['sd-prev-sr', p.sr], ['sd-goal-sr', go.sr],
   ]
   pairs.forEach(([id, val]) => { const el = g(id); if (el) el.value = val || '' })
+  aggregateRubricsFromReels()
   renderReelsInputList()
   renderRubricsInputList()
 }
@@ -28633,14 +28665,66 @@ function renderSMMRubricGrid() {
 
 function renderReelsInputList() {
   const list = g('smm-reels-input-list'); if (!list) return
-  if (!smmData.reels.length) { list.innerHTML = '<div style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--smm-muted);padding:16px;text-align:center;">Нет Reels · нажмите «+ Добавить Reel»</div>'; return }
-  list.innerHTML = smmData.reels.map((r,i) => `
-    <div style="background:var(--smm-bg3);border:1px solid var(--smm-brd);border-radius:8px;padding:14px;display:flex;align-items:center;gap:12px;">
-      <div style="font-family:var(--bebas);font-size:20px;color:var(--smm-accent2);width:28px;text-align:center;">${i+1}</div>
-      <div style="flex:1;font-size:12px;color:var(--smm-text);">${r.title||r.link||('Reel #'+(i+1))}</div>
-      <div style="font-family:var(--font-mono);font-size:10px;color:var(--smm-muted);">ER ${(+r.er||0).toFixed(2)}%</div>
-      <button onclick="deleteReel(${i})" style="background:transparent;border:none;color:var(--smm-muted);cursor:pointer;font-size:16px;padding:4px;line-height:1;" onmouseover="this.style.color='var(--smm-red)'" onmouseout="this.style.color='var(--smm-muted)'">✕</button>
-    </div>`).join('')
+  if (!smmData.reels.length) {
+    list.innerHTML = '<div style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--smm-muted);padding:16px;text-align:center;">Нет Reels · нажмите «+ Добавить Reel» или вставьте из Excel</div>'
+    return
+  }
+
+  // Collect rubric options
+  const rubricOpts = ['', ...new Set([...getRubricTemplates(), ...smmData.reels.map(r=>r.rubric).filter(Boolean), ...smmData.rubrics.map(r=>r.name)])]
+  const rubricSel = (idx, cur) => `<select onchange="editReelField(${idx},'rubric',this.value)" style="background:#111;border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:3px 6px;color:rgba(240,236,230,.6);font-family:'DM Mono',monospace;font-size:10px;outline:none;cursor:pointer;max-width:110px;">${rubricOpts.map(n=>`<option value="${n}"${n===cur?' selected':''}>${n||'—'}</option>`).join('')}</select>`
+
+  if (reelsViewMode === 'table') {
+    const inp = (idx, field, val, w) => `<input type="${['title','link'].includes(field)?'text':'number'}" value="${val||''}" onchange="editReelField(${idx},'${field}',this.value)" onblur="saveReelEdits()" style="width:${w||'60px'};background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.08);padding:3px 4px;color:rgba(240,236,230,.75);font-family:'DM Mono',monospace;font-size:11px;outline:none;font-variant-numeric:tabular-nums;" placeholder="0">`
+    const COLS = 'font-family:\'DM Mono\',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.1em;text-transform:uppercase;padding:6px 4px;'
+    let html = `<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:11px;">`
+    html += `<thead><tr style="border-bottom:1px solid rgba(255,255,255,.07);">
+      <td style="${COLS}width:22px;">#</td>
+      <td style="${COLS}min-width:140px;">Название</td>
+      <td style="${COLS}">Просм.</td>
+      <td style="${COLS}">Охват</td>
+      <td style="${COLS}">Лайки</td>
+      <td style="${COLS}">Комм.</td>
+      <td style="${COLS}">Сохр.</td>
+      <td style="${COLS}">Репосты</td>
+      <td style="${COLS}">Рубрика</td>
+      <td style="${COLS}">ER%</td>
+      <td style="${COLS}"></td>
+    </tr></thead><tbody>`
+    smmData.reels.forEach((r,i) => {
+      const bg = i%2===0 ? 'transparent' : 'rgba(255,255,255,.012)'
+      html += `<tr style="background:${bg};border-bottom:1px solid rgba(255,255,255,.04);">
+        <td style="padding:6px 4px;font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.2);text-align:center;">${i+1}</td>
+        <td style="padding:6px 4px;">${inp(i,'title',r.title,'120px')}</td>
+        <td style="padding:6px 4px;">${inp(i,'views',r.views)}</td>
+        <td style="padding:6px 4px;">${inp(i,'reach',r.reach)}</td>
+        <td style="padding:6px 4px;">${inp(i,'likes',r.likes)}</td>
+        <td style="padding:6px 4px;">${inp(i,'comments',r.comments)}</td>
+        <td style="padding:6px 4px;">${inp(i,'saves',r.saves)}</td>
+        <td style="padding:6px 4px;">${inp(i,'shares',r.shares)}</td>
+        <td style="padding:6px 4px;">${rubricSel(i, r.rubric||'')}</td>
+        <td style="padding:6px 4px;font-family:'DM Mono',monospace;font-size:11px;color:#b8923a;font-variant-numeric:tabular-nums;" id="rl-er-${i}">${(+r.er||0).toFixed(2)}%</td>
+        <td style="padding:6px 4px;"><button onclick="deleteReel(${i})" style="background:transparent;border:none;color:rgba(255,255,255,.2);cursor:pointer;font-size:14px;line-height:1;padding:2px 4px;" onmouseover="this.style.color='var(--smm-red)'" onmouseout="this.style.color='rgba(255,255,255,.2)'">✕</button></td>
+      </tr>`
+    })
+    html += '</tbody></table></div>'
+    list.innerHTML = html
+  } else {
+    // Cards mode
+    list.innerHTML = smmData.reels.map((r,i) => `
+      <div style="background:var(--smm-bg3);border:1px solid var(--smm-brd);border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:12px;">
+        <div style="font-family:var(--bebas);font-size:20px;color:var(--smm-accent2);width:24px;text-align:center;flex-shrink:0;">${i+1}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:12px;color:var(--smm-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.title||r.link||('Reel #'+(i+1))}</div>
+          <div style="display:flex;gap:10px;margin-top:4px;flex-wrap:wrap;">
+            <span style="font-family:var(--font-mono);font-size:10px;color:var(--smm-muted);">ER ${(+r.er||0).toFixed(2)}%</span>
+            ${r.views?`<span style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.2);">${Number(r.views).toLocaleString('ru-RU')} просм.</span>`:''}
+            ${r.rubric?`<span style="font-family:var(--font-mono);font-size:10px;color:#b8923a;background:rgba(184,146,58,.08);border:1px solid rgba(184,146,58,.15);border-radius:4px;padding:1px 6px;">${r.rubric}</span>`:''}
+          </div>
+        </div>
+        <button onclick="deleteReel(${i})" style="background:transparent;border:none;color:var(--smm-muted);cursor:pointer;font-size:16px;padding:4px;line-height:1;flex-shrink:0;" onmouseover="this.style.color='var(--smm-red)'" onmouseout="this.style.color='var(--smm-muted)'">✕</button>
+      </div>`).join('')
+  }
 }
 
 function renderRubricsInputList() {
@@ -28806,13 +28890,92 @@ FOR INSERT WITH CHECK (bucket_id = 'reel-covers');`
   })
 }
 
+// ── Reel view mode (cards / table) ──
+let reelsViewMode = 'cards'
+function toggleReelsView() {
+  reelsViewMode = reelsViewMode === 'cards' ? 'table' : 'cards'
+  const btn = g('reels-view-btn')
+  if (btn) btn.textContent = reelsViewMode === 'table' ? '☰ карточки' : '⊞ таблица'
+  renderReelsInputList()
+}
+
+// ── Rubric templates per project ──
+function getRubricTemplates() {
+  const key = 'rubric_tpl_' + (currentProject?.id || 'default')
+  try { return JSON.parse(localStorage.getItem(key) || '[]') } catch { return [] }
+}
+function saveRubricTemplates(names) {
+  const key = 'rubric_tpl_' + (currentProject?.id || 'default')
+  localStorage.setItem(key, JSON.stringify(names))
+}
+function addRubricTemplate(name) {
+  const tpls = getRubricTemplates()
+  if (name && !tpls.includes(name)) { tpls.push(name); saveRubricTemplates(tpls) }
+}
+
+// ── Refresh rubric dropdown in reel modal ──
+function refreshRlRubricDropdown() {
+  const sel = g('rl-rubric'); if (!sel) return
+  const all = new Set(getRubricTemplates())
+  smmData.reels.forEach(r => r.rubric && all.add(r.rubric))
+  smmData.rubrics.forEach(r => r.name && all.add(r.name))
+  const cur = sel.value
+  sel.innerHTML = '<option value="">— без рубрики —</option>'
+  all.forEach(name => {
+    const opt = document.createElement('option')
+    opt.value = name; opt.textContent = name
+    sel.appendChild(opt)
+  })
+  if (cur) sel.value = cur
+}
+
+function rlAddNewRubric() {
+  const wrap = g('rl-new-rubric-wrap'); if (!wrap) return
+  wrap.style.display = wrap.style.display === 'none' ? 'block' : 'none'
+  if (wrap.style.display === 'block') setTimeout(() => g('rl-new-rubric-name')?.focus(), 50)
+}
+function rlConfirmNewRubric() {
+  const inp = g('rl-new-rubric-name'); if (!inp) return
+  const name = inp.value.trim(); if (!name) return
+  addRubricTemplate(name)
+  refreshRlRubricDropdown()
+  const sel = g('rl-rubric'); if (sel) sel.value = name
+  inp.value = ''
+  const wrap = g('rl-new-rubric-wrap'); if (wrap) wrap.style.display = 'none'
+}
+
+// ── Auto-aggregate rubrics from reels ──
+function aggregateRubricsFromReels() {
+  const map = {}
+  smmData.reels.forEach(r => {
+    if (!r.rubric) return
+    if (!map[r.rubric]) map[r.rubric] = { name: r.rubric, posts: 0, reach: 0, views: 0, likes: 0, comments: 0, saves: 0 }
+    const e = map[r.rubric]
+    e.posts++; e.reach += r.reach||0; e.views += r.views||0
+    e.likes += r.likes||0; e.comments += r.comments||0; e.saves += r.saves||0
+  })
+  const autoNames = Object.keys(map)
+  const manual = smmData.rubrics.filter(r => !autoNames.includes(r.name))
+  const auto = autoNames.map(name => {
+    const e = map[name]
+    const er = e.reach > 0 ? +((e.likes+e.comments+e.saves)/e.reach*100).toFixed(2) : 0
+    return { name, posts:e.posts, reach:e.reach, views:e.views, likes:e.likes, comments:e.comments, saves:e.saves, er }
+  })
+  smmData.rubrics = [...auto, ...manual]
+  const badge = g('rubrics-auto-badge')
+  if (badge) badge.style.display = auto.length ? 'inline' : 'none'
+}
+
 function openAddReel() {
   rlRemoveCover()
   rlSetStatus('', '')
   const note = g('rl-sql-note'); if (note) note.style.display = 'none'
   ;['rl-link','rl-title','rl-views','rl-reach','rl-likes','rl-comments','rl-saves','rl-shares'].forEach(id => setVal(id,''))
+  setVal('rl-rubric', '')
+  const wrap = g('rl-new-rubric-wrap'); if (wrap) wrap.style.display = 'none'
+  refreshRlRubricDropdown()
   openModal('modal-reel')
-  setTimeout(() => g('rl-title').focus(), 100)
+  setTimeout(() => g('rl-title')?.focus(), 100)
 }
 
 async function addReel() {
@@ -28826,11 +28989,75 @@ async function addReel() {
   const shr = reach>0 ? +(shares/reach*100).toFixed(2) : 0
   const sr  = reach>0 ? +(saves/reach*100).toFixed(2) : 0
   const cover = getVal('rl-cover') || ''
-  smmData.reels.push({ link:getVal('rl-link'), cover, title:getVal('rl-title'), views, reach, likes, comments, saves, shares, er, tr, cr, shr, sr })
+  const newRubricInp = g('rl-new-rubric-name')
+  if (newRubricInp?.value.trim()) rlConfirmNewRubric()
+  const rubric = getVal('rl-rubric') || ''
+  if (rubric) addRubricTemplate(rubric)
+  smmData.reels.push({ link:getVal('rl-link'), cover, title:getVal('rl-title'), rubric, views, reach, likes, comments, saves, shares, er, tr, cr, shr, sr })
+  aggregateRubricsFromReels()
   ;['rl-link','rl-cover','rl-title','rl-views','rl-reach','rl-likes','rl-comments','rl-saves','rl-shares'].forEach(id=>setVal(id,''))
-  closeModal('modal-reel'); renderReelsInputList(); await saveSMMData(false)
+  closeModal('modal-reel'); renderReelsInputList(); renderRubricsInputList(); await saveSMMData(false)
 }
-async function deleteReel(idx) { smmData.reels.splice(idx,1); renderReelsInputList(); await saveSMMData(false) }
+
+async function deleteReel(idx) {
+  smmData.reels.splice(idx,1)
+  aggregateRubricsFromReels()
+  renderReelsInputList(); renderRubricsInputList(); await saveSMMData(false)
+}
+
+function editReelField(idx, field, val) {
+  if (!smmData.reels[idx]) return
+  smmData.reels[idx][field] = ['title','link','rubric','cover'].includes(field) ? val : (+val||0)
+  const r = smmData.reels[idx], reach = r.reach||0
+  r.er  = reach>0 ? +((r.likes+r.comments+r.saves)/reach*100).toFixed(2) : 0
+  r.tr  = reach>0 ? +(r.comments/reach*100).toFixed(2) : 0
+  r.cr  = reach>0 ? +(r.saves/reach*100).toFixed(2) : 0
+  r.shr = reach>0 ? +(r.shares/reach*100).toFixed(2) : 0
+  r.sr  = reach>0 ? +(r.saves/reach*100).toFixed(2) : 0
+  // Update ER cell in table
+  const erCell = g('rl-er-'+idx); if (erCell) erCell.textContent = r.er.toFixed(2)+'%'
+  aggregateRubricsFromReels(); renderRubricsInputList()
+}
+async function saveReelEdits() { await saveSMMData(false) }
+
+function openPasteImport() {
+  const panel = g('paste-import-panel'); if (!panel) return
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none'
+  if (panel.style.display === 'block') setTimeout(() => g('paste-import-ta')?.focus(), 50)
+}
+
+function parsePasteImport() {
+  const ta = g('paste-import-ta'); if (!ta) return
+  const text = ta.value.trim(); if (!text) return
+  const lines = text.split('\n').map(l => l.split('\t').map(c => c.trim()))
+  let start = 0
+  if (lines[0] && isNaN(+lines[0][1]) && lines[0][1] !== '') start = 1
+  let added = 0
+  lines.slice(start).forEach(cols => {
+    if (!cols[0] && !cols[1]) return
+    const title=cols[0]||'', views=+cols[1]||0, reach=+cols[2]||views
+    const likes=+cols[3]||0, comments=+cols[4]||0, saves=+cols[5]||0, shares=+cols[6]||0
+    const rubric=cols[7]||''
+    const er=reach>0?+((likes+comments+saves)/reach*100).toFixed(2):0
+    const tr=reach>0?+(comments/reach*100).toFixed(2):0
+    const cr=reach>0?+(saves/reach*100).toFixed(2):0
+    const shr=reach>0?+(shares/reach*100).toFixed(2):0
+    const sr=reach>0?+(saves/reach*100).toFixed(2):0
+    if (rubric) addRubricTemplate(rubric)
+    smmData.reels.push({ title, views, reach, likes, comments, saves, shares, rubric, er, tr, cr, shr, sr, link:'', cover:'' })
+    added++
+  })
+  aggregateRubricsFromReels()
+  renderReelsInputList(); renderRubricsInputList()
+  const res = g('paste-import-result')
+  if (res) { res.style.display='block'; res.textContent='✓ Добавлено '+added+' Reels' }
+  setTimeout(async () => {
+    if (res) res.style.display='none'
+    const p=g('paste-import-panel'); if(p) p.style.display='none'
+    ta.value=''
+    await saveSMMData(false)
+  }, 1800)
+}
 
 function openAddRubric() {
   ;['rb-name','rb-posts','rb-er','rb-reach','rb-views','rb-likes','rb-comments','rb-saves'].forEach(id => setVal(id,''))
