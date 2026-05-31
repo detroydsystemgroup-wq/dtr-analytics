@@ -43957,6 +43957,26 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
 .dtr-sr-name:empty::before { content:attr(data-ph); color:rgba(255,255,255,.25); pointer-events:none; }
 .dtr-sr-del { background:none; border:none; color:rgba(255,255,255,.2); cursor:pointer; font-size:13px; padding:2px 4px; flex-shrink:0; line-height:1; }
 .dtr-sr-del:hover { color:rgba(248,113,113,.7); }
+
+/* ── DTR FINAL LAYER: SMM sort select fix ── */
+#page-smm .smm-sec-heading { align-items: center !important; }
+#page-smm .smm-sec-heading select {
+  background: var(--smm-bg4, #1a1a1a) !important;
+  border: 1px solid #b8923a !important;
+  border-radius: 6px !important;
+  padding: 5px 10px !important;
+  color: #c9a84c !important;
+  font-family: 'DM Mono', monospace !important;
+  font-size: 10px !important;
+  outline: none !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  display: block !important;
+}
+#page-smm .smm-sec-heading select option {
+  background: #111 !important;
+  color: #f0ece6 !important;
+}
 </style>
 
 <script>
