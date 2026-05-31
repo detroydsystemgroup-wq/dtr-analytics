@@ -30550,7 +30550,8 @@ async function sendTelegramStageNotification(stageIndex, newStatus, note, stageN
   const rec = trackerData.find(s => s.stage_index === stageIndex)
   const name = stageName || (rec && rec.name) || STAGES[stageIndex]?.name || ('Этап ' + (stageIndex + 1))
 
-  const esc = s => String(s||'').replace(/[_*\[\]()~`>#+\-=|{}.!]/g, '\\$&')
+  // Экранирование для Markdown v1
+  const esc = s => String(s||'').replace(/[*_`\[\]]/g, '\\$&')
 
   const total   = trackerData.length || (currentProject?.stage_count) || 9
   const done    = trackerData.filter(s => s.status === 'completed').length
@@ -30563,64 +30564,39 @@ async function sendTelegramStageNotification(stageIndex, newStatus, note, stageN
   const isCompleted = newStatus === 'completed'
   const isActive    = newStatus === 'active'
 
-  const headerEmoji = isCompleted ? '\u{1F389}' : isActive ? '\u{1F680}' : '\u21A9\uFE0F'
+  const headerEmoji = isCompleted ? '🎉' : isActive ? '🚀' : '↩️'
   const statusLabel = isCompleted ? 'ЭТАП ЗАВЕРШЁН:' : isActive ? 'ЭТАП НАЧАТ:' : 'ЭТАП ОТЛОЖЕН:'
-  const stageEmoji  = isCompleted ? '\u2705' : isActive ? '\u{1F4CC}' : '\u23F8'
+  const stageEmoji  = isCompleted ? '✅' : isActive ? '📌' : '⏸'
 
   let text = ''
-
-  // Заголовок — название проекта жирным
   text += headerEmoji + ' *' + esc(currentProject.name) + '*\n'
   text += '\n'
-
-  // Статус + название этапа
-  text += '*' + esc(statusLabel) + '*\n'
+  text += '*' + statusLabel + '*\n'
   text += stageEmoji + ' ' + esc(name) + '\n'
   text += '\n'
-
-  // Прогресс
-  text += '\u{1F4CA} Прогресс: *' + pct + '%* \u2014 ' + done + ' из ' + total + ' этапов\n'
-
-  // Заметка в цитате
+  text += '📊 Прогресс: *' + pct + '%* — ' + done + ' из ' + total + ' этапов\n'
   if (note) {
     text += '\n'
-    text += '> \u{1F4AC} _' + esc(note) + '_\n'
+    text += '💬 _' + esc(note) + '_\n'
   }
-
-  // Ссылка
   if (link && /^https?:\/\//i.test(link)) {
     text += '\n'
-    text += '\u{1F517} [Открыть материал](' + link + ')\n'
+    text += '🔗 [Открыть материал](' + link + ')\n'
   }
-
-  // Дата и подпись
   text += '\n'
-  text += '_' + esc(dateStr) + ', ' + esc(timeStr) + ' \u00B7 DTR Analytics_\n'
+  text += '_' + dateStr + ', ' + timeStr + ' · DTR Analytics_\n'
   text += '\n'
-  text += 'С уважением, операционный департамент \- *DeTroyd System Group*'
+  text += 'С уважением, операционный департамент - *DeTroyd System Group*'
 
   try {
     const _tgRes = await fetch(TG_EDGE_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY },
-      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'MarkdownV2' })
+      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'Markdown' })
     })
     if (!_tgRes.ok) {
       const _tgBody = await _tgRes.text()
       console.warn('[TG] Error', _tgRes.status, _tgBody)
-      // Фоллбэк — отправить без форматирования если MarkdownV2 не прошёл
-      const plainText = (headerEmoji + ' ' + currentProject.name + '\n\n' +
-        statusLabel + '\n' + name + '\n\n' +
-        'Прогресс: ' + pct + '% — ' + done + ' из ' + total + ' этапов' +
-        (note ? '\n\n' + note : '') +
-        (link && /^https?:\/\//i.test(link) ? '\n\nМатериал: ' + link : '') +
-        '\n\n' + dateStr + ', ' + timeStr + ' · DTR Analytics' +
-        '\n\nС уважением, операционный департамент - DeTroyd System Group')
-      await fetch(TG_EDGE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY },
-        body: JSON.stringify({ chat_id: chatId, text: plainText })
-      })
     }
   } catch(e) {
     console.warn('Telegram notification failed:', e.message)
