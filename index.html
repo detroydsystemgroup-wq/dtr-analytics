@@ -6,7 +6,7 @@
 #page-dashboard .cc-shell{display:flex!important;height:100vh!important;overflow:hidden!important}
 #page-dashboard .cc-sidebar{position:sticky!important;top:0!important;height:100vh!important;overflow-y:auto!important;overflow-x:hidden!important;flex-shrink:0!important;align-self:flex-start!important}
 #page-dashboard .cc-main{flex:1!important;height:100vh!important;overflow-y:auto!important;overflow-x:hidden!important}
-#page-dashboard .cc-sidebar-footer{display:none!important}
+#page-dashboard .cc-sidebar-footer{display:block}
 </style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26004,14 +26004,6 @@ button, a, [role="button"],
         <div class="cc-online-dot"></div>
       </div>
 
-      <!-- New Project CTA — под брендом -->
-      <div style="padding:10px 14px 4px;">
-        <button class="btn-primary cc-new-btn" onclick="openCreateProject()" style="width:100%;">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Новый проект
-        </button>
-      </div>
-
       <!-- Navigation -->
       <div class="cc-nav-section">
         <div class="cc-nav-label">Навигация</div>
@@ -26084,6 +26076,13 @@ button, a, [role="button"],
       <span id="stat-reports" style="display:none;">0</span>
       <span id="stat-deadlines-week" style="display:none;">0</span>
 
+      <!-- New Project CTA — внизу -->
+      <div class="cc-sidebar-footer">
+        <button class="btn-primary cc-new-btn" onclick="openCreateProject()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Новый проект
+        </button>
+      </div>
     </aside>
 
     <!-- ══ MAIN CONTENT ══ -->
