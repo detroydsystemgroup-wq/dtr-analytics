@@ -446,6 +446,10 @@
 
 @keyframes cp-online-pulse{0%{transform:scale(1);opacity:.8}70%{transform:scale(2.8);opacity:0}100%{transform:scale(2.8);opacity:0}}
 
+@keyframes cpCurDot{0%,100%{box-shadow:0 0 0 0 rgba(201,168,76,.55)}70%{box-shadow:0 0 0 5px rgba(201,168,76,0)}}
+@keyframes cpCurBadge{0%,100%{opacity:1}50%{opacity:.72}}
+@keyframes cpCurBar{0%{background-position:0% 0}100%{background-position:200% 0}}
+
 @keyframes cpShimmer{0%{transform:translateX(-200%)}100%{transform:translateX(400%)}}
 
 @keyframes cpBreatheBorder{
@@ -27814,6 +27818,11 @@ async function cp2RenderCurrentStage(project) {
     var b   = statusBadge(s);
     var dl  = fmtDeadline(s.deadline);
     var num = (s.stage_index + 1 < 10 ? '0' : '') + (s.stage_index + 1);
+    var isAct = s.status === 'active';
+    var liveDot = isAct
+      ? '<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:' + b.col + ';margin-right:7px;vertical-align:middle;animation:cpCurDot 1.6s ease-out infinite;"></span>'
+      : '';
+    var badgeAnim = isAct ? 'animation:cpCurBadge 2.4s ease-in-out infinite;' : '';
     return '<div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid rgba(255,255,255,.05);">' +
         '<div style="font-family:var(--font-mono);font-size:11px;color:rgba(184,146,58,.55);flex-shrink:0;width:22px;">' + num + '</div>' +
         '<div style="width:26px;height:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#c9a84c;">' + stIcon(s) + '</div>' +
@@ -27822,7 +27831,7 @@ async function cp2RenderCurrentStage(project) {
           (s.note ? '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(s.note) + '</div>' : '') +
         '</div>' +
         (dl ? '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.35);white-space:nowrap;flex-shrink:0;">' + dl + '</div>' : '') +
-        '<div style="font-family:var(--font-mono);font-size:10px;font-weight:600;color:' + b.col + ';background:' + b.bg + ';border:1px solid ' + b.bd + ';padding:3px 9px;border-radius:6px;white-space:nowrap;flex-shrink:0;letter-spacing:.04em;">' + b.txt + '</div>' +
+        '<div style="display:flex;align-items:center;font-family:var(--font-mono);font-size:10px;font-weight:600;color:' + b.col + ';background:' + b.bg + ';border:1px solid ' + b.bd + ';padding:3px 9px;border-radius:6px;white-space:nowrap;flex-shrink:0;letter-spacing:.04em;' + badgeAnim + '">' + liveDot + b.txt + '</div>' +
       '</div>';
   }).join('');
 
@@ -27830,8 +27839,11 @@ async function cp2RenderCurrentStage(project) {
     rowsHtml = '<div style="padding:12px 0 2px;border-top:1px solid rgba(255,255,255,.05);font-family:var(--font-display);font-size:15px;font-weight:600;color:#34d399;">Все ' + total + ' этапов завершены</div>';
   }
 
+  var barFlow = actives.length
+    ? 'background:linear-gradient(90deg,#b8923a,#22d3ee,#b8923a);background-size:200% 100%;animation:cpCurBar 3s linear infinite;'
+    : 'background:linear-gradient(90deg,#b8923a,#22d3ee);';
   el.innerHTML =
-    '<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#b8923a,#22d3ee);"></div>' +
+    '<div style="position:absolute;top:0;left:0;right:0;height:2px;' + barFlow + '"></div>' +
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">' +
       '<div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(184,146,58,.7);">' + headline + '</div>' +
       '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,.3);">' + done + ' / ' + total + ' завершено</div>' +
