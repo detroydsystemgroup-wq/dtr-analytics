@@ -18622,6 +18622,12 @@ function toggleObOnboarding() {
             <span class="cc-nav-text">База знаний</span>
             <span class="cc-nav-count" id="kb-total-count" style="display:none;">0</span>
           </button>
+          <button class="dash-tab cc-nav-item agency-only" id="dtab-tools" onclick="switchDashTab('tools',this)">
+            <span class="cc-nav-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+            </span>
+            <span class="cc-nav-text">Инструменты DTR</span>
+          </button>
         </nav>
       </div>
 
@@ -19363,17 +19369,6 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
           </div>
         </div>
         <div class="kb-topbar-right">
-          <div class="kb-mode-toggle">
-            <button class="kb-mode-btn kb-mode-active" id="kb-mode-materials" onclick="kbSwitchMode('materials',this)">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-              Материалы
-            </button>
-            <div style="width:1px;height:18px;background:var(--brd2);margin:0 2px;flex-shrink:0;"></div>
-            <button class="kb-mode-btn" id="kb-mode-services" onclick="kbSwitchMode('services',this)">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-              Инструменты DTR
-            </button>
-          </div>
           <button class="kb-action-btn" id="kb-add-cat-topbar" onclick="kbOpenAddCategory()" style="opacity:.35;pointer-events:none;">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Категория
@@ -23377,7 +23372,7 @@ function switchDashTab(tab, btn) {
   g('dtab-overview-panel').style.display  = tab === 'overview'  ? 'block' : 'none'
   g('dtab-finance-panel').style.display   = tab === 'finance'   ? 'block' : 'none'
   var kbPanel = g('dtab-kb-panel')
-  if (kbPanel) kbPanel.style.display = tab === 'kb' ? 'block' : 'none'
+  if (kbPanel) kbPanel.style.display = (tab === 'kb' || tab === 'tools') ? 'block' : 'none'
   var teamPanel = g('dtab-team-panel')
   if (teamPanel) teamPanel.style.display = tab === 'team' ? 'block' : 'none'
   // legacy compat
@@ -23393,6 +23388,7 @@ function switchDashTab(tab, btn) {
   if (tab === 'overview') { if (_allProjects.length) { loadOverview(); loadSMMLb(); } else { loadProjects().then(() => { loadOverview(); loadSMMLb(); }) } }
   if (tab === 'finance')  loadFinance()
   if (tab === 'kb' && typeof loadKB === 'function') loadKB()
+  if (tab === 'tools' && typeof openToolsSpace === 'function') openToolsSpace()
 }
 
 let _tlMode = 'deadlines'
@@ -33279,6 +33275,15 @@ window.loadKB = async function() {
   _kbProjectId = null;
   _kbCats      = [];
   _kbItems     = [];
+  _kbMode      = 'materials';
+
+  // Восстанавливаем вид «Материалы» (если до этого открывали Инструменты DTR)
+  var _sidebar = document.querySelector('.kb-proj-sidebar');
+  var _kbBody  = document.querySelector('.kb-body');
+  if (_sidebar) _sidebar.style.display = '';
+  if (_kbBody)  _kbBody.style.gridTemplateColumns = '';
+  var _title = document.querySelector('.kb-topbar-title');
+  if (_title) _title.textContent = 'База знаний';
 
   // Ждём проекты если ещё не загружены
   if (typeof _allProjects === 'undefined' || !_allProjects || !_allProjects.length) {
@@ -33607,8 +33612,29 @@ function kbBuildCard(item) {
   + '</div>';
 }
 /* ══ MODE SWITCH ══ */
-window.kbSwitchMode = function(mode, btn) {
-  _kbMode = mode;
+// ══ Инструменты DTR — отдельный раздел в сайдбаре (переиспользует services-пространство БЗ) ══
+window.openToolsSpace = async function() {
+  // Убедимся что проекты загружены (services-логике это не мешает, но KB ждёт их)
+  if (typeof _allProjects === 'undefined' || !_allProjects || !_allProjects.length) {
+    if (typeof loadProjects === 'function') { try { await loadProjects(); } catch(e){} }
+  }
+  // Принудительно режим services
+  _kbMode = 'services';
+  // Прячем список проектов — это самостоятельное окно
+  var sidebar = document.querySelector('.kb-proj-sidebar');
+  var kbBody  = document.querySelector('.kb-body');
+  if (sidebar) sidebar.style.display = 'none';
+  if (kbBody)  kbBody.style.gridTemplateColumns = '1fr';
+  // Заголовок раздела
+  var title = document.querySelector('.kb-topbar-title');
+  var sub   = document.getElementById('kb-project-subtitle');
+  if (title) title.textContent = 'Инструменты DTR';
+  if (sub)   sub.textContent = 'Агентское пространство';
+  // Грузим контент инструментов
+  if (typeof kbLoadServicesSpace === 'function') kbLoadServicesSpace();
+};
+
+window.kbSwitchMode = function(mode, btn) {  _kbMode = mode;
   document.querySelectorAll('.kb-mode-btn').forEach(function(b){ b.classList.remove('kb-mode-active'); });
   if (btn) btn.classList.add('kb-mode-active');
 
