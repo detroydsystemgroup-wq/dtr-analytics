@@ -36642,6 +36642,35 @@ async function saveSMMData(showFeedback) {
 
 function renderSMMPresentation() {
   const m = smmData.metrics, p = smmData.prev
+
+  // ── Инжектируем заголовок секции 03 с селектом сортировки ──
+  // Находим smm-reels-grid и вставляем heading перед ним (работает независимо от кеша HTML)
+  const reelsGrid = g('smm-reels-grid')
+  if (reelsGrid && !g('smm-sec03-heading')) {
+    const h = document.createElement('div')
+    h.id = 'smm-sec03-heading'
+    h.className = 'smm-sec-heading'
+    h.style.cssText = 'margin-top:36px;display:flex;align-items:center;gap:16px;'
+    h.innerHTML = `
+      <div class="smm-sec-num" style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(240,236,230,.35);font-weight:400;">03</div>
+      <div class="smm-sec-title" style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:500;color:#f0ece6;letter-spacing:-.01em;">Опубликованный контент</div>
+      <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(240,236,230,.15),transparent);"></div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(240,236,230,.3);letter-spacing:.08em;text-transform:uppercase;">Сортировка</span>
+        <select id="smm-sort-select" style="background:#1a1a1a;border:1px solid #b8923a;border-radius:6px;padding:5px 10px;color:#c9a84c;font-family:'DM Mono',monospace;font-size:10px;outline:none;cursor:pointer;">
+          <option value="er">ER %</option>
+          <option value="views">Просмотры</option>
+          <option value="reach">Охват</option>
+          <option value="tr">TR %</option>
+          <option value="cr">CR %</option>
+          <option value="shr">SHR %</option>
+          <option value="sr">SR %</option>
+        </select>
+      </div>`
+    reelsGrid.parentNode.insertBefore(h, reelsGrid)
+    g('smm-sort-select').addEventListener('change', function() { setSMMReelsSort(this.value) })
+  }
+
   const fmtBig = n => !n ? '—' : Number(n).toLocaleString('ru-RU')
   const delta = (cur, prev) => {
     if (!cur || !prev) return ''
