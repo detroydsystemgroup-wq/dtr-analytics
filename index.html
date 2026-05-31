@@ -44732,7 +44732,8 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
 
   var hdr = '<div style="display:grid;grid-template-columns:' + gridCols + ';border-bottom:1px solid rgba(255,255,255,.06);">' +
     COLS.map(function(c, i) {
-      return '<div style="padding:9px ' + (i===0?'20px':'14px') + ';font-size:10px;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase;' + (i>0?brd:'') + '" title="' + (c.hint||'') + '">' + c.label + '</div>';
+      var align = i === 0 ? 'text-align:left;' : 'text-align:center;';
+      return '<div style="padding:9px ' + (i===0?'20px':'14px') + ';font-size:10px;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase;' + align + (i>0?brd:'') + '" title="' + (c.hint||'') + '">' + c.label + '</div>';
     }).join('') +
   '</div>';
 
