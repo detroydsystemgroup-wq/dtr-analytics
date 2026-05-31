@@ -34368,6 +34368,9 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
     var hasAny = false;
 
     _allProjects.forEach(function(p) {
+      // Только активные проекты: неархивные и не завершённые на 100%
+      if (p.status === 'archived') return;
+      if (typeof getProjectProgress === 'function' && getProjectProgress(p.id).pct >= 100) return;
       var budget = p.monthly_budget || 0;
       if (!budget || !p.services) return;
       var svcs = [];
