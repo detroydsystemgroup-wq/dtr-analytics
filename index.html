@@ -36914,7 +36914,32 @@ function setSMMRubricSort(field) {
 function renderSMMRubricGrid() {
   const grid   = g('smm-rubric-grid'); if (!grid) return
   const winner = g('smm-rubric-winner')
-  const rubs   = [...smmData.rubrics].sort((a,b) => (b[smmRubricSort]||0) - (a[smmRubricSort]||0))
+
+  // Инжект селекта сортировки в заголовок секции 04 через JS
+  if (!g('smm-rubric-sort-select')) {
+    const heading = grid.previousElementSibling && grid.previousElementSibling.id === 'smm-rubric-winner'
+      ? grid.previousElementSibling.previousElementSibling
+      : grid.previousElementSibling
+    if (heading) {
+      const sortWrap = document.createElement('div')
+      sortWrap.style.cssText = 'display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:auto;'
+      sortWrap.innerHTML = '<span style="font-family:\'DM Mono\',monospace;font-size:9px;color:rgba(255,255,255,.3);">Сортировка:</span>' +
+        '<select id="smm-rubric-sort-select" style="background:#1a1a1a;border:1px solid #b8923a;border-radius:6px;padding:4px 8px;color:#c9a84c;font-family:\'DM Mono\',monospace;font-size:9px;outline:none;cursor:pointer;">' +
+        '<option value="er">ER %</option>' +
+        '<option value="reach">Охват</option>' +
+        '<option value="views">Просмотры</option>' +
+        '</select>'
+      heading.style.display = 'flex'
+      heading.style.alignItems = 'center'
+      heading.appendChild(sortWrap)
+      g('smm-rubric-sort-select').addEventListener('change', function() { setSMMRubricSort(this.value) })
+    }
+  }
+  // Sync select value
+  const sel = g('smm-rubric-sort-select')
+  if (sel) sel.value = smmRubricSort
+
+  const rubs = [...smmData.rubrics].sort((a,b) => (b[smmRubricSort]||0) - (a[smmRubricSort]||0))
 
   if (!rubs.length) {
     grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px;font-family:\'DM Mono\',monospace;font-size:12px;letter-spacing:.1em;color:var(--smm-muted);">Добавьте рубрики во вкладке «Данные»</div>'
