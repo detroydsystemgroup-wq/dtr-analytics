@@ -21149,11 +21149,11 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
     <div class="cb-sub" style="font-family:var(--font-mono);font-size:10px;color:var(--txt2);margin-bottom:10px;">// самые "дорогие" часы — когда гости тратят больше за визит</div>
     <div style="position:relative;height:220px"><canvas id="cHourAvg"></canvas></div>
   </div>
-  <div id="hour-kpd-top" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px;"></div>
+  <div id="hour-kpd-top" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);"></div>
 </div>
       <div id="sec-peak-shift" style="display:none;">
   <div class="sh"><div class="sh-num">⏱️</div><div class="sh-title">Смещение пика трафика</div><div class="sh-line"></div></div>
-  <div id="peak-shift-inner" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;"></div>
+  <div id="peak-shift-inner" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);"></div>
 </div>
       <!-- NEW: блюд на чек по часам -->
       <div id="sec-dishes-per-check" style="display:none;">
@@ -21307,7 +21307,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
           <div class="sh-title">Средний чек по каналу продаж</div>
           <div class="sh-line"></div>
         </div>
-        <div id="avg-channel-inner" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:28px;"></div>
+        <div id="avg-channel-inner" style="display:grid;grid-template-columns:repeat(2,1fr);gap:0;border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);margin-bottom:0;"></div>
       </div>
       <div id="sec-channel-revenue" style="display:none;">
   <div class="sh"><div class="sh-num">📊</div><div class="sh-title">Доходность канала продаж</div><div class="sh-line"></div></div>
@@ -21315,7 +21315,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
     <div class="cb-title">Выручка по каналу — <span id="lbl-ch-d">Период 2</span></div>
     <div style="position:relative;height:200px"><canvas id="cChannelRev"></canvas></div>
   </div>
-  <div id="channel-revenue-cards" style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:14px;"></div>
+  <div id="channel-revenue-cards" style="display:block;margin-top:0;"></div>
 </div>
       <div id="sec-delivery-time" style="display:none;">
   <div class="sh"><div class="sh-num">🌙</div><div class="sh-title">Доставка по времени суток</div><div class="sh-line"></div></div>
@@ -24441,21 +24441,21 @@ function runAnalysis() {
         const v=tot[k]; if(!v)return ''
         const c=cmp[k], avg=v.chk?Math.round(v.rev/v.chk):0, cAvg=c&&c.chk?Math.round(c.rev/c.chk):0
         const chkDelta=c?v.chk-c.chk:null, avgDelta=cAvg?avg-cAvg:null, col=colors[k]||'#c9a84c'
-        return `<div style="background:var(--bg3);border:1px solid var(--brd);border-left:3px solid ${col};border-radius:12px;padding:16px;margin-bottom:10px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-            <div style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;">${icons[k]||'📦'} ${k}</div>
-            ${chkDelta!==null?`<span style="font-size:11px;padding:2px 8px;border-radius:5px;font-family:var(--font-mono);background:${chkDelta>=0?'rgba(0,229,163,.12)':'rgba(255,61,107,.12)'};color:${chkDelta>=0?'var(--green)':'var(--red)'};">${chkDelta>=0?'▲':'▼'} ${fmt2(Math.abs(chkDelta))} чеков</span>`:''}
+        return `<div style="border-bottom:1px solid rgba(255,255,255,.04);padding:16px 0;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <div style="font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.18em;text-transform:uppercase;">${k}</div>
+            ${chkDelta!==null?`<span style="font-family:var(--font-mono);font-size:9px;padding:2px 7px;border-radius:2px;background:${chkDelta>=0?'rgba(62,207,142,.07)':'rgba(224,82,82,.07)'};color:${chkDelta>=0?'#3ecf8e':'#e05252'};">${chkDelta>=0?'▲':'▼'} ${fmt2(Math.abs(chkDelta))} чеков</span>`:''}
           </div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:${col};">${fmt2(v.chk)}</div>
-          <div style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);margin-bottom:10px;">${(v.chk/total*100).toFixed(1)}% трафика · ${fmt2(Math.round(v.rev/1e6))} млн сум</div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:8px;">
-            <span style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);">Средний чек</span>
+          <div style="font-family:var(--font-display);font-size:36px;font-weight:700;color:${col};letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;margin-bottom:6px;">${fmt2(v.chk)}</div>
+          <div style="font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.25);margin-bottom:12px;">${(v.chk/total*100).toFixed(1)}% трафика · ${fmt2(Math.round(v.rev/1e6))} млн сум</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid rgba(255,255,255,.04);">
+            <span style="font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.1em;text-transform:uppercase;">Средний чек</span>
             <div style="display:flex;align-items:center;gap:8px;">
-              <span style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:${col};">${fmt2(avg)} сум</span>
-              ${avgDelta!==null?`<span style="font-size:10px;padding:2px 7px;border-radius:4px;font-family:var(--font-mono);background:${avgDelta>=0?'rgba(0,229,163,.1)':'rgba(255,61,107,.1)'};color:${avgDelta>=0?'var(--green)':'var(--red)'};">${avgDelta>=0?'+':''}${fmt2(avgDelta)}</span>`:''}
+              <span style="font-family:var(--font-display);font-size:16px;font-weight:700;color:${col};font-variant-numeric:tabular-nums;">${fmt2(avg)} сум</span>
+              ${avgDelta!==null?`<span style="font-family:var(--font-mono);font-size:9px;padding:2px 7px;border-radius:2px;background:${avgDelta>=0?'rgba(62,207,142,.07)':'rgba(224,82,82,.07)'};color:${avgDelta>=0?'#3ecf8e':'#e05252'};">${avgDelta>=0?'+':''}${fmt2(avgDelta)}</span>`:''}
             </div>
           </div>
-          <div style="height:4px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-top:10px;"><div style="height:100%;width:${v.chk/total*100}%;background:${col};opacity:.7;border-radius:3px;"></div></div>
+          <div style="height:1px;background:rgba(255,255,255,.05);margin-top:8px;"><div style="height:100%;width:${v.chk/total*100}%;background:${col};opacity:.6;"></div></div>
         </div>`
       }).join('')
     }
@@ -24481,32 +24481,32 @@ function runAnalysis() {
       const maxAvg = Math.max(...allTypes.map(k=>{const b2=tb[k],d2=td2[k];return Math.max(b2&&b2.chk?Math.round(b2.rev/b2.chk):0,d2&&d2.chk?Math.round(d2.rev/d2.chk):0);}))
       const fmt2 = v => new Intl.NumberFormat('ru-RU').format(v)
       g('avg-channel-section').style.display = 'block'; showBlock('block-channels')
+      g('avg-channel-inner').style.cssText = 'display:grid;grid-template-columns:repeat(2,1fr);gap:0;border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);margin-bottom:0;';
       g('avg-channel-inner').innerHTML = allTypes.map(k => {
         const b2=tb[k]||{chk:0,rev:0}, d2=td2[k]||{chk:0,rev:0}
         const bAvg=b2.chk?Math.round(b2.rev/b2.chk):0, dAvg=d2.chk?Math.round(d2.rev/d2.chk):0
         const delta=dAvg-bAvg, col=colors[k]||'#c9a84c'
-        return `<div style="background:var(--bg4);border:1px solid var(--brd);border-radius:14px;padding:20px;position:relative;overflow:hidden;">
-          <div style="position:absolute;top:0;left:0;right:0;height:2px;background:${col};"></div>
-          <div style="font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:7px;">${icons[k]||'📦'} ${k}</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
-            <div>
-              <div style="font-size:9px;color:var(--txt2);font-family:var(--font-mono);letter-spacing:.1em;margin-bottom:4px;">${LABEL_B}</div>
-              <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--txt2);">${fmt2(bAvg)}</div>
-              <div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);">${fmt2(b2.chk)} чеков</div>
+        return `<div style="border-right:1px solid rgba(255,255,255,.04);padding:20px 20px 18px;">
+          <div style="font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px;">${k}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid rgba(255,255,255,.04);margin-bottom:12px;">
+            <div style="padding:12px 14px 12px 0;border-right:1px solid rgba(255,255,255,.04);">
+              <div style="font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">${LABEL_B}</div>
+              <div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:rgba(240,236,230,.4);letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;">${fmt2(bAvg)}</div>
+              <div style="font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.2);margin-top:4px;">${fmt2(b2.chk)} чеков</div>
             </div>
-            <div>
-              <div style="font-size:9px;color:var(--txt2);font-family:var(--font-mono);letter-spacing:.1em;margin-bottom:4px;">${LABEL_D}</div>
-              <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;color:${col};">${fmt2(dAvg)}</div>
-              <div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);">${fmt2(d2.chk)} чеков</div>
+            <div style="padding:12px 0 12px 14px;">
+              <div style="font-family:var(--font-mono);font-size:8px;color:${col};letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">${LABEL_D}</div>
+              <div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:${col};letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;">${fmt2(dAvg)}</div>
+              <div style="font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.25);margin-top:4px;">${fmt2(d2.chk)} чеков</div>
             </div>
           </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-top:1px solid rgba(255,255,255,.06);">
-            <span style="font-size:11px;color:var(--txt2);font-family:var(--font-mono);">Изменение ср. чека</span>
-            <span style="font-size:13px;font-weight:600;font-family:var(--font-mono);padding:3px 10px;border-radius:5px;background:${delta>=0?'rgba(0,229,163,.12)':'rgba(255,61,107,.12)'};color:${delta>=0?'var(--green)':'var(--red)'};">${delta>=0?'+':''}${fmt2(delta)} сум</span>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid rgba(255,255,255,.04);">
+            <span style="font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.1em;text-transform:uppercase;">Изменение ср. чека</span>
+            <span style="font-family:var(--font-mono);font-size:10px;font-weight:600;padding:2px 8px;border-radius:2px;background:${delta>=0?'rgba(62,207,142,.08)':'rgba(224,82,82,.08)'};color:${delta>=0?'#3ecf8e':'#e05252'};">${delta>=0?'+':''}${fmt2(delta)} сум</span>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:10px;">
-            <div><div style="font-size:9px;color:var(--txt3);font-family:var(--font-mono);margin-bottom:3px;">До</div><div style="height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;"><div style="height:100%;width:${maxAvg?bAvg/maxAvg*100:0}%;background:rgba(240,236,230,.8);border-radius:3px;"></div></div></div>
-            <div><div style="font-size:9px;color:var(--txt3);font-family:var(--font-mono);margin-bottom:3px;">Таргет</div><div style="height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;"><div style="height:100%;width:${maxAvg?dAvg/maxAvg*100:0}%;background:${col};border-radius:3px;"></div></div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;">
+            <div><div style="font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.15);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">До</div><div style="height:1px;background:rgba(255,255,255,.06);"><div style="height:100%;width:${maxAvg?bAvg/maxAvg*100:0}%;background:rgba(240,236,230,.4);"></div></div></div>
+            <div><div style="font-family:var(--font-mono);font-size:8px;color:${col};letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;opacity:.7;">Таргет</div><div style="height:1px;background:rgba(255,255,255,.06);"><div style="height:100%;width:${maxAvg?dAvg/maxAvg*100:0}%;background:${col};"></div></div></div>
           </div>
         </div>`
       }).join('')
@@ -31527,56 +31527,49 @@ function renderChannelShare(b4, d4, b1, d1) {
       peakHour[t]=ph;
     });
 
-    // ── Шапка: сводка по каналам ──
-    var summaryHTML = '<div style="display:grid;grid-template-columns:repeat('+types.length+',1fr);gap:10px;margin-bottom:18px;">'
-      + types.map(function(t){
+    // ── Шапка: сводка по каналам — McKinsey ──
+    var summaryHTML = '<div style="display:grid;grid-template-columns:repeat('+types.length+',1fr);gap:0;border-bottom:1px solid rgba(255,255,255,.04);margin-bottom:0;">'
+      + types.map(function(t, ti){
           var col = CHAN_COLS[t]||'#c9a84c';
-          var icon = CHAN_ICONS[t]||'📦';
           var colHex = col.charAt(0)==='#'?col:'#c9a84c';
           var r=parseInt(colHex.slice(1,3),16),g=parseInt(colHex.slice(3,5),16),b=parseInt(colHex.slice(5,7),16);
           var totalChk = hours.reduce(function(s,h){return s+(hourData[h][t]?hourData[h][t].chk:0)},0);
           var totalRev = hours.reduce(function(s,h){return s+(hourData[h][t]?hourData[h][t].rev:0)},0);
           var avgChk = totalChk ? Math.round(totalRev/totalChk) : 0;
           var ph = peakHour[t];
-          return '<div style="background:rgba('+r+','+g+','+b+',.07);border:1px solid rgba('+r+','+g+','+b+',.2);border-top:3px solid '+col+';border-radius:12px;padding:14px 16px;">'
-            +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
-            +'<span style="font-size:18px;">'+icon+'</span>'
-            +'<span style="font-size:12px;font-weight:600;color:'+col+';">'+t+'</span>'
+          var isLast = ti === types.length - 1;
+          return '<div style="padding:20px 20px 18px;border-right:'+(isLast?'none':'1px solid rgba(255,255,255,.04)')+';position:relative;">'
+            +'<div style="font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px;">'+t+'</div>'
+            +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid rgba(255,255,255,.04);">'
+            +'<div style="padding:10px 14px 10px 0;border-right:1px solid rgba(255,255,255,.04);">'
+            +'<div style="font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px;">Пик часа</div>'
+            +'<div style="font-family:var(--font-body);font-size:28px;font-weight:700;color:'+col+';letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;">'+ph+'<span style="font-size:14px;opacity:.45;">:00</span></div>'
             +'</div>'
-            +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">'
-            +'<div><div style="font-size:9px;color:rgba(255,255,255,.35);font-family:var(--font-mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;">Пик часа</div>'
-            +'<div style="font-family:\"Bebas Neue\",sans-serif;font-size:24px;color:'+col+';">'+ph+'<span style="font-size:12px;color:rgba(255,255,255,.4);margin-left:1px;">:00</span></div></div>'
-            +'<div><div style="font-size:9px;color:rgba(255,255,255,.35);font-family:var(--font-mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;">Ср. чек</div>'
-            +'<div style="font-size:14px;font-weight:600;color:rgba(255,255,255,.8);">'+fmt3(Math.round(avgChk/1000))+'K</div></div>'
-            +'</div>'
-            +'<div style="margin-top:8px;font-size:10px;color:rgba(255,255,255,.35);font-family:var(--font-mono);">'+fmt3(totalChk)+' чеков всего</div>'
+            +'<div style="padding:10px 0 10px 14px;">'
+            +'<div style="font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px;">Ср. чек</div>'
+            +'<div style="font-family:var(--font-body);font-size:28px;font-weight:700;color:rgba(240,236,230,.85);letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;">'+fmt3(Math.round(avgChk/1000))+'<span style="font-size:14px;opacity:.45;">K</span></div>'
+            +'</div></div>'
+            +'<div style="font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.2);margin-top:8px;font-variant-numeric:tabular-nums;">'+fmt3(totalChk)+' чеков</div>'
             +'</div>';
         }).join('')
       +'</div>';
 
-    // ── Stacked bar chart по часам ──
-    var chartHTML = '<div style="display:flex;flex-direction:column;gap:2px;">'
-
-    // Шапка chart
-      +'<div style="display:flex;align-items:center;gap:0;margin-bottom:6px;padding:0 0 6px;border-bottom:1px solid rgba(255,255,255,.06);">'
+    // ── Stacked bar chart по часам — McKinsey ──
+    var chartHTML = '<div style="display:flex;flex-direction:column;gap:0;">'
+      +'<div style="display:flex;align-items:center;gap:0;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);">'
       +'<div style="width:72px;flex-shrink:0;"></div>'
       +'<div style="flex:1;display:flex;justify-content:space-between;">'
-      +'<span style="font-size:9px;color:rgba(255,255,255,.2);font-family:var(--font-mono);">0</span>'
-      +'<span style="font-size:9px;color:rgba(255,255,255,.2);font-family:var(--font-mono);">'+fmt3(Math.round(globalMax/2))+'</span>'
-      +'<span style="font-size:9px;color:rgba(255,255,255,.2);font-family:var(--font-mono);">'+fmt3(globalMax)+'</span>'
+      +'<span style="font-size:8px;color:rgba(255,255,255,.15);font-family:var(--font-mono);letter-spacing:.06em;">0</span>'
+      +'<span style="font-size:8px;color:rgba(255,255,255,.15);font-family:var(--font-mono);letter-spacing:.06em;">'+fmt3(Math.round(globalMax/2))+'</span>'
+      +'<span style="font-size:8px;color:rgba(255,255,255,.15);font-family:var(--font-mono);letter-spacing:.06em;">'+fmt3(globalMax)+'</span>'
       +'</div>'
       +'<div style="width:54px;flex-shrink:0;"></div>'
       +'</div>'
-
     + hours.map(function(h){
         var rowTotal = rowMaxes[h];
         if(rowTotal < 5) return '';
         var seg = segOf(h);
         var rowW = Math.round(rowTotal / globalMax * 100);
-        var isNight = parseInt(h) <= 5 || parseInt(h) >= 22;
-        var rowAlpha = rowTotal > globalMax*0.5 ? 1 : 0.65;
-
-        // Segmented stacked bar
         var segs = types.map(function(t){
           var d = hourData[h][t]||{chk:0};
           var w = rowTotal > 0 ? Math.round(d.chk/rowTotal*100) : 0;
@@ -31585,50 +31578,41 @@ function renderChannelShare(b4, d4, b1, d1) {
           var r=parseInt(colHex.slice(1,3),16),g=parseInt(colHex.slice(3,5),16),b=parseInt(colHex.slice(5,7),16);
           if(w===0) return '';
           var isPeak = peakHour[t]===h;
-          return '<div style="width:'+w+'%;height:100%;background:rgba('+r+','+g+','+b+','+(isPeak?'0.9':'0.6')+');position:relative;'
-            +(isPeak?'box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);':'')+'">'
-            +(isPeak&&w>8?'<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:9px;color:rgba(255,255,255,.9);font-family:var(--font-mono);font-weight:700;white-space:nowrap;">'+CHAN_ICONS[t]+'</div>':'')
+          return '<div style="width:'+w+'%;height:100%;background:rgba('+r+','+g+','+b+','+(isPeak?'0.85':'0.5')+');position:relative;'+(isPeak?'box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);':'')+'">'
+            +(isPeak&&w>10?'<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:8px;color:rgba(255,255,255,.7);font-family:var(--font-mono);letter-spacing:.04em;">▲</div>':'')
             +'</div>';
         }).join('');
-
-        return '<div style="display:flex;align-items:center;gap:0;padding:1px 0;">'
-          // Час слева
-          +'<div style="width:72px;flex-shrink:0;display:flex;align-items:center;gap:6px;">'
-          +'<div style="width:3px;height:22px;border-radius:2px;background:'+seg.dot+';opacity:.6;flex-shrink:0;"></div>'
+        return '<div style="display:flex;align-items:center;gap:0;border-bottom:1px solid rgba(255,255,255,.03);padding:2px 0;">'
+          +'<div style="width:72px;flex-shrink:0;display:flex;align-items:center;gap:8px;padding:4px 0;">'
+          +'<div style="width:2px;height:18px;background:'+seg.dot+';opacity:.4;flex-shrink:0;"></div>'
           +'<div>'
-          +'<div style="font-size:12px;font-weight:500;color:rgba(255,255,255,.7);font-family:var(--font-mono);">'+h+':00</div>'
-          +'<div style="font-size:8px;color:rgba(255,255,255,.2);font-family:var(--font-mono);letter-spacing:.04em;">'+seg.lb+'</div>'
+          +'<div style="font-size:11px;color:rgba(255,255,255,.5);font-family:var(--font-mono);font-variant-numeric:tabular-nums;letter-spacing:.02em;">'+h+':00</div>'
+          +'<div style="font-size:7px;color:rgba(255,255,255,.18);font-family:var(--font-mono);letter-spacing:.1em;text-transform:uppercase;">'+seg.lb+'</div>'
           +'</div></div>'
-
-          // Stacked bar
-          +'<div style="flex:1;height:26px;background:rgba(255,255,255,.04);border-radius:5px;overflow:hidden;display:flex;">'
-          +'<div style="width:'+rowW+'%;height:100%;display:flex;border-radius:5px 0 0 5px;overflow:hidden;">'
+          +'<div style="flex:1;height:20px;background:rgba(255,255,255,.03);overflow:hidden;display:flex;">'
+          +'<div style="width:'+rowW+'%;height:100%;display:flex;overflow:hidden;">'
           + segs
           +'</div></div>'
-
-          // Итого справа
-          +'<div style="width:54px;flex-shrink:0;text-align:right;padding-left:8px;">'
-          +'<span style="font-size:11px;font-weight:500;color:rgba(255,255,255,'+(rowTotal>globalMax*0.5?'0.6':'0.35')+');font-family:var(--font-mono);">'+fmt3(rowTotal)+'</span>'
+          +'<div style="width:54px;flex-shrink:0;text-align:right;padding-left:10px;">'
+          +'<span style="font-size:10px;color:rgba(255,255,255,'+(rowTotal>globalMax*0.5?'0.42':'0.2')+');font-family:var(--font-mono);font-variant-numeric:tabular-nums;">'+fmt3(rowTotal)+'</span>'
           +'</div>'
           +'</div>';
       }).join('')
-
     +'</div>';
 
-    // ── Легенда каналов ──
-    var legendHTML = '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:12px;">'
-      +'<span style="font-size:10px;color:rgba(255,255,255,.2);font-family:var(--font-mono);">Каналы:</span>'
+    // ── Легенда — McKinsey ──
+    var legendHTML = '<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:10px 0;border-top:1px solid rgba(255,255,255,.04);">'
       + types.map(function(t){
           var col = CHAN_COLS[t]||'#c9a84c';
           var colHex = col.charAt(0)==='#'?col:'#c9a84c';
           var r=parseInt(colHex.slice(1,3),16),g=parseInt(colHex.slice(3,5),16),b=parseInt(colHex.slice(5,7),16);
-          return '<div style="display:flex;align-items:center;gap:6px;">'
-            +'<div style="width:14px;height:14px;border-radius:4px;background:rgba('+r+','+g+','+b+',.75);"></div>'
-            +'<span style="font-size:11px;color:rgba(255,255,255,.45);">'+t+'</span>'
-            +'<span style="font-size:10px;color:'+col+';font-family:var(--font-mono);">пик '+peakHour[t]+':00</span>'
+          return '<div style="display:flex;align-items:center;gap:7px;">'
+            +'<div style="width:10px;height:2px;background:rgba('+r+','+g+','+b+',.75);flex-shrink:0;"></div>'
+            +'<span style="font-size:9px;color:rgba(255,255,255,.3);font-family:var(--font-mono);letter-spacing:.06em;">'+t+'</span>'
+            +'<span style="font-size:8px;color:rgba(255,255,255,.18);font-family:var(--font-mono);">пик '+peakHour[t]+':00</span>'
             +'</div>';
         }).join('')
-      +'<span style="font-size:9px;color:rgba(255,255,255,.15);font-family:var(--font-mono);margin-left:auto;">иконка = пиковый час канала</span>'
+      +'<span style="font-size:8px;color:rgba(255,255,255,.12);font-family:var(--font-mono);margin-left:auto;letter-spacing:.08em;">▲ = пиковый час</span>'
       +'</div>';
 
     hmEl.innerHTML = summaryHTML + chartHTML + legendHTML;
@@ -32059,12 +32043,12 @@ function runNewBlocks() {
       .sort(function(a,b){ return b.avg-a.avg; }).slice(0,3);
     var topEl = document.getElementById('hour-kpd-top');
     var medals = ['🥇','🥈','🥉'];
-    if (topEl) topEl.innerHTML = topHours.map(function(x,i){ return '<div style="background:var(--bg3);border:1px solid var(--brd);border-radius:14px;padding:18px;text-align:center;">'
-      +'<div style="font-size:24px;margin-bottom:8px;">'+medals[i]+'</div>'
-      +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:36px;color:var(--amber);">'+x.h+':00</div>'
-      +'<div style="font-size:10px;color:var(--txt2);font-family:\'DM Mono\',monospace;margin-top:4px;margin-bottom:10px;">самый дорогой час</div>'
-      +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:var(--txt);">'+fmt(x.avg)+' сум</div>'
-      +'<div style="font-size:10px;color:var(--txt3);font-family:\'DM Mono\',monospace;margin-top:3px;">средний чек · '+fmt(x.chk)+' чеков</div>'
+    var rankColors = ['#b8923a','rgba(240,236,230,.55)','rgba(240,236,230,.35)'];
+    if (topEl) topEl.innerHTML = topHours.map(function(x,i){ return '<div style="padding:20px 20px 18px;border-right:'+(i<2?'1px solid rgba(255,255,255,.04)':'none')+';">'
+      +'<div style="font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px;">0'+(i+1)+' · самый дорогой час</div>'
+      +'<div style="font-family:var(--font-display);font-size:40px;font-weight:700;color:'+rankColors[i]+';letter-spacing:-.055em;line-height:1;font-variant-numeric:tabular-nums;margin-bottom:8px;">'+x.h+':00</div>'
+      +'<div style="font-family:var(--font-display);font-size:18px;font-weight:700;color:rgba(240,236,230,.85);letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-bottom:6px;">'+fmt(x.avg)+' сум</div>'
+      +'<div style="font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.2);letter-spacing:.06em;">ср. чек · '+fmt(x.chk)+' чеков</div>'
       +'</div>';
     }).join('');
   }
@@ -32088,41 +32072,42 @@ function runNewBlocks() {
     var shiftRev = parseInt(prD[0]) - parseInt(prB[0]);
     var psInner = document.getElementById('peak-shift-inner');
     if (psInner) psInner.innerHTML = [
-      {icon:'👥',title:'Пик трафика (чеки)',
+      {title:'Пик трафика',sub:'чеки',
         bHour:pbB[0]+':00', bVal:fmt(pbB[1].chk)+' чеков',
         dHour:pbD[0]+':00', dVal:fmt(pbD[1].chk)+' чеков',
-        shift:shiftChk, col:'#c9a84c'},
-      {icon:'💰',title:'Пик выручки',
+        shift:shiftChk, col:'#b8923a'},
+      {title:'Пик выручки',sub:'',
         bHour:prB[0]+':00', bVal:fmtM(prB[1].rev)+' сум',
         dHour:prD[0]+':00', dVal:fmtM(prD[1].rev)+' сум',
-        shift:shiftRev, col:'#00e5a3'},
-      {icon:'📊',title:'Вывод',
+        shift:shiftRev, col:'rgba(240,236,230,.6)'},
+      {title:'Вывод',sub:'',
         bHour:'', bVal:'',
         dHour:'', dVal:'',
-        shift:null, col:'#ffb627',
+        shift:null, col:'rgba(240,236,230,.3)',
         custom: (Math.abs(shiftChk)===0&&Math.abs(shiftRev)===0)
           ? 'Пики не сдвинулись — поведение гостей стабильно'
           : 'Пик трафика сдвинулся на '+(shiftChk>0?'+':'')+shiftChk+' ч, пик выручки на '+(shiftRev>0?'+':'')+shiftRev+' ч'
       },
-    ].map(function(x){
-      if (x.custom !== undefined) return '<div style="background:var(--bg3);border:1px solid var(--brd);border-left:3px solid '+x.col+';border-radius:14px;padding:18px;display:flex;align-items:center;gap:12px;">'
-        +'<span style="font-size:28px;">'+x.icon+'</span>'
-        +'<div><div style="font-size:11px;font-weight:600;margin-bottom:6px;">'+x.title+'</div><div style="font-size:12px;color:var(--txt2);font-family:\'DM Mono\',monospace;">'+x.custom+'</div></div></div>';
-      var shiftTxt = x.shift===0?'Без сдвига':(x.shift>0?'Сдвиг +'+x.shift+' ч вперёд':'Сдвиг '+x.shift+' ч назад');
-      var shiftCol = x.shift===0?'var(--txt2)':Math.abs(x.shift)<=1?'var(--amber)':'var(--red)';
-      return '<div style="background:var(--bg3);border:1px solid var(--brd);border-left:3px solid '+x.col+';border-radius:14px;padding:18px;">'
-        +'<div style="font-size:11px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:7px;"><span>'+x.icon+'</span>'+x.title+'</div>'
-        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'
-        +'<div style="background:rgba(255,255,255,.03);border-radius:8px;padding:10px;">'
-        +'<div style="font-size:9px;color:var(--txt2);font-family:\'DM Mono\',monospace;margin-bottom:4px;">'+LABEL_B+'</div>'
-        +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:26px;color:var(--txt2);">'+x.bHour+'</div>'
-        +'<div style="font-size:10px;color:var(--txt3);font-family:\'DM Mono\',monospace;">'+x.bVal+'</div></div>'
-        +'<div style="background:rgba(255,255,255,.04);border:1.5px solid '+x.col+'44;border-radius:8px;padding:10px;">'
-        +'<div style="font-size:9px;color:'+x.col+';font-family:\'DM Mono\',monospace;margin-bottom:4px;">'+LABEL_D+'</div>'
-        +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:26px;color:'+x.col+';">'+x.dHour+'</div>'
-        +'<div style="font-size:10px;color:var(--txt2);font-family:\'DM Mono\',monospace;">'+x.dVal+'</div></div>'
+    ].map(function(x, xi){
+      var isLast = xi===2;
+      if (x.custom !== undefined) return '<div style="padding:20px;border-right:none;">'
+        +'<div style="font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px;">'+x.title+'</div>'
+        +'<div style="font-family:var(--font-display);font-size:13px;color:rgba(240,236,230,.55);line-height:1.6;">'+x.custom+'</div></div>';
+      var shiftTxt = x.shift===0?'Без сдвига':(x.shift>0?'+'+x.shift+' ч вперёд':x.shift+' ч назад');
+      var shiftCol = x.shift===0?'rgba(255,255,255,.2)':Math.abs(x.shift)<=1?'#b8923a':'#e05252';
+      return '<div style="padding:20px;border-right:1px solid rgba(255,255,255,.04);">'
+        +'<div style="font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px;">'+x.title+(x.sub?' · '+x.sub:'')+'</div>'
+        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid rgba(255,255,255,.04);margin-bottom:12px;">'
+        +'<div style="padding:12px 14px 12px 0;border-right:1px solid rgba(255,255,255,.04);">'
+        +'<div style="font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">'+LABEL_B+'</div>'
+        +'<div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:rgba(240,236,230,.4);letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;">'+x.bHour+'</div>'
+        +'<div style="font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.2);margin-top:4px;">'+x.bVal+'</div></div>'
+        +'<div style="padding:12px 0 12px 14px;">'
+        +'<div style="font-family:var(--font-mono);font-size:8px;color:'+x.col+';letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">'+LABEL_D+'</div>'
+        +'<div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:'+x.col+';letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;">'+x.dHour+'</div>'
+        +'<div style="font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.25);margin-top:4px;">'+x.dVal+'</div></div>'
         +'</div>'
-        +'<div style="font-size:11px;font-family:\'DM Mono\',monospace;color:'+shiftCol+';padding:6px 10px;background:rgba(255,255,255,.03);border-radius:7px;">'+shiftTxt+'</div></div>';
+        +'<div style="font-family:var(--font-mono);font-size:9px;color:'+shiftCol+';letter-spacing:.06em;">'+shiftTxt+'</div></div>';
     }).join('');
   }
 
@@ -32219,31 +32204,33 @@ function runNewBlocks() {
       var avgDelta = dAvg - bAvg;
       var col = colsCh[k]||'#c9a84c';
       var share = totalDRev?Math.round(d2c.rev/totalDRev*100):0;
-      return '<div style="background:var(--bg3);border:1px solid var(--brd);border-radius:14px;padding:18px;position:relative;overflow:hidden;">'
-        +'<div style="position:absolute;top:0;left:0;right:0;height:2px;background:'+col+';"></div>'
-        +'<div style="font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:7px;">'+(iconsCh[k]||'📦')+' '+k+'<span style="margin-left:auto;font-size:10px;font-family:\'DM Mono\',monospace;color:var(--txt2);">'+share+'% выручки</span></div>'
-        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'
-        +'<div style="background:rgba(255,255,255,.03);border-radius:8px;padding:12px;">'
-        +'<div style="font-size:9px;color:var(--txt2);font-family:\'DM Mono\',monospace;margin-bottom:4px;">Выручка/день '+LABEL_B+'</div>'
-        +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:var(--txt2);">'+fmtM(bRPD)+' сум</div>'
-        +'<div style="font-size:10px;color:var(--txt3);font-family:\'DM Mono\',monospace;margin-top:2px;">ср. чек: '+fmt(bAvg)+' сум</div>'
+      return '<div style="padding:18px 0;border-bottom:1px solid rgba(255,255,255,.04);">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">'
+        +'<div style="font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.18em;text-transform:uppercase;">'+k+'</div>'
+        +'<div style="font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.1em;">'+share+'% выручки</div>'
         +'</div>'
-        +'<div style="background:rgba(255,255,255,.04);border:1.5px solid '+col+'44;border-radius:8px;padding:12px;">'
-        +'<div style="font-size:9px;color:'+col+';font-family:\'DM Mono\',monospace;margin-bottom:4px;">Выручка/день '+LABEL_D+'</div>'
-        +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:'+col+';">'+fmtM(dRPD)+' сум</div>'
-        +'<div style="font-size:10px;color:var(--txt2);font-family:\'DM Mono\',monospace;margin-top:2px;">ср. чек: '+fmt(dAvg)+' сум</div>'
-        +'</div></div>'
-        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
-        +'<div style="padding:7px 10px;background:rgba(255,255,255,.03);border-radius:7px;text-align:center;">'
-        +'<div style="font-size:9px;color:var(--txt2);font-family:\'DM Mono\',monospace;margin-bottom:3px;">Δ Выручка/день</div>'
-        +'<div style="font-size:12px;font-weight:600;font-family:\'DM Mono\',monospace;color:'+(rpdDelta>=0?'var(--green)':'var(--red)')+';">'+(rpdDelta>=0?'+':'')+fmtM(rpdDelta)+' сум</div>'
+        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid rgba(255,255,255,.04);margin-bottom:10px;">'
+        +'<div style="padding:12px 14px 12px 0;border-right:1px solid rgba(255,255,255,.04);">'
+        +'<div style="font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">Выручка/день '+LABEL_B+'</div>'
+        +'<div style="font-family:var(--font-display);font-size:24px;font-weight:700;color:rgba(240,236,230,.4);letter-spacing:-.04em;font-variant-numeric:tabular-nums;">'+fmtM(bRPD)+' сум</div>'
+        +'<div style="font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.2);margin-top:4px;">ср. чек: '+fmt(bAvg)+' сум</div>'
         +'</div>'
-        +'<div style="padding:7px 10px;background:rgba(255,255,255,.03);border-radius:7px;text-align:center;">'
-        +'<div style="font-size:9px;color:var(--txt2);font-family:\'DM Mono\',monospace;margin-bottom:3px;">Δ Средний чек</div>'
-        +'<div style="font-size:12px;font-weight:600;font-family:\'DM Mono\',monospace;color:'+(avgDelta>=0?'var(--green)':'var(--red)')+';">'+(avgDelta>=0?'+':'')+fmt(avgDelta)+' сум</div>'
+        +'<div style="padding:12px 0 12px 14px;">'
+        +'<div style="font-family:var(--font-mono);font-size:8px;color:'+col+';letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;opacity:.8;">Выручка/день '+LABEL_D+'</div>'
+        +'<div style="font-family:var(--font-display);font-size:24px;font-weight:700;color:'+col+';letter-spacing:-.04em;font-variant-numeric:tabular-nums;">'+fmtM(dRPD)+' сум</div>'
+        +'<div style="font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,.25);margin-top:4px;">ср. чек: '+fmt(dAvg)+' сум</div>'
         +'</div></div>'
-        +'<div style="height:4px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-top:10px;">'
-        +'<div style="height:100%;width:'+share+'%;background:'+col+';border-radius:3px;"></div></div>'
+        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;border-top:1px solid rgba(255,255,255,.04);padding-top:10px;">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;">'
+        +'<span style="font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.1em;text-transform:uppercase;">Δ Выручка/день</span>'
+        +'<span style="font-family:var(--font-mono);font-size:10px;padding:2px 7px;border-radius:2px;background:'+(rpdDelta>=0?'rgba(62,207,142,.07)':'rgba(224,82,82,.07)')+';color:'+(rpdDelta>=0?'#3ecf8e':'#e05252')+';font-weight:600;">'+(rpdDelta>=0?'+':'')+fmtM(rpdDelta)+'</span>'
+        +'</div>'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;">'
+        +'<span style="font-family:var(--font-mono);font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.1em;text-transform:uppercase;">Δ Ср. чек</span>'
+        +'<span style="font-family:var(--font-mono);font-size:10px;padding:2px 7px;border-radius:2px;background:'+(avgDelta>=0?'rgba(62,207,142,.07)':'rgba(224,82,82,.07)')+';color:'+(avgDelta>=0?'#3ecf8e':'#e05252')+';font-weight:600;">'+(avgDelta>=0?'+':'')+fmt(avgDelta)+'</span>'
+        +'</div></div>'
+        +'<div style="height:1px;background:rgba(255,255,255,.05);margin-top:10px;">'
+        +'<div style="height:100%;width:'+share+'%;background:'+col+';opacity:.5;"></div></div>'
         +'</div>';
     }).join('');
   }
