@@ -27254,7 +27254,8 @@ async function saveStage() {
 
   // Проверяем — все 9 этапов завершены?
   if (selectedStageStatus === 'completed' && !_isClientCache) {
-    const allDone = trackerData.filter(r => r.status === 'completed').length === 9
+    const totalStages = trackerData.length
+    const allDone = totalStages > 0 && trackerData.filter(r => r.status === 'completed').length === totalStages
     if (allDone) {
       const alreadyShown = sessionStorage.getItem('complete_shown_' + currentProject.id)
       if (!alreadyShown) {
