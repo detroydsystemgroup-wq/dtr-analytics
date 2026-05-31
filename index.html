@@ -26534,7 +26534,7 @@ button, a, [role="button"],
             </div>
           </div>
         </div>
-        <div id="sv-workload-body" style="padding:0;"></div>
+        <div id="sv-workload-v2" style="padding:0;overflow:hidden;border-radius:0 0 12px 12px;"></div>
       </div>
 
       <div style="height:60px;"></div>
@@ -38737,83 +38737,87 @@ async function loadOverview() {
     }
   }
 
-  // RENDER: Workload by team members
-  var wEl = document.getElementById('sv-workload-body');
-  if (wEl) {
+  // RENDER: Workload by team members (v2 — 3 columns)
+  var wEl2 = document.getElementById('sv-workload-v2');
+  if (wEl2) {
     sb.from('team_members').select('id,name,color').eq('agency_id', currentUser.id).order('name')
       .then(function(mRes) {
         var members = mRes.data || [];
         if (!members.length) {
-          wEl.innerHTML = '<div style="font-size:11px;color:var(--txt3);padding:4px 0;">Добавь команду во вкладке «Команда»</div>';
+          wEl2.innerHTML = '<div style="padding:20px 20px;font-size:12px;color:var(--txt3);">Добавь команду во вкладке «Команда»</div>';
           return;
         }
         sb.from('project_stages').select('assignee_id,status')
           .in('project_id', activeProjIds.length ? activeProjIds : ['00000000-0000-0000-0000-000000000000'])
           .then(function(sRes) {
             var stgs = sRes.data || [];
-            var memberLoad = members.map(function(m) {
-              var active  = stgs.filter(function(s){ return s.assignee_id === m.id && s.status === 'active'; }).length;
-              var pending = stgs.filter(function(s){ return s.assignee_id === m.id && s.status === 'pending'; }).length;
-              var done    = stgs.filter(function(s){ return s.assignee_id === m.id && s.status === 'completed'; }).length;
-              return { m: m, active: active, pending: pending, done: done, total: active + pending + done };
-            }).filter(function(r){ return r.total > 0; }).sort(function(a,b){ return b.active - a.active; });
 
-            if (!memberLoad.length) {
-              wEl.innerHTML = '<div style="font-size:11px;color:var(--txt3);padding:4px 0;">Назначь сотрудников на этапы в трекере</div>';
+            // Считаем нагрузку для каждого участника
+            var memberLoad = members.map(function(m) {
+              var pending   = stgs.filter(function(s){ return s.assignee_id === m.id && s.status === 'pending'; }).length;
+              var active    = stgs.filter(function(s){ return s.assignee_id === m.id && s.status === 'active'; }).length;
+              var done      = stgs.filter(function(s){ return s.assignee_id === m.id && s.status === 'completed'; }).length;
+              return { m: m, pending: pending, active: active, done: done, total: pending + active + done };
+            }).sort(function(a,b){ return b.active - a.active; });
+
+            if (!memberLoad.length || memberLoad.every(function(r){ return r.total === 0; })) {
+              wEl2.innerHTML = '<div style="padding:20px 20px;font-size:12px;color:var(--txt3);">Назначь сотрудников на этапы в трекере</div>';
               return;
             }
-            // Считаем суммарные значения для заголовка
-            var totalPending  = memberLoad.reduce(function(s,r){ return s + r.pending; }, 0);
-            var totalActive   = memberLoad.reduce(function(s,r){ return s + r.active;  }, 0);
-            var totalDone     = memberLoad.reduce(function(s,r){ return s + r.done;    }, 0);
-            var totalAll      = totalPending + totalActive + totalDone;
 
-            // Шапка 3 колонок
-            var colHdr = '<div style="display:grid;grid-template-columns:180px 1fr 1fr 1fr;gap:0;border-bottom:1px solid var(--brd);">' +
-              '<div style="padding:10px 16px;font-size:11px;color:var(--txt3);">Сотрудник</div>' +
-              '<div style="padding:10px 16px;font-size:11px;color:var(--txt3);text-align:center;border-left:1px solid var(--brd);">В ожидании <span style="color:var(--txt2);font-family:var(--font-mono);">' + totalPending + '</span></div>' +
-              '<div style="padding:10px 16px;font-size:11px;color:var(--txt3);text-align:center;border-left:1px solid var(--brd);">В работе <span style="color:var(--amber);font-family:var(--font-mono);">' + totalActive + '</span></div>' +
-              '<div style="padding:10px 16px;font-size:11px;color:var(--txt3);text-align:center;border-left:1px solid var(--brd);">Завершено <span style="color:var(--green);font-family:var(--font-mono);">' + totalDone + '</span></div>' +
+            // Суммы по колонкам
+            var sumPending = memberLoad.reduce(function(s,r){ return s + r.pending; }, 0);
+            var sumActive  = memberLoad.reduce(function(s,r){ return s + r.active;  }, 0);
+            var sumDone    = memberLoad.reduce(function(s,r){ return s + r.done;    }, 0);
+
+            // Максимум для относительной полоски
+            var maxTotal = Math.max.apply(null, memberLoad.map(function(r){ return r.total; })) || 1;
+
+            // Цвет нагрузки
+            function loadColor(n) {
+              return n >= 5 ? 'var(--red)' : n >= 3 ? 'var(--amber)' : n > 0 ? 'var(--green)' : 'var(--txt3)';
+            }
+
+            // Ячейка колонки
+            function cell(count, color, total, borderLeft) {
+              var pct = Math.round(count / (total || 1) * 100);
+              var bl = borderLeft ? 'border-left:1px solid rgba(255,255,255,.06);' : '';
+              return '<div style="' + bl + 'padding:16px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;">' +
+                '<div style="font-size:22px;font-family:var(--font-mono);color:' + (count > 0 ? color : 'rgba(255,255,255,.15)') + ';line-height:1;">' + (count > 0 ? count : '—') + '</div>' +
+                (count > 0 ?
+                  '<div style="width:60px;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;">' +
+                    '<div style="width:' + pct + '%;height:100%;background:' + color + ';border-radius:2px;"></div>' +
+                  '</div>' : '') +
+              '</div>';
+            }
+
+            // Шапка
+            var html = '<div style="display:grid;grid-template-columns:200px 1fr 1fr 1fr;">' +
+              '<div style="padding:10px 20px;font-size:10px;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase;">Сотрудник</div>' +
+              '<div style="padding:10px 24px;font-size:10px;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase;text-align:center;border-left:1px solid rgba(255,255,255,.06);">В ожидании&nbsp;<span style="color:var(--txt2);font-family:var(--font-mono);">' + sumPending + '</span></div>' +
+              '<div style="padding:10px 24px;font-size:10px;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase;text-align:center;border-left:1px solid rgba(255,255,255,.06);">В работе&nbsp;<span style="color:var(--amber);font-family:var(--font-mono);">' + sumActive + '</span></div>' +
+              '<div style="padding:10px 24px;font-size:10px;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase;text-align:center;border-left:1px solid rgba(255,255,255,.06);">Завершено&nbsp;<span style="color:var(--green);font-family:var(--font-mono);">' + sumDone + '</span></div>' +
             '</div>';
 
             // Строки сотрудников
-            var rows = memberLoad.map(function(r) {
-              var total = r.pending + r.active + r.done; // пересчёт для надёжности
-              // Полоска нагрузки: relative width от максимального total в команде
-              var maxTotal = Math.max.apply(null, memberLoad.map(function(x){ return x.pending + x.active + x.done; }));
-              var barPending = maxTotal ? Math.round(r.pending / maxTotal * 100) : 0;
-              var barActive  = maxTotal ? Math.round(r.active  / maxTotal * 100) : 0;
-              var barDone    = maxTotal ? Math.round(r.done    / maxTotal * 100) : 0;
-
-              var loadColor = r.active >= 5 ? 'var(--red)' : r.active >= 3 ? 'var(--amber)' : 'var(--green)';
-
-              function bar(count, color, pct, label) {
-                if (count === 0) return '<div style="display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;padding:14px 16px;border-left:1px solid var(--brd);">' +
-                  '<span style="font-size:11px;color:var(--txt3);font-family:var(--font-mono);">—</span></div>';
-                return '<div style="display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;padding:14px 16px;border-left:1px solid var(--brd);">' +
-                  '<span style="font-size:20px;font-family:var(--font-mono);color:' + color + ';line-height:1;">' + count + '</span>' +
-                  '<div style="width:100%;max-width:80px;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;">' +
-                    '<div style="width:' + pct + '%;height:100%;background:' + color + ';opacity:.7;border-radius:2px;"></div>' +
-                  '</div>' +
-                '</div>';
-              }
-
-              return '<div style="display:grid;grid-template-columns:180px 1fr 1fr 1fr;gap:0;border-bottom:1px solid var(--brd);align-items:stretch;">' +
+            html += memberLoad.map(function(r) {
+              var lc = loadColor(r.active);
+              return '<div style="display:grid;grid-template-columns:200px 1fr 1fr 1fr;border-top:1px solid rgba(255,255,255,.06);">' +
                 // Имя
-                '<div style="display:flex;align-items:center;gap:8px;padding:12px 16px;">' +
-                  '<div style="width:28px;height:28px;border-radius:50%;background:' + r.m.color + '22;border:1.5px solid ' + r.m.color + '55;display:flex;align-items:center;justify-content:center;font-size:11px;color:' + r.m.color + ';flex-shrink:0;">' + r.m.name[0] + '</div>' +
+                '<div style="display:flex;align-items:center;gap:10px;padding:14px 20px;">' +
+                  '<div style="width:32px;height:32px;border-radius:50%;background:' + r.m.color + '18;border:1.5px solid ' + r.m.color + '44;display:flex;align-items:center;justify-content:center;font-size:12px;color:' + r.m.color + ';flex-shrink:0;">' + r.m.name[0].toUpperCase() + '</div>' +
                   '<div>' +
-                    '<div style="font-size:13px;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px;">' + r.m.name + '</div>' +
-                    '<div style="font-size:10px;color:var(--txt3);margin-top:1px;font-family:var(--font-mono);">' + total + ' всего</div>' +
+                    '<div style="font-size:13px;color:var(--txt);">' + r.m.name + '</div>' +
+                    '<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);margin-top:2px;">' + r.total + ' этапов</div>' +
                   '</div>' +
                 '</div>' +
-                bar(r.pending, 'rgba(240,236,230,.5)', barPending) +
-                bar(r.active,  loadColor,              barActive) +
-                bar(r.done,    'var(--green)',          barDone) +
+                cell(r.pending, 'rgba(200,196,190,.6)', maxTotal, true) +
+                cell(r.active,  lc,                     maxTotal, true) +
+                cell(r.done,    'var(--green)',          maxTotal, true) +
               '</div>';
             }).join('');
 
-            wEl.innerHTML = colHdr + rows;
+            wEl2.innerHTML = html;
           });
       });
   }
