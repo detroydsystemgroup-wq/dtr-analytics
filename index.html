@@ -17095,6 +17095,12 @@ html body main.cc-main.smm-fullscreen {
   min-height: 100vh !important;
   overflow-y: auto !important;
 }
+/* Модалки Reel и Рубрики должны работать поверх fullscreen */
+#modal-reel,
+#modal-rubric {
+  z-index: 99999 !important;
+  position: fixed !important;
+}
 </style>
 <meta charset="UTF-8">
 <meta name="build" content="dtr-v31052026-1117">
@@ -28974,6 +28980,8 @@ function exportSMMReportPDF() {
 function openModal(id, focusId) {
   const m = g(id)
   if (!m) return
+  // Teleport to body to avoid overflow/stacking-context issues in fullscreen
+  if (m.parentNode !== document.body) document.body.appendChild(m)
   m.classList.add('open')
   if (focusId) {
     const el = g(focusId)
