@@ -27992,12 +27992,18 @@ async function cp2LoadActivity(project, limit, containerId) {
 
   function fmtTime(dateStr) {
     var d = new Date(dateStr);
-    var today = new Date(); today.setHours(0,0,0,0);
-    var dd = new Date(dateStr); dd.setHours(0,0,0,0);
-    var diff = Math.floor((today - dd) / 86400000);
-    return diff === 0
-      ? 'Сегодня, ' + d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})
-      : diff === 1 ? 'Вчера' : diff + ' дн. назад';
+    var now = new Date();
+    var diffMs = now - d;
+    var diffMin = Math.floor(diffMs / 60000);
+    var diffHr  = Math.floor(diffMs / 3600000);
+    var diffDay = Math.floor(diffMs / 86400000);
+    var timeStr = d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+    if (diffMin < 1)  return 'Только что';
+    if (diffMin < 60) return diffMin + ' мин. назад';
+    if (diffHr  < 24) return diffHr  + ' ч. назад';
+    if (diffDay === 1) return 'Вчера, ' + timeStr;
+    if (diffDay < 7)  return diffDay + ' дн. назад, ' + timeStr;
+    return d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'}) + ', ' + timeStr;
   }
 
   el.innerHTML = items.map(function(it) {
@@ -28068,12 +28074,18 @@ async function cp2RenderActivityFull(project) {
 
   function fmtTime(dateStr) {
     var d = new Date(dateStr);
-    var today = new Date(); today.setHours(0,0,0,0);
-    var dd = new Date(dateStr); dd.setHours(0,0,0,0);
-    var diff = Math.floor((today - dd) / 86400000);
-    return diff === 0
-      ? 'Сегодня, ' + d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})
-      : diff === 1 ? 'Вчера' : diff + ' дн. назад';
+    var now = new Date();
+    var diffMs = now - d;
+    var diffMin = Math.floor(diffMs / 60000);
+    var diffHr  = Math.floor(diffMs / 3600000);
+    var diffDay = Math.floor(diffMs / 86400000);
+    var timeStr = d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+    if (diffMin < 1)  return 'Только что';
+    if (diffMin < 60) return diffMin + ' мин. назад';
+    if (diffHr  < 24) return diffHr  + ' ч. назад';
+    if (diffDay === 1) return 'Вчера, ' + timeStr;
+    if (diffDay < 7)  return diffDay + ' дн. назад, ' + timeStr;
+    return d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'}) + ', ' + timeStr;
   }
 
   // Группируем задачи по stage_index
