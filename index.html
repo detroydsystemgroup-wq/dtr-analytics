@@ -9,6 +9,10 @@
 #page-dashboard .cc-sidebar-footer{display:none!important}
 </style>
 <meta charset="UTF-8">
+<meta name="build" content="dtr-v31052026-1117">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DTR Performance Analytics</title>
 <meta name="description" content="DTR Performance Analytics — операционная панель агентства Detroyd System Group.">
@@ -28687,7 +28691,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
       </div>
 
       <!-- SEC 04: Рубрики — полностью строится через JS -->
-      <div id="dtr-rubric-root"></div>
+      <div id="dtr-rub-v9"></div>
 
     </div><!-- /dtr-ss-smm -->
 
@@ -36885,7 +36889,7 @@ function setSMMRubricSort(field) {
 }
 
 function renderSMMRubricGrid() {
-  const root = g('dtr-rubric-root')
+  const root = g('dtr-rub-v9')
   if (!root) return
 
   const fmtFull = n => !n ? '—' : Number(n).toLocaleString('ru-RU')
