@@ -30552,7 +30552,7 @@ async function sendTelegramStageNotification(stageIndex, newStatus, note, stageN
   const name = stageName || (rec && rec.name) || STAGES[stageIndex]?.name || ('Этап ' + (stageIndex + 1))
 
   // Escape MarkdownV2
-  const esc = s => String(s||'').replace(/[_*\[\]()~`>#+\-=|{}.!]/g, '\\$&')
+  const esc = s => String(s||'').replace(/[_*\[\]()~`>#+\-=|{}.!\u00B7\u2014]/g, '\\$&')
 
   const total  = trackerData.length || (currentProject?.stage_count) || 9
   const done   = trackerData.filter(s => s.status === 'completed').length
@@ -30581,7 +30581,7 @@ async function sendTelegramStageNotification(stageIndex, newStatus, note, stageN
   text += '\n'
 
   // Прогресс
-  text += '\u{1F4CA} Прогресс: *' + pct + '%* \u2014 ' + done + ' из ' + total + ' этапов\n'
+  text += '\u{1F4CA} Прогресс: *' + pct + '%* ' + esc('\u2014') + ' ' + done + ' из ' + total + ' этапов\n'
   text += '\n'
 
   // Заметка
@@ -30597,9 +30597,9 @@ async function sendTelegramStageNotification(stageIndex, newStatus, note, stageN
   }
 
   // Подпись
-  text += '_' + esc(dateStr) + ', ' + esc(timeStr) + ' \u00B7 DTR Analytics_\n'
+  text += '_' + esc(dateStr) + ', ' + esc(timeStr) + ' ' + esc('\u00B7') + ' DTR Analytics_\n'
   text += '\n'
-  text += 'С уважением, операционный департамент DeTroyd'
+  text += esc('С уважением, операционный департамент DeTroyd')
 
   try {
     await fetch(TG_EDGE_URL, {
