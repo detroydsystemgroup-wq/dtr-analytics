@@ -34689,6 +34689,10 @@ async function kbMoveTask(taskId, fromStatus, toStatus) {
       updates.timer_started_at = null
     }
     updates.done = false
+    // Считаем возврат только если задача была выполнена (done→waiting = rework)
+    if (fromStatus === 'done') {
+      updates.returned_count = (task.returned_count || 0) + 1
+    }
   }
 
   // Save to DB — разбиваем на безопасные поля и опциональные (done_at может не существовать)
@@ -38638,10 +38642,9 @@ async function loadOverview() {
     return h.event === 'Возвращён в ожидание';
   });
   // Задачи возвращённые из done в waiting
-  var reworkTasks = allTasks.filter(function(t){
-    return !t.done && t.kanban_status === 'waiting' && t.time_logged > 0;
-  });
-  var reworkCount = reworkStages.length + reworkTasks.length;
+  // Возвраты задач — точный счёт через returned_count
+  var reworkTasksCount = allTasks.reduce(function(s, t){ return s + (t.returned_count || 0); }, 0);
+  var reworkCount = reworkStages.length + reworkTasksCount;
 
   // ─────────────────────────────
   // RENDER: Hero strip
@@ -44596,7 +44599,7 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
     // Задачи — для velocity и времени выполнения
     // Привязка: задача → stage_index → project_stages.assignee_id
     sb.from('stage_tasks')
-      .select('id,done,kanban_status,created_at,updated_at,done_at,time_logged,stage_index,project_id')
+      .select('id,done,kanban_status,created_at,updated_at,done_at,time_logged,stage_index,project_id,returned_count')
       .in('project_id', projFilter),
 
     // История этапов — для коэффициента возвратов
@@ -44681,9 +44684,8 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
     var myStageKeys = {};
     myStages.forEach(function(s){ myStageKeys[s.project_id + '_' + s.stage_index] = true; });
 
-    var returns = history.filter(function(h) {
-      // Если в истории есть assignee_id — используем его (точно)
-      // Иначе фоллбэк на текущее назначение этапа
+    // Возвраты этапов из stage_history
+    var stageReturns = history.filter(function(h) {
       var byAssignee = h.assignee_id ? h.assignee_id === m.id : myStageKeys[h.project_id + '_' + h.stage_index];
       return byAssignee && (h.event === 'Возвращён в ожидание' || h.event === 'pending');
     }).length;
@@ -44693,8 +44695,17 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
       return byAssignee && (h.event === 'Завершён' || h.event === 'completed');
     }).length;
 
-    var reworkRate = (completions + returns) > 0
-      ? Math.round(returns / (completions + returns) * 100)
+    // Возвраты задач (done→waiting) через returned_count
+    var taskReturns = myTasks.reduce(function(s, t) {
+      return s + (t.returned_count || 0);
+    }, 0);
+
+    var returns = stageReturns + taskReturns;
+
+    // reworkRate = возвраты / (завершения + возвраты задач + завершённые задачи)
+    var totalDoneItems = completions + doneTasks.length;
+    var reworkRate = (totalDoneItems + returns) > 0
+      ? Math.round(returns / (totalDoneItems + returns) * 100)
       : null;
 
     // ── 7. Эффективность (score 0–100) ──
