@@ -14231,6 +14231,41 @@ button, a, [role="button"],
   color: rgba(255,255,255,.1)
 }
 
+.cp-footer-marquee {
+  flex: 1;
+  overflow: hidden;
+  margin-right: 24px;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.cp-footer-track {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  animation: cpFooterMarquee 30s linear infinite;
+  will-change: transform;
+}
+.cp-footer-marquee:hover .cp-footer-track {
+  animation-play-state: paused;
+}
+.cp-footer-mq {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.16);
+  padding-right: 44px;
+  flex-shrink: 0;
+}
+.cp-footer-mq b {
+  color: #c9a84c;
+  font-weight: 700;
+}
+@keyframes cpFooterMarquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
 .cp-tab-content {
   display: none
 }
@@ -20156,7 +20191,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 <div class="cp-card"><div class="cp-card-header"><div class="cp-card-title">Вся активность</div><div style="display:flex;align-items:center;gap:5px;"><div style="width:5px;height:5px;border-radius:50%;background:#3ecf8e;"></div><span style="font-family:var(--font-mono);font-size:8px;color:#3ecf8e;letter-spacing:.1em;">LIVE</span></div></div><div id="cp2-activity-full"></div></div>
 </div>
 </div>
-<div class="cp-footer"><div style="display:flex;align-items:center;gap:8px;"><div style="width:14px;height:14px;display:grid;grid-template-columns:1fr 1fr;gap:1px;"><div style="background:#b8923a;border-radius:1px;"></div><div style="background:rgba(184,146,58,.45);border-radius:1px;"></div><div style="background:rgba(184,146,58,.45);border-radius:1px;"></div><div style="background:rgba(56,178,172,.4);border-radius:1px;"></div></div><span class="cp-footer-name">DETROYD SMART SYSTEM</span></div><span class="cp-footer-copy">&copy; 2026</span></div>
+<div class="cp-footer"><div class="cp-footer-marquee"><div class="cp-footer-track"><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span><span class="cp-footer-mq"><b>DETROYD</b> SMART SYSTEM</span></div></div><span class="cp-footer-copy">&copy; 2026</span></div>
 </main>
 </div>
 
