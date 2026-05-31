@@ -28524,7 +28524,7 @@ function renderSMMReelsGrid() {
       var isActive = c.f === smmReelsSort
       var display = fmtPct(c.f, r)
       html += '<div style="text-align:right;padding-right:4px;">'
-      html += '<div style="font-family:\'DM Mono\',monospace;font-size:'+(isActive?'12':'11')+'px;font-weight:'+(isActive?'600':'400')+';color:'+(isActive?'rgba(240,236,230,.9)':'rgba(240,236,230,.38)')+';font-variant-numeric:tabular-nums;margin-bottom:4px;">'+display+'</div>'
+      html += '<div style="font-family:\'DM Mono\',monospace;font-size:'+(isActive?'12':'11')+'px;font-weight:'+(isActive?'600':'400')+';color:'+(isActive?'rgba(240,236,230,.9)':'rgba(240,236,230,.38)')+';font-variant-numeric:tabular-nums;margin-bottom:4px;height:18px;line-height:18px;display:flex;align-items:flex-end;justify-content:flex-end;">'+display+'</div>'
       html += '<div style="height:1px;background:rgba(255,255,255,.05);position:relative;">'
       html += '<div style="position:absolute;top:0;right:0;height:100%;width:'+pct.toFixed(1)+'%;background:'+(isActive?'#b8923a':'rgba(255,255,255,.2)')+';transition:width .8s;"></div>'
       html += '</div></div>'
