@@ -15644,11 +15644,17 @@ button, a, [role="button"],
 
 .kb-cards-wrap {
   padding: 16px 20px;
-  grid-template-columns: repeat(2, minmax(0,1fr));
+  grid-template-columns: repeat(5, minmax(0,1fr));
   gap: 8px;
   display: none;
   background: var(--bg2)
 }
+
+/* 5 в ряд на широких экранах, плавное уменьшение на узких */
+@media (max-width:1400px){ .kb-cards-wrap { grid-template-columns: repeat(4, minmax(0,1fr)); } }
+@media (max-width:1150px){ .kb-cards-wrap { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+@media (max-width:880px) { .kb-cards-wrap { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width:560px) { .kb-cards-wrap { grid-template-columns: 1fr; } }
 
 .kb-cat-block.kb-cat-open .kb-cards-wrap {
   display: grid
@@ -16897,7 +16903,6 @@ button, a, [role="button"],
 .cp-sidebar{width:180px}.cp-content{padding:20px 24px 32px}.cp-hero-strip{grid-template-columns:1fr auto 1fr}.cp-cols{grid-template-columns:1fr}
 .kb-body { grid-template-columns:1fr; }
  .kb-proj-sidebar { border-right:none; border-bottom:1px solid rgba(240,236,230,.06); }
- .kb-cards-wrap { grid-template-columns:1fr; }
 }
 
 @media (max-width: 900px) {
