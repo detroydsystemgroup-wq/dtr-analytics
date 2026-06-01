@@ -23425,8 +23425,11 @@ function renderProjectGrid() {
       else       { _hTxt = 'В норме';       _hCol = 'var(--green)'; _hBg = 'var(--bg3)';          _hBorder = 'var(--brd)';          _stripe = 'var(--green)' }
     }
 
-    // ── ТЕМП К ПЛАНУ — сколько этапов ДОЛЖНО быть завершено к сегодня (по дедлайнам этапов) ──
-    const _hasPlan = pct < 100 && progTotal > 0 && projStages.some(s => s.deadline)
+    // ── ТЕМП К ПЛАНУ — показываем только если у проекта расписан почти весь график ──
+    // (иначе «план» по 1–2 дедлайнам несопоставим с прогрессом по всем этапам и раздувает разрыв)
+    const _stagesWithDl = projStages.filter(s => s.deadline).length
+    const _planCoverage = progTotal > 0 ? _stagesWithDl / progTotal : 0
+    const _hasPlan = pct < 100 && progTotal > 0 && _planCoverage >= 0.7
     let _expPct = null, _gap = null, _gapCol = 'var(--txt3)'
     if (_hasPlan) {
       const _expDone = projStages.filter(s => s.deadline && new Date(s.deadline + 'T00:00:00') <= today).length
