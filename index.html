@@ -23422,7 +23422,7 @@ function renderProjectGrid() {
       let _near = false
       if (next) { const _d = Math.ceil((new Date(next.deadline + 'T00:00:00') - today) / 86400000); _near = _d >= 0 && _d <= 3 }
       if (_near) { _hTxt = 'Скоро дедлайн'; _hCol = 'var(--amber)'; _hBg = 'rgba(232,153,58,.10)'; _hBorder = 'rgba(232,153,58,.30)'; _stripe = 'var(--amber)' }
-      else       { _hTxt = 'В норме';       _hCol = 'var(--green)'; _hBg = 'var(--bg3)';          _hBorder = 'var(--brd)';          _stripe = col }
+      else       { _hTxt = 'В норме';       _hCol = 'var(--green)'; _hBg = 'var(--bg3)';          _hBorder = 'var(--brd)';          _stripe = 'var(--green)' }
     }
 
     // ── ТЕМП К ПЛАНУ — сколько этапов ДОЛЖНО быть завершено к сегодня (по дедлайнам этапов) ──
