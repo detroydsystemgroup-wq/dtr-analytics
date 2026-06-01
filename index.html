@@ -12320,12 +12320,15 @@ html.light .prow-name { color: #29303a !important; }
 html.light .prow-cat,
 html.light .prow-meta { color: #99a0a8 !important; }
 html.light .prow-pill {
-  background: rgba(41,48,58,.04) !important;
-  border: 1px solid rgba(41,48,58,.08) !important;
+  /* no !important: pills with inline semantic bg/border (e.g. Здоровье) keep them;
+     plain pills (Дедлайн, Динамика, buttons) fall back to this neutral surface */
+  background: rgba(41,48,58,.04);
+  border: 1px solid rgba(41,48,58,.08);
 }
-html.light .prow-pill:hover { border-color: rgba(156,122,43,.28) !important; }
+html.light .prow-pill:hover { border-color: rgba(156,122,43,.28); }
 html.light .prow-pill-label { color: #99a0a8 !important; }
-html.light .prow-pill-val   { color: #29303a !important; }
+/* .prow-pill-val intentionally NOT recolored — it carries inline semantic colors
+   (var(--green)/--red/--amber/--a2), which are already remapped for light mode */
 
 /* ── BLOCK 7 · TABS & SEGMENTED CONTROLS ───────────────────────────────── */
 html.light .tl-tumbler,
@@ -12479,7 +12482,11 @@ html.light .apl-hero-strip {
   border: 1px solid rgba(156,122,43,.2) !important;
 }
 html.light .apl-hero-eyebrow { color: #9c7a2b !important; }
-html.light .apl-hero-num { color: #29303a !important; }
+/* neutral hero nums -> ink; colored ones keep their semantic class color */
+html.light .apl-hero-num { color: #29303a; }
+html.light .apl-hero-num.apl-green { color: var(--green) !important; }
+html.light .apl-hero-num.apl-red   { color: var(--red) !important; }
+html.light .apl-hero-num.apl-blue  { color: var(--cyan) !important; }
 html.light .apl-hero-sub, html.light .apl-hero-foot { color: #5e6670 !important; }
 html.light .apl-hero-divider, html.light .apl-hero-rule { background: rgba(41,48,58,.1) !important; }
 html.light .apl-chart-card {
@@ -12487,11 +12494,23 @@ html.light .apl-chart-card {
   border: 1px solid rgba(41,48,58,.08) !important;
 }
 html.light .apl-chart-label { color: #5e6670 !important; }
+/* filter segment pills: neutral by default, gold when active; visible count badge */
 html.light .apl-pill {
-  background: rgba(156,122,43,.1) !important;
-  border: 1px solid rgba(156,122,43,.25) !important;
+  background: rgba(41,48,58,.04) !important;
+  border: 1px solid rgba(41,48,58,.12) !important;
+  color: #5e6670 !important;
+}
+html.light .apl-pill:hover { border-color: rgba(156,122,43,.3) !important; color: #29303a !important; }
+html.light .apl-pill.active {
+  background: rgba(156,122,43,.12) !important;
+  border-color: rgba(156,122,43,.4) !important;
   color: #7f6122 !important;
 }
+html.light .apl-pill span {
+  background: rgba(41,48,58,.08) !important;
+  color: #5e6670 !important;
+}
+html.light .apl-pill.active span { background: rgba(156,122,43,.18) !important; color: #7f6122 !important; }
 
 /* ── BLOCK 15 · REPORT BLOCKS (rp-) ────────────────────────────────────── */
 html.light .rp-block {
@@ -12722,7 +12741,8 @@ html.light .apl-proj-row {
 }
 html.light .apl-proj-row:hover { border-color: rgba(156,122,43,.28) !important; }
 html.light .apl-proj-row.apl-row-selected { border-color: rgba(156,122,43,.45) !important; background: #f7f1e7 !important; }
-html.light .apl-dkpi-val { color: #29303a !important; }
+/* .apl-dkpi-val intentionally NOT recolored — inline semantic colors (БЮДЖЕТ/
+   РАСХОДЫ/ПРИБЫЛЬ/МАРЖА use var(--green)/--red/etc., remapped for light mode) */
 html.light .apl-dkpi-lbl { color: #99a0a8 !important; }
 html.light .fin-section-label { color: #5e6670 !important; }
 html.light .fin-svc-bar-track { background: rgba(41,48,58,.06) !important; }
@@ -12733,7 +12753,9 @@ html.light .fin-trend-card {
   background: #fbf8f1 !important;
   border: 1px solid rgba(41,48,58,.08) !important;
 }
-html.light .fin-trend-val { color: #29303a !important; }
+/* no !important: RUNWAY sets an inline conditional color (green/amber/red) that
+   must win; neutral trend values still get ink via this rule's specificity */
+html.light .fin-trend-val { color: #29303a; }
 html.light .fin-trend-label, html.light .fin-trend-sub { color: #99a0a8 !important; }
 html.light .fin-unit-card {
   background: #fbf8f1 !important;
@@ -13069,6 +13091,56 @@ html.light .rp-metric-lbl { color: #99a0a8 !important; }
 /* rp-metric-val keeps its semantic color (green/red/gold) */
 html.light .rp-no-analysis { color: #99a0a8 !important; }
 html.light .smm-card-period-badge { filter: saturate(.92); }
+
+
+/* ── BLOCK 29 · BI/FINANCE CARDS · COUNTS · NATIVE PICKERS ────────────────── */
+
+/* Finance/BI project rows (bi-proj-row) — labels + action buttons were
+   class-defined white (rescue can't reach class rules) */
+html.light .bi-proj-row {
+  background: #fbf8f1 !important;
+  border: 1px solid rgba(41,48,58,.08) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+html.light .bi-proj-row:hover { border-color: rgba(156,122,43,.28) !important; }
+html.light .bi-proj-row.bi-row-selected {
+  border-color: rgba(156,122,43,.45) !important;
+  background: #f7f1e7 !important;
+}
+html.light .bi-mblock { border-color: rgba(41,48,58,.07) !important; }
+/* no !important: the Маржа label carries an inline semantic color that must win */
+html.light .bi-mb-lbl { color: #99a0a8; }
+/* .bi-mb-val keeps inline conditional colors (profit/cost/margin/hours) */
+html.light .bi-action-btn {
+  background: rgba(41,48,58,.04) !important;
+  border: 1px solid rgba(41,48,58,.12) !important;
+  color: #5e6670 !important;
+}
+html.light .bi-action-btn:hover { border-color: rgba(156,122,43,.32) !important; color: #7f6122 !important; }
+html.light .bi-action-btn.bi-action-primary {
+  background: linear-gradient(135deg,#b8923a,#9c7a2b) !important;
+  border-color: rgba(156,122,43,.5) !important;
+  color: #fbf8f1 !important;
+}
+html.light .bi-status-badge { filter: saturate(.92); }
+
+/* Native date pickers + selects were forced dark by <meta color-scheme:dark>
+   and color-scheme:dark on .gl-root/select. Element-level color-scheme on the
+   inputs makes the popup calendar AND its indicator icon render light. */
+html.light .gl-root { color-scheme: light; }
+html.light select,
+html.light .dl-date2,
+html.light .dl-date2-wrap,
+html.light input[type="date"],
+html.light input[type="datetime-local"],
+html.light input[type="month"],
+html.light input[type="time"] { color-scheme: light; }
+html.light .dl-date2-wrap {
+  background: #fbf8f1 !important;
+  border: 1px solid rgba(41,48,58,.12) !important;
+}
+html.light .dl-date2 { color: #29303a !important; }
+html.light .dl-date2::-webkit-calendar-picker-indicator { opacity: .6; }
 
 button, a, [role="button"],
 .pcard, .stat-card, .ov-card, .ov2-kpi-card,
