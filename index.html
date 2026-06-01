@@ -13212,8 +13212,17 @@ html.light .dtr-tool-card, html.light .tool-card {
 }
 
 /* ── BLOCK 32 · SMOOTH THEME TRANSITION ─────────────────────────────────────
-   When .theme-anim is on (briefly, during a switch), surfaces & text ease
-   between palettes so it feels like night falling / dawn breaking. */
+   Premium circular reveal. Where supported, the View Transitions API snapshots
+   the old theme and we wipe in the new one with an expanding circle from the
+   toggle. Elsewhere, a tinted overlay performs the same clip-path reveal. */
+
+/* View Transitions: disable the default cross-fade; we drive the circle on the
+   NEW snapshot and keep the OLD one beneath it for a clean wipe. */
+::view-transition-old(root),
+::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-old(root) { z-index: 1; }
+::view-transition-new(root) { z-index: 9999; }
+
 html.theme-anim,
 html.theme-anim body,
 html.theme-anim .app-header, html.theme-anim .cc-sidebar, html.theme-anim .cc-main,
@@ -13227,90 +13236,98 @@ html.theme-anim .dl-card-v17, html.theme-anim .act-group2 {
   transition: background-color .55s ease, color .55s ease, border-color .55s ease, box-shadow .55s ease !important;
 }
 
-/* night-falls / dawn-breaks curtain */
+/* clip-path reveal overlay (fallback for browsers without View Transitions) */
 #dtr-theme-curtain {
   position: fixed; inset: 0; z-index: 9998;
-  opacity: 0; pointer-events: none;
-  transition: opacity .34s ease;
+  pointer-events: none;
+  will-change: clip-path;
 }
-#dtr-theme-curtain.on { opacity: 1; }
+#dtr-theme-curtain:not(.on) { display: none; }
 
 /* ── BLOCK 33 · DAY/NIGHT TUMBLER ──────────────────────────────────────────
-   Replaces the plain icon button. Knob slides L→R; sky shifts night→day;
-   sun emerges, stars & clouds cross-fade. */
+   Symmetric iOS-style switch. Track 60x30, knob 24, equal 3px inset on every
+   side; horizontal travel = 60 - 24 - (3+3) = 30px. Sun/moon morph, sky
+   gradient shift, stars & clouds cross-fade, soft glow. */
 .dtr-tumbler {
-  width: 56px; height: 28px;
+  width: 60px; height: 30px;
   padding: 0 !important;
   border: none !important;
   background: transparent !important;
   cursor: pointer;
-  display: inline-flex; align-items: center;
+  display: inline-flex; align-items: center; justify-content: center;
   vertical-align: middle;
+  -webkit-tap-highlight-color: transparent;
 }
 .dtr-tumbler .tmb-track {
   position: relative;
-  width: 56px; height: 28px;
+  width: 60px; height: 30px;
   border-radius: 999px;
   overflow: hidden;
   display: block;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,.4);
-  border: 1px solid rgba(255,255,255,.12);
-  transition: border-color .5s ease;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.06);
+  transition: box-shadow .6s cubic-bezier(.22,.9,.32,1);
 }
 .dtr-tumbler .tmb-sky {
   position: absolute; inset: 0;
-  background: linear-gradient(145deg, #1b2540 0%, #0c1226 100%); /* night */
-  transition: background .55s ease;
+  background: linear-gradient(160deg, #2a3a63 0%, #131c33 55%, #0a1124 100%); /* night */
+  transition: background .65s cubic-bezier(.22,.9,.32,1);
 }
-html.light .dtr-tumbler .tmb-track { border-color: rgba(156,122,43,.4); }
+html.light .dtr-tumbler .tmb-track {
+  box-shadow: inset 0 1px 3px rgba(120,90,30,.28), inset 0 0 0 1px rgba(156,122,43,.28);
+}
 html.light .dtr-tumbler .tmb-sky {
-  background: linear-gradient(145deg, #aee0ff 0%, #67b6ef 100%); /* day */
+  background: linear-gradient(160deg, #bfe6ff 0%, #8fcdf6 55%, #5fb0ee 100%); /* day */
 }
-/* knob: moon (dark) -> sun (light) */
+/* knob: moon (dark) -> sun (light). top/left = 3px; travel 30px keeps 3px right gap */
 .dtr-tumbler .tmb-knob {
   position: absolute; top: 3px; left: 3px;
-  width: 22px; height: 22px;
+  width: 24px; height: 24px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #f4f0e6, #d6cfc0);
-  box-shadow: 0 1px 3px rgba(0,0,0,.45), inset -2px -2px 4px rgba(0,0,0,.12);
-  transition: transform .5s cubic-bezier(.16,1,.4,1), background .5s ease, box-shadow .5s ease;
-  z-index: 3;
+  background: radial-gradient(circle at 34% 30%, #fbf7ee 0%, #e4ddcc 60%, #cfc6b2 100%);
+  box-shadow: 0 2px 5px rgba(0,0,0,.4), inset -2px -2px 5px rgba(0,0,0,.14);
+  transition: transform .6s cubic-bezier(.34,1.32,.42,1),
+              background .6s cubic-bezier(.22,.9,.32,1),
+              box-shadow .6s cubic-bezier(.22,.9,.32,1);
+  z-index: 4;
 }
 html.light .dtr-tumbler .tmb-knob {
-  transform: translateX(28px);
-  background: radial-gradient(circle at 35% 30%, #ffe79a, #ffb437);
-  box-shadow: 0 0 10px rgba(255,180,55,.7), 0 1px 3px rgba(0,0,0,.2);
+  transform: translateX(30px);
+  background: radial-gradient(circle at 34% 30%, #fff1b8 0%, #ffd048 55%, #ffb12e 100%);
+  box-shadow: 0 0 12px rgba(255,176,46,.75), 0 0 22px rgba(255,176,46,.35), 0 1px 3px rgba(0,0,0,.18);
 }
-/* moon craters — visible in dark, fade out in light */
+/* moon craters — visible at night, fade in light */
 .dtr-tumbler .tmb-crater {
   position: absolute; border-radius: 50%;
-  background: rgba(0,0,0,.08);
-  transition: opacity .4s ease;
+  background: rgba(90,80,60,.16);
+  transition: opacity .45s ease;
 }
-.dtr-tumbler .tmb-crater1 { width:5px; height:5px; top:5px; left:6px; }
-.dtr-tumbler .tmb-crater2 { width:4px; height:4px; top:11px; left:12px; }
-.dtr-tumbler .tmb-crater3 { width:3px; height:3px; top:6px; left:13px; }
+.dtr-tumbler .tmb-crater1 { width:5px;  height:5px;  top:6px;  left:6px;  }
+.dtr-tumbler .tmb-crater2 { width:4px;  height:4px;  top:13px; left:13px; }
+.dtr-tumbler .tmb-crater3 { width:3px;  height:3px;  top:6px;  left:14px; }
 html.light .dtr-tumbler .tmb-crater { opacity: 0; }
-/* stars — visible at night, fade out by day */
+/* stars — clustered top-right (night side), fade out by day */
 .dtr-tumbler .tmb-star {
   position: absolute; background: #fff; border-radius: 50%;
-  opacity: .9; transition: opacity .45s ease, transform .55s ease;
+  opacity: .92; box-shadow: 0 0 3px rgba(255,255,255,.8);
+  transition: opacity .5s ease, transform .6s cubic-bezier(.22,.9,.32,1);
   z-index: 2;
 }
-.dtr-tumbler .tmb-star1 { width:2px; height:2px; top:6px; left:34px; }
-.dtr-tumbler .tmb-star2 { width:2.5px; height:2.5px; top:14px; left:42px; }
-.dtr-tumbler .tmb-star3 { width:1.5px; height:1.5px; top:9px; left:46px; }
-html.light .dtr-tumbler .tmb-star { opacity: 0; transform: translateY(-3px); }
-/* clouds — hidden at night, drift in by day */
+.dtr-tumbler .tmb-star1 { width:2px;   height:2px;   top:7px;  left:38px; }
+.dtr-tumbler .tmb-star2 { width:2.5px; height:2.5px; top:15px; left:45px; }
+.dtr-tumbler .tmb-star3 { width:1.5px; height:1.5px; top:11px; left:50px; }
+html.light .dtr-tumbler .tmb-star { opacity: 0; transform: translateY(-3px) scale(.5); }
+/* clouds — clustered left (day side), hidden at night */
 .dtr-tumbler .tmb-cloud {
-  position: absolute; background: rgba(255,255,255,.9); border-radius: 999px;
-  opacity: 0; transition: opacity .5s ease, transform .6s ease;
+  position: absolute; background: rgba(255,255,255,.92); border-radius: 999px;
+  opacity: 0; transition: opacity .55s ease, transform .65s cubic-bezier(.22,.9,.32,1);
   z-index: 2;
 }
-.dtr-tumbler .tmb-cloud1 { width:12px; height:4px; top:16px; left:8px; }
-.dtr-tumbler .tmb-cloud2 { width:8px;  height:3px; top:8px;  left:6px; }
-html.light .dtr-tumbler .tmb-cloud { opacity: .85; transform: translateX(2px); }
-.dtr-tumbler:hover .tmb-track { filter: brightness(1.05); }
+.dtr-tumbler .tmb-cloud1 { width:13px; height:4px; top:18px; left:9px;  }
+.dtr-tumbler .tmb-cloud2 { width:9px;  height:3px; top:9px;  left:7px;  }
+html.light .dtr-tumbler .tmb-cloud { opacity: .9; transform: translateX(3px); }
+.dtr-tumbler:hover .tmb-track { filter: brightness(1.06); }
+.dtr-tumbler:active .tmb-knob { transform: scale(.92); }
+html.light .dtr-tumbler:active .tmb-knob { transform: translateX(30px) scale(.92); }
 
 button, a, [role="button"],
 .pcard, .stat-card, .ov-card, .ov2-kpi-card,
@@ -19120,35 +19137,55 @@ function toggleObOnboarding() {
   var saved = localStorage.getItem('dtr-theme');
   if (saved === 'light') document.documentElement.classList.add('light');
 
+  function _applyTheme() {
+    var isLight = document.documentElement.classList.toggle('light');
+    localStorage.setItem('dtr-theme', isLight ? 'light' : 'dark');
+    var b = document.getElementById('theme-toggle-btn');
+    if (b) b.classList.toggle('is-light', isLight);
+    dtrThemeCharts();
+  }
+
   window.dtrToggleTheme = function() {
-    var goingLight = !document.documentElement.classList.contains('light');
+    var btn = document.getElementById('theme-toggle-btn');
+    // origin = center of the toggle (where the reveal blooms from)
+    var cx = window.innerWidth - 80, cy = 56;
+    if (btn) { var r = btn.getBoundingClientRect(); cx = r.left + r.width/2; cy = r.top + r.height/2; }
+    var maxR = Math.hypot(Math.max(cx, innerWidth - cx), Math.max(cy, innerHeight - cy));
 
-    // Smooth "night falls / dawn breaks" cross-fade curtain
-    var curtain = document.getElementById('dtr-theme-curtain');
-    if (!curtain) {
-      curtain = document.createElement('div');
-      curtain.id = 'dtr-theme-curtain';
-      document.body.appendChild(curtain);
+    var reduced = matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Preferred path: View Transitions API → circular reveal of the NEW theme
+    if (document.startViewTransition && !reduced) {
+      var t = document.startViewTransition(function(){ _applyTheme(); });
+      t.ready.then(function(){
+        document.documentElement.animate(
+          { clipPath: [ 'circle(0px at ' + cx + 'px ' + cy + 'px)',
+                        'circle(' + maxR + 'px at ' + cx + 'px ' + cy + 'px)' ] },
+          { duration: 620, easing: 'cubic-bezier(.4,0,.2,1)',
+            pseudoElement: '::view-transition-new(root)' }
+        );
+      }).catch(function(){});
+      return;
     }
-    // curtain tinted toward the destination theme's page color
-    curtain.style.background = goingLight
-      ? 'radial-gradient(circle at 85% 12%, rgba(243,237,225,.0), rgba(243,237,225,.55))'
-      : 'radial-gradient(circle at 85% 12%, rgba(7,7,8,.0), rgba(7,7,8,.6))';
 
-    // enable global smooth color transition for this switch
+    // Fallback: snapshot-free clip-path reveal via an overlay tinted to new theme
+    if (reduced) { _applyTheme(); return; }
+    var goingLight = !document.documentElement.classList.contains('light');
+    var ov = document.getElementById('dtr-theme-curtain');
+    if (!ov) { ov = document.createElement('div'); ov.id = 'dtr-theme-curtain'; document.body.appendChild(ov); }
+    ov.style.background = goingLight ? '#f3ede1' : '#070708';
+    ov.style.clipPath = 'circle(0px at ' + cx + 'px ' + cy + 'px)';
+    ov.classList.add('on');
+    // force reflow then expand
+    void ov.offsetWidth;
+    ov.style.transition = 'clip-path .62s cubic-bezier(.4,0,.2,1)';
+    ov.style.clipPath = 'circle(' + maxR + 'px at ' + cx + 'px ' + cy + 'px)';
     document.documentElement.classList.add('theme-anim');
-    curtain.classList.add('on');
-
-    requestAnimationFrame(function(){
-      var isLight = document.documentElement.classList.toggle('light');
-      localStorage.setItem('dtr-theme', isLight ? 'light' : 'dark');
-      var btn = document.getElementById('theme-toggle-btn');
-      if (btn) btn.classList.toggle('is-light', isLight);
-      dtrThemeCharts();
-    });
-
-    setTimeout(function(){ curtain.classList.remove('on'); }, 360);
-    setTimeout(function(){ document.documentElement.classList.remove('theme-anim'); }, 700);
+    setTimeout(function(){ _applyTheme(); }, 300);
+    setTimeout(function(){
+      ov.classList.remove('on'); ov.style.transition = 'none'; ov.style.clipPath = '';
+      document.documentElement.classList.remove('theme-anim');
+    }, 660);
   };
 
   // Read a CSS token from :root / html.light
