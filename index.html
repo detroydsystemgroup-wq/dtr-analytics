@@ -12872,6 +12872,12 @@ html.light [style*="color:#ffffff"] { color: #29303a !important; }
 html.light [style*="color: #ffffff"] { color: #29303a !important; }
 html.light [style*="color:#f0ece6"] { color: #29303a !important; }
 html.light [style*="color: #f0ece6"] { color: #29303a !important; }
+html.light [style*="color:#eeedf8"] { color: #29303a !important; }
+html.light [style*="color: #eeedf8"] { color: #29303a !important; }
+html.light [style*="color:#eaeaea"] { color: #29303a !important; }
+html.light [style*="color:#e8e8e8"] { color: #29303a !important; }
+html.light [style*="color:#f1f1f5"] { color: #29303a !important; }
+html.light [style*="color: #f1f1f5"] { color: #29303a !important; }
 html.light [style*="color:#fafafa"] { color: #29303a !important; }
 html.light [style*="color:#fff5"] { color: #29303a !important; }
 html.light [style*="color:#e8e8e8"] { color: #29303a !important; }
@@ -13361,7 +13367,7 @@ html.light .cp-progress-title { color: #29303a !important; }
 html.light .cp-stages-bar2-track,
 html.light .cp-stages-bar2-wrap { background: rgba(41,48,58,.08) !important; }
 html.light .cp-stages-bar2-lbl { color: #99a0a8 !important; }
-html.light .cp-stages-bar { background: rgba(41,48,58,.06) !important; }
+html.light .cp-stages-bar { background: transparent !important; }
 
 /* stage timeline nodes + "сейчас в работе" / stage list */
 html.light .cp-stage-node, html.light .cp-stage-dot {
@@ -13546,6 +13552,80 @@ html.light .mck-dd-group-label { color: #99a0a8 !important; }
 html.light .mck-dd-name { color: #29303a !important; }
 /* SMM benchmark labels/period */
 html.light .cp-smm-lbl, html.light .cp-smm-period { color: #99a0a8 !important; }
+
+
+/* ── BLOCK 36 · CLIENT TIMELINE — remove grey plates, adapt icons ──────────
+   Production-cycle strip, the stage icon plates, and the progress-bar track
+   were dark/grey. Make the strip seamless and turn icon plates into light
+   chips with gold (done/active) / muted (pending) icons. */
+
+/* the strip behind the timeline (was #09090f) — make it blend with the card */
+html.light .cp-stages-wrap {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(41,48,58,.06) !important;
+}
+/* the horizontal connector track + its fill */
+html.light .cp-stages-bar { background: transparent !important; }
+html.light .cp-bar-fill-v5 {
+  background: linear-gradient(90deg, rgba(156,122,43,.6) 0%, #b8923a 70%, #c9a84c 100%) !important;
+}
+html.light .cp-bar-lead-v5 { box-shadow: 0 0 8px rgba(156,122,43,.5) !important; }
+
+/* icon plates → light chips (no dark squares) */
+html.light .cp-stage-dot-inner {
+  background: #f3ede1 !important;
+  border: 1.5px solid rgba(41,48,58,.12) !important;
+  color: #99a0a8 !important;            /* pending icon stroke */
+  box-shadow: var(--shadow-sm) !important;
+}
+html.light .cp-st-done .cp-stage-dot-inner {
+  background: rgba(156,122,43,.12) !important;
+  border: 1.5px solid rgba(156,122,43,.45) !important;
+  color: #9c7a2b !important;            /* gold icon */
+}
+html.light .cp-st-active .cp-stage-dot-inner {
+  background: rgba(156,122,43,.16) !important;
+  border: 2px solid #b8923a !important;
+  color: #7f6122 !important;
+  box-shadow: 0 0 12px rgba(156,122,43,.3) !important;
+}
+html.light .cp-st-pending .cp-stage-dot-inner {
+  background: #faf6ee !important;
+  border: 1px solid rgba(41,48,58,.1) !important;
+  color: #b8b2a6 !important;
+}
+html.light .cp-dot-spinner { border-color: rgba(156,122,43,.3) !important; border-top-color: #b8923a !important; }
+
+/* progress-bar track on the "Этапы" tab (was rgba(255,255,255,.06)) */
+html.light .cp-stages-bar2-track { background: rgba(41,48,58,.08) !important; }
+html.light .cp-stages-bar2-fill {
+  background: linear-gradient(90deg, rgba(156,122,43,.55), #b8923a) !important;
+}
+
+/* detail-list stage number plates (cp-sn-*) — light chips */
+html.light .cp-sn-done {
+  background: rgba(156,122,43,.12) !important;
+  color: #9c7a2b !important;
+  border: 1px solid rgba(156,122,43,.3) !important;
+}
+html.light .cp-sn-active {
+  background: rgba(184,115,10,.12) !important;
+  color: #b8730a !important;
+  border: 1px solid rgba(184,115,10,.3) !important;
+}
+html.light .cp-sn-pending {
+  background: rgba(41,48,58,.05) !important;
+  border: 1px solid rgba(41,48,58,.1) !important;
+}
+/* stage row icon box in the detail list */
+html.light .cp-sn-icon, html.light .cp-stage-icon-box, html.light .cp-stage-ic {
+  background: #f3ede1 !important;
+  border: 1px solid rgba(41,48,58,.1) !important;
+  color: #9c7a2b !important;
+}
+
+/* "Все этапы проекта" / "Сейчас в работе" eyebrow + the cur-stage card */
+html.light .cp-progress-pct-sub { color: #99a0a8 !important; }
 
 button, a, [role="button"],
 .pcard, .stat-card, .ov-card, .ov2-kpi-card,
