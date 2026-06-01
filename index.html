@@ -19466,6 +19466,10 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
           </div>
         </div>
         <div class="kb-topbar-right">
+          <button class="kb-action-btn" id="kb-archive-btn" onclick="kbOpenArchive()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+            Архив
+          </button>
           <button class="kb-action-btn" id="kb-add-cat-topbar" onclick="kbOpenAddCategory()" style="opacity:.35;pointer-events:none;">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Категория
@@ -19493,6 +19497,11 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
               <div class="kb-proj-stat-val" id="kb-proj-stat-items">—</div>
               <div class="kb-proj-stat-lbl">Материалов</div>
             </div>
+          </div>
+          <div class="kb-proj-search-wrap" style="position:relative;margin:10px 0 6px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--txt3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="kb-proj-search" placeholder="Поиск проекта…" oninput="kbFilterProjects(this.value)" autocomplete="off"
+              style="width:100%;background:var(--bg4);border:1px solid var(--brd);border-radius:8px;padding:8px 10px 8px 32px;color:var(--txt);font-family:var(--font-display);font-size:12px;outline:none;box-sizing:border-box;">
           </div>
           <div class="kb-proj-section-lbl">Активные проекты</div>
           <div class="kb-proj-list" id="kb-proj-list"></div>
@@ -33757,6 +33766,61 @@ async function cpRenderMilestone(project) {
   </div>
 </div>
 
+<style>
+.kb-archive-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(240,236,230,.08);
+  border-radius: 10px;
+  background: var(--bg2);
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.kb-archive-row:hover {
+  border-color: rgba(184,146,58,.35);
+  background: var(--bg4);
+}
+.kb-archive-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  opacity: .85;
+}
+.kb-archive-name {
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--txt);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kb-archive-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: .08em;
+  color: var(--txt3);
+  margin-top: 2px;
+}
+</style>
+
+<div class="modal-overlay" id="modal-kb-archive" onclick="if(event.target===this)closeModal('modal-kb-archive')">
+  <div class="modal" style="max-width:520px;max-height:calc(100vh - 80px);display:flex;flex-direction:column;">
+    <div class="modal-title">Архив проектов</div>
+    <div style="font-size:12px;color:var(--txt2);margin:-6px 0 14px;line-height:1.5;">Завершённые и архивные проекты. Нажмите на проект, чтобы открыть его материалы.</div>
+    <div id="kb-archive-list" style="overflow-y:auto;display:flex;flex-direction:column;gap:8px;flex:1;min-height:80px;"></div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-kb-archive')">Закрыть</button>
+    </div>
+  </div>
+</div>
+
 
 
 
@@ -33837,6 +33901,9 @@ window.loadKB = async function() {
   _kbCats      = [];
   _kbItems     = [];
   _kbMode      = 'materials';
+  _kbProjSearch = '';
+  var _ps = document.getElementById('kb-proj-search');
+  if (_ps) _ps.value = '';
 
   // Восстанавливаем вид «Материалы» (если до этого открывали Инструменты DTR)
   var _sidebar = document.querySelector('.kb-proj-sidebar');
@@ -33854,6 +33921,8 @@ window.loadKB = async function() {
   }
   kbRenderProjectSidebar();
   kbShowNoProject();
+  var _ab = document.getElementById('kb-archive-btn');
+  if (_ab) _ab.style.display = '';
 };
 
 /* ══ RENDER PROJECTS SIDEBAR ══ */
@@ -33893,25 +33962,22 @@ function kbRenderProjectSidebar() {
     return (i > 0 ? divider : '') + item;
   }
 
+  // Фильтр по названию проекта (поиск в сайдбаре)
+  var _q = (typeof _kbProjSearch !== 'undefined' && _kbProjSearch ? _kbProjSearch : '').trim().toLowerCase();
+  var shown = _q ? projects.filter(function(p){ return (p.name||'').toLowerCase().indexOf(_q) !== -1; }) : projects;
+
   if (!projects.length) {
     list.innerHTML = '<div style="padding:24px 12px;text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--txt3);letter-spacing:.08em;line-height:1.7;">Нет активных<br>проектов</div>';
+  } else if (!shown.length) {
+    list.innerHTML = '<div style="padding:24px 12px;text-align:center;font-family:var(--font-mono);font-size:10px;color:var(--txt3);letter-spacing:.08em;line-height:1.7;">Ничего не найдено</div>';
   } else {
-    list.innerHTML = projects.map(buildItem).join('');
+    list.innerHTML = shown.map(buildItem).join('');
   }
 
-  // Archived section — уважаем состояние _kbArchiveOpen
-  if (listArchived && archLbl) {
-    if (archived.length) {
-      archLbl.style.display = '';
-      listArchived.innerHTML = archived.map(buildItem).join('');
-      listArchived.style.display = _kbArchiveOpen ? '' : 'none';
-      var chevron = document.getElementById('kb-archive-chevron');
-      if (chevron) chevron.style.transform = _kbArchiveOpen ? 'rotate(0deg)' : 'rotate(-90deg)';
-    } else {
-      listArchived.style.display = 'none';
-      archLbl.style.display = 'none';
-    }
-  }
+  // Архив теперь открывается в отдельном окне (кнопка «Архив» в топбаре),
+  // поэтому секцию архива в боковой панели больше не показываем.
+  if (listArchived) { listArchived.style.display = 'none'; listArchived.innerHTML = ''; }
+  if (archLbl)      archLbl.style.display = 'none';
 }
 
 function kbShowNoProject() {
@@ -33930,12 +33996,58 @@ function kbShowNoProject() {
 /* ══ SELECT PROJECT ══ */
 /* ── Toggle archive section ── */
 var _kbArchiveOpen = true;
+
+/* ── Поиск проектов по названию в сайдбаре ── */
+var _kbProjSearch = '';
+window.kbFilterProjects = function(value) {
+  _kbProjSearch = value || '';
+  kbRenderProjectSidebar();
+};
 window.kbToggleArchive = function() {
   _kbArchiveOpen = !_kbArchiveOpen;
   var list     = document.getElementById('kb-proj-list-archived');
   var chevron  = document.getElementById('kb-archive-chevron');
   if (list)    list.style.display    = _kbArchiveOpen ? '' : 'none';
   if (chevron) chevron.style.transform = _kbArchiveOpen ? 'rotate(0deg)' : 'rotate(-90deg)';
+};
+
+/* ── Архив проектов — отдельное окно ── */
+window.kbOpenArchive = function() {
+  kbRenderArchiveModal();
+  openModal('modal-kb-archive');
+};
+
+function kbRenderArchiveModal() {
+  var box = document.getElementById('kb-archive-list');
+  if (!box) return;
+  var all = (typeof _allProjects !== 'undefined' && _allProjects) ? _allProjects : [];
+  var archived = all.filter(function(p){
+    return p.status === 'archived' || (typeof getProjectProgress !== 'undefined' && getProjectProgress(p.id).pct === 100);
+  });
+  if (!archived.length) {
+    box.innerHTML = '<div style="padding:32px 12px;text-align:center;font-family:var(--font-mono);font-size:11px;color:var(--txt3);letter-spacing:.06em;line-height:1.7;">Нет архивных<br>проектов</div>';
+    return;
+  }
+  box.innerHTML = archived.map(function(p){
+    var letter = (p.name||'?')[0].toUpperCase();
+    var col    = p.brand_color || p.color || '#b8923a';
+    var avatarInner = p.photo_url
+      ? '<img src="'+p.photo_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:8px;display:block;">'
+      : '<span style="color:'+col+';font-size:15px;">'+letter+'</span>';
+    return '<div class="kb-archive-row" onclick="kbOpenArchivedProject(\''+p.id+'\',\''+esc(p.name)+'\')">'+
+        '<div class="kb-archive-avatar" style="background:'+col+'22;border:1px solid '+col+'44;">'+avatarInner+'</div>'+
+        '<div style="flex:1;min-width:0;">'+
+          '<div class="kb-archive-name">'+esc(p.name)+'</div>'+
+          '<div class="kb-archive-tag">АРХИВ</div>'+
+        '</div>'+
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--txt3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>'+
+      '</div>';
+  }).join('');
+}
+
+window.kbOpenArchivedProject = function(id, name) {
+  closeModal('modal-kb-archive');
+  if (typeof kbSelectProject === 'function') kbSelectProject(id, name);
 };
 
 window.kbSelectProject = async function(projectId, projectName) {
@@ -34193,6 +34305,8 @@ window.openToolsSpace = async function() {
   if (sub)   sub.textContent = 'Агентское пространство';
   // Грузим контент инструментов
   if (typeof kbLoadServicesSpace === 'function') kbLoadServicesSpace();
+  var _ab = document.getElementById('kb-archive-btn');
+  if (_ab) _ab.style.display = 'none';
 };
 
 window.kbSwitchMode = function(mode, btn) {  _kbMode = mode;
@@ -34201,6 +34315,8 @@ window.kbSwitchMode = function(mode, btn) {  _kbMode = mode;
 
   var sidebar = document.querySelector('.kb-proj-sidebar');
   var kbBody  = document.querySelector('.kb-body');
+  var _ab     = document.getElementById('kb-archive-btn');
+  if (_ab) _ab.style.display = (mode === 'services') ? 'none' : '';
 
   if (mode === 'services') {
     /* Сохраняем текущий проект материалов и входим в агентское пространство */
