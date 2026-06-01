@@ -12556,6 +12556,355 @@ html.light .ps-star { color: rgba(41,48,58,.2) !important; }
 html.light .ps-star.active,
 html.light .ps-star.filled { color: #b8923a !important; }
 
+/* ════════════════════════════════════════════════════════════════════════
+   LIGHT THEME · PHASE 2 — deep coverage (project page, kanban, finance…)
+   Added after reviewing live screenshots. Fixes every region where the
+   dark theme leaked through.
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* ── BLOCK 20 · PROJECT PAGE CHROME (pp-) ──────────────────────────────── */
+html.light .pp-header,
+html.light .pp-app-header {
+  background: rgba(251,248,241,.92) !important;
+  border-bottom: 1px solid rgba(41,48,58,.08) !important;
+  box-shadow: 0 1px 0 rgba(41,48,58,.04), 0 6px 20px rgba(74,60,30,.05) !important;
+}
+html.light .pp-back-btn {
+  background: rgba(41,48,58,.04) !important;
+  border-color: rgba(41,48,58,.1) !important;
+  color: #5e6670 !important;
+}
+html.light .pp-back-btn:hover { background: rgba(156,122,43,.1) !important; color: #7f6122 !important; }
+html.light .pp-name { color: #29303a !important; }
+html.light .pp-desc { color: #99a0a8 !important; }
+html.light .pp-progress-mini { background: rgba(41,48,58,.08) !important; }
+html.light .pp-progress-bar-mini { background: linear-gradient(90deg,#b8923a,#9c7a2b) !important; }
+html.light .pp-pct-mini { color: #7f6122 !important; }
+html.light .pp-tabs-bar {
+  background: rgba(251,248,241,.9) !important;
+  border-bottom: 1px solid rgba(41,48,58,.08) !important;
+}
+html.light .pp-tab { color: rgba(41,48,58,.55) !important; }
+html.light .pp-tab:hover { color: #29303a !important; }
+html.light .pp-tab.pp-tab-active { color: #7f6122 !important; }
+html.light .pp-tab.pp-tab-active svg { color: #9c7a2b !important; }
+html.light .pp-tab-count {
+  background: rgba(41,48,58,.07) !important;
+  color: rgba(41,48,58,.55) !important;
+}
+html.light .pp-progress-card {
+  background: linear-gradient(145deg,#fbf8f1,#f3ede1) !important;
+  border: 1px solid rgba(41,48,58,.1) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+html.light .pp-prog-pct { color: #29303a !important; }
+html.light .pp-prog-label, html.light .pp-prog-strip { color: #5e6670 !important; }
+html.light .pp-mini-stats, html.light .pp-stage-mini-stat {
+  border-color: rgba(41,48,58,.08) !important;
+}
+html.light .pp-stage-mini-val { color: #29303a !important; }
+html.light .pp-stage-mini-lbl, html.light .pp-stage-section-label,
+html.light .tracker-stages-label { color: #99a0a8 !important; }
+html.light .global-timer-badge {
+  background: rgba(46,139,87,.08) !important;
+  border: 1px solid rgba(46,139,87,.25) !important;
+}
+html.light .gtb-value { color: #2e8b57 !important; }
+html.light .gtb-label { color: #99a0a8 !important; }
+html.light .tg-connect-btn {
+  background: rgba(41,48,58,.03) !important;
+  border: 1px solid rgba(41,48,58,.12) !important;
+  color: #5e6670 !important;
+}
+html.light .tg-connect-btn:hover { border-color: rgba(156,122,43,.32) !important; color: #7f6122 !important; }
+
+/* ── BLOCK 21 · STAGE TRACKER (tracker-) ───────────────────────────────── */
+html.light .tracker-stage-card {
+  background: #fbf8f1 !important;
+  border: 1px solid rgba(41,48,58,.08) !important;
+}
+html.light .tracker-stage-card.t-active {
+  background: linear-gradient(145deg,
+    rgba(156,122,43,.1) 0%,
+    rgba(156,122,43,.05) 45%,
+    #fbf8f1 100%) !important;
+  border: 1px solid rgba(156,122,43,.45) !important;
+  box-shadow: 0 0 24px rgba(156,122,43,.1) !important;
+}
+html.light .tracker-stage-card.t-done {
+  background: rgba(46,139,87,.05) !important;
+  border-color: rgba(46,139,87,.2) !important;
+}
+html.light .tracker-stage-card.t-active .tracker-stage-name { color: #29303a !important; }
+html.light .tracker-stage-card.t-active .task-item {
+  background: rgba(41,48,58,.03) !important;
+  border: 1px solid rgba(156,122,43,.18) !important;
+}
+html.light .tracker-stage-name { color: #29303a !important; }
+html.light .tracker-note-text { color: #5e6670 !important; }
+html.light .tracker-meta-chip, html.light .tracker-link-chip {
+  background: rgba(41,48,58,.04) !important;
+  border: 1px solid rgba(41,48,58,.1) !important;
+  color: #5e6670 !important;
+}
+html.light .tracker-bar-track { background: rgba(41,48,58,.08) !important; }
+html.light .tracker-edit-btn {
+  background: rgba(41,48,58,.04) !important;
+  border: 1px solid rgba(41,48,58,.1) !important;
+  color: #5e6670 !important;
+}
+html.light .tracker-connector { background: rgba(41,48,58,.12) !important; }
+html.light .stage-status-btn {
+  background: rgba(41,48,58,.04) !important;
+  border: 1px solid rgba(41,48,58,.12) !important;
+  color: #5e6670 !important;
+}
+
+/* ── BLOCK 22 · KANBAN / ОПЕРАЦИОНКА (kb-) ─────────────────────────────── */
+html.light .kb-col {
+  background: #fbf8f1 !important;
+  border: 1px solid rgba(41,48,58,.08) !important;
+}
+html.light .kb-col-header { border-bottom: 1px solid rgba(41,48,58,.07) !important; }
+html.light .kb-col-title { color: #29303a !important; }
+html.light .kb-col-count {
+  background: rgba(41,48,58,.07) !important;
+  color: rgba(41,48,58,.6) !important;
+}
+html.light .kb-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(41,48,58,.1) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+html.light .kb-card:hover { border-color: rgba(156,122,43,.3) !important; box-shadow: var(--shadow-md) !important; }
+html.light .kb-card-title, html.light .kb-card-title2 { color: #29303a !important; }
+html.light .kb-card-note, html.light .kb-card-meta,
+html.light .kb-card-assignee-name, html.light .kb-card-deadline,
+html.light .kb-card-time, html.light .kb-card-cap { color: #5e6670 !important; }
+html.light .kb-card-divider { background: rgba(41,48,58,.08) !important; }
+html.light .kb-card-add, html.light .kb-add-btn, html.light .kb-col-add {
+  background: rgba(41,48,58,.03) !important;
+  border: 1px dashed rgba(41,48,58,.18) !important;
+  color: #99a0a8 !important;
+}
+html.light .kb-action-btn, html.light .kb-card-act {
+  background: rgba(41,48,58,.04) !important;
+  border: 1px solid rgba(41,48,58,.12) !important;
+  color: #5e6670 !important;
+}
+html.light .kb-action-primary {
+  background: linear-gradient(135deg,#b8923a,#9c7a2b) !important;
+  color: #fbf8f1 !important;
+  border-color: rgba(156,122,43,.5) !important;
+}
+html.light .kb-archive-row { border-color: rgba(41,48,58,.07) !important; }
+html.light .kb-archive-name { color: #29303a !important; }
+html.light .kb-archive-tag {
+  background: rgba(41,48,58,.06) !important;
+  color: #5e6670 !important;
+}
+html.light .kb-col-empty { color: #99a0a8 !important; }
+
+/* ── BLOCK 23 · EMPTY STATES ───────────────────────────────────────────── */
+html.light .empty,
+html.light .empty-state {
+  background: #fbf8f1 !important;
+  border: 1px solid rgba(41,48,58,.08) !important;
+}
+html.light .empty-icon { opacity: .5 !important; }
+html.light .empty-title { color: #29303a !important; }
+html.light .empty-sub { color: #99a0a8 !important; }
+
+/* ── BLOCK 24 · FINANCE — project rows, channel share, profit split ────── */
+html.light .apl-proj-row {
+  background: #fbf8f1 !important;
+  border: 1px solid rgba(41,48,58,.08) !important;
+}
+html.light .apl-proj-row:hover { border-color: rgba(156,122,43,.28) !important; }
+html.light .apl-proj-row.apl-row-selected { border-color: rgba(156,122,43,.45) !important; background: #f7f1e7 !important; }
+html.light .apl-dkpi-val { color: #29303a !important; }
+html.light .apl-dkpi-lbl { color: #99a0a8 !important; }
+html.light .fin-section-label { color: #5e6670 !important; }
+html.light .fin-svc-bar-track { background: rgba(41,48,58,.06) !important; }
+html.light .fin-svc-bar-label { color: #29303a !important; }
+html.light .fin-svc-bar-val { color: #5e6670 !important; }
+html.light .fin-svc-bar-pct { color: #99a0a8 !important; }
+html.light .fin-trend-card {
+  background: #fbf8f1 !important;
+  border: 1px solid rgba(41,48,58,.08) !important;
+}
+html.light .fin-trend-val { color: #29303a !important; }
+html.light .fin-trend-label, html.light .fin-trend-sub { color: #99a0a8 !important; }
+html.light .fin-unit-card {
+  background: #fbf8f1 !important;
+  border: 1px solid rgba(41,48,58,.08) !important;
+}
+html.light .fin-unit-row, html.light .fin-unit-div { border-color: rgba(41,48,58,.07) !important; }
+html.light .fin-unit-lbl { color: #5e6670 !important; }
+html.light .fin-unit-val { color: #29303a !important; }
+html.light .fin-unit-green { color: #2e8b57 !important; }
+html.light .fin-unit-red { color: #c0392b !important; }
+html.light .fin-col-head, html.light .fin-col-head3 { color: #99a0a8 !important; }
+html.light .fin-row-item {
+  background: #fbf8f1 !important;
+  border-color: rgba(41,48,58,.08) !important;
+}
+html.light .fin-pnl-preview { background: #f7f1e7 !important; border-color: rgba(41,48,58,.08) !important; }
+html.light .wf-bar-wrap { background: rgba(41,48,58,.05) !important; }
+html.light .wf-label { color: #5e6670 !important; }
+html.light .wf-val { color: #29303a !important; }
+/* profit-split cards */
+html.light .ps-card {
+  background: #fbf8f1 !important;
+  border: 1px solid rgba(41,48,58,.08) !important;
+}
+html.light .ps-view-label { color: #99a0a8 !important; }
+html.light .ps-view-val { color: #29303a !important; }
+html.light .ps-view-link { color: #9c7a2b !important; }
+html.light .ps-tag {
+  background: rgba(156,122,43,.1) !important;
+  color: #7f6122 !important;
+  border: 1px solid rgba(156,122,43,.25) !important;
+}
+html.light .ps-tariff-btn {
+  background: rgba(41,48,58,.04) !important;
+  border: 1px solid rgba(41,48,58,.12) !important;
+  color: #5e6670 !important;
+}
+html.light .ps-edit-btn, html.light .ps-delete-btn {
+  background: rgba(41,48,58,.04) !important;
+  border: 1px solid rgba(41,48,58,.12) !important;
+  color: #5e6670 !important;
+}
+html.light .ps-save-btn {
+  background: linear-gradient(135deg,#b8923a,#9c7a2b) !important;
+  color: #fbf8f1 !important;
+}
+
+/* ── BLOCK 25 · SERVICE CHIPS (modal) ──────────────────────────────────── */
+html.light .svc-chip {
+  background: rgba(41,48,58,.03) !important;
+  border: 1px solid rgba(41,48,58,.12) !important;
+  color: #5e6670 !important;
+}
+html.light .svc-chip[data-active="1"] {
+  background: rgba(156,122,43,.1) !important;
+  border-color: rgba(156,122,43,.4) !important;
+  color: #29303a !important;
+}
+html.light .svc-chip-dot { box-shadow: 0 0 0 2px rgba(41,48,58,.04) !important; }
+html.light .svc-badge { filter: saturate(.9); }
+
+
+/* ── BLOCK 26 · INLINE-STYLE RESCUE (retint baked-in dark values) ──────────
+   The dark theme hardcodes white text/borders/surfaces in inline styles.
+   These attribute selectors retint them for light mode, preserving the
+   original opacity hierarchy (strong / medium / muted ink). */
+html.light [style*="color:rgba(255,255,255,.95)"], html.light [style*="color: rgba(255,255,255,.95)"] { color: #29303a !important; }
+html.light [style*="color:rgba(255,255,255,.9)"], html.light [style*="color: rgba(255,255,255,.9)"] { color: #29303a !important; }
+html.light [style*="color:rgba(255,255,255,.88)"], html.light [style*="color: rgba(255,255,255,.88)"] { color: #29303a !important; }
+html.light [style*="color:rgba(255,255,255,.85)"], html.light [style*="color: rgba(255,255,255,.85)"] { color: #29303a !important; }
+html.light [style*="color:rgba(255,255,255,.82)"], html.light [style*="color: rgba(255,255,255,.82)"] { color: #29303a !important; }
+html.light [style*="color:rgba(255,255,255,.8)"], html.light [style*="color: rgba(255,255,255,.8)"] { color: #29303a !important; }
+html.light [style*="color:rgba(255,255,255,.78)"], html.light [style*="color: rgba(255,255,255,.78)"] { color: #29303a !important; }
+html.light [style*="color:rgba(255,255,255,.75)"], html.light [style*="color: rgba(255,255,255,.75)"] { color: #29303a !important; }
+html.light [style*="color:rgba(255,255,255,.72)"], html.light [style*="color: rgba(255,255,255,.72)"] { color: #29303a !important; }
+html.light [style*="color:rgba(255,255,255,.7)"], html.light [style*="color: rgba(255,255,255,.7)"] { color: #29303a !important; }
+html.light [style*="color:rgba(255,255,255,.68)"], html.light [style*="color: rgba(255,255,255,.68)"] { color: #5e6670 !important; }
+html.light [style*="color:rgba(255,255,255,.65)"], html.light [style*="color: rgba(255,255,255,.65)"] { color: #5e6670 !important; }
+html.light [style*="color:rgba(255,255,255,.62)"], html.light [style*="color: rgba(255,255,255,.62)"] { color: #5e6670 !important; }
+html.light [style*="color:rgba(255,255,255,.6)"], html.light [style*="color: rgba(255,255,255,.6)"] { color: #5e6670 !important; }
+html.light [style*="color:rgba(255,255,255,.58)"], html.light [style*="color: rgba(255,255,255,.58)"] { color: #5e6670 !important; }
+html.light [style*="color:rgba(255,255,255,.55)"], html.light [style*="color: rgba(255,255,255,.55)"] { color: #5e6670 !important; }
+html.light [style*="color:rgba(255,255,255,.52)"], html.light [style*="color: rgba(255,255,255,.52)"] { color: #5e6670 !important; }
+html.light [style*="color:rgba(255,255,255,.5)"], html.light [style*="color: rgba(255,255,255,.5)"] { color: #5e6670 !important; }
+html.light [style*="color:rgba(255,255,255,.48)"], html.light [style*="color: rgba(255,255,255,.48)"] { color: #5e6670 !important; }
+html.light [style*="color:rgba(255,255,255,.45)"], html.light [style*="color: rgba(255,255,255,.45)"] { color: #5e6670 !important; }
+html.light [style*="color:rgba(255,255,255,.42)"], html.light [style*="color: rgba(255,255,255,.42)"] { color: #5e6670 !important; }
+html.light [style*="color:rgba(255,255,255,.4)"], html.light [style*="color: rgba(255,255,255,.4)"] { color: #5e6670 !important; }
+html.light [style*="color:rgba(255,255,255,.38)"], html.light [style*="color: rgba(255,255,255,.38)"] { color: #99a0a8 !important; }
+html.light [style*="color:rgba(255,255,255,.36)"], html.light [style*="color: rgba(255,255,255,.36)"] { color: #99a0a8 !important; }
+html.light [style*="color:rgba(255,255,255,.35)"], html.light [style*="color: rgba(255,255,255,.35)"] { color: #99a0a8 !important; }
+html.light [style*="color:rgba(255,255,255,.32)"], html.light [style*="color: rgba(255,255,255,.32)"] { color: #99a0a8 !important; }
+html.light [style*="color:rgba(255,255,255,.3)"], html.light [style*="color: rgba(255,255,255,.3)"] { color: #99a0a8 !important; }
+html.light [style*="color:rgba(255,255,255,.28)"], html.light [style*="color: rgba(255,255,255,.28)"] { color: #99a0a8 !important; }
+html.light [style*="color:rgba(255,255,255,.25)"], html.light [style*="color: rgba(255,255,255,.25)"] { color: #99a0a8 !important; }
+html.light [style*="color:rgba(255,255,255,.22)"], html.light [style*="color: rgba(255,255,255,.22)"] { color: #99a0a8 !important; }
+html.light [style*="color:rgba(255,255,255,.2)"], html.light [style*="color: rgba(255,255,255,.2)"] { color: #99a0a8 !important; }
+html.light [style*="color:rgba(255,255,255,.18)"], html.light [style*="color: rgba(255,255,255,.18)"] { color: #99a0a8 !important; }
+html.light [style*="color:rgba(255,255,255,.16)"], html.light [style*="color: rgba(255,255,255,.16)"] { color: #99a0a8 !important; }
+html.light [style*="color:rgba(255,255,255,.15)"], html.light [style*="color: rgba(255,255,255,.15)"] { color: #99a0a8 !important; }
+html.light [style*="color:rgba(255,255,255,.14)"], html.light [style*="color: rgba(255,255,255,.14)"] { color: #99a0a8 !important; }
+html.light [style*="color:rgba(255,255,255,.12)"], html.light [style*="color: rgba(255,255,255,.12)"] { color: #99a0a8 !important; }
+html.light [style*="color:rgba(255,255,255,.1)"], html.light [style*="color: rgba(255,255,255,.1)"] { color: #99a0a8 !important; }
+html.light [style*="color:rgba(255,255,255,.09)"], html.light [style*="color: rgba(255,255,255,.09)"] { color: #99a0a8 !important; }
+html.light [style*="color:rgba(255,255,255,.08)"], html.light [style*="color: rgba(255,255,255,.08)"] { color: #99a0a8 !important; }
+html.light [style*="color:rgba(255,255,255,.07)"], html.light [style*="color: rgba(255,255,255,.07)"] { color: #99a0a8 !important; }
+html.light [style*="color:rgba(255,255,255,.06)"], html.light [style*="color: rgba(255,255,255,.06)"] { color: #99a0a8 !important; }
+html.light [style*="color:rgba(255,255,255,.05)"], html.light [style*="color: rgba(255,255,255,.05)"] { color: #99a0a8 !important; }
+html.light [style*="color:rgba(255,255,255,.04)"], html.light [style*="color: rgba(255,255,255,.04)"] { color: #99a0a8 !important; }
+html.light [style*="color:rgba(255,255,255)"] { color: #29303a !important; }
+html.light [style*="color: rgba(255,255,255)"] { color: #29303a !important; }
+html.light [style*="color:rgba(255,255,255,1)"] { color: #29303a !important; }
+html.light [style*="color:#fff"] { color: #29303a !important; }
+html.light [style*="color: #fff"] { color: #29303a !important; }
+html.light [style*="color:#ffffff"] { color: #29303a !important; }
+html.light [style*="color: #ffffff"] { color: #29303a !important; }
+html.light [style*="color:#f0ece6"] { color: #29303a !important; }
+html.light [style*="color: #f0ece6"] { color: #29303a !important; }
+html.light [style*="color:#fafafa"] { color: #29303a !important; }
+html.light [style*="color:#fff5"] { color: #29303a !important; }
+html.light [style*="color:#e8e8e8"] { color: #29303a !important; }
+html.light [style*="-webkit-text-fill-color:#fff"], html.light [style*="text-fill-color: #fff"] { -webkit-text-fill-color:#29303a !important; }
+html.light [style*="solid rgba(255,255,255"], html.light [style*="solid rgba(255, 255, 255"] { border-color: rgba(41,48,58,.14) !important; }
+html.light [style*="solid #fff"], html.light [style*="solid #ffffff"] { border-color: rgba(41,48,58,.14) !important; }
+html.light [style*="background:rgba(255,255,255,.95)"], html.light [style*="background: rgba(255,255,255,.95)"] { background:#fbf8f1 !important; }
+html.light [style*="background:rgba(255,255,255,.9)"], html.light [style*="background: rgba(255,255,255,.9)"] { background:#fbf8f1 !important; }
+html.light [style*="background:rgba(255,255,255,.88)"], html.light [style*="background: rgba(255,255,255,.88)"] { background:#fbf8f1 !important; }
+html.light [style*="background:rgba(255,255,255,.85)"], html.light [style*="background: rgba(255,255,255,.85)"] { background:#fbf8f1 !important; }
+html.light [style*="background:rgba(255,255,255,.82)"], html.light [style*="background: rgba(255,255,255,.82)"] { background:#fbf8f1 !important; }
+html.light [style*="background:rgba(255,255,255,.8)"], html.light [style*="background: rgba(255,255,255,.8)"] { background:#fbf8f1 !important; }
+html.light [style*="background:rgba(255,255,255,.7)"], html.light [style*="background: rgba(255,255,255,.7)"] { background:rgba(41,48,58,.06) !important; }
+html.light [style*="background:rgba(255,255,255,.6)"], html.light [style*="background: rgba(255,255,255,.6)"] { background:rgba(41,48,58,.06) !important; }
+html.light [style*="background:rgba(255,255,255,.5)"], html.light [style*="background: rgba(255,255,255,.5)"] { background:rgba(41,48,58,.06) !important; }
+html.light [style*="background:rgba(255,255,255,.4)"], html.light [style*="background: rgba(255,255,255,.4)"] { background:rgba(41,48,58,.06) !important; }
+html.light [style*="background:rgba(255,255,255,.35)"], html.light [style*="background: rgba(255,255,255,.35)"] { background:rgba(41,48,58,.06) !important; }
+html.light [style*="background:rgba(255,255,255,.3)"], html.light [style*="background: rgba(255,255,255,.3)"] { background:rgba(41,48,58,.06) !important; }
+html.light [style*="background:rgba(255,255,255,.25)"], html.light [style*="background: rgba(255,255,255,.25)"] { background:rgba(41,48,58,.035) !important; }
+html.light [style*="background:rgba(255,255,255,.2)"], html.light [style*="background: rgba(255,255,255,.2)"] { background:rgba(41,48,58,.035) !important; }
+html.light [style*="background:rgba(255,255,255,.18)"], html.light [style*="background: rgba(255,255,255,.18)"] { background:rgba(41,48,58,.035) !important; }
+html.light [style*="background:rgba(255,255,255,.15)"], html.light [style*="background: rgba(255,255,255,.15)"] { background:rgba(41,48,58,.035) !important; }
+html.light [style*="background:rgba(255,255,255,.12)"], html.light [style*="background: rgba(255,255,255,.12)"] { background:rgba(41,48,58,.035) !important; }
+html.light [style*="background:rgba(255,255,255,.1)"], html.light [style*="background: rgba(255,255,255,.1)"] { background:rgba(41,48,58,.035) !important; }
+html.light [style*="background:rgba(255,255,255,.08)"], html.light [style*="background: rgba(255,255,255,.08)"] { background:rgba(41,48,58,.035) !important; }
+html.light [style*="background:rgba(255,255,255,.07)"], html.light [style*="background: rgba(255,255,255,.07)"] { background:rgba(41,48,58,.035) !important; }
+html.light [style*="background:rgba(255,255,255,.06)"], html.light [style*="background: rgba(255,255,255,.06)"] { background:rgba(41,48,58,.035) !important; }
+html.light [style*="background:rgba(255,255,255,.05)"], html.light [style*="background: rgba(255,255,255,.05)"] { background:rgba(41,48,58,.035) !important; }
+html.light [style*="background:rgba(255,255,255,.04)"], html.light [style*="background: rgba(255,255,255,.04)"] { background:rgba(41,48,58,.035) !important; }
+html.light [style*="background:rgba(255,255,255,.03)"], html.light [style*="background: rgba(255,255,255,.03)"] { background:rgba(41,48,58,.035) !important; }
+html.light [style*="background:rgba(255,255,255,.025)"], html.light [style*="background: rgba(255,255,255,.025)"] { background:rgba(41,48,58,.035) !important; }
+html.light [style*="background:rgba(255,255,255,.02)"], html.light [style*="background: rgba(255,255,255,.02)"] { background:rgba(41,48,58,.035) !important; }
+html.light [style*="background:#07"], html.light [style*="background: #07"] { background:var(--bg3) !important; }
+html.light [style*="background:#08"], html.light [style*="background: #08"] { background:var(--bg3) !important; }
+html.light [style*="background:#09"], html.light [style*="background: #09"] { background:var(--bg3) !important; }
+html.light [style*="background:#0a"], html.light [style*="background: #0a"] { background:var(--bg3) !important; }
+html.light [style*="background:#0b"], html.light [style*="background: #0b"] { background:var(--bg3) !important; }
+html.light [style*="background:#0c"], html.light [style*="background: #0c"] { background:var(--bg3) !important; }
+html.light [style*="background:#0d"], html.light [style*="background: #0d"] { background:var(--bg3) !important; }
+html.light [style*="background:#0e"], html.light [style*="background: #0e"] { background:var(--bg3) !important; }
+html.light [style*="background:#0f"], html.light [style*="background: #0f"] { background:var(--bg3) !important; }
+html.light [style*="background:#10"], html.light [style*="background: #10"] { background:var(--bg3) !important; }
+html.light [style*="background:#11"], html.light [style*="background: #11"] { background:var(--bg3) !important; }
+html.light [style*="background:#13"], html.light [style*="background: #13"] { background:var(--bg3) !important; }
+html.light [style*="background:#14"], html.light [style*="background: #14"] { background:var(--bg3) !important; }
+html.light [style*="background:#16"], html.light [style*="background: #16"] { background:var(--bg3) !important; }
+html.light [style*="background:#17"], html.light [style*="background: #17"] { background:var(--bg3) !important; }
+html.light [style*="background:#18"], html.light [style*="background: #18"] { background:var(--bg3) !important; }
+html.light [style*="background:#1a"], html.light [style*="background: #1a"] { background:var(--bg3) !important; }
+html.light [style*="background:#1b"], html.light [style*="background: #1b"] { background:var(--bg3) !important; }
+html.light [style*="background:#1c"], html.light [style*="background: #1c"] { background:var(--bg3) !important; }
+html.light [style*="background:#1e"], html.light [style*="background: #1e"] { background:var(--bg3) !important; }
+
 button, a, [role="button"],
 .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 .smm-stat-card, .report-card, .ov-list-item,
