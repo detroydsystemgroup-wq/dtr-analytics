@@ -13329,6 +13329,156 @@ html.light .dtr-tumbler .tmb-cloud { opacity: .9; transform: translateX(3px); }
 .dtr-tumbler:active .tmb-knob { transform: scale(.92); }
 html.light .dtr-tumbler:active .tmb-knob { transform: translateX(30px) scale(.92); }
 
+
+/* ── BLOCK 34 · CLIENT PORTAL (page-client · cp- / mck-) ────────────────────
+   Full light coverage for the client-facing portal. Conditional metric colors
+   (revenue/traffic/check deltas, stage states, SMM benchmarks) use semantic
+   tokens / inline el.style and are NOT flattened here, so they keep changing. */
+
+/* page surface */
+html.light #page-client { background: var(--bg) !important; }
+html.light #page-client .cp-content,
+html.light #page-client .cp-main { background: var(--bg) !important; }
+
+/* sidebar */
+html.light .cp-sidebar {
+  background: #fbf8f1 !important;
+  border-right: 1px solid rgba(41,48,58,.08) !important;
+}
+html.light .cp-sb-brand { border-bottom: 1px solid rgba(41,48,58,.08) !important; }
+html.light .cp-sb-client-name { color: #29303a !important; }
+html.light .cp-sb-online-txt { color: #2e8b57 !important; }
+html.light .cp-sb-online-dot { background: #2e8b57 !important; box-shadow: 0 0 0 3px rgba(46,139,87,.18) !important; }
+html.light .cp-sb-nav-label, html.light .cp-sb-kpi-label { color: #99a0a8 !important; }
+html.light .cp-sb-nav-item { color: rgba(41,48,58,.6) !important; }
+html.light .cp-sb-nav-item:hover { background: rgba(41,48,58,.04) !important; color: #29303a !important; }
+html.light .cp-sb-nav-item.cp-nav-active {
+  background: rgba(156,122,43,.1) !important;
+  border-color: rgba(156,122,43,.25) !important;
+  color: #7f6122 !important;
+}
+html.light .cp-sb-kpi-sub { color: #99a0a8 !important; }
+html.light .cp-sb-progress-track { background: rgba(41,48,58,.08) !important; }
+/* .cp-sb-kpi-val / .cp-sb-nav-badge keep inline semantic colors */
+
+/* topbar */
+html.light .cp-topbar {
+  background: rgba(251,248,241,.9) !important;
+  border-bottom: 1px solid rgba(41,48,58,.08) !important;
+}
+html.light .cp-topbar-greeting { color: #5e6670 !important; }
+html.light .cp-topbar-date { color: #99a0a8 !important; }
+
+/* hero strip + cards */
+html.light .cp-hero-strip {
+  background: #fbf8f1 !important;
+  border: 1px solid rgba(41,48,58,.08) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+html.light .cp-hero-eyebrow { color: #99a0a8 !important; }
+html.light .cp-hero-sub { color: #99a0a8 !important; }
+html.light .cp-hero-divider { background: rgba(41,48,58,.1) !important; }
+/* .cp-hero-num keeps inline semantic color (green/red/cyan/amber/gold) */
+
+/* progress card (production cycle) */
+html.light .cp-progress-card {
+  background: linear-gradient(145deg,#fbf8f1,#f3ede1) !important;
+  border: 1px solid rgba(41,48,58,.1) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+html.light .cp-progress-title { color: #29303a !important; }
+/* .cp-progress-pct keeps inline gold */
+html.light .cp-stages-bar2-track,
+html.light .cp-stages-bar2-wrap { background: rgba(41,48,58,.08) !important; }
+html.light .cp-stages-bar2-lbl { color: #99a0a8 !important; }
+html.light .cp-stages-bar { background: rgba(41,48,58,.06) !important; }
+
+/* stage timeline nodes + "сейчас в работе" / stage list */
+html.light .cp-stage-node, html.light .cp-stage-dot {
+  background: #fbf8f1 !important;
+  border-color: rgba(41,48,58,.12) !important;
+}
+html.light .cp-stage-line, html.light .cp-stages-line { background: rgba(41,48,58,.12) !important; }
+html.light .cp-stage-label, html.light .cp-stage-num { color: #99a0a8 !important; }
+html.light .cp-now-card, html.light .cp-current-card {
+  background: linear-gradient(135deg, rgba(156,122,43,.08), #fbf8f1) !important;
+  border: 1px solid rgba(156,122,43,.3) !important;
+}
+
+/* generic cards (reports, activity, stages list) */
+html.light .cp-card {
+  background: #fbf8f1 !important;
+  border: 1px solid rgba(41,48,58,.08) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+html.light .cp-card-title { color: #99a0a8 !important; }
+html.light .cp-card-header { border-color: rgba(41,48,58,.08) !important; }
+/* .cp-card-count keeps inline gold */
+
+/* report rows + activity rows inside client cards */
+html.light .cp-report-row, html.light .cp-activity-row, html.light .cp-act-row {
+  border-color: rgba(41,48,58,.07) !important;
+}
+html.light .cp-report-row:hover, html.light .cp-act-row:hover { background: rgba(156,122,43,.05) !important; }
+html.light .cp-report-title, html.light .cp-act-title { color: #29303a !important; }
+html.light .cp-report-date, html.light .cp-act-time, html.light .cp-act-meta { color: #99a0a8 !important; }
+html.light .cp-act-stage-tag, html.light .cp-stage-chip {
+  background: rgba(41,48,58,.05) !important;
+  border: 1px solid rgba(41,48,58,.1) !important;
+  color: #5e6670 !important;
+}
+
+/* SMM strip (client) */
+html.light .cp-smm-strip {
+  background: #fbf8f1 !important;
+  border: 1px solid rgba(41,48,58,.08) !important;
+}
+html.light .cp-smm-title { color: #29303a !important; }
+html.light .cp-smm-period { color: #99a0a8 !important; }
+html.light .cp-smm-header { border-color: rgba(41,48,58,.08) !important; }
+html.light .cp-smm-bench-row { border-color: rgba(41,48,58,.07) !important; }
+/* SMM metric values keep their inline semantic colors */
+
+/* "reports documentation" view (mck-) */
+html.light .mck-header { border-bottom: 1px solid rgba(41,48,58,.08) !important; }
+html.light .mck-title, html.light .mck-total-num { color: #29303a !important; }
+html.light .mck-eyebrow, html.light .mck-total-lbl, html.light .mck-section-label,
+html.light .mck-section-meta, html.light .mck-section-unit, html.light .mck-section-count,
+html.light .mck-divider-label { color: #99a0a8 !important; }
+html.light .mck-search-box, html.light .mck-search-wrap {
+  background: rgba(41,48,58,.03) !important;
+  border: 1px solid rgba(41,48,58,.1) !important;
+}
+html.light .mck-search-input { color: #29303a !important; }
+html.light .mck-search-input::placeholder { color: rgba(41,48,58,.4) !important; }
+html.light .mck-search-kbd {
+  background: rgba(41,48,58,.05) !important;
+  border: 1px solid rgba(41,48,58,.12) !important;
+  color: rgba(41,48,58,.45) !important;
+}
+html.light .mck-hr, html.light .mck-divider-line { background: rgba(41,48,58,.1) !important; }
+html.light .mck-section-bar { background: rgba(41,48,58,.08) !important; }
+html.light .mck-list, html.light .mck-section {
+  background: #fbf8f1 !important;
+  border-color: rgba(41,48,58,.08) !important;
+}
+html.light .mck-dropdown {
+  background: #fbf8f1 !important;
+  border: 1px solid rgba(41,48,58,.12) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+html.light .mck-dd-header, html.light .mck-dd-hint, html.light .mck-dd-count { color: #99a0a8 !important; }
+html.light .mck-dd-footer { border-color: rgba(41,48,58,.08) !important; }
+html.light .mck-dd-footer-item { color: #5e6670 !important; }
+html.light .mck-dd-footer-item:hover { background: rgba(156,122,43,.08) !important; color: #7f6122 !important; }
+html.light .mck-report-row { border-color: rgba(41,48,58,.07) !important; }
+html.light .mck-report-row:hover { background: rgba(156,122,43,.05) !important; }
+
+/* client footer marquee */
+html.light .cp-footer-mq, html.light .mck-footer-copy { color: rgba(41,48,58,.18) !important; }
+html.light .mck-footer { border-top: 1px solid rgba(41,48,58,.06) !important; }
+html.light .mck-footer-brand { color: rgba(41,48,58,.22) !important; }
+
 button, a, [role="button"],
 .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 .smm-stat-card, .report-card, .ov-list-item,
@@ -19140,13 +19290,14 @@ function toggleObOnboarding() {
   function _applyTheme() {
     var isLight = document.documentElement.classList.toggle('light');
     localStorage.setItem('dtr-theme', isLight ? 'light' : 'dark');
-    var b = document.getElementById('theme-toggle-btn');
-    if (b) b.classList.toggle('is-light', isLight);
+    ['theme-toggle-btn','cp-theme-toggle-btn'].forEach(function(id){
+      var b = document.getElementById(id); if (b) b.classList.toggle('is-light', isLight);
+    });
     dtrThemeCharts();
   }
 
   window.dtrToggleTheme = function() {
-    var btn = document.getElementById('theme-toggle-btn');
+    var btn = document.getElementById('theme-toggle-btn') || document.getElementById('cp-theme-toggle-btn');
     // origin = center of the toggle (where the reveal blooms from)
     var cx = window.innerWidth - 80, cy = 56;
     if (btn) { var r = btn.getBoundingClientRect(); cx = r.left + r.width/2; cy = r.top + r.height/2; }
@@ -19245,11 +19396,10 @@ function toggleObOnboarding() {
 
   // Set correct icon on load
   document.addEventListener('DOMContentLoaded', function(){
-    var btn = document.getElementById('theme-toggle-btn');
-    if (btn) {
-      var isLight = document.documentElement.classList.contains('light');
-      btn.classList.toggle('is-light', isLight);
-    }
+    var isLight0 = document.documentElement.classList.contains('light');
+    ['theme-toggle-btn','cp-theme-toggle-btn'].forEach(function(id){
+      var b = document.getElementById(id); if (b) b.classList.toggle('is-light', isLight0);
+    });
     // Apply chart tokens shortly after load (lets first charts mount first)
     setTimeout(function(){ try { dtrThemeCharts(); } catch(e){} }, 800);
   });
@@ -20908,7 +21058,24 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 <main class="cp-main">
 <div class="cp-topbar">
 <div class="cp-topbar-greeting" id="cp2-greeting">ДОБРЫЙ ДЕНЬ, <span>—</span></div>
+<div style="display:flex;align-items:center;gap:18px;">
 <div class="cp-topbar-date" id="cp2-date">—</div>
+<button class="theme-toggle dtr-tumbler" id="cp-theme-toggle-btn" onclick="dtrToggleTheme()" title="Сменить тему" aria-label="Сменить тему">
+<span class="tmb-track">
+<span class="tmb-sky"></span>
+<span class="tmb-star tmb-star1"></span>
+<span class="tmb-star tmb-star2"></span>
+<span class="tmb-star tmb-star3"></span>
+<span class="tmb-cloud tmb-cloud1"></span>
+<span class="tmb-cloud tmb-cloud2"></span>
+<span class="tmb-knob">
+<span class="tmb-crater tmb-crater1"></span>
+<span class="tmb-crater tmb-crater2"></span>
+<span class="tmb-crater tmb-crater3"></span>
+</span>
+</span>
+</button>
+</div>
 </div>
 <div class="cp-content">
 <div class="cp-tab-content cp-tab-visible" id="cp2-tab-overview">
