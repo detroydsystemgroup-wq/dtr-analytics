@@ -23414,7 +23414,36 @@ function renderProjectGrid() {
       `<span class="prow-cat">${t.trim()}</span>`
     ).join('') : ''
 
-    return `<div class="proj-row${overdue?' proj-row-overdue':''}" style="border-left-color:${col};" onclick="openProject('${p.id}')">
+    // ── ЗДОРОВЬЕ (RAG) — только из реальных данных: просрочка этапов + близость дедлайна ──
+    let _hTxt, _hCol, _hBg, _hBorder, _stripe
+    if (pct === 100)  { _hTxt = 'Завершён';      _hCol = 'var(--green)'; _hBg = 'rgba(62,207,142,.10)'; _hBorder = 'rgba(62,207,142,.25)'; _stripe = 'var(--green)' }
+    else if (overdue) { _hTxt = 'Просрочен';     _hCol = 'var(--red)';   _hBg = 'rgba(224,82,82,.10)';  _hBorder = 'rgba(224,82,82,.30)';  _stripe = 'var(--red)' }
+    else {
+      let _near = false
+      if (next) { const _d = Math.ceil((new Date(next.deadline + 'T00:00:00') - today) / 86400000); _near = _d >= 0 && _d <= 3 }
+      if (_near) { _hTxt = 'Скоро дедлайн'; _hCol = 'var(--amber)'; _hBg = 'rgba(232,153,58,.10)'; _hBorder = 'rgba(232,153,58,.30)'; _stripe = 'var(--amber)' }
+      else       { _hTxt = 'В норме';       _hCol = 'var(--green)'; _hBg = 'var(--bg3)';          _hBorder = 'var(--brd)';          _stripe = col }
+    }
+
+    // ── ТЕМП К ПЛАНУ — сколько этапов ДОЛЖНО быть завершено к сегодня (по дедлайнам этапов) ──
+    const _hasPlan = pct < 100 && progTotal > 0 && projStages.some(s => s.deadline)
+    let _expPct = null, _gap = null, _gapCol = 'var(--txt3)'
+    if (_hasPlan) {
+      const _expDone = projStages.filter(s => s.deadline && new Date(s.deadline + 'T00:00:00') <= today).length
+      _expPct = Math.max(0, Math.min(100, Math.round(_expDone / progTotal * 100)))
+      _gap = pct - _expPct
+      _gapCol = _gap >= 0 ? 'var(--green)' : _gap >= -10 ? 'var(--amber)' : 'var(--red)'
+    }
+
+    // ── ДИНАМИКА — этапов завершено за последние 7 дней (по completed_at) ──
+    const _sevenAgo = new Date(today); _sevenAgo.setDate(today.getDate() - 7)
+    const _done7 = projStages.filter(s => s.status === 'completed' && s.completed_at && new Date(s.completed_at) >= _sevenAgo).length
+    let _momTxt, _momCol
+    if (pct === 100)     { _momTxt = 'Готово';            _momCol = 'var(--green)' }
+    else if (_done7 > 0) { _momTxt = '▲ ' + _done7 + ' / 7д'; _momCol = 'var(--green)' }
+    else                 { _momTxt = '▬ 0 / 7д';          _momCol = 'var(--amber)' }
+
+    return `<div class="proj-row${overdue?' proj-row-overdue':''}" style="border-left-color:${_stripe};" onclick="openProject('${p.id}')">
 
       <!-- 1. Проект -->
       <div class="prow-name-cell">
@@ -23434,11 +23463,15 @@ function renderProjectGrid() {
           <div class="prow-pipe" style="flex:1;">${segs}</div>
           <div style="font-family:var(--font-display);font-size:17px;letter-spacing:-.03em;color:${progColor};line-height:1;min-width:44px;text-align:right;">${pct}%</div>
         </div>
-        <div style="display:flex;align-items:center;gap:10px;">
-          <div style="flex:1;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;">
-            <div style="width:${pct}%;height:100%;background:${progColor};border-radius:2px;"></div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="flex:1;position:relative;height:3px;">
+            <div style="position:absolute;inset:0;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;">
+              <div style="width:${pct}%;height:100%;background:${progColor};border-radius:2px;"></div>
+            </div>
+            ${_hasPlan ? `<div style="position:absolute;left:${_expPct}%;top:-3px;bottom:-3px;width:2px;background:var(--txt);opacity:.5;border-radius:1px;" title="План на сегодня: ${_expPct}%"></div>` : ''}
           </div>
-          <div style="font-family:var(--font-mono);font-size:9px;color:var(--txt3);min-width:44px;text-align:right;">${completed}/${progTotal}</div>
+          ${_hasPlan ? `<div style="font-family:var(--font-mono);font-size:9px;color:${_gapCol};min-width:32px;text-align:right;white-space:nowrap;" title="Отклонение от плана по дедлайнам этапов">${_gap>=0?'+':''}${_gap}%</div>` : ''}
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--txt3);min-width:40px;text-align:right;">${completed}/${progTotal}</div>
         </div>
       </div>
 
@@ -23450,14 +23483,14 @@ function renderProjectGrid() {
           <div class="prow-pill-val" style="color:${dlColor};">${dlTxt}</div>
         </div>
 
-        <div class="prow-pill" style="${overdue?'border-color:rgba(224,82,82,.3);background:rgba(224,82,82,.06);':pct===100?'border-color:rgba(62,207,142,.3);background:rgba(62,207,142,.06);':'border-color:rgba(184,146,58,.3);background:rgba(184,146,58,.06);'}">
-          <div class="prow-pill-label">Статус</div>
-          <div class="prow-pill-val" style="color:${statusCol};">${statusTxt}</div>
+        <div class="prow-pill" style="border-color:${_hBorder};background:${_hBg};">
+          <div class="prow-pill-label">Здоровье</div>
+          <div class="prow-pill-val" style="color:${_hCol};">${_hTxt}</div>
         </div>
 
-        <div class="prow-pill">
-          <div class="prow-pill-label">Обновлён</div>
-          <div class="prow-pill-val">${updTxt}</div>
+        <div class="prow-pill" title="Этапов завершено за последние 7 дней">
+          <div class="prow-pill-label">Динамика</div>
+          <div class="prow-pill-val" style="color:${_momCol};">${_momTxt}</div>
         </div>
 
         <button class="prow-pill prow-pill-btn" title="Заметка" onclick="openQuickNote('${p.id}','${p.name.replace(/'/g,"\\'")}','${(p.quick_note||'').replace(/'/g,"\\'")}')">
