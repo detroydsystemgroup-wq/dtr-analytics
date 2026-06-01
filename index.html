@@ -13358,8 +13358,8 @@ html.light .cp-hero-divider { background: rgba(41,48,58,.1) !important; }
 
 /* progress card (production cycle) */
 html.light .cp-progress-card {
-  background: linear-gradient(145deg,#fbf8f1,#f3ede1) !important;
-  border: 1px solid rgba(41,48,58,.1) !important;
+  background: #fbf8f1 !important;
+  border: 1px solid rgba(41,48,58,.08) !important;
   box-shadow: var(--shadow-sm) !important;
 }
 html.light .cp-progress-title { color: #29303a !important; }
@@ -13626,6 +13626,191 @@ html.light .cp-sn-icon, html.light .cp-stage-icon-box, html.light .cp-stage-ic {
 
 /* "Все этапы проекта" / "Сейчас в работе" eyebrow + the cur-stage card */
 html.light .cp-progress-pct-sub { color: #99a0a8 !important; }
+
+
+/* ── BLOCK 37 · CLIENT FIXES v2 (timeline line, icon strokes, badges) ──────── */
+
+/* (1) timeline: the gold connector line must sit BEHIND the icon plates, and
+   plates must be fully opaque so the line never shows through them. */
+html.light .cp-bar-fill-v5,
+html.light .cp-stages-bar { z-index: 0 !important; }
+html.light .cp-dot-wrap { z-index: 5 !important; }
+html.light .cp-stage-dot-inner {
+  background: #fbf8f1 !important;     /* opaque — masks the line behind it */
+  position: relative; z-index: 2 !important;
+}
+/* (1+4) last/pending stage icon was invisible — give the stroke a visible tint */
+html.light .cp-st-pending .cp-stage-dot-inner {
+  background: #fbf8f1 !important;
+  border: 1.5px solid rgba(41,48,58,.16) !important;
+  color: #8a93a0 !important;          /* visible muted icon */
+}
+html.light .cp-st-pending .cp-stage-dot-inner svg { stroke: #8a93a0 !important; opacity: 1 !important; }
+html.light .cp-stage-dot-inner svg { stroke: currentColor !important; }
+
+/* (2) activity feed icon chips: the SVG inside had no color → set stroke to
+   match the chip's semantic tint so play/check icons are clearly visible. */
+html.light .cp-act-group-icon.start svg,
+html.light .cp-act-task-icon.start svg { stroke: #9c7a2b !important; color: #9c7a2b !important; }
+html.light .cp-act-group-icon.done svg,
+html.light .cp-act-task-icon.done svg  { stroke: #2e8b57 !important; color: #2e8b57 !important; }
+html.light .cp-act-group-icon.back svg { stroke: #b8730a !important; color: #b8730a !important; }
+html.light .cp-act-group-icon.start { background: rgba(156,122,43,.14) !important; border-color: rgba(156,122,43,.3) !important; }
+html.light .cp-act-group-icon.done  { background: rgba(46,139,87,.14) !important; border-color: rgba(46,139,87,.3) !important; }
+html.light .cp-act-group-icon.back  { background: rgba(184,115,10,.14) !important; border-color: rgba(184,115,10,.3) !important; }
+
+/* (6) the verb word after "Команда" was #fff → invisible; make it gold ink */
+html.light .cp-act-group-title { color: #29303a !important; }
+html.light .cp-act-group-title b { color: #7f6122 !important; }
+/* group surfaces + header to light */
+html.light .cp-act-group {
+  background: #fbf8f1 !important;
+  border: 1px solid rgba(41,48,58,.08) !important;
+}
+html.light .cp-act-group-header { background: rgba(41,48,58,.02) !important; border-bottom: 1px solid rgba(41,48,58,.06) !important; }
+html.light .cp-act-group-stage.start { background: rgba(156,122,43,.08) !important; border-color: rgba(156,122,43,.2) !important; color: #7f6122 !important; }
+html.light .cp-act-group-stage.done  { background: rgba(46,139,87,.08) !important; border-color: rgba(46,139,87,.2) !important; color: #2e8b57 !important; }
+html.light .cp-act-task-row:hover { background: rgba(156,122,43,.05) !important; }
+html.light .cp-act-task-icon { background: rgba(41,48,58,.04) !important; border: 1px solid rgba(41,48,58,.1) !important; }
+html.light .cp-act-task-icon.done { background: rgba(46,139,87,.08) !important; border-color: rgba(46,139,87,.15) !important; }
+
+/* (3) progress-bar track behind it had a grey/dark band — make the strip itself
+   blend; the track stays a subtle ink line, no grey block. */
+html.light .cp-stages-bar2-wrap { background: transparent !important; }
+html.light .cp-stages-bar2-track { background: rgba(41,48,58,.07) !important; box-shadow: none !important; }
+
+
+/* ── BLOCK 38 · REPORTS DOC (mck) — light polish ───────────────────────────
+   Make the client "Отчётная документация" view feel designed: real cards with
+   soft shadows, a gold accent bar per section, a proper search field, and
+   readable hover states — instead of bare lines on flat cream. */
+html.light #cp2-tab-reports .mck-section,
+html.light .mck-group, html.light .mck-section-block {
+  background: #fbf8f1 !important;
+  border: 1px solid rgba(41,48,58,.08) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--shadow-sm) !important;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+/* gold accent bar that marks each section label */
+html.light .mck-section-bar {
+  background: linear-gradient(180deg,#b8923a,#9c7a2b) !important;
+  width: 3px !important; border-radius: 2px !important;
+}
+html.light .mck-section-label { color: #5e6670 !important; letter-spacing: .12em; }
+/* search field — pill with soft inset */
+html.light .mck-search-box {
+  background: #fbf8f1 !important;
+  border: 1px solid rgba(41,48,58,.12) !important;
+  box-shadow: var(--shadow-sm);
+}
+html.light .mck-search-box:focus-within {
+  border-color: rgba(156,122,43,.45) !important;
+  box-shadow: 0 0 0 3px rgba(156,122,43,.12) !important;
+}
+html.light .mck-search-input { color: #29303a !important; }
+html.light .mck-search-input::placeholder { color: rgba(41,48,58,.4) !important; }
+/* report rows — clear separators + warm hover */
+html.light .mck-report-row {
+  border-bottom: 1px solid rgba(41,48,58,.06) !important;
+  transition: background .15s ease;
+}
+html.light .mck-report-row:last-child { border-bottom: none !important; }
+html.light .mck-report-row:hover { background: rgba(156,122,43,.06) !important; }
+html.light .mck-report-name { color: #29303a !important; font-weight: 600; }
+html.light .mck-report-index { color: #b8923a !important; }
+html.light .mck-report-arrow { color: #99a0a8 !important; }
+html.light .mck-report-row:hover .mck-report-arrow { color: #9c7a2b !important; }
+/* the big "2 отчёта" counter — keep number ink, label muted gold */
+html.light .mck-total-num { color: #29303a !important; }
+html.light .mck-total-lbl { color: #9c7a2b !important; }
+/* date divider line + label */
+html.light .mck-divider-line { background: rgba(41,48,58,.1) !important; }
+html.light .mck-divider-label {
+  color: #99a0a8 !important;
+  background: var(--bg) !important;
+  padding: 0 12px;
+}
+/* footer marquee subtle */
+html.light .mck-footer-brand, html.light .cp-footer-mq { color: rgba(41,48,58,.2) !important; }
+
+
+/* ── BLOCK 37 · CLIENT PORTAL FINAL POLISH (authoritative, placed last) ─────
+   Fixes: line through icon squares, invisible icons inside gold/pending plates,
+   grey progress-bar track, faint activity text, and reports-page contrast. */
+
+/* (1+4) TIMELINE ICON PLATES — fully OPAQUE so the connector line is masked,
+   and every icon stroke is clearly visible (incl. last/pending stage) */
+html.light .cp-stage-dot-inner {
+  background: #fbf8f1 !important;            /* opaque cream, hides line behind */
+  border: 1.5px solid rgba(41,48,58,.18) !important;
+  color: #8a8174 !important;                 /* pending icon — readable grey-ink */
+  position: relative !important;
+  z-index: 6 !important;
+  box-shadow: 0 1px 3px rgba(74,60,30,.1) !important;
+}
+html.light .cp-st-done .cp-stage-dot-inner {
+  background: #fbf3df !important;            /* opaque light gold */
+  border: 1.5px solid rgba(156,122,43,.5) !important;
+  color: #9c7a2b !important;
+}
+html.light .cp-st-active .cp-stage-dot-inner {
+  background: #fbeecb !important;            /* opaque, stronger gold */
+  border: 2px solid #b8923a !important;
+  color: #6f5418 !important;
+  box-shadow: 0 0 10px rgba(156,122,43,.28) !important;
+}
+html.light .cp-st-pending .cp-stage-dot-inner {
+  background: #fbf8f1 !important;            /* opaque so line is hidden */
+  border: 1.5px solid rgba(41,48,58,.2) !important;
+  color: #9a9286 !important;                 /* last-stage icon now visible */
+}
+/* make sure the SVG inside inherits the plate color */
+html.light .cp-stage-dot-inner svg { color: inherit !important; stroke: currentColor !important; opacity: 1 !important; }
+/* the connector line sits BEHIND the opaque plates */
+html.light .cp-bar-fill-v5, html.light .cp-stages-bar { z-index: 0 !important; }
+
+/* (2) OVERVIEW ACTIVITY FEED — bold verb after "Команда" was white */
+html.light .cp-act-text { color: #5e6670 !important; }
+html.light .cp-act-text b { color: #29303a !important; }
+
+/* (6) FULL ACTIVITY FEED — the verb (bold) was invisible/overlapping */
+html.light .cp-act-group-title { color: #29303a !important; }
+html.light .cp-act-group-title b { color: #29303a !important; font-weight: 600 !important; }
+html.light .cp-act-row, html.light .cp-act-group { border-color: rgba(41,48,58,.07) !important; }
+html.light .cp-act-body { color: #5e6670 !important; }
+
+/* (3) PROGRESS-BAR TRACK behind the fill — kill the grey */
+html.light .cp-stages-bar2-track {
+  background: rgba(41,48,58,.06) !important;
+  box-shadow: inset 0 0 0 1px rgba(41,48,58,.04) !important;
+}
+
+/* (5) REPORTS PAGE ("Отчётная документация") — give it warmth & structure
+   instead of flat washed-out look */
+html.light #cp2-tab-reports .mck-section,
+html.light #cp2-tab-reports .mck-list {
+  background: #fbf8f1 !important;
+  border: 1px solid rgba(41,48,58,.08) !important;
+  border-radius: 14px !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+html.light #cp2-tab-reports .mck-report-row {
+  border-color: rgba(41,48,58,.06) !important;
+}
+html.light #cp2-tab-reports .mck-report-row:hover {
+  background: rgba(156,122,43,.05) !important;
+}
+html.light #cp2-tab-reports .mck-section-bar {
+  background: linear-gradient(180deg,#b8923a,#9c7a2b) !important;
+  width: 3px !important; border-radius: 2px !important;
+}
+html.light .mck-search-box {
+  background: #fbf8f1 !important;
+  border: 1px solid rgba(41,48,58,.12) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
 
 button, a, [role="button"],
 .pcard, .stat-card, .ov-card, .ov2-kpi-card,
