@@ -13211,19 +13211,8 @@ html.light .dtr-tool-card, html.light .tool-card {
   border: 1px solid rgba(41,48,58,.08) !important;
 }
 
-/* ── BLOCK 32 · SMOOTH THEME TRANSITION (lightweight) ───────────────────────
-   A single full-screen overlay washes the screen toward the destination color
-   and fades back out. ONLY opacity animates (compositor-only — no reflow, no
-   per-element box-shadow transitions), so it stays smooth on large DOMs. The
-   theme is swapped instantly underneath while the wash hides the recolor. */
-#dtr-theme-curtain {
-  position: fixed; inset: 0; z-index: 9998;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity .24s ease-out;
-  will-change: opacity;
-}
-#dtr-theme-curtain.on { opacity: 1; }
+/* ── BLOCK 32 · (theme switch is instant — no overlay/transition needed) ──── */
+#dtr-theme-curtain { display: none !important; }
 
 /* ── BLOCK 33 · DAY/NIGHT TUMBLER ──────────────────────────────────────────
    Symmetric iOS-style switch. Track 60x30, knob 24, equal 3px inset on every
@@ -19377,31 +19366,8 @@ function toggleObOnboarding() {
   }
 
   window.dtrToggleTheme = function() {
-    var reduced = matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduced || _themeBusy) { _applyTheme(); return; }
-    _themeBusy = true;
-
-    var btn = document.getElementById('theme-toggle-btn') || document.getElementById('cp-theme-toggle-btn');
-    var cx = window.innerWidth - 80, cy = 56;
-    if (btn) { var r = btn.getBoundingClientRect(); cx = r.left + r.width/2; cy = r.top + r.height/2; }
-
-    // destination page color (what we briefly wash the screen toward)
-    var goingLight = !document.documentElement.classList.contains('light');
-
-    var ov = document.getElementById('dtr-theme-curtain');
-    if (!ov) { ov = document.createElement('div'); ov.id = 'dtr-theme-curtain'; document.body.appendChild(ov); }
-    // soft radial bloom from the toggle — only opacity animates (GPU, no reflow)
-    ov.style.background = 'radial-gradient(circle at ' + cx + 'px ' + cy + 'px, ' +
-      (goingLight ? 'rgba(243,237,225,.92)' : 'rgba(8,9,12,.92)') + ' 0%, ' +
-      (goingLight ? 'rgba(243,237,225,.55)' : 'rgba(8,9,12,.55)') + ' 60%, ' +
-      (goingLight ? 'rgba(243,237,225,0)'   : 'rgba(8,9,12,0)')   + ' 100%)';
-    ov.classList.add('on');                 // fade in (opacity 0 -> 1)
-
-    // swap theme at the peak of the wash, so the recolor is hidden behind it
-    setTimeout(function(){ _applyTheme(); }, 200);
-    // then fade the wash back out, revealing the new theme
-    setTimeout(function(){ ov.classList.remove('on'); }, 240);
-    setTimeout(function(){ _themeBusy = false; }, 560);
+    // Instant switch — no overlay, no transition, no jank.
+    _applyTheme();
   };
 
   // Read a CSS token from :root / html.light
