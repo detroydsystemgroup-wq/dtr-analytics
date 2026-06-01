@@ -13460,6 +13460,104 @@ html.light .cp-footer-mq, html.light .mck-footer-copy { color: rgba(41,48,58,.18
 html.light .mck-footer { border-top: 1px solid rgba(41,48,58,.06) !important; }
 html.light .mck-footer-brand { color: rgba(41,48,58,.22) !important; }
 
+
+/* ── BLOCK 35 · CLIENT PORTAL TEXT FIX (correct class names) ──────────────
+   Earlier overrides targeted guessed class names; these target the REAL
+   classes extracted from the stylesheet so no client text stays light. */
+html.light .cp-next-title { color: #29303a !important; }
+html.light .cp-act-text { color: #29303a !important; }
+html.light .cp-act-time { color: #99a0a8 !important; }
+html.light .cp-focus-text { color: #29303a !important; }
+html.light .cp-focus-tip { color: #99a0a8 !important; }
+html.light .cp-milestone-title { color: #29303a !important; }
+html.light .cp-stage-label-text { color: #5e6670 !important; }
+html.light .cp-sb-client-name { color: #29303a !important; }
+html.light .cp-sb-nav-label { color: #99a0a8 !important; }
+html.light .cp-sb-nav-item { color: #5e6670 !important; }
+html.light .cp-sb-kpi-label { color: #99a0a8 !important; }
+html.light .cp-sb-kpi-sub { color: #99a0a8 !important; }
+html.light .cp-sb-logout { color: #99a0a8 !important; }
+html.light .cp-topbar-greeting { color: #99a0a8 !important; }
+html.light .cp-topbar-date { color: #99a0a8 !important; }
+html.light .cp-hero-eyebrow { color: #99a0a8 !important; }
+/* .cp-hero-num NOT forced: carries inline semantic color (revenue/traffic/check Δ) */
+html.light .cp-hero-num { color: #29303a; }
+html.light .cp-hero-sub { color: #99a0a8 !important; }
+html.light .cp-progress-eyebrow { color: #99a0a8 !important; }
+html.light .cp-progress-title { color: #29303a !important; }
+html.light .cp-progress-pct-sub { color: #99a0a8 !important; }
+html.light .cp-stage-num-label { color: #99a0a8 !important; }
+html.light .cp-pf-text { color: #99a0a8 !important; }
+html.light .cp-pf-right { color: #99a0a8 !important; }
+html.light .cp-stages-bar2-labels { color: #99a0a8 !important; }
+html.light .cp-card-title { color: #99a0a8 !important; }
+html.light .cp-act-group-title { color: #29303a !important; }
+html.light .cp-act-group-stage { color: #5e6670 !important; }
+html.light .cp-act-group-time { color: #99a0a8 !important; }
+html.light .cp-act-tag { color: #5e6670 !important; }
+html.light .cp-smm-title { color: #99a0a8 !important; }
+html.light .cp-smm-period { color: #99a0a8 !important; }
+html.light .cp-smm-lbl { color: #99a0a8 !important; }
+html.light .cp-smm-bench-row { color: #99a0a8 !important; }
+html.light .mck-eyebrow { color: #99a0a8 !important; }
+html.light .mck-title { color: #29303a !important; }
+html.light .mck-total-num { color: #29303a !important; }
+html.light .mck-total-lbl { color: #99a0a8 !important; }
+html.light .mck-divider-label { color: #99a0a8 !important; }
+html.light .mck-section-label { color: #99a0a8 !important; }
+html.light .mck-section-unit { color: #99a0a8 !important; }
+html.light .mck-report-name { color: #29303a !important; }
+html.light .mck-report-index { color: #99a0a8 !important; }
+html.light .mck-report-date { color: #99a0a8 !important; }
+html.light .mck-report-arrow { color: #99a0a8 !important; }
+html.light .mck-search-input { color: #29303a !important; }
+html.light .mck-search-kbd { color: #99a0a8 !important; }
+html.light .mck-dd-count { color: #99a0a8 !important; }
+html.light .mck-dd-hint { color: #99a0a8 !important; }
+html.light .mck-dd-group-label { color: #99a0a8 !important; }
+html.light .mck-dd-name { color: #29303a !important; }
+html.light .mck-dd-num { color: #99a0a8 !important; }
+html.light .mck-dd-date { color: #99a0a8 !important; }
+html.light .mck-dd-empty { color: #99a0a8 !important; }
+html.light .mck-dd-footer { color: #99a0a8 !important; }
+html.light .mck-footer-brand { color: #99a0a8 !important; }
+html.light .mck-footer-copy { color: #99a0a8 !important; }
+html.light .cp-footer-name { color: #99a0a8 !important; }
+html.light .cp-footer-copy { color: #99a0a8 !important; }
+html.light .cp-footer-mq { color: #99a0a8 !important; }
+html.light .cp-sn-pending { color: #99a0a8 !important; }
+
+/* surfaces & rows that still showed dark or borderless */
+html.light .cp-act-item, html.light .cp-act-group, html.light .cp-focus-card,
+html.light .cp-milestone-card, html.light .cp-next-card, html.light .cp-pf-card,
+html.light .cp-smm-card, html.light .cp-sn-card {
+  background: #fbf8f1 !important;
+  border: 1px solid rgba(41,48,58,.08) !important;
+}
+html.light .cp-act-item { border: none !important; border-bottom: 1px solid rgba(41,48,58,.06) !important; }
+html.light .cp-act-group-head, html.light .cp-focus-head { border-color: rgba(41,48,58,.07) !important; }
+html.light .cp-act-tag, html.light .cp-act-group-stage, html.light .cp-stage-chip {
+  background: rgba(41,48,58,.05) !important;
+  border: 1px solid rgba(41,48,58,.1) !important;
+}
+html.light .cp-act-dot { box-shadow: 0 0 0 2px rgba(41,48,58,.04) !important; }
+html.light .cp-sb-logout { color: #99a0a8 !important; }
+html.light .cp-sb-logout:hover { color: #c0392b !important; }
+/* timeline labels under nodes */
+html.light .cp-stage-label-text, html.light .cp-stage-num-label,
+html.light .cp-stages-bar2-labels, html.light .cp-progress-eyebrow,
+html.light .cp-progress-pct-sub { color: #99a0a8 !important; }
+/* progress eyebrow on the production-cycle card */
+html.light .cp-now-eyebrow, html.light .cp-current-eyebrow { color: #9c7a2b !important; }
+/* mck report rows */
+html.light .mck-report-name { color: #29303a !important; }
+html.light .mck-report-date, html.light .mck-report-index, html.light .mck-report-arrow,
+html.light .mck-dd-date, html.light .mck-dd-num, html.light .mck-dd-empty,
+html.light .mck-dd-group-label { color: #99a0a8 !important; }
+html.light .mck-dd-name { color: #29303a !important; }
+/* SMM benchmark labels/period */
+html.light .cp-smm-lbl, html.light .cp-smm-period { color: #99a0a8 !important; }
+
 button, a, [role="button"],
 .pcard, .stat-card, .ov-card, .ov2-kpi-card,
 .smm-stat-card, .report-card, .ov-list-item,
