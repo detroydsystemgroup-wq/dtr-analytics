@@ -12473,7 +12473,9 @@ html.light .sv-risk-card {
 }
 html.light .sv-rc-label { color: #5e6670 !important; }
 html.light .sv-rc-sub   { color: #99a0a8 !important; }
-html.light .sv-rc-val   { color: #29303a !important; }
+/* no !important: sv-rc-val gets a JS conditional color (red/amber/green by
+   concentration & revenue/hour thresholds) that must remain visible */
+html.light .sv-rc-val   { color: #29303a; }
 html.light .sv-th, html.light .sv-th-r { color: #99a0a8 !important; border-color: rgba(41,48,58,.08) !important; }
 
 /* ── BLOCK 14 · PREMIUM REPORT HERO (apl-) ─────────────────────────────── */
@@ -13141,6 +13143,33 @@ html.light .dl-date2-wrap {
 }
 html.light .dl-date2 { color: #29303a !important; }
 html.light .dl-date2::-webkit-calendar-picker-indicator { opacity: .6; }
+
+
+/* ── BLOCK 30 · GLOBAL SEARCH OVERLAY ──────────────────────────────────────
+   Command-palette search uses near-black surfaces in class rules. */
+html.light .global-search-wrap {
+  background: rgba(251,248,241,.99) !important;
+  border: 1px solid rgba(156,122,43,.28) !important;
+  box-shadow: var(--shadow-xl) !important;
+}
+html.light .global-search-bar { background: rgba(41,48,58,.03) !important; }
+html.light .global-search-inp { color: #29303a !important; }
+html.light .global-search-inp::placeholder { color: rgba(41,48,58,.4) !important; }
+html.light .global-search-esc {
+  color: #9c7a2b !important;
+  background: rgba(156,122,43,.1) !important;
+  border: 1px solid rgba(156,122,43,.22) !important;
+}
+html.light .global-search-results {
+  background: #fbf8f1 !important;
+  border: 1px solid rgba(41,48,58,.1) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+html.light .gsr-section-title { color: #99a0a8 !important; }
+html.light .gsr-item:hover { background: rgba(156,122,43,.07) !important; }
+html.light .gsr-title { color: #29303a !important; }
+html.light .gsr-sub, html.light .gsr-empty { color: #99a0a8 !important; }
+html.light .gsr-icon { border: 1px solid rgba(41,48,58,.1) !important; }
 
 button, a, [role="button"],
 .pcard, .stat-card, .ov-card, .ov2-kpi-card,
