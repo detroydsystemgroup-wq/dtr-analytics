@@ -24775,6 +24775,17 @@ function processFile(file, key) {
       const parsed = parseSheet(rows, key)
       S[key] = parsed
 
+      // Авто-детект чек-уровневой выгрузки (для комбо). Не мешает обычным слотам.
+      try {
+        if (typeof isComboFormat === 'function' && isComboFormat(rows)) {
+          const baskets = parseComboSheet(rows)
+          if (baskets && baskets.length) {
+            const slot = (key && key[0] === 'b') ? 'combo_b' : 'combo_d'
+            S[slot] = { baskets: baskets, n: baskets.length }
+          }
+        }
+      } catch(err) { console.warn('combo parse skipped:', err) }
+
       // Update labels
       if (key === 'b1') { LABEL_B = buildLabel(parsed.meta); const _pb=g('btn-period-b'); if(_pb) _pb.textContent=LABEL_B; }
       if (key === 'd1') { LABEL_D = buildLabel(parsed.meta); const _pd=g('btn-period-d'); if(_pd) _pd.textContent=LABEL_D; }
@@ -33936,7 +33947,147 @@ function renderMenuCategories(b3, d3) {
 // Метод: топ основных × топ напитков/соусов
 // Оценка совместности = sqrt(qty_main × qty_addon) / total_chk
 // ════════════════════════════════════════
+// ══════════════════════════════════════════════
+// COMBO ENGINE — реальный анализ корзины (market basket)
+// Работает ТОЛЬКО с чек-уровневой выгрузкой (S.combo_d / S.combo_b),
+// где каждая строка = позиция в конкретном чеке.
+// Если такого файла нет — НЕ выдумываем комбо, показываем подсказку.
+// ══════════════════════════════════════════════
+var COMBO_SERVICE = ['Доставка','Самовывоз','Доставка курьером','Сервисный сбор'] // не блюда
+
+// Определяет, является ли выгрузка чек-уровневой (combo-формат)
+function isComboFormat(rows) {
+  for (var i=0;i<Math.min(rows.length,8);i++){
+    var line=rows[i].map(function(c){return String(c==null?'':c).toLowerCase()}).join(' ')
+    if (line.indexOf('номер чека')>=0 && line.indexOf('блюдо')>=0) return true
+  }
+  return false
+}
+
+// Парсит combo-файл в массив корзин (Set блюд). Forward-fill иерархии.
+function parseComboSheet(rows) {
+  var hi=-1
+  for (var i=0;i<Math.min(rows.length,10);i++){
+    var L=rows[i].map(function(c){return String(c==null?'':c).toLowerCase().trim()})
+    if (L.indexOf('номер чека')>=0 || L.some(function(c){return c.indexOf('номер чека')>=0})) { hi=i; break }
+  }
+  if (hi<0) return null
+  var H=rows[hi].map(function(c){return String(c==null?'':c).toLowerCase().trim()})
+  var ciEnt=H.findIndex(function(h){return h.indexOf('предприят')>=0||h.indexOf('подразделен')>=0})
+  var ciDay=H.findIndex(function(h){return h.indexOf('день')>=0||h.indexOf('дата')>=0})
+  var ciShift=H.findIndex(function(h){return h.indexOf('смен')>=0})
+  var ciChk=H.findIndex(function(h){return h.indexOf('номер чека')>=0})
+  var ciDish=H.findIndex(function(h){return h.indexOf('блюдо')>=0})
+  if (ciChk<0||ciDish<0) return null
+
+  var checks={}, cur=['','','','']
+  for (var r=hi+1;r<rows.length;r++){
+    var row=rows[r]
+    var ent  = ciEnt>=0   ? String(row[ciEnt]??'').trim()   : '_'
+    var day  = ciDay>=0   ? String(row[ciDay]??'').trim()   : '_'
+    var shift= ciShift>=0 ? String(row[ciShift]??'').trim() : '_'
+    var chk  = String(row[ciChk]??'').trim()
+    var dish = String(row[ciDish]??'').trim()
+    if (ent)   cur[0]=ent
+    if (day)   cur[1]=day.slice(0,10)
+    if (shift) cur[2]=shift
+    if (chk){
+      if (chk.toLowerCase().indexOf('всего')>=0) continue
+      cur[3]=chk
+    }
+    if (!dish) continue
+    if (dish.toLowerCase().indexOf('всего')>=0) continue
+    var key=cur.join('|')
+    if (cur.indexOf('')>=0 && cur[3]==='') continue
+    if (!checks[key]) checks[key]={}
+    checks[key][dish]=true
+  }
+  var baskets=[]
+  for (var k in checks){ baskets.push(Object.keys(checks[k])) }
+  return baskets
+}
+
+// Считает пары: support, lift, confidence. Возвращает топ-органические комбо.
+function computeCombos(baskets, opts) {
+  opts=opts||{}
+  var minPair=opts.minPair||100
+  var N=baskets.length
+  var item={}, pair={}
+  var isSvc=function(x){ return COMBO_SERVICE.indexOf(x)>=0 }
+  for (var i=0;i<baskets.length;i++){
+    var its=baskets[i].filter(function(x){return !isSvc(x)})
+    // uniq
+    var seen={}, u=[]
+    for (var j=0;j<its.length;j++){ if(!seen[its[j]]){seen[its[j]]=1;u.push(its[j])} }
+    u.sort()
+    for (var a=0;a<u.length;a++){
+      item[u[a]]=(item[u[a]]||0)+1
+      for (var b=a+1;b<u.length;b++){
+        var key=u[a]+'\u0001'+u[b]
+        pair[key]=(pair[key]||0)+1
+      }
+    }
+  }
+  var res=[]
+  for (var key in pair){
+    var n=pair[key]; if(n<minPair) continue
+    var parts=key.split('\u0001'), A=parts[0], B=parts[1]
+    var pA=item[A]/N, pB=item[B]/N, pAB=n/N
+    var lift=pAB/(pA*pB)
+    res.push({a:A,b:B,n:n,supp:pAB*100,lift:lift,confA:n/item[A]*100,confB:n/item[B]*100})
+  }
+  return {N:N,item:item,pairs:res}
+}
+
 function renderMenuCombos(b3, d3) {
+  var el = document.getElementById('sec-menu-combos');
+  var inner = document.getElementById('menu-combos-inner');
+  if (!el || !inner) return;
+
+  // ── РЕАЛЬНЫЙ анализ, если загружена чек-уровневая выгрузка ──
+  var comboBaskets = (S['combo_d'] && S['combo_d'].baskets) || (S['combo_b'] && S['combo_b'].baskets) || null
+  if (comboBaskets && comboBaskets.length > 200) {
+    el.style.display='block'; showBlock('block-menu')
+    var cc = computeCombos(comboBaskets, {minPair: Math.max(50, Math.round(comboBaskets.length*0.002))})
+    var organic = cc.pairs.filter(function(p){return p.lift>1.2}).sort(function(x,y){return y.n-x.n}).slice(0,8)
+    var fmtP=function(v){return new Intl.NumberFormat('ru-RU').format(Math.round(v))}
+    var H=''
+    H+='<div style="font-family:var(--font-mono);font-size:10px;color:var(--txt2);margin-bottom:14px;">'
+      +'// реальные пары из '+fmtP(cc.N)+' чеков · lift>1.2 = берут вместе чаще случайного · сигнал на сет</div>'
+    organic.forEach(function(p){
+      var liftBadge = p.lift>=2 ? 'var(--green)' : 'var(--a2)'
+      H+='<div style="background:var(--bg3);border:1px solid var(--brd);border-left:3px solid '+liftBadge+';border-radius:12px;padding:14px 16px;margin-bottom:10px;">'
+        +'<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">'
+        +'<span style="font-size:14px;font-weight:700;">'+p.a+'</span>'
+        +'<span style="color:var(--a2);font-weight:700;">+</span>'
+        +'<span style="font-size:14px;font-weight:700;">'+p.b+'</span>'
+        +'<span style="margin-left:auto;font-family:\'Bebas Neue\',sans-serif;font-size:20px;color:'+liftBadge+';">×'+p.lift.toFixed(1)+'</span>'
+        +'</div>'
+        +'<div style="font-family:var(--font-mono);font-size:11px;color:var(--txt2);margin-top:6px;">'
+        +fmtP(p.n)+' чеков вместе ('+p.supp.toFixed(1)+'% всех) · '
+        +'из чеков с «'+p.a+'» в '+p.confA.toFixed(0)+'% есть «'+p.b+'»</div>'
+        +'</div>'
+    })
+    if(!organic.length) H+='<div style="padding:14px;font-size:12px;color:var(--txt2);font-family:var(--font-mono);">Устойчивых пар не найдено (мало совместных чеков).</div>'
+    inner.innerHTML=H
+    return
+  }
+
+  // ── ФОЛБЭК: чек-уровневых данных нет — честно говорим, НЕ выдумываем ──
+  var src = d3 || b3;
+  if (!src) return;
+  el.style.display='block'; showBlock('block-menu')
+  inner.innerHTML='<div style="background:rgba(232,153,58,.06);border:1px solid rgba(232,153,58,.25);border-radius:12px;padding:16px 18px;">'
+    +'<div style="font-size:13px;font-weight:700;color:var(--amber);margin-bottom:6px;">Для анализа «что с чем берут» нужна выгрузка по чекам</div>'
+    +'<div style="font-size:12px;color:var(--txt2);line-height:1.5;font-family:var(--font-display);">'
+    +'Файл «Топ блюд» показывает только итог по каждой позиции и не содержит связи между блюдами в одном чеке. '
+    +'Чтобы получить реальные комбо-сигналы, загрузите OLAP-выгрузку по продажам с полями: '
+    +'Торговое предприятие · Учётный день · Номер смены · Номер чека · Блюдо · Количество.</div></div>'
+  return
+}
+
+// ── СТАРАЯ функция-заглушка (псевдо-оценка из агрегата) сохранена ниже, но больше не вызывается ──
+function renderMenuCombos_LEGACY(b3, d3) {
   var el = document.getElementById('sec-menu-combos');
   var inner = document.getElementById('menu-combos-inner');
   if (!el || !inner) return;
