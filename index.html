@@ -29950,70 +29950,74 @@ function renderSMMRubricGrid() {
     return
   }
 
-  var maxER    = Math.max.apply(null, rubs.map(function(r){ return r.er||0 }).concat([.001]))
-  var maxReach = Math.max.apply(null, rubs.map(function(r){ return r.reach||0 }).concat([1]))
-  var maxViews = Math.max.apply(null, rubs.map(function(r){ return r.views||0 }).concat([1]))
+  // ── totals & benchmarks (McKinsey: всё относительно портфеля) ──
+  var totalReach = rubs.reduce(function(s,r){ return s + (r.reach||0) }, 0) || 1
+  var erVals = rubs.map(function(r){ return r.er||0 }).slice().sort(function(a,b){ return a-b })
+  var medER = erVals.length % 2
+    ? erVals[(erVals.length-1)/2]
+    : (erVals[erVals.length/2-1] + erVals[erVals.length/2]) / 2
 
-  var html = ''
+  var G='#b8923a', GB='#dec17a', GR='#3ecf8e', RD='#e05252'
+  var TXT='rgba(240,236,230,.92)', MUT='rgba(240,236,230,.5)', FNT='rgba(240,236,230,.3)', HAIR='rgba(255,255,255,.07)'
+  var EB='font-family:\'DM Mono\',monospace;font-size:9px;letter-spacing:.13em;text-transform:uppercase;'
+  var reActive = smmRubricSort === 'reach', viActive = smmRubricSort === 'views'
 
-  // TABLE HEADER
-  var RUB_GRID = '28px 1fr 10% 13% 13% 8%'
-  var COL_MONO = 'font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;'
-  html += '<div style="display:grid;grid-template-columns:'+RUB_GRID+';gap:0;border-bottom:1px solid rgba(255,255,255,.06);padding:8px 0;">'
-  html += '<div></div>'
-  html += '<div style="'+COL_MONO+'color:rgba(255,255,255,.18);padding-left:8px;">Рубрика</div>'
-  html += '<div style="'+COL_MONO+'text-align:right;padding-right:12px;color:'+(smmRubricSort==='er'?'#b8923a':'rgba(255,255,255,.18)')+';">ER %</div>'
-  html += '<div style="'+COL_MONO+'text-align:right;padding-right:12px;color:'+(smmRubricSort==='reach'?'#b8923a':'rgba(255,255,255,.18)')+';">Охват</div>'
-  html += '<div style="'+COL_MONO+'text-align:right;padding-right:12px;color:'+(smmRubricSort==='views'?'#b8923a':'rgba(255,255,255,.18)')+';">Просмотры</div>'
-  html += '<div style="'+COL_MONO+'text-align:right;color:rgba(255,255,255,.18);">Постов</div>'
-  html += '</div>'
+  var html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;">'
 
   rubs.forEach(function(r, i) {
-    var isTop = i === 0
-    var erPct = maxER    > 0 ? (r.er   ||0)/maxER   *100 : 0
-    var rePct = maxReach > 0 ? (r.reach||0)/maxReach*100 : 0
-    var viPct = maxViews > 0 ? (r.views||0)/maxViews*100 : 0
-    var rowBg = isTop ? 'rgba(184,146,58,.04)' : (i%2===0 ? 'transparent' : 'rgba(255,255,255,.012)')
+    var top = i === 0
+    var anomaly = (r.er||0) > 100
+    var share = (r.reach||0) / totalReach * 100
+    var dER = (r.er||0) - medER
+    var up = dER >= 0
 
-    html += '<div style="display:grid;grid-template-columns:'+RUB_GRID+';gap:0;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04);background:'+rowBg+';align-items:center;border-left:2px solid '+(isTop?'#b8923a':'transparent')+';transition:background .15s;" onmouseover="this.style.background=\'rgba(255,255,255,.02)\'" onmouseout="this.style.background=\''+rowBg+'\'">'
+    // badge: аномалия → лидер → дельта к медиане ER
+    var badge
+    if (anomaly) {
+      badge = '<span style="'+EB+'color:'+RD+';border:1px solid rgba(224,82,82,.4);border-radius:4px;padding:2px 6px;">аномалия</span>'
+    } else if (top) {
+      badge = '<span style="'+EB+'color:'+G+';">лидер</span>'
+    } else {
+      badge = '<span style="font-family:\'DM Mono\',monospace;font-size:10px;font-variant-numeric:tabular-nums;color:'+(up?GR:RD)+';">'+(up?'▲ +':'▼ ')+dER.toFixed(2)+' п.п.</span>'
+    }
 
-    // Rank
-    html += '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:rgba(255,255,255,.2);text-align:center;">'+(i+1)+'</div>'
+    var rowBg = top ? 'rgba(184,146,58,.05)' : '#101010'
+    var brd   = top ? 'rgba(184,146,58,.28)' : HAIR
+    var lb    = top ? G : HAIR
 
-    // Name
-    html += '<div style="padding-left:8px;overflow:hidden;">'
-    html += '<div style="font-family:\'DM Sans\',sans-serif;font-size:13px;font-weight:'+(isTop?'600':'400')+';color:'+(isTop?'rgba(240,236,230,.9)':'rgba(240,236,230,.65)')+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+esc(r.name)+'</div>'
-    html += '</div>'
+    html += '<div style="background:'+rowBg+';border:1px solid '+brd+';border-left:2px solid '+lb+';border-radius:0 8px 8px 0;padding:15px 17px;transition:background .15s,border-color .15s;" onmouseover="this.style.background=\'rgba(255,255,255,.025)\'" onmouseout="this.style.background=\''+rowBg+'\'">'
 
-    // ER
-    var erActive = smmRubricSort === 'er'
-    html += '<div style="text-align:right;padding-right:12px;">'
-    html += '<div style="font-family:\'DM Mono\',monospace;font-size:12px;font-weight:'+(erActive?'600':'400')+';color:'+(erActive?'rgba(240,236,230,.9)':'rgba(240,236,230,.35)')+';font-variant-numeric:tabular-nums;margin-bottom:4px;">'+(r.er?r.er.toFixed(2)+'%':'—')+'</div>'
-    html += '<div style="height:1px;background:rgba(255,255,255,.05);position:relative;"><div style="position:absolute;top:0;right:0;height:100%;width:'+erPct.toFixed(1)+'%;background:'+(erActive?'#b8923a':'rgba(255,255,255,.18)')+';transition:width .8s;"></div></div>'
-    html += '</div>'
+    // header — rank · name · badge
+    html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:11px;">'
+    html += '<span style="font-family:\'DM Mono\',monospace;font-size:10px;color:'+(top?G:FNT)+';flex-shrink:0;">'+(i+1<10?'0':'')+(i+1)+'</span>'
+    html += '<span style="font-family:\'DM Sans\',sans-serif;font-size:14px;font-weight:'+(top?'500':'400')+';color:'+TXT+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+esc(r.name)+'</span>'
+    html += '<span style="margin-left:auto;flex-shrink:0;">'+badge+'</span></div>'
 
-    // Reach
-    var reActive = smmRubricSort === 'reach'
-    html += '<div style="text-align:right;padding-right:12px;">'
-    html += '<div style="font-family:\'DM Mono\',monospace;font-size:12px;font-weight:'+(reActive?'600':'400')+';color:'+(reActive?'rgba(240,236,230,.9)':'rgba(240,236,230,.35)')+';font-variant-numeric:tabular-nums;margin-bottom:4px;">'+fmt(r.reach)+'</div>'
-    html += '<div style="height:1px;background:rgba(255,255,255,.05);position:relative;"><div style="position:absolute;top:0;right:0;height:100%;width:'+rePct.toFixed(1)+'%;background:'+(reActive?'#b8923a':'rgba(255,255,255,.18)')+';transition:width .8s;"></div></div>'
-    html += '</div>'
+    // hero — ER
+    html += '<div style="display:flex;align-items:baseline;gap:3px;">'
+    html += '<span style="font-family:\'DM Mono\',monospace;font-size:32px;font-weight:500;font-variant-numeric:tabular-nums;line-height:1;color:'+(anomaly?RD:(top?GB:TXT))+';">'+(r.er?r.er.toFixed(2):'—')+'</span>'
+    html += '<span style="font-family:\'DM Mono\',monospace;font-size:16px;color:'+MUT+';">%</span>'
+    html += '<span style="'+EB+'color:'+FNT+';margin-left:6px;">ER</span></div>'
 
-    // Views
-    var viActive = smmRubricSort === 'views'
-    html += '<div style="text-align:right;padding-right:12px;">'
-    html += '<div style="font-family:\'DM Mono\',monospace;font-size:12px;font-weight:'+(viActive?'600':'400')+';color:'+(viActive?'rgba(240,236,230,.9)':'rgba(240,236,230,.35)')+';font-variant-numeric:tabular-nums;margin-bottom:4px;">'+fmt(r.views)+'</div>'
-    html += '<div style="height:1px;background:rgba(255,255,255,.05);position:relative;"><div style="position:absolute;top:0;right:0;height:100%;width:'+viPct.toFixed(1)+'%;background:'+(viActive?'#b8923a':'rgba(255,255,255,.18)')+';transition:width .8s;"></div></div>'
-    html += '</div>'
+    // share-of-portfolio reach bar
+    html += '<div style="margin-top:13px;">'
+    html += '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;"><span style="'+EB+'color:'+(reActive?'rgba(184,146,58,.7)':FNT)+';">доля охвата портфеля</span><span style="font-family:\'DM Mono\',monospace;font-size:12px;font-variant-numeric:tabular-nums;color:'+(top?GB:MUT)+';">'+share.toFixed(0)+'%</span></div>'
+    html += '<div style="height:5px;border-radius:3px;background:rgba(255,255,255,.05);"><div style="height:100%;border-radius:3px;width:'+Math.min(share,100).toFixed(1)+'%;background:'+(top?G:'rgba(184,146,58,.45)')+';transition:width .8s;"></div></div></div>'
 
-    // Posts
-    html += '<div style="text-align:right;padding-right:4px;">'
-    html += '<div style="font-family:\'DM Mono\',monospace;font-size:11px;color:rgba(240,236,230,.25);font-variant-numeric:tabular-nums;">'+(r.posts||'—')+'</div>'
+    // footer — охват / просмотры / постов (активная метрика подсвечена)
+    var cells = [['Охват', fmt(r.reach), reActive], ['Просмотры', fmt(r.views), viActive], ['Постов', (r.posts||'—'), false]]
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;margin-top:14px;padding-top:12px;border-top:1px solid '+HAIR+';">'
+    cells.forEach(function(c, ci){
+      html += '<div style="'+(ci<2?'border-right:1px solid '+HAIR+';':'')+'padding:0 10px 0 '+(ci?10:0)+'px;">'
+      html += '<div style="'+EB+'color:'+(c[2]?'rgba(184,146,58,.7)':FNT)+';margin-bottom:4px;">'+c[0]+'</div>'
+      html += '<div style="font-family:\'DM Mono\',monospace;font-size:12px;font-variant-numeric:tabular-nums;color:'+(c[2]?TXT:MUT)+';">'+c[1]+'</div></div>'
+    })
     html += '</div>'
 
     html += '</div>'
   })
 
+  html += '</div>'
   root.innerHTML = html
 }
 
