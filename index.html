@@ -21238,90 +21238,32 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 
       <!-- sub-label: распределение -->
       <div style="padding:12px 0 10px;border-bottom:1px solid rgba(255,255,255,.04);">
-        <span style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.2em;text-transform:uppercase;">Распределение по форматам</span>
+        <span style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.2em;text-transform:uppercase;">Просмотры по форматам</span>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid rgba(255,255,255,.05);">
-
-        <!-- Охват -->
-        <div style="padding:28px 48px 28px 0;border-right:1px solid rgba(255,255,255,.05);">
-          <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.18em;text-transform:uppercase;margin-bottom:24px;">Охват</div>
-          <div style="display:flex;flex-direction:column;gap:0;">
-            <div style="padding:12px 0;border-top:1px solid rgba(255,255,255,.04);">
-              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
-                <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;color:rgba(255,255,255,.3);text-transform:uppercase;">Reels</span>
-                <div style="display:flex;align-items:baseline;gap:14px;">
-                  <span id="sp-reels-pct" style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:700;color:rgba(240,236,230,.9);letter-spacing:-.02em;font-variant-numeric:tabular-nums;">—</span>
-                  <span id="sp-reels" style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.18);font-variant-numeric:tabular-nums;">—</span>
-                </div>
-              </div>
-              <div style="height:1px;background:rgba(255,255,255,.05);position:relative;">
-                <div id="spf-reels" style="position:absolute;top:0;left:0;height:100%;width:0%;background:#b8923a;transition:width 1.4s cubic-bezier(.16,1,.3,1);"></div>
-              </div>
-            </div>
-            <div style="padding:12px 0;border-top:1px solid rgba(255,255,255,.04);">
-              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
-                <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;color:rgba(255,255,255,.3);text-transform:uppercase;">Посты</span>
-                <div style="display:flex;align-items:baseline;gap:14px;">
-                  <span id="sp-posts-pct" style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:700;color:rgba(240,236,230,.9);letter-spacing:-.02em;font-variant-numeric:tabular-nums;">—</span>
-                  <span id="sp-posts" style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.18);font-variant-numeric:tabular-nums;">—</span>
-                </div>
-              </div>
-              <div style="height:1px;background:rgba(255,255,255,.05);position:relative;">
-                <div id="spf-posts" style="position:absolute;top:0;left:0;height:100%;width:0%;background:rgba(255,255,255,.3);transition:width 1.4s cubic-bezier(.16,1,.3,1);"></div>
-              </div>
-            </div>
-            <div style="padding:12px 0;border-top:1px solid rgba(255,255,255,.04);">
-              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
-                <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;color:rgba(255,255,255,.3);text-transform:uppercase;">Сторис</span>
-                <div style="display:flex;align-items:baseline;gap:14px;">
-                  <span id="sp-stories-pct" style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:700;color:rgba(240,236,230,.9);letter-spacing:-.02em;font-variant-numeric:tabular-nums;">—</span>
-                  <span id="sp-stories" style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.18);font-variant-numeric:tabular-nums;">—</span>
-                </div>
-              </div>
-              <div style="height:1px;background:rgba(255,255,255,.05);position:relative;">
-                <div id="spf-stories" style="position:absolute;top:0;left:0;height:100%;width:0%;background:rgba(255,255,255,.15);transition:width 1.4s cubic-bezier(.16,1,.3,1);"></div>
-              </div>
-            </div>
+      <div style="padding:8px 0 0;">
+        <div style="display:flex;height:34px;border-radius:6px;overflow:hidden;background:rgba(255,255,255,.04);">
+          <div id="vbar-reels" style="width:0%;background:#b8923a;height:100%;display:flex;align-items:center;padding-left:14px;box-sizing:border-box;transition:width 1.4s cubic-bezier(.16,1,.3,1);">
+            <span id="vbar-reels-pct" style="font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;color:#1a1305;letter-spacing:-.02em;font-variant-numeric:tabular-nums;white-space:nowrap;">—</span>
           </div>
-          <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.05);display:flex;align-items:baseline;gap:10px;">
-            <div id="sv-total-reach" style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:700;color:rgba(240,236,230,.6);letter-spacing:-.04em;font-variant-numeric:tabular-nums;">—</div>
-            <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.15);text-transform:uppercase;letter-spacing:.12em;">охват итого</div>
+          <div id="vbar-stories" style="width:0%;background:rgba(184,146,58,.5);height:100%;border-left:1.5px solid #080808;transition:width 1.4s cubic-bezier(.16,1,.3,1);"></div>
+        </div>
+        <div style="display:flex;gap:28px;margin-top:14px;">
+          <div style="display:flex;align-items:center;gap:9px;">
+            <span style="width:9px;height:9px;border-radius:2px;background:#b8923a;flex-shrink:0;"></span>
+            <span style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:rgba(240,236,230,.92);">Reels</span>
+            <span id="vleg-reels-pct" style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:#dec17a;font-variant-numeric:tabular-nums;">—</span>
+            <span id="vleg-reels" style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(240,236,230,.4);font-variant-numeric:tabular-nums;">—</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:9px;">
+            <span style="width:9px;height:9px;border-radius:2px;background:rgba(184,146,58,.5);flex-shrink:0;"></span>
+            <span style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:rgba(240,236,230,.5);">Сторис</span>
+            <span id="vleg-stories-pct" style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:rgba(240,236,230,.92);font-variant-numeric:tabular-nums;">—</span>
+            <span id="vleg-stories" style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(240,236,230,.4);font-variant-numeric:tabular-nums;">—</span>
           </div>
         </div>
-
-        <!-- Просмотры -->
-        <div style="padding:28px 0 28px 48px;">
-          <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.18em;text-transform:uppercase;margin-bottom:24px;">Просмотры</div>
-          <div style="display:flex;flex-direction:column;gap:0;">
-            <div style="padding:12px 0;border-top:1px solid rgba(255,255,255,.04);">
-              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
-                <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;color:rgba(255,255,255,.3);text-transform:uppercase;">Reels</span>
-                <div style="display:flex;align-items:baseline;gap:14px;">
-                  <span id="sv-reels-views-pct" style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:700;color:rgba(240,236,230,.9);letter-spacing:-.02em;font-variant-numeric:tabular-nums;">—</span>
-                  <span id="sv-reels-views" style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.18);font-variant-numeric:tabular-nums;">—</span>
-                </div>
-              </div>
-              <div style="height:1px;background:rgba(255,255,255,.05);position:relative;">
-                <div id="spf-reels-views" style="position:absolute;top:0;left:0;height:100%;width:0%;background:#b8923a;transition:width 1.4s cubic-bezier(.16,1,.3,1);"></div>
-              </div>
-            </div>
-            <div style="padding:12px 0;border-top:1px solid rgba(255,255,255,.04);">
-              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
-                <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;color:rgba(255,255,255,.3);text-transform:uppercase;">Посты</span>
-                <div style="display:flex;align-items:baseline;gap:14px;">
-                  <span id="sv-posts-views-pct" style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:700;color:rgba(240,236,230,.9);letter-spacing:-.02em;font-variant-numeric:tabular-nums;">—</span>
-                  <span id="sv-posts-views" style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.18);font-variant-numeric:tabular-nums;">—</span>
-                </div>
-              </div>
-              <div style="height:1px;background:rgba(255,255,255,.05);position:relative;">
-                <div id="spf-posts-views" style="position:absolute;top:0;left:0;height:100%;width:0%;background:rgba(255,255,255,.3);transition:width 1.4s cubic-bezier(.16,1,.3,1);"></div>
-              </div>
-            </div>
-          </div>
-          <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.05);display:flex;align-items:baseline;gap:10px;">
-            <div id="sv-total-views" style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:700;color:rgba(240,236,230,.6);letter-spacing:-.04em;font-variant-numeric:tabular-nums;">—</div>
-            <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.15);text-transform:uppercase;letter-spacing:.12em;">просмотров итого</div>
-          </div>
+        <div style="margin-top:22px;padding-top:16px;border-top:1px solid rgba(255,255,255,.05);display:flex;align-items:baseline;gap:10px;">
+          <div id="sv-total-views" style="font-family:'DM Sans',sans-serif;font-size:28px;font-weight:700;color:rgba(240,236,230,.6);letter-spacing:-.04em;font-variant-numeric:tabular-nums;">—</div>
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.15);text-transform:uppercase;letter-spacing:.12em;">просмотров итого</div>
         </div>
       </div>
 
@@ -21392,10 +21334,6 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
           <input class="smm-inp" id="sd-reels-reach" type="number" placeholder="0" style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;color:#f0ece6;font-family:'DM Mono',monospace;font-size:13px;outline:none;">
         </div>
         <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;">
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">ОХВАТ ПОСТЫ</div>
-          <input class="smm-inp" id="sd-posts-reach" type="number" placeholder="0" style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;color:#f0ece6;font-family:'DM Mono',monospace;font-size:13px;outline:none;">
-        </div>
-        <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;">
           <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">ОХВАТ СТОРИС</div>
           <input class="smm-inp" id="sd-stories-reach" type="number" placeholder="0" style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;color:#f0ece6;font-family:'DM Mono',monospace;font-size:13px;outline:none;">
         </div>
@@ -21404,8 +21342,8 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
           <input class="smm-inp" id="sd-reels-views" type="number" placeholder="0" style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;color:#f0ece6;font-family:'DM Mono',monospace;font-size:13px;outline:none;">
         </div>
         <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;">
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">ПРОСМ ПОСТЫ</div>
-          <input class="smm-inp" id="sd-posts-views" type="number" placeholder="0" style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;color:#f0ece6;font-family:'DM Mono',monospace;font-size:13px;outline:none;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">ПРОСМ СТОРИС</div>
+          <input class="smm-inp" id="sd-stories-views" type="number" placeholder="0" style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;color:#f0ece6;font-family:'DM Mono',monospace;font-size:13px;outline:none;">
         </div>
         <div style="background:#111;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;">
           <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">ПОДПИСЧИКИ</div>
@@ -29344,8 +29282,8 @@ async function loadSMMReports() {
     var tr2 = sm2.tr  != null && sm2.tr  !== '' && sm2.tr  !== 0 ? (+sm2.tr).toFixed(2)  + '%' : null;
 
     // Extra reach/content metrics
-    var totalReach = (sm2.reels_reach||0) + (sm2.posts_reach||0) + (sm2.stories_reach||0);
-    var totalViews = (sm2.reels_views||0) + (sm2.posts_views||0);
+    var totalReach = (sm2.reels_reach||0) + (sm2.stories_reach||0);
+    var totalViews = (sm2.reels_views||0) + (sm2.stories_views != null ? sm2.stories_views : (sm2.stories_reach||0));
     var reachStr   = totalReach > 0 ? fmtSMMNum(totalReach) : null;
     var viewsStr   = totalViews > 0 ? fmtSMMNum(totalViews) : null;
     var reelsStr   = (sm2.reels_count != null && sm2.reels_count > 0) ? sm2.reels_count + ' Reels' : null;
@@ -29522,8 +29460,8 @@ function fillSMMDataForm() {
   const m = smmData.metrics, p = smmData.prev, go = smmData.goals
   const pairs = [
     ['sd-reels-count', m.reels_count], ['sd-posts-count', m.posts_count], ['sd-stories-count', m.stories_count],
-    ['sd-reels-reach', m.reels_reach], ['sd-posts-reach', m.posts_reach], ['sd-stories-reach', m.stories_reach],
-    ['sd-reels-views', m.reels_views], ['sd-posts-views', m.posts_views],
+    ['sd-reels-reach', m.reels_reach], ['sd-stories-reach', m.stories_reach],
+    ['sd-reels-views', m.reels_views], ['sd-stories-views', m.stories_views],
     ['sd-followers', m.followers], ['sd-prev-followers', p.followers],
     ['sd-subscribers-current', m.subscribers_current],
     ['sd-ad-creatives', m.ad_creatives],
@@ -29544,8 +29482,8 @@ function collectSMMData() {
   const n = id => { const el = g(id); if (!el) return null; const v = el.value.trim(); return v === '' ? null : +v || null }
   smmData.metrics = {
     reels_count: n('sd-reels-count'), posts_count: n('sd-posts-count'), stories_count: n('sd-stories-count'),
-    reels_reach: n('sd-reels-reach'), posts_reach: n('sd-posts-reach'), stories_reach: n('sd-stories-reach'),
-    reels_views: n('sd-reels-views'), posts_views: n('sd-posts-views'),
+    reels_reach: n('sd-reels-reach'), stories_reach: n('sd-stories-reach'),
+    reels_views: n('sd-reels-views'), stories_views: n('sd-stories-views'),
     followers: n('sd-followers'),
     subscribers_current: n('sd-subscribers-current'),
     ad_creatives: n('sd-ad-creatives'),
@@ -29598,9 +29536,10 @@ function renderSMMPresentation() {
     return `<span class="smm-stat-delta ${+d>=0?'ssd-up':'ssd-down'}">${+d>=0?'▲':'▼'} ${Math.abs(+d)}%</span>`
   }
   const totalPubs = (m.reels_count||0) + (m.posts_count||0)
-  const totalReach = (m.reels_reach||0) + (m.posts_reach||0) + (m.stories_reach||0)
-  const totalViews = (m.reels_views||0) + (m.posts_views||0)
-  const maxReach = Math.max(m.reels_reach||0, m.posts_reach||0, m.stories_reach||0, 1)
+  const totalReach = (m.reels_reach||0) + (m.stories_reach||0)
+  const storiesViews = (m.stories_views != null ? m.stories_views : (m.stories_reach||0))
+  const totalViews = (m.reels_views||0) + storiesViews
+  const maxReach = Math.max(m.reels_reach||0, m.stories_reach||0, 1)
 
   if(g('sv-reels-count')) g('sv-reels-count').textContent = fmtBig(m.reels_count)
   if(g('sv-stories')) g('sv-stories').textContent = fmtBig(m.stories_count)
@@ -29616,25 +29555,20 @@ function renderSMMPresentation() {
   if(g('sv-total-views')) g('sv-total-views').textContent = fmtBig(totalViews)
   if(g('sv-er-hero')) g('sv-er-hero').textContent = m.er ? (+m.er).toFixed(2)+'%' : '—'
 
-  // ── Reach bars with % ──
-  const totalReachFmt = totalReach || 1
-  const setProgPct = (valId, fillId, pctId, val, max, total) => {
-    if(g(valId)) g(valId).textContent = fmtBig(val)
-    const fill = g(fillId)
-    if(fill) setTimeout(() => fill.style.width = (max>0?(val/max*100):0).toFixed(1)+'%', 80)
-    if(g(pctId)) g(pctId).textContent = total>0 ? Math.round(val/total*100)+'%' : '—'
-  }
-  setProgPct('sp-reels','spf-reels','sp-reels-pct', m.reels_reach||0, maxReach, totalReach)
-  setProgPct('sp-posts','spf-posts','sp-posts-pct', m.posts_reach||0, maxReach, totalReach)
-  setProgPct('sp-stories','spf-stories','sp-stories-pct', m.stories_reach||0, maxReach, totalReach)
-
-  // ── Views bars with % ──
+  // ── Просмотры по форматам: Reels / Сторис ──
   const reelsViews = m.reels_views||0
-  const postsViews = m.posts_views||0
-  const maxViews = Math.max(reelsViews, postsViews, 1)
-  const totalViewsFmt = totalViews || 1
-  setProgPct('sv-reels-views','spf-reels-views','sv-reels-views-pct', reelsViews, maxViews, totalViews)
-  setProgPct('sv-posts-views','spf-posts-views','sv-posts-views-pct', postsViews, maxViews, totalViews)
+  const vTot = (reelsViews + storiesViews) || 1
+  const hasViews = (reelsViews + storiesViews) > 0
+  const reelsP = Math.round(reelsViews / vTot * 100)
+  const storiesP = hasViews ? 100 - reelsP : 0
+  const setW = (id, w) => { const e = g(id); if(e) setTimeout(() => e.style.width = w + '%', 80) }
+  setW('vbar-reels', (reelsViews / vTot * 100).toFixed(1))
+  setW('vbar-stories', (storiesViews / vTot * 100).toFixed(1))
+  if(g('vbar-reels-pct')) g('vbar-reels-pct').textContent = hasViews ? reelsP + '%' : '—'
+  if(g('vleg-reels-pct')) g('vleg-reels-pct').textContent = hasViews ? reelsP + '%' : '—'
+  if(g('vleg-stories-pct')) g('vleg-stories-pct').textContent = hasViews ? storiesP + '%' : '—'
+  if(g('vleg-reels')) g('vleg-reels').textContent = fmtBig(reelsViews)
+  if(g('vleg-stories')) g('vleg-stories').textContent = fmtBig(storiesViews)
 
   renderSMMMetrics()
   renderSMMReelsGrid()
@@ -29769,9 +29703,9 @@ function renderVsMarket(bench, m, p) {
             gap:0;
           ">
           <div style="width:3px;height:32px;background:${zCol};margin-right:20px;flex-shrink:0;opacity:.7;"></div>
-          <div style="width:52px;flex-shrink:0;">
+          <div style="width:120px;flex-shrink:0;padding-right:16px;box-sizing:border-box;">
             <div style="font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:rgba(240,236,230,.8);letter-spacing:.02em;">${z.name}</div>
-            <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);text-transform:uppercase;letter-spacing:.08em;margin-top:2px;">${z.label}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);text-transform:uppercase;letter-spacing:.08em;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${z.label}</div>
           </div>
           <div style="flex:1;padding:0 24px;">
             <div style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">норма для вашего размера: ${normRange}</div>
