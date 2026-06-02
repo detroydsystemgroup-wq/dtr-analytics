@@ -25102,6 +25102,52 @@ function checkPeriodCompatibility(bD,dD) {
   if(kr&&kr.parentNode) kr.parentNode.insertBefore(warn,kr)
 }
 
+// ══ КАЛЕНДАРНЫЙ КОНТЕКСТ (РАМАДАН) ══
+// Ловит сезонный сдвиг, который проверка длины периода не видит:
+// если один период попадает на Рамадан, режим питания смещается (день↓, ифтар/ночь↑),
+// и часть разницы между периодами — это календарь, а не результат работы.
+// Даты григорианские, ОРИЕНТИРОВОЧНЫЕ (зависят от наблюдения Луны). Источник: исламские календари.
+// Таблицу нужно пополнять по мере появления подтверждённых дат на следующие годы.
+var RAMADAN_WINDOWS = [
+  { y:2025, from:'28.02.2025', to:'30.03.2025' },
+  { y:2026, from:'17.02.2026', to:'20.03.2026' },
+  { y:2027, from:'08.02.2027', to:'11.03.2027' },
+  { y:2028, from:'28.01.2028', to:'26.02.2028' }
+]
+function _ccToDate(s){ var p=String(s||'').split('.'); if(p.length<3) return null; var d=new Date(+p[2], +p[1]-1, +p[0]); return isNaN(d)?null:d }
+function _ccPeriodRange(slot){
+  if(!slot||!slot.rows||!slot.rows.length) return null
+  var ds=slot.rows.map(function(r){return _ccToDate(r.label)}).filter(Boolean).sort(function(a,b){return a-b})
+  if(!ds.length) return null
+  return { from:ds[0], to:ds[ds.length-1] }
+}
+function _ccOverlapDays(r,w){
+  if(!r) return 0
+  var a=_ccToDate(w.from), b=_ccToDate(w.to)
+  if(!a||!b) return 0
+  var s=Math.max(r.from,a), e=Math.min(r.to,b)
+  if(e<s) return 0
+  return Math.round((e-s)/86400000)+1
+}
+function checkCalendarContext(){
+  var ex=g('calendar-ctx-warn'); if(ex) ex.remove()
+  var rb=_ccPeriodRange(S['b1']), rd=_ccPeriodRange(S['d1'])
+  if(!rb||!rd) return
+  var rmOverlap=function(r){ var best=0; RAMADAN_WINDOWS.forEach(function(w){ var o=_ccOverlapDays(r,w); if(o>best) best=o }); return best }
+  var ob=rmOverlap(rb), od=rmOverlap(rd)
+  if(Math.max(ob,od)<5) return            // ни один период существенно не в Рамадане
+  if(Math.abs(ob-od)<5) return            // оба одинаково затронуты → сравнение корректно
+  var hi=ob>od?LABEL_B:LABEL_D, hiDays=Math.max(ob,od)
+  var warn=document.createElement('div')
+  warn.id='calendar-ctx-warn'
+  warn.style.cssText='margin-bottom:14px;padding:13px 16px;background:rgba(232,153,58,.08);border:1px solid rgba(232,153,58,.3);border-left:3px solid var(--amber);border-radius:11px;display:flex;align-items:flex-start;gap:11px;'
+  warn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 2"/></svg>'
+    +'<div><div style="font-size:13px;font-weight:700;color:var(--amber);margin-bottom:3px;">Календарный контекст: период «'+hi+'» захватывает Рамадан (~'+hiDays+' дн.)</div>'
+    +'<div style="font-size:12px;color:var(--txt2);line-height:1.5;font-family:var(--font-display);">В пост режим питания смещается: дневные продажи падают, вечерние (ифтар) и ночные растут. Часть разницы между периодами — это календарь, а не результат работы. Для «чистого» эффекта сравнивайте сопоставимые периоды (после праздника или год к году). Даты Рамадана ориентировочные.</div></div>'
+  var kr=document.querySelector('.kpi-row')
+  if(kr&&kr.parentNode) kr.parentNode.insertBefore(warn,kr)
+}
+
 // ══ ЭФФЕКТИВНОСТЬ МЕНЮ ══
 function renderMenuEfficiency(b3,d3) {
   var secEl=g('sec-menu-efficiency'),innerEl=g('menu-efficiency-inner')
@@ -25456,6 +25502,7 @@ function runAnalysis() {
   renderWaterfallBlock(bRD,dRD,bCD,dCD,bA,dA,gr,grP,ex,bD,dD)
   renderHealthScore(bRD,dRD,bCD,dCD,bA,dA,grP,bD,dD,S['b1'],S['d1'])
   checkPeriodCompatibility(bD,dD)
+  checkCalendarContext()
 
   // Сохраняем данные для food cost
   window._lastDRD = dRD
