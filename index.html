@@ -29827,16 +29827,20 @@ function renderSMMReelsGrid() {
     // gold accent bar for top reel
     if (isTop) html += '<div style="position:absolute;left:0;top:26px;bottom:26px;width:3px;border-radius:0 3px 3px 0;background:linear-gradient(180deg,#dec17a,#b8923a);"></div>'
 
-    // cover (9:16) or placeholder — enlarged
-    html += '<div style="position:relative;width:96px;height:128px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:1px solid '+(isTop?'rgba(184,146,58,.25)':'rgba(255,255,255,.08)')+';overflow:hidden;'
+    // cover (9:16) or placeholder — enlarged.
+    // Outer wrapper has NO overflow:hidden so the rank badge can sit on the corner;
+    // only the inner cover clips the image/placeholder to rounded corners.
+    var coverBorder = isTop ? 'rgba(184,146,58,.25)' : 'rgba(255,255,255,.08)'
+    html += '<div style="position:relative;width:96px;height:128px;flex-shrink:0;">'
+    html += '<div style="position:absolute;inset:0;border-radius:10px;overflow:hidden;display:flex;align-items:center;justify-content:center;border:1px solid '+coverBorder+';'
     if (r.cover && r.cover.trim()) {
-      html += 'background:#0d0d0f;"><div style="position:absolute;inset:0;background:url(\''+r.cover+'\') center/cover no-repeat;"></div>'
+      html += 'background:#0d0d0f;"><div style="position:absolute;inset:0;background:url(\''+r.cover+'\') center/cover no-repeat;"></div></div>'
     } else {
       html += 'background:linear-gradient(160deg,'+(isTop?'#1c1709':'#161619')+',#0d0d0f);">'
-      html += '<svg width="24" height="24" viewBox="0 0 24 24" fill="'+(isTop?'rgba(222,193,122,.5)':'rgba(255,255,255,.2)')+'"><path d="M8 5v14l11-7z"/></svg>'
+      html += '<svg width="24" height="24" viewBox="0 0 24 24" fill="'+(isTop?'rgba(222,193,122,.5)':'rgba(255,255,255,.2)')+'"><path d="M8 5v14l11-7z"/></svg></div>'
     }
-    // rank badge — enlarged
-    html += '<div style="position:absolute;top:-9px;left:-9px;width:26px;height:26px;border-radius:50%;font-family:\'DM Mono\',monospace;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;'+(isTop?'background:#b8923a;color:#0a0a0c;':'background:#1a1a1e;border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.5);')+'">'+(i+1)+'</div>'
+    // rank badge — sits on the outer corner, NOT clipped (ring matches card bg)
+    html += '<div style="position:absolute;top:-9px;left:-9px;width:26px;height:26px;border-radius:50%;font-family:\'DM Mono\',monospace;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px #111114;'+(isTop?'background:#b8923a;color:#0a0a0c;':'background:#1a1a1e;border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.5);')+'">'+(i+1)+'</div>'
     html += '</div>'
 
     // body
