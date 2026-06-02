@@ -30049,19 +30049,105 @@ function renderSMMConclusions() {
     });
   }
 
-  // ── 3. Глубина вовлечения: сохранения + репосты против лайков ──
-  if (m.lr != null && (m.sr != null || m.shr != null)) {
-    var deep = (m.sr || 0) + (m.shr || 0), likes = m.lr || 0;
-    if (likes > 0) {
-      var ratio = deep / likes * 100;
-      C.push({
-        tone: ratio >= 25 ? 'pos' : ratio >= 12 ? 'warn' : 'neg',
-        title: ratio >= 25 ? 'Аудитория не просто лайкает — она сохраняет контент и делится им'
-          : 'Реакция держится в основном на лайках, глубокие действия отстают',
-        body: 'Сохранения и репосты вместе дают ' + hl(pct(deep)) + ' против ' + hl(pct(likes)) + ' лайков — соотношение «глубоких» сигналов к «поверхностным» ' + hl(Math.round(ratio) + '%') + '. Лайк пассивен, тогда как сохранение и репост требуют намерения: они показывают, что контент несёт ценность, которой хочется владеть или делиться.',
-        rec: ratio >= 25 ? 'Усиливать прикладной, «сохраняемый» контент — это устойчивый драйвер органического охвата.'
-          : 'Встраивать явный повод сохранить или переслать: чек-листы, инструкции, формулировки «сохрани, чтобы не потерять».'
-      });
+  // ── 3. Профиль реакций: СООТНОШЕНИЕ метрик как диагноз контента ──
+  // Методология: сравниваем не абсолюты (лайков всегда больше), а ИНДЕКС к норме.
+  // index = значение / норма бенчмарка; >1 — перевыполняет, <1 — недобирает.
+  var ACT = [
+    { key: 'lr',  name: 'Лайки',       col: 'rgba(240,236,230,.20)' },
+    { key: 'tr',  name: 'Комментарии', col: 'rgba(222,193,122,.45)' },
+    { key: 'shr', name: 'Репосты',     col: 'rgba(184,146,58,.7)'  },
+    { key: 'sr',  name: 'Сохранения',  col: '#b8923a'              }
+  ];
+  var act = ACT.filter(function (a) { return m[a.key] != null && m[a.key] > 0; }).map(function (a) {
+    var norm = bench[a.key] ? bench[a.key].g : null;
+    return { name: a.name, col: a.col, val: m[a.key], idx: norm ? m[a.key] / norm : null };
+  });
+  var _reactionLead = '';
+  if (act.length >= 2) {
+    var sumV = act.reduce(function (s, a) { return s + a.val; }, 0) || 1;
+    act.forEach(function (a) { a.share = a.val / sumV * 100; });
+    var withIdx = act.filter(function (a) { return a.idx != null; });
+    var dom = withIdx.length ? withIdx.slice().sort(function (x, y) { return y.idx - x.idx; })[0] : null;
+    var weak = withIdx.length ? withIdx.slice().sort(function (x, y) { return x.idx - y.idx; })[0] : null;
+    var spread = (dom && weak && weak.idx > 0) ? dom.idx / weak.idx : 1;
+
+    var arch;
+    if (!dom || spread < 1.4) arch = { tone: 'pos', name: 'Сбалансированный профиль', desc: 'Реакции распределены ровно, без перекосов — зрелый контент, который и эмоционально цепляет, и приносит пользу.' };
+    else if (dom.name === 'Сохранения') arch = { tone: 'warn', name: 'Прикладной / образовательный', desc: 'Контент ценят за пользу — его сохраняют, чтобы вернуться. Это укрепляет экспертность и удержание, но эмоционально цепляет слабее, и это ограничивает виральность.' };
+    else if (dom.name === 'Репосты') arch = { tone: 'pos', name: 'Социально-заразный', desc: 'Контентом делятся — он работает как социальная валюта. Это сильнейший бесплатный драйвер охвата и притока новой аудитории.' };
+    else if (dom.name === 'Комментарии') arch = { tone: 'pos', name: 'Дискуссионный / комьюнити', desc: 'Контент провоцирует диалог и мнения — это даёт высокую лояльность и максимальный алгоритмический вес, но требует контроля тональности.' };
+    else arch = { tone: 'warn', name: 'Эмоционально-вирусный', desc: 'Контент нравится и собирает охват, но реакция поверхностная: его реже сохраняют и пересылают, поэтому лояльность и практическая ценность ниже.' };
+
+    var archCol = toneCol[arch.tone] || GOLD;
+    var segs = act.map(function (a) {
+      return '<div style="width:' + a.share.toFixed(1) + '%;background:' + a.col + ';height:100%;" title="' + a.name + ' ' + a.share.toFixed(0) + '%"></div>';
+    }).join('');
+    var legend = act.map(function (a) {
+      var idxTxt = a.idx == null ? '' : '×' + a.idx.toFixed(2);
+      var idxCol = a.idx == null ? MUT : a.idx >= 1.1 ? GREEN : a.idx < 0.8 ? RED : 'rgba(240,236,230,.45)';
+      return '<div style="display:flex;align-items:center;gap:7px;">' +
+          '<span style="width:8px;height:8px;border-radius:2px;background:' + a.col + ';flex-shrink:0;"></span>' +
+          '<span style="font-family:\'DM Mono\',monospace;font-size:9px;letter-spacing:.05em;color:rgba(240,236,230,.6);text-transform:uppercase;">' + a.name + '</span>' +
+          '<span style="font-family:\'DM Sans\',sans-serif;font-size:12px;font-weight:700;color:rgba(240,236,230,.85);font-variant-numeric:tabular-nums;">' + a.share.toFixed(0) + '%</span>' +
+          (idxTxt ? '<span style="font-family:\'DM Mono\',monospace;font-size:9px;color:' + idxCol + ';font-variant-numeric:tabular-nums;" title="индекс к норме рынка">' + idxTxt + '</span>' : '') +
+        '</div>';
+    }).join('');
+
+    _reactionLead =
+      '<div style="margin:4px 0 10px;padding:24px 26px;background:#0d0d0f;border:1px solid rgba(255,255,255,.06);border-left:2px solid ' + archCol + ';border-radius:0 8px 8px 0;animation:smmFadeUp .5s both;">' +
+        '<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">' +
+          '<div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">' +
+            '<span style="font-family:\'DM Mono\',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:' + MUT + ';">Профиль реакций</span>' +
+            '<span style="font-family:\'DM Sans\',sans-serif;font-size:17px;font-weight:600;letter-spacing:-.02em;color:' + archCol + ';">' + arch.name + '</span>' +
+          '</div>' +
+          '<span style="font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:' + MUT + ';">× — индекс к норме рынка</span>' +
+        '</div>' +
+        '<div style="display:flex;height:10px;border-radius:3px;overflow:hidden;background:rgba(255,255,255,.04);">' + segs + '</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:14px 28px;margin-top:16px;">' + legend + '</div>' +
+        '<div style="margin-top:18px;padding-top:16px;border-top:1px solid rgba(255,255,255,.06);font-family:\'DM Sans\',sans-serif;font-size:13.5px;line-height:1.65;color:' + TXT2 + ';">' + arch.desc + '</div>' +
+      '</div>';
+
+    // ── диагнозы по соотношениям (срабатывают только при заметном перекосе) ──
+    function idxOf(k) { var a = withIdx.filter(function (x) { return x.name === k; })[0]; return a ? a.idx : null; }
+    var iL = idxOf('Лайки'), iC = idxOf('Комментарии'), iSh = idxOf('Репосты'), iSv = idxOf('Сохранения');
+
+    // Сохранения vs Лайки — польза против эмоции (тот самый пример)
+    if (iSv != null && iL != null) {
+      if (iSv / iL >= 1.4) C.push({ tone: 'warn',
+        title: 'Контент полезный, но эмоционально не цепляет',
+        body: 'Сохранения опережают свою норму в ' + hl('×' + iSv.toFixed(2)) + ', тогда как лайки идут лишь на ' + hl('×' + iL.toFixed(2)) + '. Люди забирают контент «на потом», но не ставят лайк — классический признак прикладной, рациональной подачи без эмоционального крючка.',
+        rec: 'Добавить эмоцию и историю в первые секунды: ценность уже доказана, не хватает повода отреагировать сразу — это поднимет охват.' });
+      else if (iL / iSv >= 1.4) C.push({ tone: 'warn',
+        title: 'Контент нравится, но его не сохраняют — нет практической ценности',
+        body: 'Лайки идут на ' + hl('×' + iL.toFixed(2)) + ' к норме при сохранениях лишь ' + hl('×' + iSv.toFixed(2)) + '. Аудитории контент приятен, но в нём нет того, к чему хочется вернуться, — он потребляется и забывается.',
+        rec: 'Встраивать прикладной слой: чек-листы, разборы, «сохрани, чтобы не потерять» — это конвертирует симпатию в удержание и охват.' });
+    }
+    // Репосты vs Лайки — социальная валюта
+    if (iSh != null && iL != null && iSh / iL >= 1.4) C.push({ tone: 'pos',
+      title: 'Контентом делятся охотнее, чем лайкают — работает социальная валюта',
+      body: 'Репосты опережают норму в ' + hl('×' + iSh.toFixed(2)) + ' против ' + hl('×' + iL.toFixed(2)) + ' по лайкам. Репост ценнее лайка: человек ручается контентом перед своим кругом и бесплатно открывает вам новую аудиторию.',
+      rec: 'Усиливать «пересылаемость» — релейтбл-формулировки, инсайты в духе «перешли другу» — это самый дешёвый канал роста.' });
+    // Комментарии vs Лайки — диалог против пассива
+    if (iC != null && iL != null) {
+      if (iC / iL >= 1.4) C.push({ tone: 'pos',
+        title: 'Контент раскручивает диалог сильнее, чем собирает лайки',
+        body: 'Комментарии идут на ' + hl('×' + iC.toFixed(2)) + ' к норме при лайках ' + hl('×' + iL.toFixed(2)) + '. Аудитории есть что сказать — это самый дорогой для пользователя сигнал и сильнейший фактор удержания поста в выдаче.',
+        rec: 'Не гасить дискуссию: отвечать в первый час, задавать продолжающие вопросы — каждый ответ подбрасывает пост в ленты.' });
+      else if (iL / iC >= 2.5) C.push({ tone: 'warn',
+        title: 'Лайкают, но не комментируют — реакция пассивная',
+        body: 'Лайки превышают норму в ' + hl('×' + iL.toFixed(2)) + ', а комментарии отстают (' + hl('×' + iC.toFixed(2)) + '). Аудитория одобряет контент, но не вступает в разговор — это вещание, а не диалог.',
+        rec: 'Встраивать открытые вопросы, опросы и заострённые тезисы, на которые хочется ответить.' });
+    }
+    // Сохранения vs Репосты — личная против социальной ценности
+    if (iSv != null && iSh != null) {
+      if (iSv / iSh >= 1.6) C.push({ tone: 'neutral',
+        title: 'Контент ценят «для себя», а не для своего круга',
+        body: 'Сохранения (' + hl('×' + iSv.toFixed(2)) + ') заметно опережают репосты (' + hl('×' + iSh.toFixed(2)) + '). Ценность личная и прикладная, но недостаточно «социальная», чтобы ею делиться напоказ.',
+        rec: 'Добавлять статусный, релейтбл-угол к полезному контенту, чтобы им хотелось не только владеть, но и делиться.' });
+      else if (iSh / iSv >= 1.6) C.push({ tone: 'neutral',
+        title: 'Контент социальный, но его реже забирают «на потом»',
+        body: 'Репосты (' + hl('×' + iSh.toFixed(2)) + ') опережают сохранения (' + hl('×' + iSv.toFixed(2)) + '). Контент хорош как социальная валюта, но в нём мало прикладной глубины для возврата.',
+        rec: 'Усилить практический слой, чтобы виральный контент ещё и сохраняли — это удержит охват дольше одного всплеска.' });
     }
   }
 
@@ -30269,7 +30355,7 @@ function renderSMMConclusions() {
       '</div>';
   }).join('');
 
-  el.innerHTML = head + body;
+  el.innerHTML = head + _reactionLead + body;
 }
 
 
