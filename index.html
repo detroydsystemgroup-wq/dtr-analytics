@@ -29832,72 +29832,96 @@ function renderSMMReelsGrid() {
     return
   }
 
-  // Active sort config
-  var activeLbl = { er:'ER',views:'Просмотры',reach:'Охват',tr:'TR',cr:'CR',shr:'SHR',sr:'SR' }[smmReelsSort] || 'ER'
-
-  // Visible columns: active + 3 most data-rich others
-  var visibleCols = COLS.filter(function(c){ return c.f === smmReelsSort }).concat(
-    COLS.filter(function(c){ return c.f !== smmReelsSort && reels.some(function(r){ return (r[c.f]||0)>0 }) }).slice(0,3)
-  )
+  // McKinsey poster cards. Each reel = hairline-separated row with a cover,
+  // title, large ER in the right number-column, and a 6-metric grid below.
+  // Active sort metric is highlighted gold in the metric grid.
+  var ENG = [
+    { f:'views', l:'Просмотры' },
+    { f:'reach', l:'Охват' },
+    { f:'likes', l:'Лайки' },
+    { f:'comments', l:'Комм.' },
+    { f:'saves', l:'Сохр.' },
+    { f:'shares', l:'Репост.' },
+  ]
+  var fmtMetric = function(f, r) {
+    if (['er','tr','cr','shr','sr'].indexOf(f) !== -1) return r[f] ? (+r[f]).toFixed(2)+'%' : '—'
+    return r[f] ? Number(r[f]).toLocaleString('ru-RU') : '—'
+  }
+  // Headline metric shown big on the right = the active sort field (default ER)
+  var headF = smmReelsSort
+  var headLbl = { er:'ER',views:'Просмотры',reach:'Охват',tr:'TR',cr:'CR',shr:'SHR',sr:'SR' }[headF] || 'ER'
+  var headIsPct = ['er','tr','cr','shr','sr'].indexOf(headF) !== -1
 
   var html = ''
 
-  // TABLE HEADER
-  html += '<div style="display:grid;grid-template-columns:28px 1fr'+visibleCols.map(function(){ return ' minmax(0,11%)' }).join('')+';gap:0;border-bottom:1px solid rgba(255,255,255,.06);padding:8px 0 8px 0;overflow:hidden;">'
-  html += '<div></div>'
-  html += '<div style="font-family:\'DM Mono\',monospace;font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.14em;text-transform:uppercase;padding-left:8px;">Название</div>'
-  visibleCols.forEach(function(c) {
-    var isActive = c.f === smmReelsSort
-    html += '<div style="text-align:right;font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:'+(isActive?'rgba(255,255,255,.5)':'rgba(255,255,255,.18)')+';padding-right:4px;">'+(isActive?'<span style="color:#b8923a;">'+c.l+'</span>':c.l)+'</div>'
-  })
-  html += '</div>'
-
-  // TABLE ROWS
-  var maxVals = {}
-  visibleCols.forEach(function(c) {
-    maxVals[c.f] = Math.max.apply(null, reels.map(function(r){ return r[c.f]||0 }).concat([.001]))
-  })
-
-  reels.slice(0,20).forEach(function(r, i) {
+  reels.slice(0,30).forEach(function(r, i) {
     var isTop = i === 0
     var title = r.title || ('Reel #'+(i+1))
     var linkHref = r.link && /^https?:\/\//i.test(r.link) ? r.link : null
-    var rowBg = isTop ? 'rgba(184,146,58,.04)' : (i%2===0 ? 'transparent' : 'rgba(255,255,255,.012)')
 
-    var rowOpen = linkHref
-      ? '<a href="'+linkHref+'" target="_blank" rel="noopener" style="'
-      : '<div style="'
-    var rowStyle = 'display:grid;grid-template-columns:28px 1fr'+visibleCols.map(function(){ return ' minmax(0,11%)' }).join('')+';gap:0;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.04);overflow:hidden;background:'+rowBg+';align-items:center;'+(linkHref?'cursor:pointer;text-decoration:none;':'')+(isTop?'border-left:2px solid #b8923a;padding-left:0;':'border-left:2px solid transparent;')+'"'
-    var rowClose = linkHref ? '</a>' : '</div>'
+    var open  = linkHref ? '<a href="'+linkHref+'" target="_blank" rel="noopener" style="text-decoration:none;cursor:pointer;' : '<div style="'
+    var close = linkHref ? '</a>' : '</div>'
+    var rowBorder = (i < Math.min(reels.length,30)-1) ? 'border-bottom:1px solid rgba(255,255,255,.05);' : ''
+    html += open + 'position:relative;display:flex;gap:18px;padding:20px 0 20px 16px;'+rowBorder+'">'
 
-    html += rowOpen + rowStyle + '>'
+    // gold accent bar for top reel
+    if (isTop) html += '<div style="position:absolute;left:0;top:22px;bottom:22px;width:2px;background:linear-gradient(180deg,#dec17a,#b8923a);"></div>'
 
-    // Rank
-    html += '<div style="font-family:\'DM Mono\',monospace;font-size:9px;color:rgba(255,255,255,.18);text-align:center;">'+(i+1)+'</div>'
-
-    // Title + cover thumb
-    html += '<div style="display:flex;align-items:center;gap:10px;padding-left:8px;overflow:hidden;">'
+    // cover (9:16) or placeholder
+    html += '<div style="position:relative;width:60px;height:84px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:1px solid '+(isTop?'rgba(184,146,58,.2)':'rgba(255,255,255,.07)')+';overflow:hidden;'
     if (r.cover && r.cover.trim()) {
-      html += '<div style="width:24px;height:32px;border-radius:2px;background:url(\''+r.cover+'\') center/cover no-repeat;flex-shrink:0;"></div>'
+      html += 'background:#0d0d0f;"><div style="position:absolute;inset:0;background:url(\''+r.cover+'\') center/cover no-repeat;"></div>'
+    } else {
+      html += 'background:linear-gradient(160deg,'+(isTop?'#1c1709':'#161619')+',#0d0d0f);">'
+      html += '<svg width="15" height="15" viewBox="0 0 24 24" fill="'+(isTop?'rgba(222,193,122,.5)':'rgba(255,255,255,.2)')+'"><path d="M8 5v14l11-7z"/></svg>'
     }
-    html += '<div style="font-family:\'DM Sans\',sans-serif;font-size:12px;font-weight:'+(isTop?'600':'400')+';color:'+(isTop?'rgba(240,236,230,.9)':'rgba(240,236,230,.65)')+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+esc(title)+'</div>'
-    if (linkHref) html += '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>'
+    // rank badge
+    html += '<div style="position:absolute;top:-7px;left:-7px;width:20px;height:20px;border-radius:50%;font-family:\'DM Mono\',monospace;font-size:9px;font-weight:600;display:flex;align-items:center;justify-content:center;'+(isTop?'background:#b8923a;color:#0a0a0c;':'background:#1a1a1e;border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.5);')+'">'+(i+1)+'</div>'
     html += '</div>'
 
-    // Metric cells
-    visibleCols.forEach(function(c) {
-      var val = r[c.f]||0
-      var pct = maxVals[c.f]>0 ? val/maxVals[c.f]*100 : 0
-      var isActive = c.f === smmReelsSort
-      var display = fmtPct(c.f, r)
-      html += '<div style="text-align:right;padding-right:4px;">'
-      html += '<div style="font-family:\'DM Mono\',monospace;font-size:'+(isActive?'12':'11')+'px;font-weight:'+(isActive?'600':'400')+';color:'+(isActive?'rgba(240,236,230,.9)':'rgba(240,236,230,.38)')+';font-variant-numeric:tabular-nums;margin-bottom:4px;height:18px;line-height:18px;display:flex;align-items:flex-end;justify-content:flex-end;">'+display+'</div>'
-      html += '<div style="height:1px;background:rgba(255,255,255,.05);position:relative;">'
-      html += '<div style="position:absolute;top:0;right:0;height:100%;width:'+pct.toFixed(1)+'%;background:'+(isActive?'#b8923a':'rgba(255,255,255,.2)')+';transition:width .8s;"></div>'
-      html += '</div></div>'
-    })
+    // body
+    html += '<div style="flex:1;min-width:0;">'
 
-    html += rowClose
+    // title row + big headline metric
+    html += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px;">'
+    html += '<div style="min-width:0;">'
+    html += '<div style="font-family:\'DM Sans\',sans-serif;font-size:16px;font-weight:600;letter-spacing:-.015em;color:'+(isTop?'#fff':'rgba(255,255,255,.92)')+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+esc(title)
+    if (linkHref) html += ' <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.28)" stroke-width="2.5" stroke-linecap="round" style="vertical-align:baseline;margin-left:2px;"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>'
+    html += '</div>'
+    html += '<div style="font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:.18em;text-transform:uppercase;margin-top:5px;color:'+(isTop?'rgba(184,146,58,.55)':'rgba(255,255,255,.28)')+';">'+(isTop?'Топ по вовлечённости':'Опубликован')+'</div>'
+    html += '</div>'
+    // headline number column (active sort metric)
+    var headVal = fmtMetric(headF, r)
+    var headColor = isTop ? '#dec17a' : 'rgba(255,255,255,.88)'
+    var pctColor  = isTop ? 'rgba(222,193,122,.6)' : 'rgba(255,255,255,.4)'
+    html += '<div style="text-align:right;flex-shrink:0;">'
+    html += '<div style="font-family:\'DM Mono\',monospace;font-size:7px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:3px;color:'+(isTop?'rgba(184,146,58,.55)':'rgba(255,255,255,.28)')+';">'+headLbl+'</div>'
+    if (headIsPct && r[headF]) {
+      var parts = (+r[headF]).toFixed(2).split('.')
+      html += '<div style="font-family:\'DM Mono\',monospace;font-size:26px;font-weight:600;line-height:.9;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:'+headColor+';">'+parts[0]+'.'+parts[1]+'<span style="font-size:15px;color:'+pctColor+';">%</span></div>'
+    } else {
+      html += '<div style="font-family:\'DM Mono\',monospace;font-size:24px;font-weight:600;line-height:.9;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:'+headColor+';">'+headVal+'</div>'
+    }
+    html += '</div>'
+    html += '</div>'
+
+    // 6-metric hairline grid
+    html += '<div style="display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid rgba(255,255,255,.06);">'
+    ENG.forEach(function(c, ci) {
+      var isActive = c.f === smmReelsSort
+      var last = ci === ENG.length-1
+      var pad = ci === 0 ? '11px 14px 0 0' : (last ? '11px 0 0 14px' : '11px 14px 0')
+      var brd = last ? '' : 'border-right:1px solid rgba(255,255,255,.04);'
+      var valColor = isActive ? '#dec17a' : 'rgba(255,255,255,.9)'
+      html += '<div style="padding:'+pad+';'+brd+'">'
+      html += '<div style="font-family:\'DM Mono\',monospace;font-size:7px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:5px;color:'+(isActive?'rgba(184,146,58,.6)':'rgba(255,255,255,.28)')+';">'+c.l+'</div>'
+      html += '<div style="font-family:\'DM Mono\',monospace;font-size:14px;font-variant-numeric:tabular-nums;color:'+valColor+';">'+fmtMetric(c.f, r)+'</div>'
+      html += '</div>'
+    })
+    html += '</div>'
+
+    html += '</div>'   // body
+    html += close
   })
 
   root.innerHTML = html
