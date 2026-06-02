@@ -25526,6 +25526,10 @@ function runAnalysis() {
   }
 
   g('analytics-wrap').classList.add('visible')
+  // Перерисовка графиков: часть canvas создаётся, пока блок ещё скрыт (0×0).
+  // После показа форсируем resize, иначе диаграммы остаются пустыми.
+  var _redrawCharts = function(){ Object.keys(CH).forEach(function(k){ try { CH[k].resize(); CH[k].update('none') } catch(e){} }) }
+  requestAnimationFrame(function(){ _redrawCharts(); setTimeout(_redrawCharts, 250) })
   // Auto-collapse files section after analysis runs
   collapseFilesSection(true)
   setTimeout(()=>g('analytics-wrap').scrollIntoView({behavior:'smooth',block:'start'}),100)
@@ -25691,13 +25695,13 @@ function renderWeekdayTrend() {
     }
   }
 
-  // Revenue per weekday
+  // Revenue per weekday (значения в млн, чтобы ось 'M' была корректной)
   mkChart('cWDR', 'bar', {
     labels: DAYS,
     datasets: [
       {
         label: LABEL_B + ' (сум/день)',
-        data: ab.rev,
+        data: ab.rev.map(v => +(v/1e6).toFixed(1)),
         backgroundColor: COLORS_REV.map(c => c.replace('.75', '.45').replace('.8', '.45')),
         borderColor: COLORS_REV.map(c => c.replace('.75', '1').replace('.8', '1').replace('.65','1')),
         borderWidth: 1.5,
@@ -25705,7 +25709,7 @@ function renderWeekdayTrend() {
       },
       {
         label: LABEL_D + ' (сум/день)',
-        data: ad.rev,
+        data: ad.rev.map(v => +(v/1e6).toFixed(1)),
         backgroundColor: COLORS_REV,
         borderRadius: 5,
       }
@@ -25753,9 +25757,9 @@ function renderWeekdayTrend() {
       </div>`
 
     best.innerHTML = [
-      maxRevIdx >= 0 ? badge('🏆', 'Лучший день по выручке', DAYS[maxRevIdx] + ' · ' + new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(Math.round(ad.rev[maxRevIdx]*1e6)) + ' сум', 'var(--green)') : '',
+      maxRevIdx >= 0 ? badge('🏆', 'Лучший день по выручке', DAYS[maxRevIdx] + ' · ' + new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(Math.round(ad.rev[maxRevIdx])) + ' сум', 'var(--green)') : '',
       maxChkIdx >= 0 ? badge('👥', 'Больше всего чеков', DAYS[maxChkIdx] + ' · ' + ad.chk[maxChkIdx] + ' чек.', 'var(--cyan)') : '',
-      minRevIdx >= 0 && minRevIdx !== maxRevIdx ? badge('📉', 'Слабый день', DAYS[minRevIdx] + ' · ' + new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(Math.round(ad.rev[minRevIdx]*1e6)) + ' сум', 'var(--amber)') : '',
+      minRevIdx >= 0 && minRevIdx !== maxRevIdx ? badge('📉', 'Слабый день', DAYS[minRevIdx] + ' · ' + new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(Math.round(ad.rev[minRevIdx])) + ' сум', 'var(--amber)') : '',
     ].join('')
   }
 }
