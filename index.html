@@ -21299,6 +21299,15 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 
       <div style="padding-top:4px;overflow:hidden;" id="dtr-rub-v9"></div>
 
+      <div style="display:flex;align-items:baseline;gap:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:0;margin-top:72px;">
+        <span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.18);letter-spacing:.12em;flex-shrink:0;">05</span>
+        <span style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:600;color:rgba(255,255,255,.88);letter-spacing:-.025em;line-height:1;">Выводы и рекомендации</span>
+        <div style="flex:1;"></div>
+        <span style="font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.14em;text-transform:uppercase;">Стратегический разбор</span>
+      </div>
+
+      <div style="padding-top:4px;" id="smm-conclusions"></div>
+
     </div>
     </div><!-- /dtr-ss-smm -->
 
@@ -29573,6 +29582,7 @@ function renderSMMPresentation() {
   renderSMMMetrics()
   renderSMMReelsGrid()
   renderSMMRubricGrid()
+  renderSMMConclusions()
 }
 
 function renderSMMMetrics() {
@@ -29973,6 +29983,294 @@ function renderSMMRubricGrid() {
 }
 
 
+
+
+function renderSMMConclusions() {
+  var el = g('smm-conclusions'); if (!el) return;
+  var m = smmData.metrics || {}, p = smmData.prev || {}, go = smmData.goals || {};
+  var reels = smmData.reels || [];
+  var rubrics = smmData.rubrics || [];
+  var bKey = +((g('smm-bench-sel') && g('smm-bench-sel').value) || 50000);
+  var bench = SMM_BENCHMARKS[bKey] || SMM_BENCHMARKS[50000];
+
+  // ── палитра (в духе уже заданной системы) ──
+  var GOLD = '#b8923a', GOLD2 = '#dec17a', GREEN = '#3ecf8e', AMBER = '#e8993a', RED = '#e05252';
+  var TXT = 'rgba(240,236,230,.9)', TXT2 = 'rgba(240,236,230,.58)', MUT = 'rgba(255,255,255,.28)', HAIR = 'rgba(255,255,255,.06)';
+  var toneCol = { pos: GREEN, warn: AMBER, neg: RED, neutral: GOLD };
+  var toneTag = { pos: 'Сильная сторона', warn: 'Точка роста', neg: 'Зона риска', neutral: 'Контекст' };
+
+  // ── форматтеры ──
+  function num(n) { return (n == null || isNaN(n)) ? '—' : Number(n).toLocaleString('ru-RU'); }
+  function pct(n, d) { return (n == null || isNaN(n)) ? '—' : (+n).toFixed(d == null ? 2 : d) + '%'; }
+  function dlt(cur, prev) { if (cur == null || prev == null || prev === 0) return null; return (cur - prev) / prev * 100; }
+  function hl(s) { return '<b style="font-family:\'DM Mono\',monospace;font-weight:500;color:' + GOLD2 + ';font-variant-numeric:tabular-nums;">' + s + '</b>'; }
+  function plural(n, one, few, many) { var a = n % 10, b = n % 100; if (a === 1 && b !== 11) return one; if (a >= 2 && a <= 4 && (b < 10 || b >= 20)) return few; return many; }
+  var BENCH_LABEL = { 10000: 'до 10 000', 30000: '10–30 тыс.', 50000: '30–50 тыс.', 70000: '50–70 тыс.', 100000: '70–100 тыс.', 150000: '100 тыс.+' };
+
+  var C = []; // {tone, title, body, rec}
+
+  // ── 1. Рыночная позиция (главный вывод, вершина пирамиды) ──
+  var metKeys = ['er', 'lr', 'tr', 'shr', 'sr'];
+  var zoneByKey = {}; metKeys.forEach(function (k) { zoneByKey[k] = getSMMZone(m[k], bench[k]); });
+  var zs = metKeys.map(function (k) { return zoneByKey[k]; }).filter(function (z) { return z !== 'none'; });
+  if (zs.length) {
+    var green = zs.filter(function (z) { return z === 'green'; }).length;
+    var yellow = zs.filter(function (z) { return z === 'yellow'; }).length;
+    var red = zs.filter(function (z) { return z === 'red'; }).length;
+    var total = zs.length;
+    var score = Math.round((green * 100 + yellow * 50) / (total * 100) * 100);
+    var verdict = score >= 80 ? 'Это сильная рыночная позиция — задача периода удерживать её, а не доказывать заново'
+      : score >= 50 ? 'Это уверенный средний-плюс: фундамент заложен, но примерно половина потенциала роста ещё не извлечена'
+        : score >= 30 ? 'Это позиция роста — база есть, но большинство метрик пока не дотягивает до рынка'
+          : 'Это зона риска: контент не конвертирует охват в реакцию на рыночном уровне';
+    C.push({
+      tone: score >= 70 ? 'pos' : score >= 45 ? 'warn' : 'neg',
+      title: 'Аккаунт оценивается в ' + score + ' из 100 относительно рынка',
+      body: 'Из ' + total + ' ключевых метрик ' + hl(green + ' выше нормы') + ', ' + hl(yellow + ' в норме') + ' и ' + hl(red + ' ниже нормы') + ' для аудитории «' + (BENCH_LABEL[bKey] || '—') + '». ' + verdict + '.',
+      rec: red > 0 ? 'Сфокусировать следующий период на ' + red + ' отстающих ' + plural(red, 'метрике', 'метриках', 'метриках') + ' — точечный рост здесь сдвигает общий балл сильнее всего.' : 'Удерживать планку и переносить ресурс с защиты текущих метрик на масштабирование охвата.'
+    });
+  }
+
+  // ── 2. Вовлечённость (ER) — ключевой индикатор здоровья контента ──
+  if (m.er != null) {
+    var zER = getSMMZone(m.er, bench.er);
+    var partsER = ['Вовлечённость (ER) ' + hl(pct(m.er)) + ' — это ' + (zER === 'green' ? 'выше' : zER === 'yellow' ? 'на уровне' : 'ниже') + ' рыночной нормы ' + hl(pct(bench.er.g)) + ' для вашего размера аудитории'];
+    var dER = dlt(m.er, p.er);
+    if (dER != null) partsER.push((dER >= 0 ? 'рост на ' : 'снижение на ') + hl(Math.abs(dER).toFixed(1) + '%') + ' к прошлому периоду');
+    if (go.er) partsER.push('цель ' + hl(pct(go.er)) + ' выполнена на ' + hl(Math.round(m.er / go.er * 100) + '%'));
+    C.push({
+      tone: zER === 'green' ? 'pos' : zER === 'yellow' ? 'warn' : 'neg',
+      title: zER === 'green' ? 'Вовлечённость опережает рынок — это главный актив аккаунта'
+        : zER === 'yellow' ? 'Вовлечённость держится на рыночной норме'
+          : 'Вовлечённость ниже рынка — первоочередная зона работы',
+      body: partsER.join('. ') + '. ER — это доля аудитории, которая не просто увидела, а отреагировала на контент; именно она, а не охват, показывает, работает ли коммуникация.',
+      rec: zER === 'green' ? 'Зафиксировать форматы-драйверы ER и нарастить их долю в контент-плане.'
+        : 'Сместить план в сторону форматов с доказанной реакцией (см. разбор рилсов и рубрик выше) и сократить «тихий» контент.'
+    });
+  }
+
+  // ── 3. Глубина вовлечения: сохранения + репосты против лайков ──
+  if (m.lr != null && (m.sr != null || m.shr != null)) {
+    var deep = (m.sr || 0) + (m.shr || 0), likes = m.lr || 0;
+    if (likes > 0) {
+      var ratio = deep / likes * 100;
+      C.push({
+        tone: ratio >= 25 ? 'pos' : ratio >= 12 ? 'warn' : 'neg',
+        title: ratio >= 25 ? 'Аудитория не просто лайкает — она сохраняет контент и делится им'
+          : 'Реакция держится в основном на лайках, глубокие действия отстают',
+        body: 'Сохранения и репосты вместе дают ' + hl(pct(deep)) + ' против ' + hl(pct(likes)) + ' лайков — соотношение «глубоких» сигналов к «поверхностным» ' + hl(Math.round(ratio) + '%') + '. Лайк пассивен, тогда как сохранение и репост требуют намерения: они показывают, что контент несёт ценность, которой хочется владеть или делиться.',
+        rec: ratio >= 25 ? 'Усиливать прикладной, «сохраняемый» контент — это устойчивый драйвер органического охвата.'
+          : 'Встраивать явный повод сохранить или переслать: чек-листы, инструкции, формулировки «сохрани, чтобы не потерять».'
+      });
+    }
+  }
+
+  // ── 4. Сохранения (SR) — сигнал ценности для алгоритма ──
+  if (m.sr != null) {
+    var zSR = getSMMZone(m.sr, bench.sr);
+    C.push({
+      tone: zSR === 'green' ? 'pos' : zSR === 'yellow' ? 'warn' : 'neg',
+      title: zSR === 'green' ? 'Сохранения выше нормы — контент воспринимается как ценный'
+        : zSR === 'yellow' ? 'Сохранения в пределах нормы'
+          : 'Низкие сохранения — контенту не хватает прикладной ценности',
+      body: 'SR ' + hl(pct(m.sr)) + ' при норме ' + hl(pct(bench.sr.g)) + '. Сохранение — сильнейший сигнал ценности для алгоритма Instagram: он трактует его как «контент, к которому вернутся», и расширяет органический охват.',
+      rec: zSR === 'green' ? 'Закрепить рубрики-доноры сохранений как опорные в сетке.' : 'Перевести часть развлекательного контента в формат «полезное, что хочется сохранить».'
+    });
+  }
+
+  // ── 5. Репосты (SHR) — бесплатная дистрибуция ──
+  if (m.shr != null) {
+    var zSH = getSMMZone(m.shr, bench.shr);
+    C.push({
+      tone: zSH === 'green' ? 'pos' : zSH === 'yellow' ? 'warn' : 'neg',
+      title: zSH === 'green' ? 'Репосты выше рынка — работает «сарафанный» охват'
+        : zSH === 'yellow' ? 'Репосты на уровне нормы' : 'Низкие репосты ограничивают органический рост',
+      body: 'SH/R ' + hl(pct(m.shr)) + ' против нормы ' + hl(pct(bench.shr.g)) + '. Репост — это бесплатная дистрибуция: каждый пересланный пост открывает доступ к аудитории за пределами текущих подписчиков.',
+      rec: zSH === 'green' ? 'Разобрать триггеры, которые заставляют делиться, и встроить их системно.' : 'Делать контент удобным для пересылки: одна понятная мысль, эмоция или польза, релевантная кругу друзей.'
+    });
+  }
+
+  // ── 6. Комментарии (C/R) — глубина диалога ──
+  if (m.tr != null) {
+    var zTR = getSMMZone(m.tr, bench.tr);
+    C.push({
+      tone: zTR === 'green' ? 'pos' : zTR === 'yellow' ? 'warn' : 'neg',
+      title: zTR === 'green' ? 'Комментарии выше нормы — аудитория втянута в диалог'
+        : zTR === 'yellow' ? 'Комментарии на уровне нормы' : 'Дискуссия в комментариях не разогрета',
+      body: 'C/R ' + hl(pct(m.tr)) + ' при норме ' + hl(pct(bench.tr.g)) + '. Комментарий — самое «дорогое» для пользователя действие и один из сильнейших факторов ранжирования: он удерживает пост в выдаче дольше.',
+      rec: zTR === 'green' ? 'Поддерживать диалог ответами в первые часы — это умножает охват поста.' : 'Встраивать открытые вопросы и поводы для мнения, отвечать на комментарии в первый час после публикации.'
+    });
+  }
+
+  // ── 7. Прирост аудитории ──
+  if (m.followers != null) {
+    var base = m.subscribers_current || 0;
+    var growthPct = base > 0 ? m.followers / base * 100 : null;
+    var dF = dlt(m.followers, p.followers);
+    var partsF = ['За период аккаунт получил ' + hl((m.followers > 0 ? '+' : '') + num(m.followers)) + ' ' + plural(Math.abs(m.followers), 'подписчика', 'подписчиков', 'подписчиков')];
+    if (base > 0) partsF.push('при базе ' + hl(num(base)) + ' это ' + hl((growthPct >= 0 ? '+' : '') + growthPct.toFixed(1) + '%') + ' за период');
+    if (dF != null) partsF.push('динамика прироста ' + hl((dF >= 0 ? '+' : '') + Math.round(dF) + '%') + ' к прошлому периоду');
+    C.push({
+      tone: m.followers <= 0 ? 'neg' : (growthPct != null && growthPct >= 5) ? 'pos' : 'warn',
+      title: m.followers <= 0 ? 'Аудитория не растёт — это ограничивает потолок охвата'
+        : (growthPct != null && growthPct >= 5) ? 'Аудитория растёт темпом выше здорового органического'
+          : 'Аудитория растёт, но медленнее своего потенциала',
+      body: partsF.join('; ') + '. Здоровым органическим приростом для контентного аккаунта считается порядка 3–5% базы в месяц; всё выше — признак, что контент пробивает алгоритмическую выдачу.',
+      rec: (growthPct != null && growthPct >= 5) ? 'Не сбавлять частоту Reels — именно они конвертируют охват в подписку.'
+        : 'Сместить акцент на форматы с высоким охватом среди неподписчиков (Reels) — это основной канал притока.'
+    });
+  }
+
+  // ── 8. Проникновение охвата относительно базы ──
+  var totalReach = (m.reels_reach || 0) + (m.stories_reach || 0);
+  if (totalReach > 0 && m.subscribers_current) {
+    var pen = totalReach / m.subscribers_current;
+    C.push({
+      tone: pen >= 1 ? 'pos' : pen >= 0.5 ? 'warn' : 'neg',
+      title: pen >= 1 ? 'Охват превышает базу подписчиков — контент выходит за её пределы'
+        : 'Охват не покрывает даже всю базу подписчиков',
+      body: 'Суммарный охват ' + hl(num(totalReach)) + ' против ' + hl(num(m.subscribers_current)) + ' подписчиков — коэффициент ' + hl(pen.toFixed(2) + '×') + '. ' + (pen >= 1 ? 'Контент видят и те, кто на вас не подписан, — это главное условие роста.' : 'Контент в основном крутится внутри текущей аудитории и почти не привлекает новую.'),
+      rec: pen >= 1 ? 'Конвертировать «залётный» охват в подписку: усилить позиционирование в первых секундах и призыв подписаться.'
+        : 'Наращивать долю Reels и трендовых форматов — именно они дают охват за пределами подписчиков.'
+    });
+  }
+
+  // ── 9. Стратегия форматов: Reels vs Сторис ──
+  var rv = m.reels_views || 0, sv = (m.stories_views != null ? m.stories_views : (m.stories_reach || 0));
+  if (rv + sv > 0) {
+    var reelsP = Math.round(rv / (rv + sv) * 100);
+    C.push({
+      tone: reelsP >= 55 ? 'pos' : reelsP >= 35 ? 'warn' : 'neg',
+      title: reelsP >= 55 ? 'Reels — основной двигатель просмотров и охвата'
+        : reelsP >= 35 ? 'Баланс Reels и сторис близок к паритету'
+          : 'Просмотры держатся на сторис — охват упирается в текущую аудиторию',
+      body: 'Reels дают ' + hl(reelsP + '%') + ' просмотров, сторис — ' + hl((100 - reelsP) + '%') + '. Reels работают на охват и привлечение новой аудитории, сторис — на удержание и прогрев текущей; стратегия роста должна опираться прежде всего на первое.',
+      rec: reelsP >= 55 ? 'Сохранять приоритет Reels, а сторис использовать для прогрева и конверсии уже охваченной аудитории.'
+        : 'Увеличить производство Reels: при текущем миксе аккаунт недополучает новый охват.'
+    });
+  }
+
+  // ── 10. Концентрация просмотров по рилсам (правило Парето) ──
+  var rWithV = reels.filter(function (r) { return r.views > 0; });
+  if (rWithV.length >= 3) {
+    var sV = rWithV.slice().sort(function (a, b) { return (b.views || 0) - (a.views || 0); });
+    var totV = sV.reduce(function (s, r) { return s + (r.views || 0); }, 0) || 1;
+    var topShare = Math.round((sV[0].views || 0) / totV * 100);
+    var top3 = Math.round(sV.slice(0, 3).reduce(function (s, r) { return s + (r.views || 0); }, 0) / totV * 100);
+    C.push({
+      tone: topShare >= 50 ? 'warn' : 'pos',
+      title: topShare >= 50 ? 'Просмотры держатся на одном-двух «выстреливших» роликах — это рискованно'
+        : 'Просмотры распределены ровно — контент работает системно, а не за счёт случайных хитов',
+      body: 'Лучший ролик собрал ' + hl(num(sV[0].views)) + ' просмотров — ' + hl(topShare + '%') + ' всего объёма, топ-3 дают ' + hl(top3 + '%') + '. ' + (topShare >= 50 ? 'Зависимость от единичных хитов делает результат непредсказуемым от периода к периоду.' : 'Равномерность означает воспроизводимую механику, а не везение.'),
+      rec: topShare >= 50 ? 'Разобрать механику топ-ролика (хук, тема, формат) и превратить разовый успех в повторяемый шаблон.'
+        : 'Зафиксировать работающие шаблоны как стандарт продакшена.'
+    });
+  }
+
+  // ── 11. Разброс ER между роликами — стабильность качества ──
+  var rWithER = reels.filter(function (r) { return r.er > 0 && r.er < 100; });
+  if (rWithER.length >= 2) {
+    var sE = rWithER.slice().sort(function (a, b) { return (b.er || 0) - (a.er || 0); });
+    var best = sE[0], worst = sE[sE.length - 1], spread = best.er - worst.er;
+    C.push({
+      tone: spread >= 4 ? 'warn' : 'pos',
+      title: spread >= 4 ? 'Вовлечённость роликов сильно разнится — темы работают неравномерно'
+        : 'Вовлечённость роликов ровная — качество стабильно',
+      body: 'Лучший ролик' + (best.title ? ' («' + esc(best.title) + '»)' : '') + ' дал ER ' + hl(pct(best.er)) + ', слабейший — ' + hl(pct(worst.er)) + ', разброс ' + hl(spread.toFixed(1) + ' п.п.') + '. ' + (spread >= 4 ? 'Такой разброс показывает, что отдельные темы и форматы заметно сильнее остальных.' : 'Узкий разброс — признак отлаженной редакционной политики.'),
+      rec: spread >= 4 ? 'Перераспределить план в пользу тем верхнего квартиля по ER и сократить слабые форматы.'
+        : 'Удерживать стандарт и тестировать новые форматы малыми партиями.'
+    });
+  }
+
+  // ── 12. Портфель рубрик: лидер, аутсайдер, концентрация ──
+  var rubER = rubrics.filter(function (r) { return r.er > 0 && r.er < 100; });
+  if (rubER.length >= 2) {
+    var sR = rubER.slice().sort(function (a, b) { return (b.er || 0) - (a.er || 0); });
+    var bestR = sR[0], worstR = sR[sR.length - 1];
+    var totRch = rubrics.reduce(function (s, r) { return s + (r.reach || 0); }, 0) || 1;
+    var topR = rubrics.slice().sort(function (a, b) { return (b.reach || 0) - (a.reach || 0); })[0];
+    var conc = Math.round((topR.reach || 0) / totRch * 100);
+    C.push({
+      tone: conc >= 55 ? 'warn' : 'pos',
+      title: 'В портфеле рубрик есть явный лидер и аутсайдер по эффективности',
+      body: 'Рубрика «' + esc(bestR.name) + '» ведёт по ER (' + hl(pct(bestR.er)) + '), «' + esc(worstR.name) + '» — слабейшая (' + hl(pct(worstR.er)) + '). При этом ' + hl(conc + '%') + ' охвата приходится на одну рубрику — «' + esc(topR.name) + '». ' + (conc >= 55 ? 'Портфель перекошен: результат завязан на узкую тему.' : 'Охват распределён достаточно сбалансированно.'),
+      rec: 'Нарастить долю рубрики-лидера в сетке, слабейшую — переупаковать или заменить' + (conc >= 55 ? '; и снизить зависимость от одной темы.' : '; баланс тем сохранять.')
+    });
+  }
+
+  // ── 13. Достижение целей (KPI) ──
+  var goalKeys = ['er', 'lr', 'tr', 'shr', 'sr'].filter(function (k) { return go[k]; });
+  if (goalKeys.length) {
+    var met = goalKeys.filter(function (k) { return m[k] != null && m[k] >= go[k]; }).length;
+    C.push({
+      tone: met === goalKeys.length ? 'pos' : met >= goalKeys.length / 2 ? 'warn' : 'neg',
+      title: met === goalKeys.length ? 'Все поставленные KPI достигнуты'
+        : met === 0 ? 'Ни один из поставленных KPI не закрыт' : 'Достигнута часть поставленных KPI',
+      body: 'Из ' + hl(goalKeys.length + ' ' + plural(goalKeys.length, 'цели', 'целей', 'целей')) + ' выполнено ' + hl(met) + '. ' + (met === goalKeys.length ? 'План перевыполнен — есть основание поднять планку на следующий период.' : 'Цели по ' + (goalKeys.length - met) + ' ' + plural(goalKeys.length - met, 'метрике', 'метрикам', 'метрикам') + ' пока не закрыты.'),
+      rec: met === goalKeys.length ? 'Пересмотреть KPI вверх — текущие цели перестали быть амбициозными.'
+        : 'Сфокусировать ресурс на недостигнутых метриках и проверить реалистичность их целей.'
+    });
+  }
+
+  // ── 14. Частота контакта ──
+  if (m.frequency) {
+    var f = +m.frequency;
+    C.push({
+      tone: f >= 2.5 ? 'pos' : f >= 1.5 ? 'warn' : 'neg',
+      title: f >= 2.5 ? 'Высокая частота контакта — аудитория хорошо «прогрета»'
+        : 'Частота контакта низкая — контент быстро забывается',
+      body: 'Частота ' + hl(f.toFixed(1) + '×') + ' означает, что в среднем каждый человек видел контент ' + hl(f.toFixed(1) + ' ' + plural(Math.round(f), 'раз', 'раза', 'раз')) + ' за период. Узнаваемость и доверие формируются повторными контактами; разовый показ почти не оставляет следа.',
+      rec: f >= 2.5 ? 'Следить, чтобы рост частоты не перешёл в усталость аудитории — вовремя обновлять форматы.'
+        : 'Повышать плотность публикаций и сторис, чтобы выйти на 2–3 контакта на человека.'
+    });
+  }
+
+  // ── 15. Объём и продуктивность ──
+  var totalPubs = (m.reels_count || 0) + (m.posts_count || 0);
+  if (totalPubs > 0) {
+    C.push({
+      tone: 'neutral',
+      title: 'Объём контента за период — ' + totalPubs + ' ' + plural(totalPubs, 'публикация', 'публикации', 'публикаций'),
+      body: 'Опубликовано ' + hl(num(m.reels_count || 0) + ' Reels') + (m.stories_count ? ', ' + hl(num(m.stories_count) + ' сторис') : '') + (m.ad_creatives ? ' и ' + hl(num(m.ad_creatives) + ' рекламных креативов') : '') + '. Регулярность — фундамент алгоритмического доверия: стабильный ритм важнее разовых всплесков объёма.',
+      rec: 'Удерживать ритм и долю Reels; оценивать продуктивность не числом постов, а охватом и ER на единицу контента.'
+    });
+  }
+
+  // ── рендер ──
+  if (!C.length) {
+    el.innerHTML = '<div style="padding:56px 0;text-align:center;font-family:\'DM Mono\',monospace;font-size:10px;color:rgba(255,255,255,.15);letter-spacing:.1em;">Заполните метрики во вкладке «Данные» — выводы построятся автоматически</div>';
+    return;
+  }
+
+  var head = '<div style="display:flex;align-items:baseline;justify-content:space-between;padding:16px 0 20px;border-bottom:1px solid ' + HAIR + ';">' +
+    '<span style="font-family:\'DM Mono\',monospace;font-size:9px;color:' + MUT + ';letter-spacing:.16em;text-transform:uppercase;">Принцип разбора&nbsp;&nbsp;·&nbsp;&nbsp;вывод&nbsp;→&nbsp;аргумент&nbsp;→&nbsp;рекомендация</span>' +
+    '<span style="font-family:\'DM Mono\',monospace;font-size:9px;color:' + MUT + ';letter-spacing:.12em;text-transform:uppercase;">' + C.length + ' ' + plural(C.length, 'вывод', 'вывода', 'выводов') + '</span>' +
+    '</div>';
+
+  var body = C.map(function (c, i) {
+    var col = toneCol[c.tone] || GOLD;
+    var nn = (i + 1 < 10 ? '0' : '') + (i + 1);
+    return '<div style="display:flex;gap:18px;padding:24px 0;border-bottom:1px solid ' + HAIR + ';animation:smmFadeUp .5s both;animation-delay:' + (i * 0.05).toFixed(2) + 's;">' +
+        '<div style="display:flex;gap:14px;flex-shrink:0;">' +
+          '<div style="font-family:\'DM Mono\',monospace;font-size:11px;color:' + MUT + ';width:22px;padding-top:4px;font-variant-numeric:tabular-nums;letter-spacing:.05em;">' + nn + '</div>' +
+          '<div style="width:2px;background:' + col + ';opacity:.8;border-radius:2px;"></div>' +
+        '</div>' +
+        '<div style="flex:1;min-width:0;">' +
+          '<div style="display:flex;align-items:center;gap:11px;margin-bottom:10px;flex-wrap:wrap;">' +
+            '<span style="font-family:\'DM Mono\',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:' + col + ';border:1px solid ' + col + ';border-radius:2px;padding:3px 7px;opacity:.9;">' + (toneTag[c.tone] || '') + '</span>' +
+            '<span style="font-family:\'DM Sans\',sans-serif;font-size:15px;font-weight:600;color:' + TXT + ';letter-spacing:-.015em;line-height:1.35;">' + c.title + '</span>' +
+          '</div>' +
+          '<div style="font-family:\'DM Sans\',sans-serif;font-size:13.5px;line-height:1.68;color:' + TXT2 + ';letter-spacing:.005em;">' + c.body + '</div>' +
+          '<div style="margin-top:12px;display:flex;gap:8px;align-items:baseline;">' +
+            '<span style="font-family:\'DM Mono\',monospace;font-size:11px;color:' + GOLD + ';flex-shrink:0;">→</span>' +
+            '<span style="font-family:\'DM Mono\',monospace;font-size:11px;line-height:1.6;color:rgba(240,236,230,.62);letter-spacing:.01em;">' + c.rec + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  }).join('');
+
+  el.innerHTML = head + body;
+}
 
 
 function renderReelsInputList() {
