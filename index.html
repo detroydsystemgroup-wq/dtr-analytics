@@ -13306,511 +13306,35 @@ html.light .dtr-tumbler .tmb-cloud { opacity: .9; transform: translateX(3px); }
 html.light .dtr-tumbler:active .tmb-knob { transform: translateX(30px) scale(.92); }
 
 
-/* ── BLOCK 34 · CLIENT PORTAL (page-client · cp- / mck-) ────────────────────
-   Full light coverage for the client-facing portal. Conditional metric colors
-   (revenue/traffic/check deltas, stage states, SMM benchmarks) use semantic
-   tokens / inline el.style and are NOT flattened here, so they keep changing. */
-
-/* page surface */
-html.light #page-client { background: var(--bg) !important; }
-html.light #page-client .cp-content,
-html.light #page-client .cp-main { background: var(--bg) !important; }
-
-/* sidebar */
-html.light .cp-sidebar {
-  background: #fbf8f1 !important;
-  border-right: 1px solid rgba(41,48,58,.08) !important;
+/* ── CLIENT PORTAL: dark-only ──────────────────────────────────────────────
+   The client-facing portal (#page-client) has no theme toggle and always uses
+   the dark theme. Force its surfaces/text/borders back to dark even when the
+   rest of the app is in light mode (html.light), overriding the global light
+   rescue + hairline retint for everything inside #page-client. */
+html.light #page-client { color-scheme: dark; background: var(--bg) !important; }
+html.light #page-client * {
+  /* neutralize the global light hairline retint inside the portal */
+  border-color: rgba(255,255,255,.06);
 }
-html.light .cp-sb-brand { border-bottom: 1px solid rgba(41,48,58,.08) !important; }
-html.light .cp-sb-client-name { color: #29303a !important; }
-html.light .cp-sb-online-txt { color: #2e8b57 !important; }
-html.light .cp-sb-online-dot { background: #2e8b57 !important; box-shadow: 0 0 0 3px rgba(46,139,87,.18) !important; }
-html.light .cp-sb-nav-label, html.light .cp-sb-kpi-label { color: #99a0a8 !important; }
-html.light .cp-sb-nav-item { color: rgba(41,48,58,.6) !important; }
-html.light .cp-sb-nav-item:hover { background: rgba(41,48,58,.04) !important; color: #29303a !important; }
-html.light .cp-sb-nav-item.cp-nav-active {
-  background: rgba(156,122,43,.1) !important;
-  border-color: rgba(156,122,43,.25) !important;
-  color: #7f6122 !important;
-}
-html.light .cp-sb-kpi-sub { color: #99a0a8 !important; }
-html.light .cp-sb-progress-track { background: rgba(41,48,58,.08) !important; }
-/* .cp-sb-kpi-val / .cp-sb-nav-badge keep inline semantic colors */
-
-/* topbar */
-html.light .cp-topbar {
-  background: rgba(251,248,241,.9) !important;
-  border-bottom: 1px solid rgba(41,48,58,.08) !important;
-}
-html.light .cp-topbar-greeting { color: #5e6670 !important; }
-html.light .cp-topbar-date { color: #99a0a8 !important; }
-
-/* hero strip + cards */
-html.light .cp-hero-strip {
-  background: #fbf8f1 !important;
-  border: 1px solid rgba(41,48,58,.08) !important;
-  box-shadow: var(--shadow-sm) !important;
-}
-html.light .cp-hero-eyebrow { color: #99a0a8 !important; }
-html.light .cp-hero-sub { color: #99a0a8 !important; }
-html.light .cp-hero-divider { background: rgba(41,48,58,.1) !important; }
-/* .cp-hero-num keeps inline semantic color (green/red/cyan/amber/gold) */
-
-/* progress card (production cycle) */
-html.light .cp-progress-card {
-  background: #fbf8f1 !important;
-  border: 1px solid rgba(41,48,58,.08) !important;
-  box-shadow: var(--shadow-sm) !important;
-}
-html.light .cp-progress-title { color: #29303a !important; }
-/* .cp-progress-pct keeps inline gold */
-html.light .cp-stages-bar2-track,
-html.light .cp-stages-bar2-wrap { background: rgba(41,48,58,.08) !important; }
-html.light .cp-stages-bar2-lbl { color: #99a0a8 !important; }
-html.light .cp-stages-bar { background: transparent !important; }
-
-/* stage timeline nodes + "сейчас в работе" / stage list */
-html.light .cp-stage-node, html.light .cp-stage-dot {
-  background: #fbf8f1 !important;
-  border-color: rgba(41,48,58,.12) !important;
-}
-html.light .cp-stage-line, html.light .cp-stages-line { background: rgba(41,48,58,.12) !important; }
-html.light .cp-stage-label, html.light .cp-stage-num { color: #99a0a8 !important; }
-html.light .cp-now-card, html.light .cp-current-card {
-  background: linear-gradient(135deg, rgba(156,122,43,.08), #fbf8f1) !important;
-  border: 1px solid rgba(156,122,43,.3) !important;
-}
-
-/* generic cards (reports, activity, stages list) */
-html.light .cp-card {
-  background: #fbf8f1 !important;
-  border: 1px solid rgba(41,48,58,.08) !important;
-  box-shadow: var(--shadow-sm) !important;
-}
-html.light .cp-card-title { color: #99a0a8 !important; }
-html.light .cp-card-header { border-color: rgba(41,48,58,.08) !important; }
-/* .cp-card-count keeps inline gold */
-
-/* report rows + activity rows inside client cards */
-html.light .cp-report-row, html.light .cp-activity-row, html.light .cp-act-row {
-  border-color: rgba(41,48,58,.07) !important;
-}
-html.light .cp-report-row:hover, html.light .cp-act-row:hover { background: rgba(156,122,43,.05) !important; }
-html.light .cp-report-title, html.light .cp-act-title { color: #29303a !important; }
-html.light .cp-report-date, html.light .cp-act-time, html.light .cp-act-meta { color: #99a0a8 !important; }
-html.light .cp-act-stage-tag, html.light .cp-stage-chip {
-  background: rgba(41,48,58,.05) !important;
-  border: 1px solid rgba(41,48,58,.1) !important;
-  color: #5e6670 !important;
-}
-
-/* SMM strip (client) */
-html.light .cp-smm-strip {
-  background: #fbf8f1 !important;
-  border: 1px solid rgba(41,48,58,.08) !important;
-}
-html.light .cp-smm-title { color: #29303a !important; }
-html.light .cp-smm-period { color: #99a0a8 !important; }
-html.light .cp-smm-header { border-color: rgba(41,48,58,.08) !important; }
-html.light .cp-smm-bench-row { border-color: rgba(41,48,58,.07) !important; }
-/* SMM metric values keep their inline semantic colors */
-
-/* "reports documentation" view (mck-) */
-html.light .mck-header { border-bottom: 1px solid rgba(41,48,58,.08) !important; }
-html.light .mck-title, html.light .mck-total-num { color: #29303a !important; }
-html.light .mck-eyebrow, html.light .mck-total-lbl, html.light .mck-section-label,
-html.light .mck-section-meta, html.light .mck-section-unit, html.light .mck-section-count,
-html.light .mck-divider-label { color: #99a0a8 !important; }
-html.light .mck-search-box, html.light .mck-search-wrap {
-  background: rgba(41,48,58,.03) !important;
-  border: 1px solid rgba(41,48,58,.1) !important;
-}
-html.light .mck-search-input { color: #29303a !important; }
-html.light .mck-search-input::placeholder { color: rgba(41,48,58,.4) !important; }
-html.light .mck-search-kbd {
-  background: rgba(41,48,58,.05) !important;
-  border: 1px solid rgba(41,48,58,.12) !important;
-  color: rgba(41,48,58,.45) !important;
-}
-html.light .mck-hr, html.light .mck-divider-line { background: rgba(41,48,58,.1) !important; }
-html.light .mck-section-bar { background: rgba(41,48,58,.08) !important; }
-html.light .mck-list, html.light .mck-section {
-  background: #fbf8f1 !important;
-  border-color: rgba(41,48,58,.08) !important;
-}
-html.light .mck-dropdown {
-  background: #fbf8f1 !important;
-  border: 1px solid rgba(41,48,58,.12) !important;
-  box-shadow: var(--shadow-lg) !important;
-}
-html.light .mck-dd-header, html.light .mck-dd-hint, html.light .mck-dd-count { color: #99a0a8 !important; }
-html.light .mck-dd-footer { border-color: rgba(41,48,58,.08) !important; }
-html.light .mck-dd-footer-item { color: #5e6670 !important; }
-html.light .mck-dd-footer-item:hover { background: rgba(156,122,43,.08) !important; color: #7f6122 !important; }
-html.light .mck-report-row { border-color: rgba(41,48,58,.07) !important; }
-html.light .mck-report-row:hover { background: rgba(156,122,43,.05) !important; }
-
-/* client footer marquee */
-html.light .cp-footer-mq, html.light .mck-footer-copy { color: rgba(41,48,58,.18) !important; }
-html.light .mck-footer { border-top: 1px solid rgba(41,48,58,.06) !important; }
-html.light .mck-footer-brand { color: rgba(41,48,58,.22) !important; }
-
-
-/* ── BLOCK 35 · CLIENT PORTAL TEXT FIX (correct class names) ──────────────
-   Earlier overrides targeted guessed class names; these target the REAL
-   classes extracted from the stylesheet so no client text stays light. */
-html.light .cp-next-title { color: #29303a !important; }
-html.light .cp-act-text { color: #29303a !important; }
-html.light .cp-act-time { color: #99a0a8 !important; }
-html.light .cp-focus-text { color: #29303a !important; }
-html.light .cp-focus-tip { color: #99a0a8 !important; }
-html.light .cp-milestone-title { color: #29303a !important; }
-html.light .cp-stage-label-text { color: #5e6670 !important; }
-html.light .cp-sb-client-name { color: #29303a !important; }
-html.light .cp-sb-nav-label { color: #99a0a8 !important; }
-html.light .cp-sb-nav-item { color: #5e6670 !important; }
-html.light .cp-sb-kpi-label { color: #99a0a8 !important; }
-html.light .cp-sb-kpi-sub { color: #99a0a8 !important; }
-html.light .cp-sb-logout { color: #99a0a8 !important; }
-html.light .cp-topbar-greeting { color: #99a0a8 !important; }
-html.light .cp-topbar-date { color: #99a0a8 !important; }
-html.light .cp-hero-eyebrow { color: #99a0a8 !important; }
-/* .cp-hero-num NOT forced: carries inline semantic color (revenue/traffic/check Δ) */
-html.light .cp-hero-num { color: #29303a; }
-html.light .cp-hero-sub { color: #99a0a8 !important; }
-html.light .cp-progress-eyebrow { color: #99a0a8 !important; }
-html.light .cp-progress-title { color: #29303a !important; }
-html.light .cp-progress-pct-sub { color: #99a0a8 !important; }
-html.light .cp-stage-num-label { color: #99a0a8 !important; }
-html.light .cp-pf-text { color: #99a0a8 !important; }
-html.light .cp-pf-right { color: #99a0a8 !important; }
-html.light .cp-stages-bar2-labels { color: #99a0a8 !important; }
-html.light .cp-card-title { color: #99a0a8 !important; }
-html.light .cp-act-group-title { color: #29303a !important; }
-html.light .cp-act-group-stage { color: #5e6670 !important; }
-html.light .cp-act-group-time { color: #99a0a8 !important; }
-html.light .cp-act-tag { color: #5e6670 !important; }
-html.light .cp-smm-title { color: #99a0a8 !important; }
-html.light .cp-smm-period { color: #99a0a8 !important; }
-html.light .cp-smm-lbl { color: #99a0a8 !important; }
-html.light .cp-smm-bench-row { color: #99a0a8 !important; }
-html.light .mck-eyebrow { color: #99a0a8 !important; }
-html.light .mck-title { color: #29303a !important; }
-html.light .mck-total-num { color: #29303a !important; }
-html.light .mck-total-lbl { color: #99a0a8 !important; }
-html.light .mck-divider-label { color: #99a0a8 !important; }
-html.light .mck-section-label { color: #99a0a8 !important; }
-html.light .mck-section-unit { color: #99a0a8 !important; }
-html.light .mck-report-name { color: #29303a !important; }
-html.light .mck-report-index { color: #99a0a8 !important; }
-html.light .mck-report-date { color: #99a0a8 !important; }
-html.light .mck-report-arrow { color: #99a0a8 !important; }
-html.light .mck-search-input { color: #29303a !important; }
-html.light .mck-search-kbd { color: #99a0a8 !important; }
-html.light .mck-dd-count { color: #99a0a8 !important; }
-html.light .mck-dd-hint { color: #99a0a8 !important; }
-html.light .mck-dd-group-label { color: #99a0a8 !important; }
-html.light .mck-dd-name { color: #29303a !important; }
-html.light .mck-dd-num { color: #99a0a8 !important; }
-html.light .mck-dd-date { color: #99a0a8 !important; }
-html.light .mck-dd-empty { color: #99a0a8 !important; }
-html.light .mck-dd-footer { color: #99a0a8 !important; }
-html.light .mck-footer-brand { color: #99a0a8 !important; }
-html.light .mck-footer-copy { color: #99a0a8 !important; }
-html.light .cp-footer-name { color: #99a0a8 !important; }
-html.light .cp-footer-copy { color: #99a0a8 !important; }
-html.light .cp-footer-mq { color: #99a0a8 !important; }
-html.light .cp-sn-pending { color: #99a0a8 !important; }
-
-/* surfaces & rows that still showed dark or borderless */
-html.light .cp-act-item, html.light .cp-act-group, html.light .cp-focus-card,
-html.light .cp-milestone-card, html.light .cp-next-card, html.light .cp-pf-card,
-html.light .cp-smm-card, html.light .cp-sn-card {
-  background: #fbf8f1 !important;
-  border: 1px solid rgba(41,48,58,.08) !important;
-}
-html.light .cp-act-item { border: none !important; border-bottom: 1px solid rgba(41,48,58,.06) !important; }
-html.light .cp-act-group-head, html.light .cp-focus-head { border-color: rgba(41,48,58,.07) !important; }
-html.light .cp-act-tag, html.light .cp-act-group-stage, html.light .cp-stage-chip {
-  background: rgba(41,48,58,.05) !important;
-  border: 1px solid rgba(41,48,58,.1) !important;
-}
-html.light .cp-act-dot { box-shadow: 0 0 0 2px rgba(41,48,58,.04) !important; }
-html.light .cp-sb-logout { color: #99a0a8 !important; }
-html.light .cp-sb-logout:hover { color: #c0392b !important; }
-/* timeline labels under nodes */
-html.light .cp-stage-label-text, html.light .cp-stage-num-label,
-html.light .cp-stages-bar2-labels, html.light .cp-progress-eyebrow,
-html.light .cp-progress-pct-sub { color: #99a0a8 !important; }
-/* progress eyebrow on the production-cycle card */
-html.light .cp-now-eyebrow, html.light .cp-current-eyebrow { color: #9c7a2b !important; }
-/* mck report rows */
-html.light .mck-report-name { color: #29303a !important; }
-html.light .mck-report-date, html.light .mck-report-index, html.light .mck-report-arrow,
-html.light .mck-dd-date, html.light .mck-dd-num, html.light .mck-dd-empty,
-html.light .mck-dd-group-label { color: #99a0a8 !important; }
-html.light .mck-dd-name { color: #29303a !important; }
-/* SMM benchmark labels/period */
-html.light .cp-smm-lbl, html.light .cp-smm-period { color: #99a0a8 !important; }
-
-
-/* ── BLOCK 36 · CLIENT TIMELINE — remove grey plates, adapt icons ──────────
-   Production-cycle strip, the stage icon plates, and the progress-bar track
-   were dark/grey. Make the strip seamless and turn icon plates into light
-   chips with gold (done/active) / muted (pending) icons. */
-
-/* the strip behind the timeline (was #09090f) — make it blend with the card */
-html.light .cp-stages-wrap {
-  background: transparent !important;
-  border-bottom: 1px solid rgba(41,48,58,.06) !important;
-}
-/* the horizontal connector track + its fill */
-html.light .cp-stages-bar { background: transparent !important; }
-html.light .cp-bar-fill-v5 {
-  background: linear-gradient(90deg, rgba(156,122,43,.6) 0%, #b8923a 70%, #c9a84c 100%) !important;
-}
-html.light .cp-bar-lead-v5 { box-shadow: 0 0 8px rgba(156,122,43,.5) !important; }
-
-/* icon plates → light chips (no dark squares) */
-html.light .cp-stage-dot-inner {
-  background: #f3ede1 !important;
-  border: 1.5px solid rgba(41,48,58,.12) !important;
-  color: #99a0a8 !important;            /* pending icon stroke */
-  box-shadow: var(--shadow-sm) !important;
-}
-html.light .cp-st-done .cp-stage-dot-inner {
-  background: rgba(156,122,43,.12) !important;
-  border: 1.5px solid rgba(156,122,43,.45) !important;
-  color: #9c7a2b !important;            /* gold icon */
-}
-html.light .cp-st-active .cp-stage-dot-inner {
-  background: rgba(156,122,43,.16) !important;
-  border: 2px solid #b8923a !important;
-  color: #7f6122 !important;
-  box-shadow: 0 0 12px rgba(156,122,43,.3) !important;
-}
-html.light .cp-st-pending .cp-stage-dot-inner {
-  background: #faf6ee !important;
-  border: 1px solid rgba(41,48,58,.1) !important;
-  color: #b8b2a6 !important;
-}
-html.light .cp-dot-spinner { border-color: rgba(156,122,43,.3) !important; border-top-color: #b8923a !important; }
-
-/* progress-bar track on the "Этапы" tab (was rgba(255,255,255,.06)) */
-html.light .cp-stages-bar2-track { background: rgba(41,48,58,.08) !important; }
-html.light .cp-stages-bar2-fill {
-  background: linear-gradient(90deg, rgba(156,122,43,.55), #b8923a) !important;
-}
-
-/* detail-list stage number plates (cp-sn-*) — light chips */
-html.light .cp-sn-done {
-  background: rgba(156,122,43,.12) !important;
-  color: #9c7a2b !important;
-  border: 1px solid rgba(156,122,43,.3) !important;
-}
-html.light .cp-sn-active {
-  background: rgba(184,115,10,.12) !important;
-  color: #b8730a !important;
-  border: 1px solid rgba(184,115,10,.3) !important;
-}
-html.light .cp-sn-pending {
-  background: rgba(41,48,58,.05) !important;
-  border: 1px solid rgba(41,48,58,.1) !important;
-}
-/* stage row icon box in the detail list */
-html.light .cp-sn-icon, html.light .cp-stage-icon-box, html.light .cp-stage-ic {
-  background: #f3ede1 !important;
-  border: 1px solid rgba(41,48,58,.1) !important;
-  color: #9c7a2b !important;
-}
-
-/* "Все этапы проекта" / "Сейчас в работе" eyebrow + the cur-stage card */
-html.light .cp-progress-pct-sub { color: #99a0a8 !important; }
-
-
-/* ── BLOCK 37 · CLIENT FIXES v2 (timeline line, icon strokes, badges) ──────── */
-
-/* (1) timeline: the gold connector line must sit BEHIND the icon plates, and
-   plates must be fully opaque so the line never shows through them. */
-html.light .cp-bar-fill-v5,
-html.light .cp-stages-bar { z-index: 0 !important; }
-html.light .cp-dot-wrap { z-index: 5 !important; }
-html.light .cp-stage-dot-inner {
-  background: #fbf8f1 !important;     /* opaque — masks the line behind it */
-  position: relative; z-index: 2 !important;
-}
-/* (1+4) last/pending stage icon was invisible — give the stroke a visible tint */
-html.light .cp-st-pending .cp-stage-dot-inner {
-  background: #fbf8f1 !important;
-  border: 1.5px solid rgba(41,48,58,.16) !important;
-  color: #8a93a0 !important;          /* visible muted icon */
-}
-html.light .cp-st-pending .cp-stage-dot-inner svg { stroke: #8a93a0 !important; opacity: 1 !important; }
-html.light .cp-stage-dot-inner svg { stroke: currentColor !important; }
-
-/* (2) activity feed icon chips: the SVG inside had no color → set stroke to
-   match the chip's semantic tint so play/check icons are clearly visible. */
-html.light .cp-act-group-icon.start svg,
-html.light .cp-act-task-icon.start svg { stroke: #9c7a2b !important; color: #9c7a2b !important; }
-html.light .cp-act-group-icon.done svg,
-html.light .cp-act-task-icon.done svg  { stroke: #2e8b57 !important; color: #2e8b57 !important; }
-html.light .cp-act-group-icon.back svg { stroke: #b8730a !important; color: #b8730a !important; }
-html.light .cp-act-group-icon.start { background: rgba(156,122,43,.14) !important; border-color: rgba(156,122,43,.3) !important; }
-html.light .cp-act-group-icon.done  { background: rgba(46,139,87,.14) !important; border-color: rgba(46,139,87,.3) !important; }
-html.light .cp-act-group-icon.back  { background: rgba(184,115,10,.14) !important; border-color: rgba(184,115,10,.3) !important; }
-
-/* (6) the verb word after "Команда" was #fff → invisible; make it gold ink */
-html.light .cp-act-group-title { color: #29303a !important; }
-html.light .cp-act-group-title b { color: #7f6122 !important; }
-/* group surfaces + header to light */
-html.light .cp-act-group {
-  background: #fbf8f1 !important;
-  border: 1px solid rgba(41,48,58,.08) !important;
-}
-html.light .cp-act-group-header { background: rgba(41,48,58,.02) !important; border-bottom: 1px solid rgba(41,48,58,.06) !important; }
-html.light .cp-act-group-stage.start { background: rgba(156,122,43,.08) !important; border-color: rgba(156,122,43,.2) !important; color: #7f6122 !important; }
-html.light .cp-act-group-stage.done  { background: rgba(46,139,87,.08) !important; border-color: rgba(46,139,87,.2) !important; color: #2e8b57 !important; }
-html.light .cp-act-task-row:hover { background: rgba(156,122,43,.05) !important; }
-html.light .cp-act-task-icon { background: rgba(41,48,58,.04) !important; border: 1px solid rgba(41,48,58,.1) !important; }
-html.light .cp-act-task-icon.done { background: rgba(46,139,87,.08) !important; border-color: rgba(46,139,87,.15) !important; }
-
-/* (3) progress-bar track behind it had a grey/dark band — make the strip itself
-   blend; the track stays a subtle ink line, no grey block. */
-html.light .cp-stages-bar2-wrap { background: transparent !important; }
-html.light .cp-stages-bar2-track { background: rgba(41,48,58,.07) !important; box-shadow: none !important; }
-
-
-/* ── BLOCK 38 · REPORTS DOC (mck) — light polish ───────────────────────────
-   Make the client "Отчётная документация" view feel designed: real cards with
-   soft shadows, a gold accent bar per section, a proper search field, and
-   readable hover states — instead of bare lines on flat cream. */
-html.light #cp2-tab-reports .mck-section,
-html.light .mck-group, html.light .mck-section-block {
-  background: #fbf8f1 !important;
-  border: 1px solid rgba(41,48,58,.08) !important;
-  border-radius: 16px !important;
-  box-shadow: var(--shadow-sm) !important;
-  overflow: hidden;
-  margin-bottom: 14px;
-}
-/* gold accent bar that marks each section label */
-html.light .mck-section-bar {
-  background: linear-gradient(180deg,#b8923a,#9c7a2b) !important;
-  width: 3px !important; border-radius: 2px !important;
-}
-html.light .mck-section-label { color: #5e6670 !important; letter-spacing: .12em; }
-/* search field — pill with soft inset */
-html.light .mck-search-box {
-  background: #fbf8f1 !important;
-  border: 1px solid rgba(41,48,58,.12) !important;
-  box-shadow: var(--shadow-sm);
-}
-html.light .mck-search-box:focus-within {
-  border-color: rgba(156,122,43,.45) !important;
-  box-shadow: 0 0 0 3px rgba(156,122,43,.12) !important;
-}
-html.light .mck-search-input { color: #29303a !important; }
-html.light .mck-search-input::placeholder { color: rgba(41,48,58,.4) !important; }
-/* report rows — clear separators + warm hover */
-html.light .mck-report-row {
-  border-bottom: 1px solid rgba(41,48,58,.06) !important;
-  transition: background .15s ease;
-}
-html.light .mck-report-row:last-child { border-bottom: none !important; }
-html.light .mck-report-row:hover { background: rgba(156,122,43,.06) !important; }
-html.light .mck-report-name { color: #29303a !important; font-weight: 600; }
-html.light .mck-report-index { color: #b8923a !important; }
-html.light .mck-report-arrow { color: #99a0a8 !important; }
-html.light .mck-report-row:hover .mck-report-arrow { color: #9c7a2b !important; }
-/* the big "2 отчёта" counter — keep number ink, label muted gold */
-html.light .mck-total-num { color: #29303a !important; }
-html.light .mck-total-lbl { color: #9c7a2b !important; }
-/* date divider line + label */
-html.light .mck-divider-line { background: rgba(41,48,58,.1) !important; }
-html.light .mck-divider-label {
-  color: #99a0a8 !important;
-  background: var(--bg) !important;
-  padding: 0 12px;
-}
-/* footer marquee subtle */
-html.light .mck-footer-brand, html.light .cp-footer-mq { color: rgba(41,48,58,.2) !important; }
-
-
-/* ── BLOCK 37 · CLIENT PORTAL FINAL POLISH (authoritative, placed last) ─────
-   Fixes: line through icon squares, invisible icons inside gold/pending plates,
-   grey progress-bar track, faint activity text, and reports-page contrast. */
-
-/* (1+4) TIMELINE ICON PLATES — fully OPAQUE so the connector line is masked,
-   and every icon stroke is clearly visible (incl. last/pending stage) */
-html.light .cp-stage-dot-inner {
-  background: #fbf8f1 !important;            /* opaque cream, hides line behind */
-  border: 1.5px solid rgba(41,48,58,.18) !important;
-  color: #8a8174 !important;                 /* pending icon — readable grey-ink */
-  position: relative !important;
-  z-index: 6 !important;
-  box-shadow: 0 1px 3px rgba(74,60,30,.1) !important;
-}
-html.light .cp-st-done .cp-stage-dot-inner {
-  background: #fbf3df !important;            /* opaque light gold */
-  border: 1.5px solid rgba(156,122,43,.5) !important;
-  color: #9c7a2b !important;
-}
-html.light .cp-st-active .cp-stage-dot-inner {
-  background: #fbeecb !important;            /* opaque, stronger gold */
-  border: 2px solid #b8923a !important;
-  color: #6f5418 !important;
-  box-shadow: 0 0 10px rgba(156,122,43,.28) !important;
-}
-html.light .cp-st-pending .cp-stage-dot-inner {
-  background: #fbf8f1 !important;            /* opaque so line is hidden */
-  border: 1.5px solid rgba(41,48,58,.2) !important;
-  color: #9a9286 !important;                 /* last-stage icon now visible */
-}
-/* make sure the SVG inside inherits the plate color */
-html.light .cp-stage-dot-inner svg { color: inherit !important; stroke: currentColor !important; opacity: 1 !important; }
-/* the connector line sits BEHIND the opaque plates */
-html.light .cp-bar-fill-v5, html.light .cp-stages-bar { z-index: 0 !important; }
-
-/* (2) OVERVIEW ACTIVITY FEED — bold verb after "Команда" was white */
-html.light .cp-act-text { color: #5e6670 !important; }
-html.light .cp-act-text b { color: #29303a !important; }
-
-/* (6) FULL ACTIVITY FEED — the verb (bold) was invisible/overlapping */
-html.light .cp-act-group-title { color: #29303a !important; }
-html.light .cp-act-group-title b { color: #29303a !important; font-weight: 600 !important; }
-html.light .cp-act-row, html.light .cp-act-group { border-color: rgba(41,48,58,.07) !important; }
-html.light .cp-act-body { color: #5e6670 !important; }
-
-/* (3) PROGRESS-BAR TRACK behind the fill — kill the grey */
-html.light .cp-stages-bar2-track {
-  background: rgba(41,48,58,.06) !important;
-  box-shadow: inset 0 0 0 1px rgba(41,48,58,.04) !important;
-}
-
-/* (5) REPORTS PAGE ("Отчётная документация") — give it warmth & structure
-   instead of flat washed-out look */
-html.light #cp2-tab-reports .mck-section,
-html.light #cp2-tab-reports .mck-list {
-  background: #fbf8f1 !important;
-  border: 1px solid rgba(41,48,58,.08) !important;
-  border-radius: 14px !important;
-  box-shadow: var(--shadow-sm) !important;
-}
-html.light #cp2-tab-reports .mck-report-row {
-  border-color: rgba(41,48,58,.06) !important;
-}
-html.light #cp2-tab-reports .mck-report-row:hover {
-  background: rgba(156,122,43,.05) !important;
-}
-html.light #cp2-tab-reports .mck-section-bar {
-  background: linear-gradient(180deg,#b8923a,#9c7a2b) !important;
-  width: 3px !important; border-radius: 2px !important;
-}
-html.light .mck-search-box {
-  background: #fbf8f1 !important;
-  border: 1px solid rgba(41,48,58,.12) !important;
-  box-shadow: var(--shadow-sm) !important;
-}
+/* restore dark text where the inline-style rescue had recolored it to ink */
+html.light #page-client [style*="color:rgba(255,255,255"],
+html.light #page-client [style*="color: rgba(255,255,255"],
+html.light #page-client [style*="color:#fff"],
+html.light #page-client [style*="color: #fff"],
+html.light #page-client [style*="color:#f0ece6"],
+html.light #page-client [style*="color: #f0ece6"],
+html.light #page-client [style*="color:#eeedf8"],
+html.light #page-client [style*="color: #eeedf8"],
+html.light #page-client [style*="color:#eaeaea"],
+html.light #page-client [style*="color:#e8e8e8"],
+html.light #page-client [style*="color:#f1f1f5"],
+html.light #page-client [style*="color: #f1f1f5"] { color: #f0ece6 !important; }
+/* restore dark surfaces where rescue had lightened them */
+html.light #page-client [style*="background:rgba(255,255,255"],
+html.light #page-client [style*="background: rgba(255,255,255"],
+html.light #page-client [style*="background-color: rgba(255,255,255"] { background: rgba(255,255,255,.04) !important; }
+html.light #page-client [style*="solid rgba(255,255,255"],
+html.light #page-client [style*="solid rgba(255, 255, 255"] { border-color: rgba(255,255,255,.08) !important; }
 
 button, a, [role="button"],
 .pcard, .stat-card, .ov-card, .ov2-kpi-card,
@@ -19624,7 +19148,7 @@ function toggleObOnboarding() {
   function _applyTheme() {
     var isLight = document.documentElement.classList.toggle('light');
     localStorage.setItem('dtr-theme', isLight ? 'light' : 'dark');
-    ['theme-toggle-btn','cp-theme-toggle-btn'].forEach(function(id){
+    ['theme-toggle-btn'].forEach(function(id){
       var b = document.getElementById(id); if (b) b.classList.toggle('is-light', isLight);
     });
     dtrThemeCharts();
@@ -19693,7 +19217,7 @@ function toggleObOnboarding() {
   // Set correct icon on load
   document.addEventListener('DOMContentLoaded', function(){
     var isLight0 = document.documentElement.classList.contains('light');
-    ['theme-toggle-btn','cp-theme-toggle-btn'].forEach(function(id){
+    ['theme-toggle-btn'].forEach(function(id){
       var b = document.getElementById(id); if (b) b.classList.toggle('is-light', isLight0);
     });
     // Apply chart tokens shortly after load (lets first charts mount first)
@@ -21354,24 +20878,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 <main class="cp-main">
 <div class="cp-topbar">
 <div class="cp-topbar-greeting" id="cp2-greeting">ДОБРЫЙ ДЕНЬ, <span>—</span></div>
-<div style="display:flex;align-items:center;gap:18px;">
 <div class="cp-topbar-date" id="cp2-date">—</div>
-<button class="theme-toggle dtr-tumbler" id="cp-theme-toggle-btn" onclick="dtrToggleTheme()" title="Сменить тему" aria-label="Сменить тему">
-<span class="tmb-track">
-<span class="tmb-sky"></span>
-<span class="tmb-star tmb-star1"></span>
-<span class="tmb-star tmb-star2"></span>
-<span class="tmb-star tmb-star3"></span>
-<span class="tmb-cloud tmb-cloud1"></span>
-<span class="tmb-cloud tmb-cloud2"></span>
-<span class="tmb-knob">
-<span class="tmb-crater tmb-crater1"></span>
-<span class="tmb-crater tmb-crater2"></span>
-<span class="tmb-crater tmb-crater3"></span>
-</span>
-</span>
-</button>
-</div>
 </div>
 <div class="cp-content">
 <div class="cp-tab-content cp-tab-visible" id="cp2-tab-overview">
@@ -29077,8 +28584,18 @@ async function cp2LoadTracker(project) {
         tagIcon  = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
         tagText  = 'Ожидает';
       }
-      var iconCol = s==='completed' ? '#c9a84c' : s==='active' ? '#3ecf8e' : 'rgba(255,255,255,.2)';
-      var iconBg  = s==='completed' ? 'background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.2)' : s==='active' ? 'background:rgba(62,207,142,.1);border:1px solid rgba(62,207,142,.2)' : 'background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07)';
+      var _lt = document.documentElement.classList.contains('light');
+      var iconCol = s==='completed' ? (_lt ? '#9c7a2b' : '#c9a84c')
+                  : s==='active'    ? (_lt ? '#9c7a2b' : '#3ecf8e')
+                  : (_lt ? '#8a8174' : 'rgba(255,255,255,.2)');
+      var iconBg  = s==='completed'
+                    ? (_lt ? 'background:rgba(156,122,43,.12);border:1px solid rgba(156,122,43,.4)'
+                           : 'background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.2)')
+                  : s==='active'
+                    ? (_lt ? 'background:rgba(156,122,43,.14);border:1px solid #b8923a'
+                           : 'background:rgba(62,207,142,.1);border:1px solid rgba(62,207,142,.2)')
+                    : (_lt ? 'background:#fbf8f1;border:1px solid rgba(41,48,58,.2)'
+                           : 'background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07)');
       var svgIcon = (STAGE_ICONS[i] || '').replace('stroke="currentColor"', 'stroke="' + iconCol + '"');
 
       // Дата: для completed — когда завершён, для active — когда начат + дедлайн
