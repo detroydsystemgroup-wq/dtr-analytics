@@ -21162,6 +21162,36 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 #dtr-ss-smm [style*="letter-spacing:.2em"],#dtr-ss-smm [style*="letter-spacing: .2em"]{letter-spacing:.08em!important}
 #dtr-ss-smm [style*="letter-spacing:.18em"],#dtr-ss-smm [style*="letter-spacing: .18em"]{letter-spacing:.07em!important}
 #dtr-ss-smm [style*="letter-spacing:.14em"],#dtr-ss-smm [style*="letter-spacing: .14em"]{letter-spacing:.06em!important}
+
+/* ═══════════ RD READABILITY BOOST — крупнее и читабельнее (только отчёт) ═══════════ */
+/* Поднимаем «пол» самых мелких шрифтов в выводе анализа до читаемого минимума. */
+/* Намеренно НЕ трогаем крупные значения (40px и пр.), чтобы не ломать сетку карточек. */
+.analytics-wrap [style*="font-size:8px"]{font-size:12px!important}
+.analytics-wrap [style*="font-size:9px"]{font-size:12px!important}
+.analytics-wrap [style*="font-size:10px"]{font-size:13px!important}
+.analytics-wrap [style*="font-size:11px"]{font-size:13.5px!important}
+.analytics-wrap [style*="font-size:12px"]{font-size:14px!important}
+.analytics-wrap [style*="font-size:13px"]{font-size:15px!important}
+.analytics-wrap [style*="font-size:14px"]{font-size:15.5px!important}
+/* Межстрочный интервал — чтобы строки не наезжали при увеличенном шрифте */
+.analytics-wrap [style*="line-height:1.4"]{line-height:1.6!important}
+.analytics-wrap [style*="line-height:1.5"]{line-height:1.65!important}
+.analytics-wrap p,.analytics-wrap div{}
+/* Разрядка заглавных подписей — читаются легче */
+.analytics-wrap [style*="letter-spacing:.2em"],.analytics-wrap [style*="letter-spacing: .2em"]{letter-spacing:.08em!important}
+.analytics-wrap [style*="letter-spacing:.18em"],.analytics-wrap [style*="letter-spacing: .18em"]{letter-spacing:.07em!important}
+.analytics-wrap [style*="letter-spacing:.12em"],.analytics-wrap [style*="letter-spacing: .12em"]{letter-spacing:.05em!important}
+.analytics-wrap [style*="letter-spacing:.1em"],.analytics-wrap [style*="letter-spacing: .1em"]{letter-spacing:.04em!important}
+/* Заголовки секций и блоков — заметнее */
+.analytics-wrap .sh-title{font-size:18px!important;font-weight:700!important}
+.analytics-wrap .rp-block-sub{font-size:14px!important;line-height:1.55!important}
+.analytics-wrap .cb-title{font-size:16px!important;font-weight:700!important;line-height:1.45!important}
+/* Воздух между блоками и в таблицах, чтобы ничего не слипалось */
+.analytics-wrap .rp-block{margin-bottom:24px!important}
+.analytics-wrap table td,.analytics-wrap table th{font-size:14px!important;padding-top:11px!important;padding-bottom:11px!important;line-height:1.45!important}
+/* Крупные числа в KPI не обрезаются по высоте */
+.analytics-wrap [style*="font-size:40px"],.analytics-wrap [style*="font-size:28px"]{line-height:1.12!important}
+/* ═══════════ /RD READABILITY BOOST ═══════════ */
 </style>
     <div id="dtr-ss-smm" style="display:block;">
     <div style="padding:48px 64px 80px;width:100%;">
