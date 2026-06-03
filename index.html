@@ -38831,4 +38831,16 @@ window.switchDashTab = function(tab, btn) {
   };
 })();
 </script>
+
+<style id="dtr-modern-numerals">
+/* Современные числа: табличные (выровненные) lining-фигуры + аккуратный трекинг.
+   Числа в метриках перестают «прыгать» при обновлении и выравниваются по колонкам. */
+.apl-hero-num, .stat-val, .fin-trend-val, .sv-rc-val,
+.kb-card-timer, .kb-timer-live, .kb-timer-logged, .kb-card-deadline,
+.apl-hero-foot, .fin-trend-sub, .sv-rc-sub {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+.apl-hero-num, .stat-val { letter-spacing: -.03em; }
+</style>
 </html>
