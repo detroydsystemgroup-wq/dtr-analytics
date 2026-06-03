@@ -29355,7 +29355,7 @@ function renderClientReportCards(items, containerId, type) {
     if (hasM) {
       strip = '<div class="crc-strip">'
         + cell('Рост выручки', (growth != null ? arrSpan(growth) + mag(growth) + '%' : '—'), vc(growth))
-        + cell('Трафик Δ', (traf != null ? arrSpan(traf) + mag(traf) + ' гост.' : '—'), vc(traf))
+        + cell('Трафик Δ', (traf != null ? arrSpan(traf) + mag(traf) + ' чек.' : '—'), vc(traf))
         + cell('Ср. чек Δ', (chk != null ? arrSpan(chk) + mag(chk) + ' сум' : '—'), vc(chk))
         + cell('Выручка факт', (dRev != null ? nf(dRev) + ' сум' : '—'), 'crc-gold crc-big')
         + cell('База', (bRev != null ? nf(bRev) + ' сум' : '—'), 'crc-mut crc-big')
