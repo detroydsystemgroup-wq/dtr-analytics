@@ -19317,6 +19317,34 @@ html.light .crc-strip,html.light .crc-cell{border-color:rgba(41,48,58,.08)}
 html.light .crc-new{color:#fff}
 html.light .crc-gold{color:#9c7a2b}
 html.light .crc-open{color:#fff}
+
+/* ── Чёткое разделение секций PERFORMANCE / SMM: каждая группа — отдельная панель ── */
+.mck-sections .mck-section{position:relative;padding:16px 18px 8px;border-radius:18px;border:1px solid}
+.mck-section.sec-perf{background:rgba(52,211,153,.04);border-color:rgba(52,211,153,.18)}
+.mck-section.sec-smm{background:rgba(167,139,250,.05);border-color:rgba(167,139,250,.20)}
+.mck-section.sec-perf::before,.mck-section.sec-smm::before{content:"";position:absolute;left:-1px;top:18px;bottom:18px;width:3px;border-radius:0 3px 3px 0}
+.mck-section.sec-perf::before{background:#34d399}
+.mck-section.sec-smm::before{background:#a78bfa}
+
+/* большой разрыв между панелями */
+.mck-sections .mck-hr{height:0;margin:22px 0;background:transparent;border:none}
+
+/* шапка группы — линия-подчёркивание под цвет, заголовок крупнее и ярче */
+.mck-section .mck-section-head{align-items:center;margin:0 0 16px;padding:0 2px 13px;border-bottom:1px solid;background:transparent;border-radius:0}
+.mck-section.sec-perf .mck-section-head{border-bottom-color:rgba(52,211,153,.16)}
+.mck-section.sec-smm .mck-section-head{border-bottom-color:rgba(167,139,250,.18)}
+.mck-section .mck-section-label{font-size:11px;letter-spacing:.13em;color:var(--txt);font-weight:600}
+.mck-section-bar{width:4px;height:18px;border-radius:3px}
+.mck-section-bar.perf{background:linear-gradient(180deg,#34d399,#c9a84c)}
+.mck-section-bar.smm{background:linear-gradient(180deg,#a78bfa,#8b5cf6)}
+
+/* счётчик — в цвет карточек */
+.mck-section-count.perf{color:#34d399}
+.mck-section-count.smm{color:#a78bfa}
+.mck-section-unit{color:var(--txt3)}
+
+html.light .mck-section.sec-perf{background:rgba(46,139,87,.05);border-color:rgba(46,139,87,.2)}
+html.light .mck-section.sec-smm{background:rgba(124,92,200,.06);border-color:rgba(124,92,200,.22)}
 </style>
 
 <body>
@@ -21098,7 +21126,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 
   <!-- Секции -->
   <div class="mck-sections">
-    <div class="mck-section">
+    <div class="mck-section sec-perf">
       <div class="mck-section-head">
         <div class="mck-section-label">
           <div class="mck-section-bar perf"></div>
@@ -21114,7 +21142,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 
     <div class="mck-hr"></div>
 
-    <div class="mck-section">
+    <div class="mck-section sec-smm">
       <div class="mck-section-head">
         <div class="mck-section-label">
           <div class="mck-section-bar smm"></div>
