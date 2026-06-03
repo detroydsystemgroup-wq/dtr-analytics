@@ -24538,13 +24538,12 @@ function renderReportCompareStrip(reports) {
   const el = g('rp-compare-strip');
   if (!el) return;
 
-  // только опубликованные с посчитанными метриками; reports уже отсортированы created_at DESC
+  // зачётные = опубликованные с посчитанными метриками; reports уже отсортированы created_at DESC
   const pub = (reports || []).filter(function(r){
     if (r.status !== 'published') return false;
     const s = r.summary || {};
     return s.growth_pct != null || s.d_total_rev != null || s.traffic_delta != null || s.avg_check_delta != null;
   });
-  if (pub.length < 2) { el.innerHTML = ''; return; }
 
   // лёгкие стили (структура — классы apl-hero-* как в панели Дедлайнов)
   if (!document.getElementById('rpc-style')) {
@@ -24556,12 +24555,13 @@ function renderReportCompareStrip(reports) {
       + '.rpc-head2 .rpc-pair{font-family:var(--font-mono);font-size:11px;color:var(--txt2);letter-spacing:.02em;}'
       + '.rpc-strip{animation:fadeUp .38s cubic-bezier(.16,1,.3,1) both;margin-bottom:20px;}'
       + '.rpc-strip .apl-hero-sub{font-weight:600;}'
+      + '.rpc-dim{opacity:.5;}'
       + '.rpc-suffix{font-size:13px;font-weight:600;letter-spacing:0;opacity:.7;}';
     document.head.appendChild(st);
   }
 
-  const last = pub[0], prev = pub[1];
-  const sl = last.summary || {}, sp = prev.summary || {};
+  const last = pub[0] || null, prev = pub[1] || null;
+  const sl = (last && last.summary) || {}, sp = (prev && prev.summary) || {};
 
   function num(v){ return Math.round(v).toLocaleString('ru-RU'); }
   function sgn(v){ return v > 0 ? '+' : (v < 0 ? '−' : ''); }
@@ -24577,7 +24577,6 @@ function renderReportCompareStrip(reports) {
     if (a >= 1e3) return Math.round(v/1e3).toLocaleString('ru-RU') + ' тыс';
     return num(v);
   }
-  // карточка hero-панели: подпись · крупное число · импульс vs пред · черта · референс
   function card(label, numHtml, numColor, subHtml, subColor, footText){
     return '<div class="apl-hero-card">'
       + '<div class="apl-hero-eyebrow">'+label+'</div>'
@@ -24587,22 +24586,23 @@ function renderReportCompareStrip(reports) {
       + '<div class="apl-hero-foot">'+footText+'</div>'
       + '</div>';
   }
+  function foot(prevTxt){ return prev ? ('пред. '+prevTxt) : '—'; }
 
   const cells = [];
 
   // 1) РОСТ — импульс в п.п.
   (function(){
-    const lv = sl.growth_pct, pv = sp.growth_pct;
+    const lv = last ? sl.growth_pct : null, pv = prev ? sp.growth_pct : null;
     const numH = lv==null ? '—' : sgn(lv)+Math.abs(Math.round(lv))+'%';
     const numC = lv==null ? 'var(--txt2)' : (lv>=0?'var(--green)':'var(--red)');
     let subH='', subC='';
     if(lv!=null && pv!=null){ const d=lv-pv; subH=arrow(d)+' '+sgn(d)+Math.abs(Math.round(d))+' п.п.'; subC=col(d); }
-    cells.push(card('Рост', numH, numC, subH, subC, 'пред. '+(pv==null?'—':sgn(pv)+Math.abs(Math.round(pv))+'%')));
+    cells.push(card('Рост', numH, numC, subH, subC, foot(pv==null?'—':sgn(pv)+Math.abs(Math.round(pv))+'%')));
   })();
 
   // 2) ТРАФИК — со страховкой на несопоставимые базы (per-day vs per-period)
   (function(){
-    const lv = sl.traffic_delta, pv = sp.traffic_delta;
+    const lv = last ? sl.traffic_delta : null, pv = prev ? sp.traffic_delta : null;
     const numH = lv==null ? '—' : signedNum(lv);
     const numC = lv==null ? 'var(--txt2)' : (lv>=0?'var(--green)':'var(--red)');
     let subH='', subC='';
@@ -24611,32 +24611,38 @@ function renderReportCompareStrip(reports) {
       if((a>0 && b>0) && (Math.max(a,b)/Math.min(a,b) > 8)){ subH='⚠ разные базы'; subC='var(--amber)'; }
       else { const d=lv-pv; subH=arrow(d)+' '+signedNum(d); subC=col(d); }
     }
-    cells.push(card('Трафик', numH, numC, subH, subC, 'пред. '+signedNum(pv)));
+    cells.push(card('Трафик', numH, numC, subH, subC, foot(signedNum(pv))));
   })();
 
   // 3) СР. ЧЕК — импульс в сумах
   (function(){
-    const lv = sl.avg_check_delta, pv = sp.avg_check_delta;
+    const lv = last ? sl.avg_check_delta : null, pv = prev ? sp.avg_check_delta : null;
     const numH = lv==null ? '—' : signedNum(lv)+suf('сум');
     const numC = lv==null ? 'var(--txt2)' : (lv>=0?'var(--green)':'var(--red)');
     let subH='', subC='';
     if(lv!=null && pv!=null){ const d=lv-pv; subH=arrow(d)+' '+signedNum(d)+' сум'; subC=col(d); }
-    cells.push(card('Ср. чек', numH, numC, subH, subC, 'пред. '+(pv==null?'—':signedNum(pv)+' сум')));
+    cells.push(card('Ср. чек', numH, numC, subH, subC, foot(pv==null?'—':signedNum(pv)+' сум')));
   })();
 
   // 4) ФАКТ · СУММА — чистое абсолютное сравнение
   (function(){
-    const lv = sl.d_total_rev, pv = sp.d_total_rev;
+    const lv = last ? sl.d_total_rev : null, pv = prev ? sp.d_total_rev : null;
     const numH = lv==null ? '—' : abbr(lv)+suf('сум');
     let subH='', subC='';
     if(lv!=null && pv!=null && pv!==0){ const pct=(lv-pv)/Math.abs(pv)*100; subH=arrow(pct)+' '+sgn(pct)+Math.abs(pct).toFixed(1).replace('.',',')+'%'; subC=col(pct); }
-    cells.push(card('Факт · сумма', numH, 'var(--a2)', subH, subC, 'пред. '+abbr(pv)));
+    cells.push(card('Факт · сумма', numH, lv==null?'var(--txt2)':'var(--a2)', subH, subC, foot(abbr(pv))));
   })();
+
+  // статус-строка по состоянию
+  let pairHtml;
+  if (last && prev)      pairHtml = esc(last.title)+' <span style="color:var(--txt3)">←</span> '+esc(prev.title);
+  else if (last)         pairHtml = esc(last.title)+' · ждём второй отчёт для сравнения';
+  else                   pairHtml = 'появится после двух опубликованных отчётов с анализом';
 
   el.innerHTML =
     '<div class="rpc-head2"><span class="rpc-eyebrow">Последний vs предыдущий</span>'
-    + '<span class="rpc-pair">'+esc(last.title)+' <span style="color:var(--txt3)">←</span> '+esc(prev.title)+'</span></div>'
-    + '<div class="apl-hero-strip rpc-strip">'
+    + '<span class="rpc-pair">'+pairHtml+'</span></div>'
+    + '<div class="apl-hero-strip rpc-strip'+(last?'':' rpc-dim')+'">'
     +   cells[0] + '<div class="apl-hero-divider"></div>'
     +   cells[1] + '<div class="apl-hero-divider"></div>'
     +   cells[2] + '<div class="apl-hero-divider"></div>'
@@ -29803,7 +29809,6 @@ function renderSMMCompareStrip(reports) {
     const m = r.metrics || {};
     return val(m.er) != null || val(m.lr) != null || val(m.tr) != null || val(m.shr) != null || val(m.sr) != null;
   });
-  if (withMetrics.length < 2) { el.innerHTML = ''; return; }
 
   if (!document.getElementById('rpc-style-smm')) {
     const st = document.createElement('style');
@@ -29814,13 +29819,14 @@ function renderSMMCompareStrip(reports) {
       + '.rpc-head2 .rpc-pair{font-family:var(--font-mono);font-size:11px;color:var(--txt2);letter-spacing:.02em;}'
       + '.rpc-strip{animation:fadeUp .38s cubic-bezier(.16,1,.3,1) both;margin-bottom:20px;}'
       + '.rpc-strip .apl-hero-sub{font-weight:600;}'
+      + '.rpc-dim{opacity:.5;}'
       + '.rpc-strip-5{grid-template-columns:1fr auto 1fr auto 1fr auto 1fr auto 1fr;}'
       + '.rpc-strip-5 .apl-hero-card{padding:24px 22px 20px;}';
     document.head.appendChild(st);
   }
 
-  const last = withMetrics[0], prev = withMetrics[1];
-  const ml = last.metrics || {}, mp = prev.metrics || {};
+  const last = withMetrics[0] || null, prev = withMetrics[1] || null;
+  const ml = (last && last.metrics) || {}, mp = (prev && prev.metrics) || {};
 
   function arrow(d){ return d > 0 ? '↑' : d < 0 ? '↓' : '→'; }
   // для всех SMM-метрик «выше = лучше» → рост зелёный, падение красное
@@ -29835,28 +29841,34 @@ function renderSMMCompareStrip(reports) {
       subH = arrow(d) + ' ' + (d>0?'+':d<0?'−':'') + Math.abs(d).toFixed(2) + ' п.п.';
       subC = col(d);
     }
+    const footTxt = prev ? ('пред. ' + pct(pv)) : '—';
     return '<div class="apl-hero-card">'
       + '<div class="apl-hero-eyebrow">'+label+'</div>'
       + '<div class="apl-hero-num" style="color:'+(lv==null?'var(--txt2)':brandColor)+';">'+numH+'</div>'
       + '<div class="apl-hero-sub" style="color:'+subC+';">'+(subH||'—')+'</div>'
       + '<div class="apl-hero-rule"></div>'
-      + '<div class="apl-hero-foot">пред. '+pct(pv)+'</div>'
+      + '<div class="apl-hero-foot">'+footTxt+'</div>'
       + '</div>';
   }
 
   const defs = [
-    ['ER',  val(ml.er),  val(mp.er),  'var(--a2)'],
-    ['LR',  val(ml.lr),  val(mp.lr),  '#22d3ee'],
-    ['CR',  val(ml.tr),  val(mp.tr),  '#fbbf24'],
-    ['SHR', val(ml.shr), val(mp.shr), '#e879f9'],
-    ['SR',  val(ml.sr),  val(mp.sr),  '#34d399'],
+    ['ER',  last?val(ml.er):null,  prev?val(mp.er):null,  'var(--a2)'],
+    ['LR',  last?val(ml.lr):null,  prev?val(mp.lr):null,  '#22d3ee'],
+    ['CR',  last?val(ml.tr):null,  prev?val(mp.tr):null,  '#fbbf24'],
+    ['SHR', last?val(ml.shr):null, prev?val(mp.shr):null, '#e879f9'],
+    ['SR',  last?val(ml.sr):null,  prev?val(mp.sr):null,  '#34d399'],
   ];
   const cells = defs.map(function(d){ return card(d[0], d[1], d[2], d[3]); });
 
+  let pairHtml;
+  if (last && prev)  pairHtml = esc(last.period_label||'—')+' <span style="color:var(--txt3)">←</span> '+esc(prev.period_label||'—');
+  else if (last)     pairHtml = esc(last.period_label||'—')+' · ждём второй отчёт для сравнения';
+  else               pairHtml = 'появится после двух SMM-отчётов с метриками';
+
   el.innerHTML =
     '<div class="rpc-head2"><span class="rpc-eyebrow">Последний vs предыдущий</span>'
-    + '<span class="rpc-pair">'+esc(last.period_label||'—')+' <span style="color:var(--txt3)">←</span> '+esc(prev.period_label||'—')+'</span></div>'
-    + '<div class="apl-hero-strip rpc-strip rpc-strip-5">'
+    + '<span class="rpc-pair">'+pairHtml+'</span></div>'
+    + '<div class="apl-hero-strip rpc-strip rpc-strip-5'+(last?'':' rpc-dim')+'">'
     +   cells.join('<div class="apl-hero-divider"></div>')
     + '</div>';
 }
