@@ -20858,6 +20858,41 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
         </div>
       </div>
 
+      <!-- PULSE STRIP — показатели операционки в стиле финансов -->
+      <div class="apl-hero-strip" id="kb-pulse-strip" style="margin-top:16px;">
+        <div class="apl-hero-card apl-hero-revenue">
+          <div class="apl-hero-eyebrow">Время всего</div>
+          <div class="apl-hero-num" id="kbp-time">—</div>
+          <div class="apl-hero-sub">часов отработано</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="kbp-time-foot">—</div>
+        </div>
+        <div class="apl-hero-divider"></div>
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">Сделано сегодня</div>
+          <div class="apl-hero-num apl-green" id="kbp-today">—</div>
+          <div class="apl-hero-sub">задач закрыто</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="kbp-week-foot">—</div>
+        </div>
+        <div class="apl-hero-divider"></div>
+        <div class="apl-hero-card apl-hero-profit">
+          <div class="apl-hero-eyebrow">Выполнено</div>
+          <div class="apl-hero-num" id="kbp-done-pct">—</div>
+          <div class="apl-hero-sub" id="kbp-done-sub">— из — задач</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-margin-bar"><div class="apl-margin-track"><div class="apl-margin-fill" id="kbp-done-bar" style="width:0%"></div></div></div>
+        </div>
+        <div class="apl-hero-divider"></div>
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">Rework rate</div>
+          <div class="apl-hero-num" id="kbp-rework">—</div>
+          <div class="apl-hero-sub" id="kbp-rework-sub">возвраты задач</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="kbp-rework-foot">—</div>
+        </div>
+      </div>
+
       <!-- SQL note (hidden until error) -->
       <div class="kb-sql-note" id="kb-sql-note" style="display:none;">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -27894,6 +27929,7 @@ function renderKanban() {
   renderKanbanCol('kb-cards-active',  cols.active,  'active')
   renderKanbanCol('kb-cards-done',    cols.done,    'done')
   kbRestoreDoneState()
+  if (typeof renderKbPulse === 'function') renderKbPulse()
 }
 
 function renderKanbanCol(containerId, tasks, status) {
@@ -27990,6 +28026,7 @@ function renderKanbanCol(containerId, tasks, status) {
       <div class="kb-card-body">
         <div class="kb-card-toprow">
           <span class="kb-pri-badge ${priClass[pri]}">${priLabels[pri]||pri}</span>
+          ${status==='done' && (t.returned_count||0)>0 ? `<span class="kb-rework-badge" title="возвращалась ${t.returned_count} раз">↩ ${t.returned_count}×</span>` : ''}
           ${timerHtml}
         </div>
 
@@ -38828,6 +38865,58 @@ window.switchDashTab = function(tab, btn) {
   // Клик по чипу — просто перерисовываем с новым выбранным id (id уникален, безопасен)
   window.selectStageAssignee = function (id) {
     window.renderStageAssignee(window._stageMembers || [], id || '');
+  };
+})();
+</script>
+
+<script id="dtr-kb-pulse-js">
+(function () {
+  if (!document.getElementById('dtr-kb-pulse-style')) {
+    var st = document.createElement('style');
+    st.id = 'dtr-kb-pulse-style';
+    st.textContent =
+      '.kb-rework-badge{font-family:var(--font-mono);font-size:9px;letter-spacing:.02em;color:var(--amber);background:rgba(232,153,58,.15);padding:2px 6px;border-radius:5px;white-space:nowrap;}';
+    document.head.appendChild(st);
+  }
+
+  window.renderKbPulse = function () {
+    var strip = document.getElementById('kb-pulse-strip');
+    if (!strip) return;
+    var tasks = (typeof kanbanTasks !== 'undefined' && kanbanTasks) ? kanbanTasks : [];
+    function setT(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+    function fmtHM(min) { min = Math.round(min || 0); var h = Math.floor(min / 60), m = min % 60; return h > 0 ? (h + 'ч' + (m ? ' ' + m + 'м' : '')) : (m + 'м'); }
+
+    var t0 = new Date(); t0.setHours(0, 0, 0, 0); var t0ms = t0.getTime();
+    var w0 = Date.now() - 7 * 86400000;
+
+    var totalMin = 0, doneCount = 0, activeCount = 0, todayCount = 0, weekCount = 0, returns = 0, completedEver = 0;
+    tasks.forEach(function (t) {
+      totalMin += (t.time_logged || 0);
+      var st = t.kanban_status || (t.done ? 'done' : 'waiting');
+      if (st === 'active' || t.timer_started_at) activeCount++;
+      if (t.done) doneCount++;
+      if (t.done || t.done_at) completedEver++;
+      if (t.done && t.done_at) { var dm = new Date(t.done_at).getTime(); if (dm >= t0ms) todayCount++; if (dm >= w0) weekCount++; }
+      returns += (t.returned_count > 0) ? t.returned_count : ((t.done_at && !t.done && st === 'waiting') ? 1 : 0);
+    });
+
+    var total = tasks.length;
+    var donePct = total ? Math.round(doneCount / total * 100) : 0;
+    var reworkPct = completedEver ? Math.round(returns / completedEver * 100) : 0;
+
+    setT('kbp-time', fmtHM(totalMin));
+    setT('kbp-time-foot', activeCount + ' в работе');
+    setT('kbp-today', todayCount);
+    setT('kbp-week-foot', 'за неделю: ' + weekCount);
+    setT('kbp-done-pct', donePct + '%');
+    setT('kbp-done-sub', total ? (doneCount + ' из ' + total + ' задач') : 'нет задач');
+    var bar = document.getElementById('kbp-done-bar'); if (bar) bar.style.width = donePct + '%';
+
+    setT('kbp-rework', reworkPct + '%');
+    setT('kbp-rework-sub', completedEver ? (returns + ' из ' + completedEver + ' задач') : 'нет данных');
+    var rwNum = document.getElementById('kbp-rework');
+    if (rwNum) rwNum.style.color = completedEver ? (reworkPct <= 10 ? 'var(--green)' : reworkPct <= 20 ? 'var(--amber)' : 'var(--red)') : 'var(--txt3)';
+    setT('kbp-rework-foot', completedEver ? (reworkPct <= 10 ? 'норма · ≤10%' : reworkPct <= 20 ? 'умеренно' : 'высокий · >20%') : '—');
   };
 })();
 </script>
