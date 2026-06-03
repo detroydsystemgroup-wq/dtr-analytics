@@ -37823,6 +37823,10 @@ async function loadTeamPanel() {
   var members = membersRes.data || [];
   var stages  = stagesRes.data || [];
 
+  // ── Кэш для drill-down по нагрузке (клик по статусу → задачи сотрудника) ──
+  window._wlMembers = members;
+  window._wlStages  = stages;
+
   // Список участников — берём данные из кэша Сводки или ждём его
   if (!members.length) {
     listEl.innerHTML = '<div style="font-size:12px;color:var(--txt3);padding:12px 0;">Пока нет участников. Добавь первого.</div>';
@@ -37953,10 +37957,15 @@ async function loadTeamPanel() {
 
     function lc(n){ return n>=5?'var(--red)':n>=3?'var(--amber)':n>0?'var(--green)':'rgba(255,255,255,.2)'; }
 
-    function tcell(count, color, bl) {
+    function tcell(count, color, bl, memberId, status) {
       var pct = Math.round(count / maxT * 100);
       var bls = bl ? 'border-left:1px solid rgba(255,255,255,.06);' : '';
-      return '<div style="' + bls + 'padding:14px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">' +
+      var clickable = count > 0 && memberId;
+      var clickAttr = clickable
+        ? ' class="wl-cell-click" data-mid="' + memberId + '" data-st="' + status + '" onclick="openWorkloadDrill(\'' + memberId + '\',\'' + status + '\')" title="Показать задачи сотрудника"'
+        : '';
+      var cur = clickable ? 'cursor:pointer;' : '';
+      return '<div' + clickAttr + ' style="' + bls + cur + 'padding:14px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transition:background .14s ease;position:relative;">' +
         '<div style="font-size:20px;font-family:var(--font-mono);color:' + (count>0?color:'rgba(255,255,255,.15)') + ';line-height:1;">' + (count>0?count:'—') + '</div>' +
         (count>0 ? '<div style="width:48px;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;"><div style="width:'+pct+'%;height:100%;background:'+color+';border-radius:2px;"></div></div>' : '') +
       '</div>';
@@ -37981,9 +37990,9 @@ async function loadTeamPanel() {
             '<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);margin-top:2px;">' + r.total + ' этапов</div>' +
           '</div>' +
         '</div>' +
-        tcell(r.pending,   'rgba(200,196,190,.6)', true) +
-        tcell(r.active,    lc(r.active),           true) +
-        tcell(r.completed, 'var(--green)',          true) +
+        tcell(r.pending,   'rgba(200,196,190,.6)', true, r.m.id, 'pending') +
+        tcell(r.active,    lc(r.active),           true, r.m.id, 'active') +
+        tcell(r.completed, 'var(--green)',          true, r.m.id, 'completed') +
       '</div>';
     }).join('');
 
@@ -38549,5 +38558,197 @@ window.switchDashTab = function(tab, btn) {
   _origSwitchDashTab2 && _origSwitchDashTab2(tab, btn);
   if (tab === 'team') loadTeamPanel();
 };
+</script>
+
+<!-- ═══════════════════════════════════════════════
+     WORKLOAD DRILL-DOWN — клик по статусу → задачи сотрудника → переход на канбан
+     Мост: этап (assignee_id) → задачи этапа (project_id + stage_index) → карточка #kbc-<id>
+═══════════════════════════════════════════════ -->
+<script id="dtr-workload-drill-js">
+(function () {
+  // ── Стили (инжектим один раз) ──
+  if (!document.getElementById('wl-drill-style')) {
+    var st = document.createElement('style');
+    st.id = 'wl-drill-style';
+    st.textContent =
+      '.wl-cell-click:hover{background:rgba(184,146,58,.08)!important;}' +
+      '.wl-cell-click:active{background:rgba(184,146,58,.14)!important;}' +
+      '.wl-ov{position:fixed;inset:0;z-index:9000;display:none;align-items:stretch;justify-content:flex-end;background:rgba(8,8,12,.55);backdrop-filter:blur(3px);animation:fadeIn .18s ease;}' +
+      '.wl-ov.open{display:flex;}' +
+      '.wl-panel{width:min(460px,92vw);height:100%;background:var(--bg2,#15151c);border-left:1px solid var(--brd,rgba(255,255,255,.08));box-shadow:-24px 0 60px rgba(0,0,0,.45);display:flex;flex-direction:column;animation:wlSlide .26s cubic-bezier(.16,1,.3,1) both;}' +
+      '@keyframes wlSlide{from{transform:translateX(40px);opacity:0}to{transform:translateX(0);opacity:1}}' +
+      '.wl-head{padding:18px 20px 14px;border-bottom:1px solid var(--brd,rgba(255,255,255,.08));display:flex;align-items:center;gap:13px;}' +
+      '.wl-head-x{margin-left:auto;width:30px;height:30px;border-radius:8px;border:1px solid var(--brd,rgba(255,255,255,.1));background:transparent;color:var(--txt2,#aaa);cursor:pointer;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;flex-shrink:0;}' +
+      '.wl-head-x:hover{background:rgba(255,255,255,.06);color:var(--txt,#fff);}' +
+      '.wl-body{flex:1;overflow-y:auto;padding:14px 16px 28px;}' +
+      '.wl-grp{margin-bottom:16px;}' +
+      '.wl-grp-hd{font-size:11px;letter-spacing:.04em;color:var(--txt3,#888);font-family:var(--font-mono,monospace);text-transform:uppercase;margin:0 2px 7px;display:flex;align-items:center;gap:6px;}' +
+      '.wl-task{display:flex;align-items:center;gap:10px;padding:11px 13px;border:1px solid var(--brd,rgba(255,255,255,.08));border-radius:11px;background:var(--bg3,rgba(255,255,255,.02));cursor:pointer;margin-bottom:7px;transition:border-color .14s,transform .14s,background .14s;}' +
+      '.wl-task:hover{border-color:rgba(184,146,58,.45);transform:translateX(-3px);background:rgba(184,146,58,.05);}' +
+      '.wl-task-title{flex:1;min-width:0;font-size:13px;color:var(--txt,#eee);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
+      '.wl-badge{font-size:9.5px;font-family:var(--font-mono,monospace);padding:3px 7px;border-radius:6px;flex-shrink:0;letter-spacing:.02em;}' +
+      '.wl-arrow{color:var(--txt3,#777);flex-shrink:0;font-size:15px;}' +
+      '.wl-empty{font-size:12px;color:var(--txt3,#888);padding:9px 12px;border:1px dashed var(--brd,rgba(255,255,255,.1));border-radius:10px;}' +
+      '.wl-stage-link{font-size:11px;color:var(--a2,#c9a84c);cursor:pointer;text-decoration:underline;text-underline-offset:2px;}' +
+      '@keyframes wlKbFlash{0%,100%{box-shadow:0 0 0 0 rgba(184,146,58,0);}30%{box-shadow:0 0 0 3px rgba(184,146,58,.9),0 0 26px rgba(184,146,58,.55);}}' +
+      '.wl-kb-flash{animation:wlKbFlash 1.3s ease 2;border-color:rgba(184,146,58,.7)!important;}';
+    document.head.appendChild(st);
+  }
+
+  // ── Overlay DOM (создаём один раз) ──
+  var ov = document.getElementById('wl-drill-ov');
+  if (!ov) {
+    ov = document.createElement('div');
+    ov.className = 'wl-ov';
+    ov.id = 'wl-drill-ov';
+    ov.innerHTML =
+      '<div class="wl-panel" onclick="event.stopPropagation()">' +
+        '<div class="wl-head" id="wl-drill-head"></div>' +
+        '<div class="wl-body" id="wl-drill-body"></div>' +
+      '</div>';
+    ov.addEventListener('click', function () { if (window.closeWorkloadDrill) window.closeWorkloadDrill(); });
+    document.body.appendChild(ov);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && ov.classList.contains('open') && window.closeWorkloadDrill) window.closeWorkloadDrill();
+    });
+  }
+
+  var ST_LABELS = { pending: 'В ожидании', active: 'В работе', completed: 'Завершено' };
+  var ST_COLORS = { pending: 'rgba(200,196,190,.85)', active: 'var(--amber,#e8993a)', completed: 'var(--green,#3ecf8e)' };
+  var KB_BADGE = {
+    waiting: { t: 'Ожидает',  bg: 'rgba(200,196,190,.12)', c: 'rgba(220,216,210,.85)' },
+    active:  { t: 'В работе', bg: 'rgba(232,153,58,.14)',   c: 'var(--amber,#e8993a)' },
+    done:    { t: 'Готово',   bg: 'rgba(62,207,142,.14)',   c: 'var(--green,#3ecf8e)' }
+  };
+
+  function esc2(s) { return (typeof esc === 'function') ? esc(s) : String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function projName(pid) {
+    var arr = (typeof _allProjects !== 'undefined' && _allProjects) ? _allProjects : [];
+    var p = arr.find(function (x) { return x.id === pid; });
+    return p ? p.name : 'Проект';
+  }
+  function stageName(s) {
+    if (s.name) return s.name;
+    if (typeof STAGES !== 'undefined' && STAGES[s.stage_index]) return STAGES[s.stage_index].name;
+    return 'Этап ' + ((s.stage_index || 0) + 1);
+  }
+
+  window.closeWorkloadDrill = function () {
+    var o = document.getElementById('wl-drill-ov');
+    if (o) o.classList.remove('open');
+  };
+
+  window.openWorkloadDrill = async function (memberId, status) {
+    var members = window._wlMembers || [];
+    var stages  = window._wlStages || [];
+    var m = members.find(function (x) { return x.id === memberId; });
+    if (!m) return;
+
+    // Этапы этого сотрудника в выбранном статусе
+    var myStages = stages.filter(function (s) { return s.assignee_id === memberId && s.status === status; });
+
+    var col = ST_COLORS[status] || 'var(--a2,#c9a84c)';
+    var avatar = m.avatar_url
+      ? '<div style="width:40px;height:40px;border-radius:10px;overflow:hidden;border:1.5px solid ' + m.color + '55;flex-shrink:0;"><img src="' + m.avatar_url + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+      : '<div style="width:40px;height:40px;border-radius:10px;background:' + m.color + '22;border:1.5px solid ' + m.color + '55;display:flex;align-items:center;justify-content:center;font-size:16px;color:' + m.color + ';flex-shrink:0;">' + esc2((m.name || '?')[0].toUpperCase()) + '</div>';
+
+    g('wl-drill-head').innerHTML =
+      avatar +
+      '<div style="flex:1;min-width:0;">' +
+        '<div style="font-size:15px;color:var(--txt,#eee);font-weight:500;line-height:1.15;">' + esc2(m.name) + '</div>' +
+        '<div style="font-size:11px;margin-top:3px;font-family:var(--font-mono,monospace);"><span style="color:' + col + ';">' + (ST_LABELS[status] || status) + '</span> <span style="color:var(--txt3,#888);">· ' + myStages.length + ' эт.</span></div>' +
+      '</div>' +
+      '<button class="wl-head-x" onclick="closeWorkloadDrill()" title="Закрыть (Esc)">✕</button>';
+
+    var body = g('wl-drill-body');
+    document.getElementById('wl-drill-ov').classList.add('open');
+
+    if (!myStages.length) {
+      body.innerHTML = '<div class="wl-empty">У сотрудника нет этапов в статусе «' + (ST_LABELS[status] || status) + '».</div>';
+      return;
+    }
+
+    body.innerHTML = '<div style="font-size:12px;color:var(--txt3,#888);padding:8px 4px;">Загрузка задач…</div>';
+
+    // Подтягиваем задачи только по нужным проектам (одним запросом)
+    var projIds = Array.from(new Set(myStages.map(function (s) { return s.project_id; })));
+    var tasks = [];
+    try {
+      var res = await sb.from('stage_tasks')
+        .select('id,title,priority,deadline,kanban_status,done,project_id,stage_index')
+        .in('project_id', projIds);
+      tasks = res.data || [];
+    } catch (e) { tasks = []; }
+
+    // Рендер: группа = этап (проект › этап), внутри — задачи
+    var html = myStages.map(function (s) {
+      var stTasks = tasks.filter(function (t) {
+        return t.project_id === s.project_id && (t.stage_index === s.stage_index);
+      });
+      stTasks.forEach(function (t) { if (!t.kanban_status) t.kanban_status = t.done ? 'done' : 'waiting'; });
+
+      var grpHd =
+        '<div class="wl-grp-hd">' +
+          '<span style="color:var(--txt2,#bbb);">' + esc2(projName(s.project_id)) + '</span>' +
+          '<span style="opacity:.5;">›</span>' +
+          '<span>' + esc2(stageName(s)) + '</span>' +
+        '</div>';
+
+      var rows;
+      if (!stTasks.length) {
+        rows = '<div class="wl-empty">Задач в этапе нет. ' +
+          '<span class="wl-stage-link" onclick="wlOpenProjectOnly(\'' + s.project_id + '\')">Открыть проект →</span></div>';
+      } else {
+        rows = stTasks.map(function (t) {
+          var b = KB_BADGE[t.kanban_status] || KB_BADGE.waiting;
+          var dl = '';
+          if (t.deadline) {
+            var dd = new Date(t.deadline + 'T00:00:00');
+            if (!isNaN(dd)) dl = '<span class="wl-badge" style="background:rgba(255,255,255,.05);color:var(--txt3,#888);">' + dd.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }) + '</span>';
+          }
+          return '<div class="wl-task" onclick="wlGoToTask(\'' + t.project_id + '\',\'' + t.id + '\')">' +
+            '<span class="wl-task-title">' + esc2(t.title) + '</span>' +
+            dl +
+            '<span class="wl-badge" style="background:' + b.bg + ';color:' + b.c + ';">' + b.t + '</span>' +
+            '<span class="wl-arrow">→</span>' +
+          '</div>';
+        }).join('');
+      }
+      return '<div class="wl-grp">' + grpHd + rows + '</div>';
+    }).join('');
+
+    body.innerHTML = html;
+  };
+
+  window.wlOpenProjectOnly = async function (projectId) {
+    closeWorkloadDrill();
+    if (typeof openProject === 'function') await openProject(projectId);
+  };
+
+  // Переход на задачу на канбане: открыть проект → вкладка «Канбан» → доскроллить + подсветить
+  window.wlGoToTask = async function (projectId, taskId) {
+    closeWorkloadDrill();
+    if (typeof openProject !== 'function') return;
+    await openProject(projectId);
+
+    var kbBtn = g('pptab-kanban');
+    if (typeof switchProjTab === 'function') switchProjTab('kanban', kbBtn);
+
+    // Карточки рендерятся асинхронно (loadKanban) — ждём появления
+    var tries = 0;
+    var timer = setInterval(function () {
+      var card = g('kbc-' + taskId);
+      if (card) {
+        clearInterval(timer);
+        try { card.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+        card.classList.add('wl-kb-flash');
+        setTimeout(function () { card.classList.remove('wl-kb-flash'); }, 2700);
+      } else if (++tries > 45) { // ~4.5с
+        clearInterval(timer);
+        if (typeof showToast === 'function') showToast('Задача не найдена на канбане', 'warn');
+      }
+    }, 100);
+  };
+})();
 </script>
 </html>
