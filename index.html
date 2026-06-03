@@ -22816,9 +22816,8 @@ UPDATE stage_tasks SET kanban_status = CASE WHEN done = true THEN 'done' ELSE 'w
       </div>
     </div>
     <div class="field"><label>Ответственный</label>
-      <select id="stage-assignee-inp" style="width:100%;">
-        <option value="">— Не назначен —</option>
-      </select>
+      <div id="stage-assignee-grid" class="stage-asg-grid"></div>
+      <input type="hidden" id="stage-assignee-id" value="">
     </div>
     <div class="field"><label>Заметка для клиента</label><input type="text" id="stage-note-inp" placeholder="Например: собрали данные за 3 месяца"></div>
     <div class="field"><label>Дата завершения (план)</label><input type="date" id="stage-deadline-inp"></div>
@@ -28682,20 +28681,13 @@ function openEditStage(i) {
   selectedStageStatus = rec.status || 'pending'
   updateStageStatusBtns()
 
-  // Загружаем команду в дропдаун
-  const sel = g('stage-assignee-inp')
-  if (sel) {
-    sel.innerHTML = '<option value="">— Не назначен —</option>'
+  // Загружаем команду в кастомный пикер с аватарками
+  var _asgGrid = g('stage-assignee-grid')
+  if (_asgGrid) {
+    _asgGrid.innerHTML = '<div style="font-size:12px;color:var(--txt3);padding:6px 2px;">Загрузка команды…</div>'
     sb.from('team_members').select('id,name,role,color,avatar_url').eq('agency_id', currentUser.id).order('name')
       .then(function(res) {
-        var members = res.data || []
-        members.forEach(function(m) {
-          var opt = document.createElement('option')
-          opt.value = m.id
-          opt.textContent = m.name + (m.role ? ' · ' + m.role : '')
-          if (rec.assignee_id === m.id) opt.selected = true
-          sel.appendChild(opt)
-        })
+        if (typeof renderStageAssignee === 'function') renderStageAssignee(res.data || [], rec.assignee_id || '')
       })
   }
 
@@ -28718,9 +28710,8 @@ async function saveStage() {
   const note = g('stage-note-inp').value.trim()
   const deadline = g('stage-deadline-inp').value || null
   const link = g('stage-link-inp').value.trim() || null
-  const assigneeSel = g('stage-assignee-inp')
-  const assigneeId   = assigneeSel?.value || null
-  const assigneeName = assigneeSel?.options[assigneeSel.selectedIndex]?.text || null
+  const assigneeId   = g('stage-assignee-id')?.value || null
+  const assigneeName = assigneeId ? (window._stageAssigneeName || null) : null
   const existing = trackerData.find(r => r.stage_index === editingStageIndex)
   const prevStatus = existing?.status || 'pending'
 
@@ -38581,11 +38572,13 @@ window.switchDashTab = function(tab, btn) {
       '.wl-head-x{margin-left:auto;width:30px;height:30px;border-radius:8px;border:1px solid var(--brd,rgba(255,255,255,.1));background:transparent;color:var(--txt2,#aaa);cursor:pointer;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;flex-shrink:0;}' +
       '.wl-head-x:hover{background:rgba(255,255,255,.06);color:var(--txt,#fff);}' +
       '.wl-body{flex:1;overflow-y:auto;padding:18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;align-content:start;}' +
-      '.wl-body.wl-single{display:flex;justify-content:center;}' +
-      '.wl-body.wl-single .wl-grp{width:min(520px,100%);}' +
+      '.wl-body.wl-single{display:block;}' +
+      '.wl-body.wl-single .wl-grp{width:100%;}' +
+      '.wl-body.wl-single .wl-tasks{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:9px;}' +
       '.wl-grp{border:1px solid var(--brd,rgba(255,255,255,.07));border-radius:14px;background:var(--bg3,rgba(255,255,255,.018));padding:13px 13px 7px;align-self:start;}' +
       '.wl-grp-hd{font-size:11px;letter-spacing:.04em;color:var(--txt3,#888);font-family:var(--font-mono,monospace);text-transform:uppercase;margin:0 2px 11px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}' +
-      '.wl-task{display:flex;align-items:center;gap:10px;padding:11px 13px;border:1px solid var(--brd,rgba(255,255,255,.08));border-radius:11px;background:var(--bg3,rgba(255,255,255,.02));cursor:pointer;margin-bottom:7px;transition:border-color .14s,transform .14s,background .14s;}' +
+      '.wl-tasks{display:flex;flex-direction:column;gap:7px;}' +
+      '.wl-task{display:flex;align-items:center;gap:10px;padding:11px 13px;border:1px solid var(--brd,rgba(255,255,255,.08));border-radius:11px;background:var(--bg3,rgba(255,255,255,.02));cursor:pointer;transition:border-color .14s,transform .14s,background .14s;}' +
       '.wl-task:hover{border-color:rgba(184,146,58,.45);transform:translateY(-2px);background:rgba(184,146,58,.05);}' +
       '.wl-task-title{flex:1;min-width:0;font-size:13px;color:var(--txt,#eee);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
       '.wl-badge{font-size:9.5px;font-family:var(--font-mono,monospace);padding:3px 7px;border-radius:6px;flex-shrink:0;letter-spacing:.02em;}' +
@@ -38717,7 +38710,7 @@ window.switchDashTab = function(tab, btn) {
           '</div>';
         }).join('');
       }
-      return '<div class="wl-grp">' + grpHd + rows + '</div>';
+      return '<div class="wl-grp">' + grpHd + '<div class="wl-tasks">' + rows + '</div></div>';
     }).join('');
 
     body.classList.toggle('wl-single', myStages.length <= 1);
@@ -38752,6 +38745,89 @@ window.switchDashTab = function(tab, btn) {
         if (typeof showToast === 'function') showToast('Задача не найдена на канбане', 'warn');
       }
     }, 100);
+  };
+})();
+</script>
+
+<!-- ═══════════════════════════════════════════════
+     STAGE ASSIGNEE PICKER — аватарки вместо нативного select
+═══════════════════════════════════════════════ -->
+<script id="dtr-stage-assignee-js">
+(function () {
+  if (!document.getElementById('stage-asg-style')) {
+    var st = document.createElement('style');
+    st.id = 'stage-asg-style';
+    st.textContent =
+      '.stage-asg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(154px,1fr));gap:8px;}' +
+      '.stage-asg-chip{display:flex;align-items:center;gap:9px;padding:9px 11px;border:1px solid rgba(184,146,58,.12);border-radius:11px;background:rgba(184,146,58,.04);cursor:pointer;transition:border-color .16s,background .16s,transform .16s,box-shadow .16s;text-align:left;min-width:0;}' +
+      '.stage-asg-chip:hover{border-color:rgba(184,146,58,.3);background:rgba(184,146,58,.09);transform:translateY(-1px);}' +
+      '.stage-asg-chip.asg-active{border-color:rgba(184,146,58,.45);background:rgba(184,146,58,.14);box-shadow:0 0 18px rgba(184,146,58,.14);}' +
+      '.stage-asg-av{width:30px;height:30px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;overflow:hidden;}' +
+      '.stage-asg-av img{width:100%;height:100%;object-fit:cover;display:block;}' +
+      '.stage-asg-meta{min-width:0;flex:1;}' +
+      '.stage-asg-name{font-size:12.5px;color:var(--txt,#eee);font-weight:500;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}' +
+      '.stage-asg-role{font-size:10px;color:var(--txt3,#888);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;}' +
+      '.stage-asg-check{margin-left:auto;color:var(--a2,#c9a84c);opacity:0;flex-shrink:0;transition:opacity .16s;display:flex;}' +
+      '.stage-asg-chip.asg-active .stage-asg-check{opacity:1;}';
+    document.head.appendChild(st);
+  }
+
+  function esc3(s) {
+    return (typeof esc === 'function') ? esc(s)
+      : String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; });
+  }
+
+  var CHECK_SVG = '<span class="stage-asg-check"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>';
+
+  window.renderStageAssignee = function (members, selectedId) {
+    var grid = document.getElementById('stage-assignee-grid');
+    if (!grid) return;
+    members = members || [];
+    window._stageMembers = members;
+    selectedId = selectedId || '';
+
+    var chips = [];
+    // «Не назначен»
+    chips.push(
+      '<div class="stage-asg-chip' + (!selectedId ? ' asg-active' : '') + '" onclick="selectStageAssignee(\'\')">' +
+        '<div class="stage-asg-av" style="background:rgba(140,140,150,.12);color:var(--txt3,#888);border:1px dashed rgba(255,255,255,.2);">' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h2"/><line x1="17" y1="13" x2="23" y2="19"/><line x1="23" y1="13" x2="17" y2="19"/></svg>' +
+        '</div>' +
+        '<div class="stage-asg-meta"><div class="stage-asg-name">Не назначен</div></div>' +
+        CHECK_SVG +
+      '</div>'
+    );
+
+    members.forEach(function (m) {
+      var active = selectedId === m.id;
+      var col = m.color || '#b8923a';
+      var av = m.avatar_url
+        ? '<div class="stage-asg-av" style="border:1px solid ' + col + '55;"><img src="' + m.avatar_url + '" alt=""></div>'
+        : '<div class="stage-asg-av" style="background:' + col + '22;border:1px solid ' + col + '55;color:' + col + ';">' + esc3((m.name || '?')[0].toUpperCase()) + '</div>';
+      chips.push(
+        '<div class="stage-asg-chip' + (active ? ' asg-active' : '') + '" onclick="selectStageAssignee(\'' + m.id + '\')">' +
+          av +
+          '<div class="stage-asg-meta">' +
+            '<div class="stage-asg-name">' + esc3(m.name) + '</div>' +
+            (m.role ? '<div class="stage-asg-role">' + esc3(m.role) + '</div>' : '') +
+          '</div>' +
+          CHECK_SVG +
+        '</div>'
+      );
+    });
+
+    grid.innerHTML = chips.join('');
+
+    // Синхронизируем скрытое значение + кэш имени (читается в saveStage)
+    var hidden = document.getElementById('stage-assignee-id');
+    if (hidden) hidden.value = selectedId;
+    var selM = members.find(function (x) { return x.id === selectedId; });
+    window._stageAssigneeName = selM ? selM.name : null;
+  };
+
+  // Клик по чипу — просто перерисовываем с новым выбранным id (id уникален, безопасен)
+  window.selectStageAssignee = function (id) {
+    window.renderStageAssignee(window._stageMembers || [], id || '');
   };
 })();
 </script>
