@@ -18765,6 +18765,7 @@ var _isClient = false; // будет перезаписан основным с�
     if (btnPeriod) btnPeriod.style.display = 'flex';
     _syncPeriodBtn();
   }
+  window._showObToggle = _showObToggle;
 
   function _syncPeriodBtn() {
     var bEl = document.getElementById('btn-period-b');
@@ -21210,6 +21211,10 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 @media(max-width:760px){.analytics-wrap .exi-grid{grid-template-columns:1fr}}
 .analytics-wrap .exi-method{font-family:var(--font-mono);font-size:11px;color:var(--txt3);margin-top:10px;line-height:1.5;border-top:1px dashed var(--brd);padding-top:10px}
 /* ═══════════ /EXEC INSIGHTS ═══════════ */
+
+/* Блок «Финансы и прогноз» скрыт по запросу (ROI/прогноз по 2 точкам вводили в заблуждение). */
+/* Чтобы вернуть — удалить это правило. */
+#block-finance { display:none !important; }
 </style>
     <div id="dtr-ss-smm" style="display:block;">
     <div style="padding:48px 64px 80px;width:100%;">
@@ -25552,7 +25557,12 @@ function runAnalysis() {
 
   updateAllLabels()
 
-  const bD = b.meta.days||1, dD = d.meta.days||1
+  let bD = b.meta.days||1, dD = d.meta.days||1
+  // Защита: если meta.days не сохранился (старый отчёт из базы) — восстанавливаем из числа дневных строк,
+  // иначе выручка/день раздувается до суммы за период и ломает график и KPI.
+  const _dayRows = (s)=> (s && Array.isArray(s.rows)) ? s.rows.filter(r=>/^\d{1,2}\.\d{1,2}\./.test(String(r.label||''))).length : 0
+  if (bD <= 1) { const n=_dayRows(b); if (n>1) bD=n }
+  if (dD <= 1) { const n=_dayRows(d); if (n>1) dD=n }
   const bR = b.meta.totalRev, dR = d.meta.totalRev
   const bC = b.meta.totalChk, dC = d.meta.totalChk
   const bRD = bR/bD, dRD = dR/dD, bCD = bC/bD, dCD = dC/dD
@@ -25599,7 +25609,11 @@ function runAnalysis() {
   // Charts
   const bArr = b.rows.map(r=>+(r.rev/1e6).toFixed(2))
   const dArr = d.rows.map(r=>+(r.rev/1e6).toFixed(2))
-  const base = Array(Math.max(bArr.length,dArr.length)).fill(+(bRD/1e6).toFixed(2))
+  // Базовая линия = СРЕДНЕЕ дневной выручки базового периода, считаем прямо из точек графика,
+  // чтобы линия всегда была в одном масштабе с днями (раньше бралось bRD, что при сбое meta.days
+  // могло равняться сумме за период и сплющивало график).
+  const baseAvgM = bArr.length ? bArr.reduce((s,v)=>s+v,0)/bArr.length : +(bRD/1e6).toFixed(2)
+  const base = Array(Math.max(bArr.length,dArr.length)).fill(+baseAvgM.toFixed(2))
   const lbl = Array.from({length:Math.max(bArr.length,dArr.length)},(_,i)=>i+1)
 
   mkChart('cDay','line',{labels:lbl,datasets:[
@@ -25858,6 +25872,15 @@ function runAnalysis() {
   if (fcSec) fcSec.style.display = 'block'
 
   g('analytics-wrap').classList.add('visible')
+  // Показать тумблер подсказок. Его прежняя обёртка над runAnalysis перезаписывалась
+  // hoisted-объявлением функции, поэтому раскрываем кнопку здесь напрямую и надёжно.
+  // Только для агентства (не в клиентском просмотре).
+  try {
+    var _isCli = (typeof _isClient !== 'undefined' && _isClient) || (typeof window!=='undefined' && window._isClient)
+    var _obBtn = g('ob-toggle')
+    if (_obBtn && !_isCli) _obBtn.style.display = 'inline-flex'
+    if (typeof window !== 'undefined' && typeof window._showObToggle === 'function') { try { window._showObToggle() } catch(e2){} }
+  } catch(e) {}
   // Перерисовка графиков: часть canvas создаётся, пока блок ещё скрыт (0×0).
   // После показа форсируем resize, иначе диаграммы остаются пустыми.
   var _redrawCharts = function(){ Object.keys(CH).forEach(function(k){ try { CH[k].resize(); CH[k].update('none') } catch(e){} }) }
