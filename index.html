@@ -21890,14 +21890,22 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
           <span class="ub-tag" style="background:rgba(232,153,58,.12);color:var(--a);">Количество</span>
         </div>
         <div class="drop-row">
-          <div class="drop" id="z-cmb" onclick="document.getElementById('f-cmb').click()" ondragover="dv(event,'cmb')" ondragleave="dl('cmb')" ondrop="dd(event,'cmb')" style="flex:1;">
-            <div class="drop-per" style="color:var(--a);">Выгрузка по чекам</div>
-            <div class="drop-cta"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Загрузить файл по чекам</div>
-            <div class="drop-hint">Уникальный чек = филиал + день + смена + № чека</div>
-            <div class="drop-ok" id="ok-cmb"><span class="drop-check"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Загружен</div>
-            <input type="file" id="f-cmb" accept=".xlsx,.xls" onchange="loadFile(event,'cmb')">
+          <div class="drop" id="z-cmbB" onclick="document.getElementById('f-cmbB').click()" ondragover="dv(event,'cmbB')" ondragleave="dl('cmbB')" ondrop="dd(event,'cmbB')">
+            <div class="drop-per" style="color:var(--a2);">Период 1</div>
+            <div class="drop-cta"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Загрузить</div>
+            <div class="drop-hint">Чеки — базовый период</div>
+            <div class="drop-ok" id="ok-cmbB"><span class="drop-check"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Загружен</div>
+            <input type="file" id="f-cmbB" accept=".xlsx,.xls" onchange="loadFile(event,'cmbB')">
+          </div>
+          <div class="drop" id="z-cmbD" onclick="document.getElementById('f-cmbD').click()" ondragover="dv(event,'cmbD')" ondragleave="dl('cmbD')" ondrop="dd(event,'cmbD')">
+            <div class="drop-per" style="color:var(--a);">Период 2</div>
+            <div class="drop-cta"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3" fill="currentColor" opacity=".4"/></svg>Загрузить</div>
+            <div class="drop-hint">Чеки — сравниваемый период</div>
+            <div class="drop-ok" id="ok-cmbD"><span class="drop-check"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Загружен</div>
+            <input type="file" id="f-cmbD" accept=".xlsx,.xls" onchange="loadFile(event,'cmbD')">
           </div>
         </div>
+        <div class="drop-hint" style="text-align:center;margin-top:10px;opacity:.65;">Уникальный чек = филиал + день + смена + № чека · сравнение покажет, какие комбо устойчивы в обоих периодах</div>
       </div>
     </div>
 
@@ -24847,25 +24855,26 @@ function processFile(file, key) {
       const ws = wb.Sheets[wb.SheetNames[0]]
       const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''})
 
-      // ── Выделенный combo-слот (Шаблон 06): только корзина, без обычного парсинга ──
-      if (key === 'cmb') {
+      // ── Combo-слоты (Шаблон 06): корзина по чекам, два периода. Без обычного парсинга ──
+      if (key === 'cmbB' || key === 'cmbD') {
         const baskets = parseComboSheet(rows)
         if (!baskets || !baskets.length) {
           showToast('⚠️ Не удалось распознать выгрузку по чекам. Нужны колонки «Номер чека» и «Блюдо».', 'warn')
-          const z0 = g('z-cmb'); if (z0) z0.classList.remove('drag')
+          const z0 = g('z-' + key); if (z0) z0.classList.remove('drag')
           return
         }
-        S['combo_d'] = { baskets: baskets, n: baskets.length }
-        const zc = g('z-cmb'); if (zc) { zc.classList.remove('drag'); zc.classList.add('done') }
-        const okc = g('ok-cmb'); if (okc) { okc.textContent = '✓ ' + file.name.slice(0,22); okc.style.display = 'block' }
+        const slot = (key === 'cmbB') ? 'combo_b' : 'combo_d'
+        S[slot] = { baskets: baskets, n: baskets.length }
+        const zc = g('z-' + key); if (zc) { zc.classList.remove('drag'); zc.classList.add('done') }
+        const okc = g('ok-' + key); if (okc) { okc.textContent = '✓ ' + file.name.slice(0,22); okc.style.display = 'block' }
         showToast('✓ Комбо-данные загружены: ' + baskets.length.toLocaleString('ru-RU') + ' чеков', 'ok')
         if (currentReport) {
           try {
             const { data: { session } } = await sb.auth.getSession()
             if (session) await sb.from('report_files').upsert({
-              report_id: currentReport.id, template_type: 'combo',
+              report_id: currentReport.id, template_type: (key === 'cmbB' ? 'combo_b' : 'combo_d'),
               file_name: file.name,
-              storage_path: `${currentUser.id}/${currentReport.id}/combo.xlsx`,
+              storage_path: `${currentUser.id}/${currentReport.id}/${slot}.xlsx`,
               parsed_data: { baskets: baskets, n: baskets.length }
             }, { onConflict: 'report_id,template_type' })
           } catch(err) { console.warn('combo save skipped:', err) }
@@ -34341,16 +34350,34 @@ function renderMenuCombos(b3, d3) {
     var cc = computeCombos(comboBaskets, {minPair: Math.max(50, Math.round(comboBaskets.length*0.002))})
     var organic = cc.pairs.filter(function(p){return p.lift>1.2}).sort(function(x,y){return y.n-x.n}).slice(0,8)
     var fmtP=function(v){return new Intl.NumberFormat('ru-RU').format(Math.round(v))}
+
+    // ── Сравнение периодов: если есть оба combo-файла, проверяем устойчивость пары ──
+    var hasBoth = !!(S['combo_b'] && S['combo_b'].baskets && S['combo_d'] && S['combo_d'].baskets)
+    var liftMapB = null
+    if (hasBoth) {
+      var ccB = computeCombos(S['combo_b'].baskets, {minPair: Math.max(40, Math.round(S['combo_b'].baskets.length*0.0015))})
+      liftMapB = {}
+      ccB.pairs.forEach(function(p){ liftMapB[p.a+'\u0001'+p.b]=p.lift; liftMapB[p.b+'\u0001'+p.a]=p.lift })
+    }
+
     var H=''
     H+='<div style="font-family:var(--font-mono);font-size:10px;color:var(--txt2);margin-bottom:14px;">'
-      +'// реальные пары из '+fmtP(cc.N)+' чеков · lift>1.2 = берут вместе чаще случайного · сигнал на сет</div>'
+      +'// реальные пары из '+fmtP(cc.N)+' чеков'+(hasBoth?' (Период 2)':'')+' · lift>1.2 = берут вместе чаще случайного'
+      +(hasBoth?' · бейдж «устойчиво» = пара сильна и в Периоде 1':'')+'</div>'
     organic.forEach(function(p){
       var liftBadge = p.lift>=2 ? 'var(--green)' : 'var(--a2)'
+      var stableTag = ''
+      if (hasBoth) {
+        var lb = liftMapB[p.a+'\u0001'+p.b]
+        if (lb && lb>1.2) stableTag = '<span style="font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;background:rgba(52,211,153,.14);color:#34d399;padding:3px 9px;border-radius:20px;">устойчиво · П1 ×'+lb.toFixed(1)+'</span>'
+        else stableTag = '<span style="font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;background:rgba(251,191,36,.12);color:#fbbf24;padding:3px 9px;border-radius:20px;">только П2</span>'
+      }
       H+='<div style="background:var(--bg3);border:1px solid var(--brd);border-left:3px solid '+liftBadge+';border-radius:12px;padding:14px 16px;margin-bottom:10px;">'
         +'<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">'
         +'<span style="font-size:14px;font-weight:700;">'+p.a+'</span>'
         +'<span style="color:var(--a2);font-weight:700;">+</span>'
         +'<span style="font-size:14px;font-weight:700;">'+p.b+'</span>'
+        +(stableTag?'<span style="margin-left:8px;">'+stableTag+'</span>':'')
         +'<span style="margin-left:auto;font-family:\'Bebas Neue\',sans-serif;font-size:20px;color:'+liftBadge+';">×'+p.lift.toFixed(1)+'</span>'
         +'</div>'
         +'<div style="font-family:var(--font-mono);font-size:11px;color:var(--txt2);margin-top:6px;">'
