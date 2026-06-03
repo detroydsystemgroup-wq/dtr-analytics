@@ -24964,7 +24964,16 @@ function excelDateToStr(v) {
 
 function buildLabel(meta) {
   if (!meta) return 'Период'
-  const {dateFrom, dateTo, monthName, days} = meta
+  let {dateFrom, dateTo, monthName, days} = meta
+  // Фолбэк: если в meta нет дат/месяца, пытаемся достать из строк (дневные данные DD.MM.YYYY)
+  if (!monthName && !dateFrom && Array.isArray(meta.rows)) {
+    const dated = meta.rows.map(r => r && r.label).filter(l => /^\d{1,2}\.\d{1,2}\./.test(String(l||'')))
+    if (dated.length) { dateFrom = dated[0]; dateTo = dated[dated.length-1] }
+  }
+  if (!monthName && dateFrom) {
+    const p = String(dateFrom).split('.')
+    if (p.length >= 2) monthName = MONTHS[parseInt(p[1])] || ''
+  }
   // dateFrom/dateTo могут быть Excel-серийниками или строками вида DD.MM.YYYY
   const fmtDate = (v) => {
     if (!v) return ''
@@ -24982,6 +24991,19 @@ function buildLabel(meta) {
   }
   const from = fmtDate(dateFrom)
   const to   = fmtDate(dateTo)
+  // Приоритет — название месяца (читабельно для клиента: «Март», «Апрель»)
+  if (monthName && String(monthName).trim()) {
+    const mn = String(monthName).trim()
+    const cap = mn.charAt(0).toUpperCase() + mn.slice(1)
+    // если период охватывает 2 месяца — показываем оба
+    let mn2 = ''
+    if (to) {
+      const p2 = String(dateTo).split('.')
+      const m2 = (p2.length >= 2) ? (MONTHS[parseInt(p2[1])] || '') : ''
+      if (m2 && m2.toLowerCase() !== mn.toLowerCase()) mn2 = '–' + (m2.charAt(0).toUpperCase()+m2.slice(1))
+    }
+    return cap + mn2
+  }
   if (from && to) return `${from} – ${to}`
   if (from)       return `от ${from}`
   if (days)       return `${days} дн.`
