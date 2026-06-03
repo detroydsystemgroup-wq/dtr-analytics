@@ -18759,9 +18759,9 @@ var _isClient = false; // будет перезаписан основным с�
   function _showObToggle() {
     var btnOb     = document.getElementById('ob-toggle');
     var btnPeriod = document.getElementById('btn-period-wrap');
-    if (!_isClient) {
-      if (btnOb)     btnOb.style.display     = 'inline-flex';
-    }
+    // Этот путь вызывается только из агентского просмотра отчёта (клиент рендерится отдельной страницей #page-client),
+    // поэтому показываем тумблер вместе с бейджем периода без доп. гейта.
+    if (btnOb)     btnOb.style.display     = 'inline-flex';
     if (btnPeriod) btnPeriod.style.display = 'flex';
     _syncPeriodBtn();
   }
@@ -25876,10 +25876,8 @@ function runAnalysis() {
   // hoisted-объявлением функции, поэтому раскрываем кнопку здесь напрямую и надёжно.
   // Только для агентства (не в клиентском просмотре).
   try {
-    var _isCli = (typeof _isClient !== 'undefined' && _isClient) || (typeof window!=='undefined' && window._isClient)
-    var _obBtn = g('ob-toggle')
-    if (_obBtn && !_isCli) _obBtn.style.display = 'inline-flex'
-    if (typeof window !== 'undefined' && typeof window._showObToggle === 'function') { try { window._showObToggle() } catch(e2){} }
+    if (typeof window !== 'undefined' && typeof window._showObToggle === 'function') { window._showObToggle() }
+    else { var _obBtn = g('ob-toggle'); if (_obBtn) _obBtn.style.display = 'inline-flex' }
   } catch(e) {}
   // Перерисовка графиков: часть canvas создаётся, пока блок ещё скрыт (0×0).
   // После показа форсируем resize, иначе диаграммы остаются пустыми.
