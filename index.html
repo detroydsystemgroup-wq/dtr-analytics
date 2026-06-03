@@ -26772,13 +26772,26 @@ function _biComputeRow(p) {
   return { p, budget, salaries, extras:project, opex, project, hours, totalCost, profit, marginPct, hasBudget, allExp }
 }
 
+// ── Медиана часов по проектам с залогированными часами ──
+// нужна, чтобы «Мин. часов» и «Затратные» были реальными противоположностями,
+// а не одинаковым условием hours>0 (как было — оба попадали все проекты)
+function _biMedianHours() {
+  const hs = _biAllRows.filter(r=>r.hours>0).map(r=>r.hours).sort((a,b)=>a-b)
+  if (!hs.length) return 0
+  const m = Math.floor(hs.length/2)
+  return hs.length%2 ? hs[m] : (hs[m-1]+hs[m])/2
+}
+
 // ── Segment filter ──
+// ВАЖНО: условия здесь должны 1-в-1 совпадать с подсчётом счётчиков (bsc-*),
+// иначе плашка показывает одно число, а по клику — другой набор.
 function _biFilter(rows) {
+  const med = _biMedianHours()
   switch(_biSegment) {
-    case 'profit':    return [...rows].filter(r=>r.hasBudget).sort((a,b)=>(b.marginPct||0)-(a.marginPct||0)).slice(0,5)
-    case 'efficient': return [...rows].filter(r=>r.hasBudget && r.hours > 0).sort((a,b)=>a.hours-b.hours)
+    case 'profit':    return [...rows].filter(r=>r.hasBudget && r.marginPct!==null && r.marginPct>=60).sort((a,b)=>(b.marginPct||0)-(a.marginPct||0))
+    case 'efficient': return [...rows].filter(r=>r.hours>0 && r.hours<=med).sort((a,b)=>a.hours-b.hours)
     case 'atrisk':    return rows.filter(r=>r.hasBudget && r.marginPct!==null && r.marginPct<20)
-    case 'heavy':     return [...rows].filter(r=>r.hours>0).sort((a,b)=>b.hours-a.hours)
+    case 'heavy':     return [...rows].filter(r=>r.hours>med).sort((a,b)=>b.hours-a.hours)
     case 'nobudget':  return rows.filter(r=>!r.hasBudget)
     default:          return rows
   }
@@ -26938,13 +26951,14 @@ function renderFinance() {
   const ppEl = g('bi-profit-per-client')
   if(ppEl && totalMRR>0) ppEl.style.color = totalProfit>=0 ? 'var(--green)' : 'var(--red)'
 
-  // ── Segment counts ──
+  // ── Segment counts ── (условия 1-в-1 как в _biFilter)
   const sc=(id,rows)=>{ const el=g(id); if(el) el.textContent=rows.length }
+  const _med = _biMedianHours()
   sc('bsc-all',      _biAllRows)
-  sc('bsc-profit',   _biAllRows.filter(r=>r.hasBudget&&r.marginPct>=60))
-  sc('bsc-efficient',_biAllRows.filter(r=>r.hasBudget&&r.hours>0))
+  sc('bsc-profit',   _biAllRows.filter(r=>r.hasBudget&&r.marginPct!==null&&r.marginPct>=60))
+  sc('bsc-efficient',_biAllRows.filter(r=>r.hours>0&&r.hours<=_med))
   sc('bsc-atrisk',   _biAllRows.filter(r=>r.hasBudget&&r.marginPct!==null&&r.marginPct<20))
-  sc('bsc-heavy',    _biAllRows.filter(r=>r.hours>0))
+  sc('bsc-heavy',    _biAllRows.filter(r=>r.hours>_med))
   sc('bsc-nobudget', _biAllRows.filter(r=>!r.hasBudget))
 
   // ── Donut: agency cost structure ──
