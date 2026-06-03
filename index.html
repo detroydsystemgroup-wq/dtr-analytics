@@ -38573,18 +38573,20 @@ window.switchDashTab = function(tab, btn) {
     st.textContent =
       '.wl-cell-click:hover{background:rgba(184,146,58,.08)!important;}' +
       '.wl-cell-click:active{background:rgba(184,146,58,.14)!important;}' +
-      '.wl-ov{position:fixed;inset:0;z-index:9000;display:none;align-items:stretch;justify-content:flex-end;background:rgba(8,8,12,.55);backdrop-filter:blur(3px);animation:fadeIn .18s ease;}' +
+      '.wl-ov{position:fixed;inset:0;z-index:9000;display:none;align-items:center;justify-content:center;padding:32px;background:rgba(8,8,12,.62);backdrop-filter:blur(4px);animation:fadeIn .18s ease;}' +
       '.wl-ov.open{display:flex;}' +
-      '.wl-panel{width:min(460px,92vw);height:100%;background:var(--bg2,#15151c);border-left:1px solid var(--brd,rgba(255,255,255,.08));box-shadow:-24px 0 60px rgba(0,0,0,.45);display:flex;flex-direction:column;animation:wlSlide .26s cubic-bezier(.16,1,.3,1) both;}' +
-      '@keyframes wlSlide{from{transform:translateX(40px);opacity:0}to{transform:translateX(0);opacity:1}}' +
-      '.wl-head{padding:18px 20px 14px;border-bottom:1px solid var(--brd,rgba(255,255,255,.08));display:flex;align-items:center;gap:13px;}' +
+      '.wl-panel{width:min(980px,94vw);max-height:86vh;background:var(--bg2,#15151c);border:1px solid var(--brd,rgba(255,255,255,.09));border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.55);display:flex;flex-direction:column;overflow:hidden;animation:wlPop .26s cubic-bezier(.16,1,.3,1) both;}' +
+      '@keyframes wlPop{from{transform:translateY(14px) scale(.97);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}' +
+      '.wl-head{padding:18px 22px 15px;border-bottom:1px solid var(--brd,rgba(255,255,255,.08));display:flex;align-items:center;gap:13px;flex-shrink:0;}' +
       '.wl-head-x{margin-left:auto;width:30px;height:30px;border-radius:8px;border:1px solid var(--brd,rgba(255,255,255,.1));background:transparent;color:var(--txt2,#aaa);cursor:pointer;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;flex-shrink:0;}' +
       '.wl-head-x:hover{background:rgba(255,255,255,.06);color:var(--txt,#fff);}' +
-      '.wl-body{flex:1;overflow-y:auto;padding:14px 16px 28px;}' +
-      '.wl-grp{margin-bottom:16px;}' +
-      '.wl-grp-hd{font-size:11px;letter-spacing:.04em;color:var(--txt3,#888);font-family:var(--font-mono,monospace);text-transform:uppercase;margin:0 2px 7px;display:flex;align-items:center;gap:6px;}' +
+      '.wl-body{flex:1;overflow-y:auto;padding:18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;align-content:start;}' +
+      '.wl-body.wl-single{display:flex;justify-content:center;}' +
+      '.wl-body.wl-single .wl-grp{width:min(520px,100%);}' +
+      '.wl-grp{border:1px solid var(--brd,rgba(255,255,255,.07));border-radius:14px;background:var(--bg3,rgba(255,255,255,.018));padding:13px 13px 7px;align-self:start;}' +
+      '.wl-grp-hd{font-size:11px;letter-spacing:.04em;color:var(--txt3,#888);font-family:var(--font-mono,monospace);text-transform:uppercase;margin:0 2px 11px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}' +
       '.wl-task{display:flex;align-items:center;gap:10px;padding:11px 13px;border:1px solid var(--brd,rgba(255,255,255,.08));border-radius:11px;background:var(--bg3,rgba(255,255,255,.02));cursor:pointer;margin-bottom:7px;transition:border-color .14s,transform .14s,background .14s;}' +
-      '.wl-task:hover{border-color:rgba(184,146,58,.45);transform:translateX(-3px);background:rgba(184,146,58,.05);}' +
+      '.wl-task:hover{border-color:rgba(184,146,58,.45);transform:translateY(-2px);background:rgba(184,146,58,.05);}' +
       '.wl-task-title{flex:1;min-width:0;font-size:13px;color:var(--txt,#eee);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
       '.wl-badge{font-size:9.5px;font-family:var(--font-mono,monospace);padding:3px 7px;border-radius:6px;flex-shrink:0;letter-spacing:.02em;}' +
       '.wl-arrow{color:var(--txt3,#777);flex-shrink:0;font-size:15px;}' +
@@ -38664,6 +38666,7 @@ window.switchDashTab = function(tab, btn) {
     document.getElementById('wl-drill-ov').classList.add('open');
 
     if (!myStages.length) {
+      body.classList.add('wl-single');
       body.innerHTML = '<div class="wl-empty">У сотрудника нет этапов в статусе «' + (ST_LABELS[status] || status) + '».</div>';
       return;
     }
@@ -38717,6 +38720,7 @@ window.switchDashTab = function(tab, btn) {
       return '<div class="wl-grp">' + grpHd + rows + '</div>';
     }).join('');
 
+    body.classList.toggle('wl-single', myStages.length <= 1);
     body.innerHTML = html;
   };
 
