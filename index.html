@@ -21192,6 +21192,24 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 /* Крупные числа в KPI не обрезаются по высоте */
 .analytics-wrap [style*="font-size:40px"],.analytics-wrap [style*="font-size:28px"]{line-height:1.12!important}
 /* ═══════════ /RD READABILITY BOOST ═══════════ */
+
+/* ═══════════ EXEC INSIGHTS — консалтинговые выводы (факт→причина→рекомендация→эффект) ═══════════ */
+.analytics-wrap .exi-wrap{display:flex;flex-direction:column;gap:14px;margin-top:8px}
+.analytics-wrap .exi{background:linear-gradient(180deg,rgba(255,255,255,.018),transparent);border:1px solid var(--brd);border-radius:16px;padding:20px 22px;position:relative;overflow:hidden}
+.analytics-wrap .exi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--exi-accent,#c9a84c)}
+.analytics-wrap .exi-head{display:flex;align-items:flex-start;gap:13px;margin-bottom:14px}
+.analytics-wrap .exi-rank{flex:none;width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:14px;font-weight:600;background:var(--exi-accent,#c9a84c);color:#0a0a0b}
+.analytics-wrap .exi-sev{flex:none;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border-radius:30px;align-self:center}
+.analytics-wrap .exi-title{font-size:17px;font-weight:700;line-height:1.35;flex:1}
+.analytics-wrap .exi-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 26px}
+.analytics-wrap .exi-cell{}
+.analytics-wrap .exi-k{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--txt3);margin-bottom:7px;padding-bottom:6px;border-bottom:1px solid var(--brd)}
+.analytics-wrap .exi-v{font-size:14.5px;line-height:1.6;color:var(--txt2)}
+.analytics-wrap .exi-v b{color:var(--txt);font-weight:700}
+.analytics-wrap .exi-num{font-family:var(--font-mono);color:var(--exi-accent,#c9a84c);font-weight:600}
+@media(max-width:760px){.analytics-wrap .exi-grid{grid-template-columns:1fr}}
+.analytics-wrap .exi-method{font-family:var(--font-mono);font-size:11px;color:var(--txt3);margin-top:10px;line-height:1.5;border-top:1px dashed var(--brd);padding-top:10px}
+/* ═══════════ /EXEC INSIGHTS ═══════════ */
 </style>
     <div id="dtr-ss-smm" style="display:block;">
     <div style="padding:48px 64px 80px;width:100%;">
@@ -25103,6 +25121,209 @@ function hideBlock(blockId) {
   const b = document.getElementById(blockId);
   if (b) b.style.display = 'none';
 }
+
+// ══════════════════════════════════════════════════════════════
+// EXEC INSIGHTS ENGINE — выводы консалтингового уровня
+// Каждый вывод: НАБЛЮДЕНИЕ → ЧТО ЗА ЭТИМ → РЕКОМЕНДАЦИЯ → ЭФФЕКТ
+// Считает ТОЛЬКО из реальных загруженных данных. Если данных нет — пункт не строится.
+// Ранжирование по «весу» (severity), чтобы важное было сверху.
+// ══════════════════════════════════════════════════════════════
+function buildExecInsights(C) {
+  // C: {bR,dR,bC,dC,bD,dD,bRD,dRD,bCD,dCD,bA,dA,gr,grP,ex,tr,ad}
+  var fmt = function(v){ return new Intl.NumberFormat('ru-RU').format(Math.round(v)); };
+  var fmtM = function(v){ return (v/1e6).toFixed(1).replace('.',',') + ' млн'; };
+  var pct = function(v,d){ return (v>=0?'+':'−') + Math.abs(v).toFixed(d==null?1:d) + '%'; };
+  var ins = [];
+
+  // ── 1. Источник роста: трафик vs средний чек (revenue bridge) ──
+  var tcEff = (C.dCD - C.bCD) * C.bA;       // вклад трафика (в сум/день)
+  var ccEff = (C.dA - C.bA) * C.dCD;        // вклад среднего чека
+  var totEff = Math.abs(tcEff) + Math.abs(ccEff) || 1;
+  var tShare = Math.round(Math.abs(tcEff)/totEff*100);
+  var cShare = 100 - tShare;
+  var trafGrew = C.dCD > C.bCD;
+  if (Math.abs(C.gr) > 1) {
+    var trafDom = Math.abs(tcEff) >= Math.abs(ccEff);
+    ins.push({
+      sev: C.gr>0 ? 'rost' : 'risk',
+      accent: C.gr>0 ? '#34d399' : '#f87171',
+      weight: 100,
+      title: (C.gr>0?'Рост выручки ':'Падение выручки ') + pct(C.grP) + ' держится ' + (trafDom?'на трафике':'на среднем чеке') + (trafDom?' — это экстенсивная, уязвимая модель роста':' — премиальная модель роста'),
+      fact: 'Выручка/день ' + fmtM(C.bRD) + ' → <b>' + fmtM(C.dRD) + '</b> ('+pct(C.grP)+'). Декомпозиция: вклад трафика <span class="exi-num">'+(tcEff>=0?'+':'−')+fmtM(Math.abs(tcEff))+'</span> ('+tShare+'%), вклад среднего чека <span class="exi-num">'+(ccEff>=0?'+':'−')+fmtM(Math.abs(ccEff))+'</span> ('+cShare+'%).',
+      why: trafDom
+        ? 'Рост дают <b>новые визиты, а не более дорогой чек</b>. Такой рост дешевле потерять: он чувствителен к рекламному бюджету, погоде и конкуренту через дорогу. Без работы над чеком вы растёте «вширь», упираясь в потолок пропускной способности кухни в пик.'
+        : 'Гость стал тратить больше за визит — это <b>устойчивее</b>, чем рост числа гостей, и не требует расширения мощностей. Но проверьте, не разовый ли это эффект подорожания меню.',
+      rec: trafDom
+        ? 'Переключить часть усилий с привлечения на <b>глубину чека</b>: обязательный апсейл напитка/соуса на кассе, комбо-наборы, «+сыр за…». Цель — поднять средний чек хотя бы на 3–5%, зафиксировав текущий трафик.'
+        : 'Защитить ценовую модель: следить, чтобы рост чека шёл от ассортимента (наборы, премиум-позиции), а не только от повышения цен, которое отпугивает частых гостей.',
+      effect: trafDom
+        ? 'Подъём среднего чека на 5% при текущем трафике ≈ <span class="exi-num">+'+fmtM(C.dCD*C.dA*0.05)+' сум/день</span> (~'+fmtM(C.dCD*C.dA*0.05*30)+'/мес) практически без новых затрат.'
+        : 'Удержание модели даёт предсказуемую выручку и снижает зависимость от рекламного бюджета.',
+      method: 'Метод: revenue bridge. Вклад трафика = Δ(чеков/день)×ср.чек_базы; вклад чека = Δ(ср.чек)×чеков/день_тек.'
+    });
+  }
+
+  // ── 2. Средний чек: падение при росте объёма ──
+  if (C.ad < -200 && C.gr > 0) {
+    var dpcDrop = null;
+    ins.push({
+      sev:'watch', accent:'#fbbf24', weight: 70,
+      title:'Средний чек снизился на '+fmt(Math.abs(C.ad))+' сум — это плата за рост частоты, а не обеднение гостя',
+      fact:'Средний чек '+fmt(C.bA)+' → <b>'+fmt(C.dA)+'</b> сум ('+pct(C.ad/C.bA*100)+'), при этом трафик вырос на '+pct((C.dCD/C.bCD-1)*100)+'. Выручка в плюсе за счёт объёма.',
+      why:'Когда приходит больше гостей, в потоке растёт доля лёгких заказов (один донер, напиток) — это <b>механически опускает средний чек</b>, даже если цены не менялись. Само по себе это не проблема, проблема — если так и оставить деньги «на столе».',
+      rec:'Не паниковать по чеку, а <b>догружать корзину</b>: автопредложение напитка к каждому основному блюду, наборы со скидкой 3–5%, мерч/десерт на кассе. Перевести часть «голых» заказов в комбо.',
+      effect:'Возврат среднего чека к уровню базы при текущем трафике ≈ <span class="exi-num">+'+fmtM(Math.abs(C.ad)*C.dCD)+' сум/день</span>.',
+      method:'Метод: сравнение ср.чека и динамики трафика между периодами.'
+    });
+  }
+
+  // ── 3. Концентрация в одном SKU (риск) — из меню d3 ──
+  try {
+    var d3 = S['d3'];
+    if (d3 && d3.rows && d3.rows.length) {
+      var rowsM = d3.rows.filter(function(r){return r.rev>0;}).sort(function(a,b){return b.rev-a.rev;});
+      var totRev = rowsM.reduce(function(s,r){return s+r.rev;},0)||1;
+      var top1 = rowsM[0];
+      var top1Share = top1.rev/totRev*100;
+      // сколько позиций дают 80%
+      var cum=0,n80=0; for(var i=0;i<rowsM.length;i++){cum+=rowsM[i].rev;if(cum>=0.8*totRev){n80=i+1;break;}}
+      if (top1Share >= 25) {
+        ins.push({
+          sev:'risk', accent:'#f87171', weight: 85,
+          title:'Зависимость от одного блюда: «'+top1.label.trim()+'» = '+top1Share.toFixed(0)+'% всей выручки',
+          fact:'Топ-позиция «'+top1.label.trim()+'» приносит <b>'+top1Share.toFixed(1)+'%</b> выручки меню. Всего <span class="exi-num">'+n80+'</span> из '+rowsM.length+' позиций дают 80% оборота.',
+          why:'Треть бизнеса на одном SKU — это <b>концентрационный риск</b>: рост цены сырья (мясо), перебой поставки или ошибка в рецептуре бьют сразу по всей выручке. Длинный «хвост» из '+(rowsM.length-n80)+' слабых позиций при этом замедляет кухню в пик и усложняет закуп.',
+          rec:'Защитить флагман (контракт на сырьё с фиксацией цены, резервный поставщик) и растить <b>«вторую ногу»</b> — продвигать 2–3 позиции из топ-10 в наборах. Хвост — сократить или перевести в сезонные спецпредложения.',
+          effect:'Снижение риска срыва выручки + ускорение кухни в часы пик за счёт более короткого меню.',
+          method:'Метод: доля позиции в выручке меню (файл «Топ блюд»), Парето 80/20.'
+        });
+      }
+    }
+  } catch(e){}
+
+  // ── 4. Комбо-разрыв (если загружен combo-файл) ──
+  try {
+    var cb = (S['combo_d'] && S['combo_d'].baskets) || (S['combo_b'] && S['combo_b'].baskets);
+    if (cb && cb.length > 200 && typeof computeCombos === 'function') {
+      var ccx = computeCombos(cb, {minPair: Math.max(50, Math.round(cb.length*0.002))});
+      var org = ccx.pairs.filter(function(p){return p.lift>1.3;}).sort(function(a,b){return b.lift-a.lift;});
+      // attach-rate: доля чеков с топ-блюдом, где есть напиток
+      var DRINKS=['Cola','Coca','Fanta','Sprite','Suv','Fuse','Ays','Choy','Tea'];
+      var isDrink=function(x){return DRINKS.some(function(k){return x.indexOf(k)>=0;});};
+      var mainItem=null,maxN=0;
+      for(var it in ccx.item){ if(ccx.item[it]>maxN && !isDrink(it)){maxN=ccx.item[it];mainItem=it;} }
+      var withDrink=0;
+      for(var b=0;b<cb.length;b++){ if(cb[b].indexOf(mainItem)>=0 && cb[b].some(isDrink)) withDrink++; }
+      var attach = maxN? Math.round(withDrink/maxN*100):0;
+      if (mainItem && attach < 60) {
+        ins.push({
+          sev:'opp', accent:'#22d3ee', weight: 80,
+          title:'Главный резерв: '+(100-attach)+'% заказов с «'+mainItem.trim()+'» уходят без напитка',
+          fact:'«'+mainItem.trim()+'» в '+fmt(maxN)+' чеках, напиток добавляют только в <b>'+attach+'%</b>. Сильнейшая органическая пара по '+fmt(ccx.N)+' чекам' + (org[0]?': «'+org[0].a.trim()+' + '+org[0].b.trim()+'» (вместе в '+org[0].lift.toFixed(1)+'× чаще случайного)':'')+'.',
+          why:'Напиток — позиция с самой высокой наценкой в фастфуде. Гости готовы его брать (это видно по силе пар), но на кассе его не предлагают системно. Это <b>деньги, лежащие на столе</b> каждый день.',
+          rec:'Ввести набор «'+mainItem.trim()+' + напиток (+ фри)» одной кнопкой на кассе с выгодой 3–4 тыс. Скрипт кассиру: предлагать набор по умолчанию. Вынести набор на меню-борд и в приложение.',
+          effect:'Подъём attach-rate напитка с '+attach+'% до 46% ≈ <span class="exi-num">+'+fmt(maxN*0.10)+' напитков/период</span> только по этой позиции — почти чистая маржа.',
+          method:'Метод: market basket по '+fmt(ccx.N)+' чекам, lift = частота пары / случайное ожидание.'
+        });
+      }
+    }
+  } catch(e){}
+
+  // ── 5. Дисперсия филиалов (если b5/d5) ──
+  try {
+    var b5=S['b5'], d5=S['d5'];
+    if (b5 && d5 && b5.branches && d5.branches) {
+      var rows5=[];
+      for (var nm in d5.branches) {
+        var bb=b5.branches[nm], dd=d5.branches[nm];
+        if(!bb||!dd) continue;
+        var g5 = bb.rev? (dd.rev/bb.rev-1)*100 : 0;
+        rows5.push({name:nm, gr:g5, acD: dd.chk?dd.rev/dd.chk:0});
+      }
+      if (rows5.length>=2) {
+        rows5.sort(function(a,b){return a.gr-b.gr;});
+        var worst=rows5[0], best=rows5[rows5.length-1];
+        var acs=rows5.map(function(r){return r.acD;});
+        var acAvg=acs.reduce(function(s,x){return s+x;},0)/acs.length;
+        var minAc=Math.min.apply(null,acs);
+        if (worst.gr < -2 || (acAvg && minAc < acAvg*0.6)) {
+          ins.push({
+            sev:'risk', accent:'#a78bfa', weight: 75,
+            title:'Сеть растёт неравномерно: «'+worst.name+'» отстаёт ('+pct(worst.gr)+'), «'+best.name+'» тянет ('+pct(best.gr)+')',
+            fact:'Разброс по филиалам: лучший '+best.name+' '+pct(best.gr)+', худший '+worst.name+' <b>'+pct(worst.gr)+'</b>.' + (minAc<acAvg*0.6?' У «'+rows5.reduce(function(a,b){return a.acD<b.acD?a:b;}).name+'» средний чек в '+(acAvg/minAc).toFixed(1)+'× ниже сети — это иной формат либо проблема учёта/ассортимента.':''),
+            why:'Равномерный рекламный бюджет «по всем филиалам поровну» <b>дотирует слабую точку за счёт сильной</b>. Аномально низкий чек у одного филиала почти всегда означает другой формат, урезанное меню или некорректное пробитие чеков.',
+            rec:'Не размазывать бюджет: <b>усилить точки-лидеры</b> (там отдача выше) и провести отдельный разбор отстающего филиала — меню, поток, корректность iiko. Решить: масштабировать модель лидера или переформатировать/закрывать.',
+            effect:'Перераспределение промо в пользу растущих точек повышает ROI бюджета; устранение слабого звена убирает скрытый отток прибыли.',
+            method:'Метод: рост выручки и средний чек по филиалам (файл «Филиалы»), сравнение с медианой сети.'
+          });
+        }
+      }
+    }
+  } catch(e){}
+
+  // ── 6. Утренний провал по часам (если b2/d2) ──
+  try {
+    var h2=S['d2']||S['b2'];
+    if (h2 && h2.rows && h2.rows.length>=12) {
+      var tot=0, morn=0;
+      h2.rows.forEach(function(r){
+        var hh=parseInt(String(r.label),10);
+        tot+=r.rev||0;
+        if(hh>=6 && hh<=11) morn+=r.rev||0;
+      });
+      var mShare = tot? morn/tot*100:0;
+      if (mShare>0 && mShare<8) {
+        ins.push({
+          sev:'opp', accent:'#22d3ee', weight: 55,
+          title:'Утро (06–11 ч) почти пустует — '+mShare.toFixed(1)+'% выручки при оплаченной аренде',
+          fact:'Утренний слот даёт лишь <b>'+mShare.toFixed(1)+'%</b> дневной выручки, тогда как точка работает целый день и аренда/часть смены оплачены.',
+          why:'Простаивающий слот при фиксированных затратах — <b>отрицательная маржа этого окна</b>. У фастфуда утро — естественная зона роста (завтраки, кофе, ролл навынос) с высокой наценкой.',
+          rec:'Запустить тестовое утреннее предложение (завтрак-ролл/лаваш + чай/кофе по сниженной цене 06–11 ч) на 1–2 сильных точках, с таргетом на район и доставку.',
+          effect:'Даже выход утра с '+mShare.toFixed(1)+'% до 7–8% — это дополнительный оборот на уже оплаченной инфраструктуре, с высокой маржинальностью.',
+          method:'Метод: доля выручки 06–11 ч в почасовом отчёте.'
+        });
+      }
+    }
+  } catch(e){}
+
+  // сортировка по весу (важное сверху)
+  ins.sort(function(a,b){return b.weight-a.weight;});
+  return ins;
+}
+
+function renderExecInsights(C) {
+  var host = g('ins-block');
+  if (!host) return;
+  var ins = buildExecInsights(C);
+  if (!ins.length) { host.innerHTML=''; return; }
+  var sevMap = {
+    rost:{label:'Рост',  bg:'rgba(52,211,153,.14)', col:'#34d399'},
+    opp: {label:'Возможность', bg:'rgba(34,211,238,.14)', col:'#22d3ee'},
+    watch:{label:'Под контроль', bg:'rgba(251,191,36,.14)', col:'#fbbf24'},
+    risk:{label:'Риск', bg:'rgba(248,113,113,.14)', col:'#f87171'}
+  };
+  var html = '<div class="exi-wrap">';
+  ins.forEach(function(x,i){
+    var sv = sevMap[x.sev] || sevMap.watch;
+    html += '<div class="exi" style="--exi-accent:'+x.accent+'">'
+      + '<div class="exi-head">'
+        + '<div class="exi-rank" style="background:'+x.accent+'">'+(i+1)+'</div>'
+        + '<div class="exi-title">'+x.title+'</div>'
+        + '<div class="exi-sev" style="background:'+sv.bg+';color:'+sv.col+'">'+sv.label+'</div>'
+      + '</div>'
+      + '<div class="exi-grid">'
+        + '<div class="exi-cell"><div class="exi-k">📊 Наблюдение</div><div class="exi-v">'+x.fact+'</div></div>'
+        + '<div class="exi-cell"><div class="exi-k">🔎 Что за этим стоит</div><div class="exi-v">'+x.why+'</div></div>'
+        + '<div class="exi-cell"><div class="exi-k" style="color:'+x.accent+'">🎯 Рекомендация</div><div class="exi-v">'+x.rec+'</div></div>'
+        + '<div class="exi-cell"><div class="exi-k" style="color:#34d399">📈 Ожидаемый эффект</div><div class="exi-v">'+x.effect+'</div></div>'
+      + '</div>'
+      + (x.method?'<div class="exi-method">'+x.method+'</div>':'')
+      + '</div>';
+  });
+  html += '</div>';
+  host.innerHTML = html;
+}
+
 // ══ WATERFALL ДЕКОМПОЗИЦИЯ ══
 function renderWaterfallBlock(bRD,dRD,bCD,dCD,bA,dA,gr,grP,ex,bD,dD) {
   var block=g('waterfall-block'),inner=g('waterfall-inner')
@@ -25578,20 +25799,12 @@ function runAnalysis() {
     }
   }
 
-  // Enhanced insights with contributor analysis
-  var ins = []
-  var _tc2 = (dCD-bCD)*bA, _cc2 = (dA-bA)*bCD
-  var _totC = Math.abs(_tc2)+Math.abs(_cc2)||1
-  var _tShare = Math.round(Math.abs(_tc2)/_totC*100)
-  if (gr>0) ins.push({ic:'📈',t:'Рост выручки <b>+'+grP.toFixed(1)+'%</b> — это '+fmtM(Math.round(gr))+' сум дополнительно каждый день.'})
-  else if(gr<0) ins.push({ic:'📉',t:'Выручка снизилась на <b>'+Math.abs(grP).toFixed(1)+'%</b> — стоит проверить сезонность или качество трафика.'})
-  if (Math.abs(_tc2)>0||Math.abs(_cc2)>0) {
-    if (Math.abs(_tc2) > Math.abs(_cc2)) ins.push({ic:'👥',t:'Рост обеспечен преимущественно трафиком (<b>'+_tShare+'%</b> вклада) — пришло больше гостей. Средний чек дал '+(100-_tShare)+'%.'})
-    else ins.push({ic:'🧾',t:'Рост обеспечен преимущественно средним чеком (<b>'+(100-_tShare)+'%</b> вклада) — гости тратят больше. Трафик дал '+_tShare+'%.'})
-  }
-  if (Math.abs(ex)>0) ins.push({ic:'💰',t:'Суммарная доп. выручка за период: <b>'+fmtM(Math.round(ex))+' сум</b>.'})
-  if (Math.abs(ad)>1000&&gr>0) ins.push({ic:'💎',t:ad>0?'Средний чек вырос на <b>'+fmtM(Math.round(ad))+' сум</b> — гости покупают дороже.':'Средний чек снизился на '+fmtM(Math.round(Math.abs(ad)))+' сум — рост идёт через объём.'})
-  g('ins-block').innerHTML = ins.map(function(x){return '<div class="ins-row"><div class="ins-ic">'+x.ic+'</div><div>'+x.t+'</div></div>'}).join('')
+  // Exec insights — консалтинговый уровень (факт→причина→рекомендация→эффект)
+  renderExecInsights({
+    bR:bR, dR:dR, bC:bC, dC:dC, bD:bD, dD:dD,
+    bRD:bRD, dRD:dRD, bCD:bCD, dCD:dCD, bA:bA, dA:dA,
+    gr:gr, grP:grP, ex:ex, tr:tr, ad:ad
+  })
 
   // Always render weekday trend (b1/d1 always available)
   renderWeekdayTrend()
@@ -25612,17 +25825,6 @@ function runAnalysis() {
   if (fcEl) renderFoodCostBlock(dRD, dA, S['d3'] || null)
   var fcSec = document.getElementById('sec-food-cost')
   if (fcSec) fcSec.style.display = 'block'
-
-  // Contributor analysis — добавляем в инсайты
-  var _contribIns = getContributorInsight(bRD,dRD,bCD,dCD,bA,dA)
-  if (_contribIns) {
-    var insBlock = g('ins-block')
-    if (insBlock) {
-      var existingHTML = insBlock.innerHTML
-      var newRow = '<div class="ins-row" style="border-left-color:var(--cyan);"><div class="ins-ic">'+_contribIns.ic+'</div><div>'+_contribIns.t+'</div></div>'
-      insBlock.innerHTML = existingHTML + newRow
-    }
-  }
 
   g('analytics-wrap').classList.add('visible')
   // Перерисовка графиков: часть canvas создаётся, пока блок ещё скрыт (0×0).
