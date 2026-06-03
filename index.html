@@ -19261,6 +19261,63 @@ function toggleObOnboarding() {
 html.light .theme-toggle .tt-ico-moon { display: none; }
 html.light .theme-toggle .tt-ico-sun { display: block; }
 </style>
+<style id="dtr-client-report-cards">
+.crc{position:relative;background:rgba(12,12,20,.97);border:1px solid rgba(255,255,255,.07);border-radius:18px;
+  padding:18px 20px 0;margin-bottom:14px;overflow:hidden;cursor:pointer;
+  transition:border-color .25s cubic-bezier(.16,1,.3,1),transform .25s cubic-bezier(.16,1,.3,1),box-shadow .25s;
+  animation:cardEntrance .4s cubic-bezier(.16,1,.3,1) both}
+.crc:hover{transform:translateY(-2px);border-color:rgba(184,146,58,.3);box-shadow:0 16px 40px rgba(0,0,0,.5)}
+.crc.crc-smm:hover{border-color:rgba(167,139,250,.4)}
+.crc.crc-featured{border-color:rgba(184,146,58,.28)}
+.crc.crc-smm.crc-featured{border-color:rgba(167,139,250,.32)}
+.crc-topline{position:absolute;top:0;left:0;right:0;height:2px;opacity:0;
+  background:linear-gradient(90deg,#b8923a,#dec17a,#b8923a);background-size:200% 100%;animation:crcFlow 3s linear infinite}
+.crc.crc-smm .crc-topline{background:linear-gradient(90deg,#8b5cf6,#a78bfa,#8b5cf6);background-size:200% 100%}
+.crc.crc-featured .crc-topline{opacity:1}
+@keyframes crcFlow{0%{background-position:0 0}100%{background-position:200% 0}}
+
+.crc-top{display:flex;align-items:flex-start;gap:16px;padding-bottom:18px}
+.crc-ava{width:54px;height:54px;flex-shrink:0;border-radius:14px;display:flex;align-items:center;justify-content:center;border:1.5px solid;transition:transform .25s}
+.crc:hover .crc-ava{transform:scale(1.04)}
+.crc-ava-perf{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.28);box-shadow:0 0 22px rgba(52,211,153,.08)}
+.crc-ava-draft{background:rgba(184,146,58,.08);border-color:rgba(184,146,58,.22);box-shadow:0 0 22px rgba(184,146,58,.06)}
+.crc-ava-smm{background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.3);box-shadow:0 0 22px rgba(167,139,250,.08)}
+
+.crc-info{flex:1;min-width:0}
+.crc-name{font-family:var(--font-display);font-size:19px;font-weight:700;letter-spacing:-.01em;line-height:1.15;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crc-meta{display:flex;align-items:center;gap:9px;margin-top:8px;flex-wrap:wrap}
+.crc-badge{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:6px;border:1px solid}
+.crc-b-pub{color:#34d399;background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.25)}
+.crc-b-draft{color:#c9a84c;background:rgba(184,146,58,.1);border-color:rgba(184,146,58,.25)}
+.crc-b-smm{color:#a78bfa;background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.3)}
+.crc-new{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:6px;color:#0a0a0a;background:linear-gradient(135deg,#dec17a,#c9a84c)}
+.crc-period{font-family:var(--font-mono);font-size:11px;color:var(--txt3);letter-spacing:.02em}
+.crc-date{display:flex;align-items:center;gap:6px;margin-top:9px;font-family:var(--font-mono);font-size:10px;color:var(--txt3);letter-spacing:.03em}
+
+.crc-open{flex-shrink:0;display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 18px;border-radius:11px;font-family:var(--font-display);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;color:#fff;
+  background:linear-gradient(135deg,#b8923a,#c9a84c);border:1px solid rgba(184,146,58,.5);box-shadow:0 2px 10px rgba(184,146,58,.28);transition:all .18s}
+.crc-open:hover{background:linear-gradient(135deg,#c9a84c,#dec17a);box-shadow:0 5px 18px rgba(184,146,58,.45);transform:translateY(-1px)}
+.crc.crc-smm .crc-open{background:linear-gradient(135deg,#8b5cf6,#a78bfa);border-color:rgba(139,92,246,.5);box-shadow:0 2px 10px rgba(139,92,246,.28)}
+.crc.crc-smm .crc-open:hover{box-shadow:0 5px 18px rgba(139,92,246,.45)}
+.crc-open svg{transition:transform .18s}.crc:hover .crc-open svg{transform:translateX(3px)}
+
+.crc-strip{display:flex;border-top:1px solid rgba(255,255,255,.07);margin:0 -20px}
+.crc-cell{flex:1;padding:14px 16px;border-right:1px solid rgba(255,255,255,.07);min-width:0}
+.crc-cell:last-child{border-right:none}
+.crc-cell-lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)}
+.crc-cell-val{font-family:var(--font-display);font-size:16px;font-weight:700;margin-top:5px;letter-spacing:-.01em;white-space:nowrap}
+.crc-cell-val.crc-big{font-size:14px}
+.crc-ar{font-size:13px;margin-right:1px}
+.crc-up{color:#34d399}.crc-dn{color:#f87171}.crc-amb{color:#fbbf24}.crc-gold{color:#dec17a}.crc-mut{color:var(--txt3)}.crc-vi{color:#a78bfa}
+.crc-empty{flex:1;padding:16px;text-align:center;font-family:var(--font-mono);font-size:11px;color:var(--txt3);letter-spacing:.04em}
+
+html.light .crc{background:#fbf8f1;border-color:rgba(41,48,58,.08)}
+html.light .crc:hover{border-color:rgba(156,122,43,.28);box-shadow:0 12px 32px rgba(41,48,58,.12)}
+html.light .crc-strip,html.light .crc-cell{border-color:rgba(41,48,58,.08)}
+html.light .crc-new{color:#fff}
+html.light .crc-gold{color:#9c7a2b}
+html.light .crc-open{color:#fff}
+</style>
 
 <body>
 
@@ -29183,10 +29240,126 @@ async function cp2LoadTracker(project) {
   }
 }
 
+function renderClientReportCards(items, containerId, type) {
+  var el = (typeof g === 'function') ? g(containerId) : document.getElementById(containerId);
+  if (!el) return;
+  if (!items || !items.length) {
+    el.innerHTML = '<div style="font-family:var(--font-mono);font-size:10px;color:var(--txt3);padding:16px 0;letter-spacing:.06em;">Нет данных</div>';
+    return;
+  }
+  var now = Date.now();
+  function fmtDate(d) {
+    if (!d) return '—';
+    try {
+      var dd = new Date(d);
+      return dd.toLocaleDateString('ru-RU', {day:'2-digit', month:'long', year:'numeric'}) + ' · ' +
+             dd.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
+    } catch (e) { return '—'; }
+  }
+  function isNew(d) { try { return (now - new Date(d).getTime()) < 7 * 86400000; } catch (e) { return false; } }
+  function nf(v)  { return Math.round(v).toLocaleString('ru-RU'); }
+  function sgn(v) { return (v > 0 ? '+' : '') + nf(v); }
+  function mag(v) { return Math.round(Math.abs(v)).toLocaleString('ru-RU'); }
+  function arr(v) { return v == null ? '' : (v > 0 ? '↑' : v < 0 ? '↓' : '→'); }
+  function vc(v)  { return v == null ? 'crc-mut' : (v > 0 ? 'crc-up' : v < 0 ? 'crc-dn' : 'crc-amb'); }
+  function cell(lbl, valHtml, cls) {
+    return '<div class="crc-cell"><div class="crc-cell-lbl">' + lbl + '</div><div class="crc-cell-val ' + (cls || '') + '">' + valHtml + '</div></div>';
+  }
+  function arrSpan(v) { return v == null ? '' : '<span class="crc-ar">' + arr(v) + '</span>'; }
+
+  el.innerHTML = items.map(function (r, idx) {
+    var featured = (idx === 0) ? ' crc-featured' : '';
+    var newPill  = isNew(r.created_at) ? '<span class="crc-new">Новый</span>' : '';
+    var dateStr  = fmtDate(r.created_at);
+
+    if (type === 'smm') {
+      var lbl = r.period_label || '';
+      var title = (!lbl || lbl.length <= 3)
+        ? ('SMM · ' + new Date(r.created_at).toLocaleDateString('ru-RU', {month:'long', year:'numeric'}))
+        : lbl;
+      var m = r.metrics || {};
+      var hasM = m && (m.reels_reach != null || m.stories_reach != null || m.er != null ||
+                       m.followers != null || m.subscribers_current != null ||
+                       m.reels_count != null || m.posts_count != null);
+      var strip;
+      if (hasM) {
+        var reach = (m.reels_reach || 0) + (m.stories_reach || 0);
+        var pubs  = (m.reels_count || 0) + (m.posts_count || 0);
+        var erTxt = m.er != null ? (+m.er).toFixed(2).replace('.', ',') + '%' : '—';
+        strip = '<div class="crc-strip">'
+          + cell('Охват', reach ? nf(reach) : '—', 'crc-vi')
+          + cell('Вовлечённость', erTxt, 'crc-vi')
+          + cell('Подписчики Δ', m.followers != null ? arrSpan(m.followers) + mag(m.followers) : '—', vc(m.followers))
+          + cell('Публикаций', pubs || '—', '')
+          + '</div>';
+      } else {
+        strip = '<div class="crc-strip"><div class="crc-empty">Метрики появятся после запуска анализа в отчёте</div></div>';
+      }
+      var avaSvg = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.6" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>';
+      return '<div class="crc crc-smm' + featured + '" onclick="loadAndOpenSMM(\'' + r.id + '\')">'
+        + '<div class="crc-topline"></div>'
+        + '<div class="crc-top">'
+          + '<div class="crc-ava crc-ava-smm">' + avaSvg + '</div>'
+          + '<div class="crc-info">'
+            + '<div class="crc-name">' + esc(title) + '</div>'
+            + '<div class="crc-meta">' + newPill + '<span class="crc-badge crc-b-smm">SMM</span><span class="crc-period">Соцсети · месяц</span></div>'
+            + '<div class="crc-date"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>' + dateStr + '</div>'
+          + '</div>'
+          + '<button class="crc-open" onclick="event.stopPropagation();loadAndOpenSMM(\'' + r.id + '\')">Открыть <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></button>'
+        + '</div>'
+        + strip
+      + '</div>';
+    }
+
+    // ── PERFORMANCE ──
+    var isPub = r.status === 'published';
+    var title = r.title || r.period_d_label || 'Отчёт';
+    var accent = isPub ? '#34d399' : '#c9a84c';
+    var sm = r.summary || {};
+    var growth = sm.growth_pct != null ? sm.growth_pct : null;
+    var traf   = sm.traffic_delta != null ? sm.traffic_delta : null;
+    var chk    = sm.avg_check_delta != null ? sm.avg_check_delta : null;
+    var dRev   = sm.d_total_rev != null ? sm.d_total_rev : null;
+    var bRev   = sm.b_total_rev != null ? sm.b_total_rev : null;
+    var hasM = growth != null || traf != null || chk != null || dRev != null || bRev != null;
+    var hasPeriods = r.period_b_label || r.period_d_label;
+    var strip;
+    if (hasM) {
+      strip = '<div class="crc-strip">'
+        + cell('Рост выручки', (growth != null ? arrSpan(growth) + mag(growth) + '%' : '—'), vc(growth))
+        + cell('Трафик Δ', (traf != null ? arrSpan(traf) + mag(traf) + ' гост.' : '—'), vc(traf))
+        + cell('Ср. чек Δ', (chk != null ? arrSpan(chk) + mag(chk) + ' сум' : '—'), vc(chk))
+        + cell('Выручка факт', (dRev != null ? nf(dRev) + ' сум' : '—'), 'crc-gold crc-big')
+        + cell('База', (bRev != null ? nf(bRev) + ' сум' : '—'), 'crc-mut crc-big')
+        + '</div>';
+    } else {
+      strip = '<div class="crc-strip"><div class="crc-empty">Метрики появятся после запуска анализа в отчёте</div></div>';
+    }
+    var avaCls = isPub ? 'crc-ava-perf' : 'crc-ava-draft';
+    var docSvg = '<svg width="30" height="30" viewBox="0 0 30 30" fill="none"><path d="M7 4h11l6 6v17a1.5 1.5 0 01-1.5 1.5H7A1.5 1.5 0 015.5 26.5V5.5A1.5 1.5 0 017 4z" fill="' + accent + '22" stroke="' + accent + '" stroke-width="1.4"/><path d="M18 4v6h6" stroke="' + accent + '" stroke-width="1.4" fill="none" stroke-linejoin="round"/><line x1="9" y1="15" x2="21" y2="15" stroke="' + accent + '" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="19" x2="21" y2="19" stroke="' + accent + '" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="23" x2="15" y2="23" stroke="' + accent + '" stroke-width="1.5" stroke-linecap="round"/></svg>';
+    return '<div class="crc crc-perf' + featured + '" onclick="openReport(\'' + r.id + '\')">'
+      + '<div class="crc-topline"></div>'
+      + '<div class="crc-top">'
+        + '<div class="crc-ava ' + avaCls + '">' + docSvg + '</div>'
+        + '<div class="crc-info">'
+          + '<div class="crc-name">' + esc(title) + '</div>'
+          + '<div class="crc-meta">' + newPill
+            + '<span class="crc-badge ' + (isPub ? 'crc-b-pub' : 'crc-b-draft') + '">' + (isPub ? 'Опубликован' : 'Черновик') + '</span>'
+            + (hasPeriods ? '<span class="crc-period">' + esc(r.period_b_label || '—') + ' → ' + esc(r.period_d_label || '—') + '</span>' : '')
+          + '</div>'
+          + '<div class="crc-date"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>' + dateStr + '</div>'
+        + '</div>'
+        + '<button class="crc-open" onclick="event.stopPropagation();openReport(\'' + r.id + '\')">Открыть <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg></button>'
+      + '</div>'
+      + strip
+    + '</div>';
+  }).join('');
+}
+
 async function cp2LoadReports(project) {
   var pid = project.id;
   // Performance reports — без фильтра по статусу, берём все доступные
-  var r1 = await sb.from('reports').select('id,title,period_b_label,period_d_label,created_at,status').eq('project_id', pid).order('created_at',{ascending:false});
+  var r1 = await sb.from('reports').select('id,title,period_b_label,period_d_label,created_at,status,summary').eq('project_id', pid).order('created_at',{ascending:false});
   var perfReports = (r1.data || []).filter(function(r){ return !r.hidden_for_client; });
   cpPerfReports = perfReports;
 
@@ -29255,8 +29428,8 @@ async function cp2LoadReports(project) {
     smm:  smmReports.map(function(r){ return {id:r.id,type:'smm',title:smmTitle(r),date:r.created_at}; })
   };
   renderReportList(combined.slice(0, 6), 'cp2-reports-list');
-  renderReportList(perfReports.map(function(r){ return {id:r.id,type:'perf',title:r.title||r.period_d_label||'Отчёт',date:r.created_at}; }), 'cp2-perf-list');
-  renderReportList(smmReports.map(function(r){ return {id:r.id,type:'smm',title:smmTitle(r),date:r.created_at}; }), 'cp2-smm-list');
+  renderClientReportCards(perfReports, 'cp2-perf-list', 'perf');
+  renderClientReportCards(smmReports, 'cp2-smm-list', 'smm');
 }
 
 async function cp2RenderCurrentStage(project) {
