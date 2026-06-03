@@ -20725,6 +20725,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
           Новый SMM отчёт
         </button>
       </div>
+      <div id="smm-compare-strip"></div>
       <div id="smm-reports-list"></div>
     </div>
 
@@ -29787,6 +29788,79 @@ async function createSMMReport() {
   openSMMReport(data)
 }
 
+// ══════════════════════════════════════════════
+// Панель сравнения SMM: последний отчёт vs предыдущий
+// 5 метрик: ER · LR · CR · SHR · SR (в процентных пунктах)
+// CR хранится в metrics.tr (не .cr!)
+// ══════════════════════════════════════════════
+function renderSMMCompareStrip(reports) {
+  const el = g('smm-compare-strip');
+  if (!el) return;
+
+  // парсер значения метрики: null/''/0 трактуем как «не введено» (как в карточках)
+  function val(x){ return (x != null && x !== '' && +x !== 0) ? +x : null; }
+  const withMetrics = (reports || []).filter(function(r){
+    const m = r.metrics || {};
+    return val(m.er) != null || val(m.lr) != null || val(m.tr) != null || val(m.shr) != null || val(m.sr) != null;
+  });
+  if (withMetrics.length < 2) { el.innerHTML = ''; return; }
+
+  if (!document.getElementById('rpc-style-smm')) {
+    const st = document.createElement('style');
+    st.id = 'rpc-style-smm';
+    st.textContent = ''
+      + '.rpc-head2{display:flex;align-items:baseline;gap:10px;margin:2px 2px 9px;flex-wrap:wrap;}'
+      + '.rpc-head2 .rpc-eyebrow{font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--a2);}'
+      + '.rpc-head2 .rpc-pair{font-family:var(--font-mono);font-size:11px;color:var(--txt2);letter-spacing:.02em;}'
+      + '.rpc-strip{animation:fadeUp .38s cubic-bezier(.16,1,.3,1) both;margin-bottom:20px;}'
+      + '.rpc-strip .apl-hero-sub{font-weight:600;}'
+      + '.rpc-strip-5{grid-template-columns:1fr auto 1fr auto 1fr auto 1fr auto 1fr;}'
+      + '.rpc-strip-5 .apl-hero-card{padding:24px 22px 20px;}';
+    document.head.appendChild(st);
+  }
+
+  const last = withMetrics[0], prev = withMetrics[1];
+  const ml = last.metrics || {}, mp = prev.metrics || {};
+
+  function arrow(d){ return d > 0 ? '↑' : d < 0 ? '↓' : '→'; }
+  // для всех SMM-метрик «выше = лучше» → рост зелёный, падение красное
+  function col(d){ return d > 0 ? 'var(--green)' : d < 0 ? 'var(--red)' : 'var(--txt2)'; }
+  function pct(v){ return v == null ? '—' : v.toFixed(2) + '%'; }
+
+  function card(label, lv, pv, brandColor){
+    const numH = lv == null ? '—' : pct(lv);
+    let subH = '', subC = 'rgba(255,255,255,.3)';
+    if (lv != null && pv != null){
+      const d = lv - pv;
+      subH = arrow(d) + ' ' + (d>0?'+':d<0?'−':'') + Math.abs(d).toFixed(2) + ' п.п.';
+      subC = col(d);
+    }
+    return '<div class="apl-hero-card">'
+      + '<div class="apl-hero-eyebrow">'+label+'</div>'
+      + '<div class="apl-hero-num" style="color:'+(lv==null?'var(--txt2)':brandColor)+';">'+numH+'</div>'
+      + '<div class="apl-hero-sub" style="color:'+subC+';">'+(subH||'—')+'</div>'
+      + '<div class="apl-hero-rule"></div>'
+      + '<div class="apl-hero-foot">пред. '+pct(pv)+'</div>'
+      + '</div>';
+  }
+
+  const defs = [
+    ['ER',  val(ml.er),  val(mp.er),  'var(--a2)'],
+    ['LR',  val(ml.lr),  val(mp.lr),  '#22d3ee'],
+    ['CR',  val(ml.tr),  val(mp.tr),  '#fbbf24'],
+    ['SHR', val(ml.shr), val(mp.shr), '#e879f9'],
+    ['SR',  val(ml.sr),  val(mp.sr),  '#34d399'],
+  ];
+  const cells = defs.map(function(d){ return card(d[0], d[1], d[2], d[3]); });
+
+  el.innerHTML =
+    '<div class="rpc-head2"><span class="rpc-eyebrow">Последний vs предыдущий</span>'
+    + '<span class="rpc-pair">'+esc(last.period_label||'—')+' <span style="color:var(--txt3)">←</span> '+esc(prev.period_label||'—')+'</span></div>'
+    + '<div class="apl-hero-strip rpc-strip rpc-strip-5">'
+    +   cells.join('<div class="apl-hero-divider"></div>')
+    + '</div>';
+}
+
 async function loadSMMReports() {
   if (!currentProject) return
   const { data } = await sb.from('smm_reports')
@@ -29797,10 +29871,13 @@ async function loadSMMReports() {
   if (!list) return
   const reports = data || []
   updateProjTabCounts(-1, reports.length)
+  const _smmCmp = g('smm-compare-strip')
   if (!reports.length) {
+    if (_smmCmp) _smmCmp.innerHTML = ''
     list.innerHTML = '<div class="empty-state" style="padding:36px 20px;"><div class="empty-icon" style="font-size:26px;">📱</div><div class="empty-title" style="font-size:14px;">SMM отчётов нет</div><div class="empty-sub" style="font-size:12px;">Создайте первый SMM отчёт</div></div>'
     return
   }
+  renderSMMCompareStrip(reports)
   list.innerHTML = reports.map(function(r, i) {
     var dateStr = new Date(r.created_at).toLocaleDateString('ru-RU', {day:'2-digit',month:'long',year:'numeric'});
     var timeStr = new Date(r.created_at).toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'});
