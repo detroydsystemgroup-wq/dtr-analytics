@@ -24545,23 +24545,17 @@ function renderReportCompareStrip(reports) {
   });
   if (pub.length < 2) { el.innerHTML = ''; return; }
 
-  // стили — один раз в <head>
+  // лёгкие стили (структура — классы apl-hero-* как в панели Дедлайнов)
   if (!document.getElementById('rpc-style')) {
     const st = document.createElement('style');
     st.id = 'rpc-style';
     st.textContent = ''
-      + '.rpc-wrap{margin:2px 0 22px;animation:fadeUp .4s ease both;}'
-      + '.rpc-head{display:flex;align-items:baseline;gap:12px;margin-bottom:11px;flex-wrap:wrap;}'
-      + '.rpc-head-eyebrow{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--a2);}'
-      + '.rpc-head-pair{font-family:var(--font-mono);font-size:11px;color:var(--txt2);letter-spacing:.02em;}'
-      + '.rpc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}'
-      + '@media(max-width:760px){.rpc-grid{grid-template-columns:repeat(2,1fr);}}'
-      + '.rpc-card{position:relative;background:linear-gradient(160deg,var(--bg3),var(--bg));border:1px solid var(--brd2);border-radius:14px;padding:15px 16px 13px;display:flex;flex-direction:column;gap:7px;overflow:hidden;min-width:0;}'
-      + '.rpc-card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--a-glow),transparent);}'
-      + '.rpc-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--txt2);}'
-      + '.rpc-main{font-family:"Bebas Neue",var(--font-display);font-size:26px;line-height:1;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}'
-      + '.rpc-chip{align-self:flex-start;font-family:var(--font-mono);font-size:11px;font-weight:600;padding:3px 8px;border:1px solid;border-radius:7px;letter-spacing:.02em;}'
-      + '.rpc-prev{font-family:var(--font-mono);font-size:10.5px;color:var(--txt3);letter-spacing:.02em;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}';
+      + '.rpc-head2{display:flex;align-items:baseline;gap:10px;margin:2px 2px 9px;flex-wrap:wrap;}'
+      + '.rpc-head2 .rpc-eyebrow{font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--a2);}'
+      + '.rpc-head2 .rpc-pair{font-family:var(--font-mono);font-size:11px;color:var(--txt2);letter-spacing:.02em;}'
+      + '.rpc-strip{animation:fadeUp .38s cubic-bezier(.16,1,.3,1) both;margin-bottom:20px;}'
+      + '.rpc-strip .apl-hero-sub{font-weight:600;}'
+      + '.rpc-suffix{font-size:13px;font-weight:600;letter-spacing:0;opacity:.7;}';
     document.head.appendChild(st);
   }
 
@@ -24573,62 +24567,80 @@ function renderReportCompareStrip(reports) {
   function signedNum(v){ if(v==null) return '—'; return sgn(v) + num(Math.abs(v)); }
   function arrow(d){ return d > 0 ? '↑' : d < 0 ? '↓' : '→'; }
   function col(d){ return d > 0 ? 'var(--green)' : d < 0 ? 'var(--red)' : 'var(--txt2)'; }
-  function chip(text, c){ return '<div class="rpc-chip" style="color:'+c+';border-color:'+c+'33;background:'+c+'14;">'+text+'</div>'; }
-  function card(label, mainDisp, mainColor, chipHtml, prevDisp, mainExtra){
-    return '<div class="rpc-card">'
-      + '<div class="rpc-label">'+label+'</div>'
-      + '<div class="rpc-main" style="color:'+mainColor+';'+(mainExtra||'')+'">'+mainDisp+'</div>'
-      + (chipHtml||'<div class="rpc-chip" style="color:var(--txt3);border-color:var(--brd2);background:transparent;">— нет пары</div>')
-      + '<div class="rpc-prev">пред. '+prevDisp+'</div>'
+  function suf(t){ return '<span class="rpc-suffix">&nbsp;'+t+'</span>'; }
+  function abbr(v){
+    if (v == null) return '—';
+    const a = Math.abs(v);
+    if (a >= 1e9) return (v/1e9).toFixed(2).replace('.',',') + ' млрд';
+    if (a >= 1e6) return (v/1e6).toFixed(1).replace('.',',') + ' млн';
+    if (a >= 1e3) return Math.round(v/1e3).toLocaleString('ru-RU') + ' тыс';
+    return num(v);
+  }
+  // карточка hero-панели: подпись · крупное число · импульс vs пред · черта · референс
+  function card(label, numHtml, numColor, subHtml, subColor, footText){
+    return '<div class="apl-hero-card">'
+      + '<div class="apl-hero-eyebrow">'+label+'</div>'
+      + '<div class="apl-hero-num" style="color:'+numColor+';">'+numHtml+'</div>'
+      + '<div class="apl-hero-sub" style="color:'+(subColor||'rgba(255,255,255,.3)')+';">'+(subHtml||'—')+'</div>'
+      + '<div class="apl-hero-rule"></div>'
+      + '<div class="apl-hero-foot">'+footText+'</div>'
       + '</div>';
   }
 
-  const cards = [];
+  const cells = [];
 
-  // 1) РОСТ — изменение в п.п.
+  // 1) РОСТ — импульс в п.п.
   (function(){
     const lv = sl.growth_pct, pv = sp.growth_pct;
-    const mainDisp = lv==null?'—':sgn(lv)+Math.abs(Math.round(lv))+'%';
-    const mainColor = lv==null?'var(--txt2)':(lv>=0?'var(--green)':'var(--red)');
-    let c=''; if(lv!=null && pv!=null){ const d=lv-pv; c=chip(arrow(d)+' '+sgn(d)+Math.abs(Math.round(d))+' п.п.', col(d)); }
-    cards.push(card('Рост', mainDisp, mainColor, c, pv==null?'—':sgn(pv)+Math.abs(Math.round(pv))+'%'));
+    const numH = lv==null ? '—' : sgn(lv)+Math.abs(Math.round(lv))+'%';
+    const numC = lv==null ? 'var(--txt2)' : (lv>=0?'var(--green)':'var(--red)');
+    let subH='', subC='';
+    if(lv!=null && pv!=null){ const d=lv-pv; subH=arrow(d)+' '+sgn(d)+Math.abs(Math.round(d))+' п.п.'; subC=col(d); }
+    cells.push(card('Рост', numH, numC, subH, subC, 'пред. '+(pv==null?'—':sgn(pv)+Math.abs(Math.round(pv))+'%')));
   })();
 
   // 2) ТРАФИК — со страховкой на несопоставимые базы (per-day vs per-period)
   (function(){
     const lv = sl.traffic_delta, pv = sp.traffic_delta;
-    const mainDisp = lv==null?'—':signedNum(lv);
-    const mainColor = lv==null?'var(--txt2)':(lv>=0?'var(--green)':'var(--red)');
-    let c='';
+    const numH = lv==null ? '—' : signedNum(lv);
+    const numC = lv==null ? 'var(--txt2)' : (lv>=0?'var(--green)':'var(--red)');
+    let subH='', subC='';
     if(lv!=null && pv!=null){
       const a=Math.abs(lv), b=Math.abs(pv);
-      const incomparable = (a>0 && b>0) && (Math.max(a,b)/Math.min(a,b) > 8);
-      c = incomparable ? chip('⚠ разные базы', 'var(--amber)') : (function(){ const d=lv-pv; return chip(arrow(d)+' '+signedNum(d), col(d)); })();
+      if((a>0 && b>0) && (Math.max(a,b)/Math.min(a,b) > 8)){ subH='⚠ разные базы'; subC='var(--amber)'; }
+      else { const d=lv-pv; subH=arrow(d)+' '+signedNum(d); subC=col(d); }
     }
-    cards.push(card('Трафик', mainDisp, mainColor, c, signedNum(pv)));
+    cells.push(card('Трафик', numH, numC, subH, subC, 'пред. '+signedNum(pv)));
   })();
 
-  // 3) СР. ЧЕК — изменение в сумах
+  // 3) СР. ЧЕК — импульс в сумах
   (function(){
     const lv = sl.avg_check_delta, pv = sp.avg_check_delta;
-    const mainDisp = lv==null?'—':signedNum(lv)+' сум';
-    const mainColor = lv==null?'var(--txt2)':(lv>=0?'var(--green)':'var(--red)');
-    let c=''; if(lv!=null && pv!=null){ const d=lv-pv; c=chip(arrow(d)+' '+signedNum(d)+' сум', col(d)); }
-    cards.push(card('Ср. чек', mainDisp, mainColor, c, pv==null?'—':signedNum(pv)+' сум'));
+    const numH = lv==null ? '—' : signedNum(lv)+suf('сум');
+    const numC = lv==null ? 'var(--txt2)' : (lv>=0?'var(--green)':'var(--red)');
+    let subH='', subC='';
+    if(lv!=null && pv!=null){ const d=lv-pv; subH=arrow(d)+' '+signedNum(d)+' сум'; subC=col(d); }
+    cells.push(card('Ср. чек', numH, numC, subH, subC, 'пред. '+(pv==null?'—':signedNum(pv)+' сум')));
   })();
 
-  // 4) ФАКТ — сумма (чистое абсолютное сравнение)
+  // 4) ФАКТ · СУММА — чистое абсолютное сравнение
   (function(){
     const lv = sl.d_total_rev, pv = sp.d_total_rev;
-    const mainDisp = lv==null?'—':num(lv)+' сум';
-    let c=''; if(lv!=null && pv!=null && pv!==0){ const pct=(lv-pv)/Math.abs(pv)*100; c=chip(arrow(pct)+' '+sgn(pct)+Math.abs(pct).toFixed(1).replace('.',',')+'%', col(pct)); }
-    cards.push(card('Факт · сумма', mainDisp, 'var(--a2)', c, pv==null?'—':num(pv)+' сум', 'font-size:19px;'));
+    const numH = lv==null ? '—' : abbr(lv)+suf('сум');
+    let subH='', subC='';
+    if(lv!=null && pv!=null && pv!==0){ const pct=(lv-pv)/Math.abs(pv)*100; subH=arrow(pct)+' '+sgn(pct)+Math.abs(pct).toFixed(1).replace('.',',')+'%'; subC=col(pct); }
+    cells.push(card('Факт · сумма', numH, 'var(--a2)', subH, subC, 'пред. '+abbr(pv)));
   })();
 
-  el.innerHTML = '<div class="rpc-wrap">'
-    + '<div class="rpc-head"><span class="rpc-head-eyebrow">Последний vs предыдущий</span>'
-    + '<span class="rpc-head-pair">'+esc(last.title)+' <span style="color:var(--txt3)">←</span> '+esc(prev.title)+'</span></div>'
-    + '<div class="rpc-grid">'+cards.join('')+'</div></div>';
+  el.innerHTML =
+    '<div class="rpc-head2"><span class="rpc-eyebrow">Последний vs предыдущий</span>'
+    + '<span class="rpc-pair">'+esc(last.title)+' <span style="color:var(--txt3)">←</span> '+esc(prev.title)+'</span></div>'
+    + '<div class="apl-hero-strip rpc-strip">'
+    +   cells[0] + '<div class="apl-hero-divider"></div>'
+    +   cells[1] + '<div class="apl-hero-divider"></div>'
+    +   cells[2] + '<div class="apl-hero-divider"></div>'
+    +   cells[3]
+    + '</div>';
 }
 
 async function loadReports() {
