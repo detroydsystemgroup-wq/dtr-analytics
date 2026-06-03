@@ -20709,6 +20709,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
           Новый отчёт
         </button>
       </div>
+      <div id="rp-compare-strip"></div>
       <div id="reports-list"></div>
     </div>
 
@@ -24528,6 +24529,108 @@ async function openProject(id) {
   loadAlertRules().catch(()=>{})
 }
 
+// ══════════════════════════════════════════════
+// Полоска сравнения: последний опубликованный отчёт vs предыдущий
+// 4 метрики: Рост · Трафик · Ср. чек · Факт-сумма
+// ══════════════════════════════════════════════
+function renderReportCompareStrip(reports) {
+  const el = g('rp-compare-strip');
+  if (!el) return;
+
+  // только опубликованные с посчитанными метриками; reports уже отсортированы created_at DESC
+  const pub = (reports || []).filter(function(r){
+    if (r.status !== 'published') return false;
+    const s = r.summary || {};
+    return s.growth_pct != null || s.d_total_rev != null || s.traffic_delta != null || s.avg_check_delta != null;
+  });
+  if (pub.length < 2) { el.innerHTML = ''; return; }
+
+  // стили — один раз в <head>
+  if (!document.getElementById('rpc-style')) {
+    const st = document.createElement('style');
+    st.id = 'rpc-style';
+    st.textContent = ''
+      + '.rpc-wrap{margin:2px 0 22px;animation:fadeUp .4s ease both;}'
+      + '.rpc-head{display:flex;align-items:baseline;gap:12px;margin-bottom:11px;flex-wrap:wrap;}'
+      + '.rpc-head-eyebrow{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--a2);}'
+      + '.rpc-head-pair{font-family:var(--font-mono);font-size:11px;color:var(--txt2);letter-spacing:.02em;}'
+      + '.rpc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}'
+      + '@media(max-width:760px){.rpc-grid{grid-template-columns:repeat(2,1fr);}}'
+      + '.rpc-card{position:relative;background:linear-gradient(160deg,var(--bg3),var(--bg));border:1px solid var(--brd2);border-radius:14px;padding:15px 16px 13px;display:flex;flex-direction:column;gap:7px;overflow:hidden;min-width:0;}'
+      + '.rpc-card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--a-glow),transparent);}'
+      + '.rpc-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--txt2);}'
+      + '.rpc-main{font-family:"Bebas Neue",var(--font-display);font-size:26px;line-height:1;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}'
+      + '.rpc-chip{align-self:flex-start;font-family:var(--font-mono);font-size:11px;font-weight:600;padding:3px 8px;border:1px solid;border-radius:7px;letter-spacing:.02em;}'
+      + '.rpc-prev{font-family:var(--font-mono);font-size:10.5px;color:var(--txt3);letter-spacing:.02em;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}';
+    document.head.appendChild(st);
+  }
+
+  const last = pub[0], prev = pub[1];
+  const sl = last.summary || {}, sp = prev.summary || {};
+
+  function num(v){ return Math.round(v).toLocaleString('ru-RU'); }
+  function sgn(v){ return v > 0 ? '+' : (v < 0 ? '−' : ''); }
+  function signedNum(v){ if(v==null) return '—'; return sgn(v) + num(Math.abs(v)); }
+  function arrow(d){ return d > 0 ? '↑' : d < 0 ? '↓' : '→'; }
+  function col(d){ return d > 0 ? 'var(--green)' : d < 0 ? 'var(--red)' : 'var(--txt2)'; }
+  function chip(text, c){ return '<div class="rpc-chip" style="color:'+c+';border-color:'+c+'33;background:'+c+'14;">'+text+'</div>'; }
+  function card(label, mainDisp, mainColor, chipHtml, prevDisp, mainExtra){
+    return '<div class="rpc-card">'
+      + '<div class="rpc-label">'+label+'</div>'
+      + '<div class="rpc-main" style="color:'+mainColor+';'+(mainExtra||'')+'">'+mainDisp+'</div>'
+      + (chipHtml||'<div class="rpc-chip" style="color:var(--txt3);border-color:var(--brd2);background:transparent;">— нет пары</div>')
+      + '<div class="rpc-prev">пред. '+prevDisp+'</div>'
+      + '</div>';
+  }
+
+  const cards = [];
+
+  // 1) РОСТ — изменение в п.п.
+  (function(){
+    const lv = sl.growth_pct, pv = sp.growth_pct;
+    const mainDisp = lv==null?'—':sgn(lv)+Math.abs(Math.round(lv))+'%';
+    const mainColor = lv==null?'var(--txt2)':(lv>=0?'var(--green)':'var(--red)');
+    let c=''; if(lv!=null && pv!=null){ const d=lv-pv; c=chip(arrow(d)+' '+sgn(d)+Math.abs(Math.round(d))+' п.п.', col(d)); }
+    cards.push(card('Рост', mainDisp, mainColor, c, pv==null?'—':sgn(pv)+Math.abs(Math.round(pv))+'%'));
+  })();
+
+  // 2) ТРАФИК — со страховкой на несопоставимые базы (per-day vs per-period)
+  (function(){
+    const lv = sl.traffic_delta, pv = sp.traffic_delta;
+    const mainDisp = lv==null?'—':signedNum(lv);
+    const mainColor = lv==null?'var(--txt2)':(lv>=0?'var(--green)':'var(--red)');
+    let c='';
+    if(lv!=null && pv!=null){
+      const a=Math.abs(lv), b=Math.abs(pv);
+      const incomparable = (a>0 && b>0) && (Math.max(a,b)/Math.min(a,b) > 8);
+      c = incomparable ? chip('⚠ разные базы', 'var(--amber)') : (function(){ const d=lv-pv; return chip(arrow(d)+' '+signedNum(d), col(d)); })();
+    }
+    cards.push(card('Трафик', mainDisp, mainColor, c, signedNum(pv)));
+  })();
+
+  // 3) СР. ЧЕК — изменение в сумах
+  (function(){
+    const lv = sl.avg_check_delta, pv = sp.avg_check_delta;
+    const mainDisp = lv==null?'—':signedNum(lv)+' сум';
+    const mainColor = lv==null?'var(--txt2)':(lv>=0?'var(--green)':'var(--red)');
+    let c=''; if(lv!=null && pv!=null){ const d=lv-pv; c=chip(arrow(d)+' '+signedNum(d)+' сум', col(d)); }
+    cards.push(card('Ср. чек', mainDisp, mainColor, c, pv==null?'—':signedNum(pv)+' сум'));
+  })();
+
+  // 4) ФАКТ — сумма (чистое абсолютное сравнение)
+  (function(){
+    const lv = sl.d_total_rev, pv = sp.d_total_rev;
+    const mainDisp = lv==null?'—':num(lv)+' сум';
+    let c=''; if(lv!=null && pv!=null && pv!==0){ const pct=(lv-pv)/Math.abs(pv)*100; c=chip(arrow(pct)+' '+sgn(pct)+Math.abs(pct).toFixed(1).replace('.',',')+'%', col(pct)); }
+    cards.push(card('Факт · сумма', mainDisp, 'var(--a2)', c, pv==null?'—':num(pv)+' сум', 'font-size:19px;'));
+  })();
+
+  el.innerHTML = '<div class="rpc-wrap">'
+    + '<div class="rpc-head"><span class="rpc-head-eyebrow">Последний vs предыдущий</span>'
+    + '<span class="rpc-head-pair">'+esc(last.title)+' <span style="color:var(--txt3)">←</span> '+esc(prev.title)+'</span></div>'
+    + '<div class="rpc-grid">'+cards.join('')+'</div></div>';
+}
+
 async function loadReports() {
   const { data } = await sb.from('reports')
     .select('id, title, status, period_b_label, period_d_label, created_at, hidden_for_client, summary')
@@ -24539,10 +24642,13 @@ async function loadReports() {
   const visible = isClient ? (data || []).filter(r => !r.hidden_for_client) : (data || [])
 
   const list = g('reports-list')
+  const _cmpStrip = g('rp-compare-strip')
   if (!visible.length) {
+    if (_cmpStrip) _cmpStrip.innerHTML = ''
     list.innerHTML = `<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-title">Нет отчётов</div><div class="empty-sub">Создай первый отчёт для этого проекта</div></div>`
     return
   }
+  renderReportCompareStrip(visible)
   // Agency-only visibility is already handled in afterLogin/openProject
 
   // Update tab count
