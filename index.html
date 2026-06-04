@@ -24451,19 +24451,8 @@ function renderProjectGrid() {
       `<span class="prow-cat">${t.trim()}</span>`
     ).join('') : ''
 
-    // ── ЗДОРОВЬЕ (RAG) — только из реальных данных: просрочка этапов + близость дедлайна ──
-    let _hTxt, _hCol, _hBg, _hBorder, _stripe
-    if (pct === 100)  { _hTxt = 'Завершён';      _hCol = 'var(--green)'; _hBg = 'rgba(62,207,142,.10)'; _hBorder = 'rgba(62,207,142,.25)'; _stripe = 'var(--green)' }
-    else if (overdue) { _hTxt = 'Просрочен';     _hCol = 'var(--red)';   _hBg = 'rgba(224,82,82,.10)';  _hBorder = 'rgba(224,82,82,.30)';  _stripe = 'var(--red)' }
-    else {
-      let _near = false
-      if (next) { const _d = Math.ceil((new Date(next.deadline + 'T00:00:00') - today) / 86400000); _near = _d >= 0 && _d <= 3 }
-      if (_near) { _hTxt = 'Скоро дедлайн'; _hCol = 'var(--amber)'; _hBg = 'rgba(232,153,58,.10)'; _hBorder = 'rgba(232,153,58,.30)'; _stripe = 'var(--amber)' }
-      else       { _hTxt = 'В норме';       _hCol = 'var(--green)'; _hBg = 'var(--bg3)';          _hBorder = 'var(--brd)';          _stripe = 'var(--green)' }
-    }
-
-    // ── ТЕМП К ПЛАНУ — показываем только если у проекта расписан почти весь график ──
-    // (иначе «план» по 1–2 дедлайнам несопоставим с прогрессом по всем этапам и раздувает разрыв)
+    // ── ТЕМП К ПЛАНУ — вычисляем ДО здоровья, т.к. gap влияет на RAG ──
+    // (показываем только если у проекта расписан почти весь график >=70%)
     const _stagesWithDl = projStages.filter(s => s.deadline).length
     const _planCoverage = progTotal > 0 ? _stagesWithDl / progTotal : 0
     const _hasPlan = pct < 100 && progTotal > 0 && _planCoverage >= 0.7
@@ -24473,6 +24462,21 @@ function renderProjectGrid() {
       _expPct = Math.max(0, Math.min(100, Math.round(_expDone / progTotal * 100)))
       _gap = pct - _expPct
       _gapCol = _gap >= 0 ? 'var(--green)' : _gap >= -10 ? 'var(--amber)' : 'var(--red)'
+    }
+
+    // ── ЗДОРОВЬЕ (RAG) — просрочка этапов + близость дедлайна + отставание от плана ──
+    let _hTxt, _hCol, _hBg, _hBorder, _stripe
+    if (pct === 100)  { _hTxt = 'Завершён';      _hCol = 'var(--green)'; _hBg = 'rgba(62,207,142,.10)'; _hBorder = 'rgba(62,207,142,.25)'; _stripe = 'var(--green)' }
+    else if (overdue) { _hTxt = 'Просрочен';     _hCol = 'var(--red)';   _hBg = 'rgba(224,82,82,.10)';  _hBorder = 'rgba(224,82,82,.30)';  _stripe = 'var(--red)' }
+    else {
+      let _near = false
+      if (next) { const _d = Math.ceil((new Date(next.deadline + 'T00:00:00') - today) / 86400000); _near = _d >= 0 && _d <= 3 }
+      // Учитываем отставание от плана: gap < -25% → красный, gap < -10% → жёлтый
+      const _behindPlan = _hasPlan && _gap !== null && _gap < -10
+      const _farBehind  = _hasPlan && _gap !== null && _gap < -25
+      if (_farBehind)              { _hTxt = 'Отстаёт';     _hCol = 'var(--red)';   _hBg = 'rgba(224,82,82,.10)';  _hBorder = 'rgba(224,82,82,.30)';  _stripe = 'var(--red)' }
+      else if (_near || _behindPlan) { _hTxt = 'Под угрозой'; _hCol = 'var(--amber)'; _hBg = 'rgba(232,153,58,.10)'; _hBorder = 'rgba(232,153,58,.30)'; _stripe = 'var(--amber)' }
+      else                         { _hTxt = 'В норме';     _hCol = 'var(--green)'; _hBg = 'var(--bg3)';          _hBorder = 'var(--brd)';          _stripe = 'var(--green)' }
     }
 
     // ── ДИНАМИКА — этапов завершено за последние 7 дней (по completed_at) ──
