@@ -38653,9 +38653,12 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
     var velocityScore = done30 > 0 ? Math.min(100, Math.round(done30 / 20 * 100)) : null;
     var qualityScore  = reworkRate !== null ? (100 - reworkRate) : null;
 
-    // Score: считаем только по доступным компонентам, не занижаем за отсутствие данных
+    // Score: считаем только по доступным компонентам, не занижаем за отсутствие данных.
+    // Но «качество» в одиночку (0 возвратов на нуле работы) не должно давать 100% —
+    // нужна реальная пропускная способность: скорость ИЛИ velocity.
+    var hasThroughput = (speedScore !== null) || (velocityScore !== null);
     var effScore = null;
-    if (hasAnyData) {
+    if (hasAnyData && hasThroughput) {
       var scoreComponents = [];
       if (speedScore    !== null) scoreComponents.push({ val: speedScore,    w: 0.40 });
       if (velocityScore !== null) scoreComponents.push({ val: velocityScore, w: 0.35 });
