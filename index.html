@@ -20431,10 +20431,27 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
         </div>
         <button onclick="openAddTeamMember()" style="display:flex;align-items:center;gap:6px;background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.25);border-radius:7px;padding:8px 16px;color:#c9a84c;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.04em;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;" onmouseover="this.style.background='rgba(184,146,58,.2)';this.style.borderColor='rgba(184,146,58,.45)'" onmouseout="this.style.background='rgba(184,146,58,.1)';this.style.borderColor='rgba(184,146,58,.25)'">+ Добавить</button>
       </div>
-      <div id="team-members-list" style="display:flex;flex-direction:column;gap:8px;"></div>
-      <div style="margin-top:28px;">
+      <!-- TAB BAR -->
+      <div style="display:flex;gap:8px;margin:4px 0 20px;flex-wrap:wrap;">
+        <button id="tt-btn-employees" onclick="switchTeamTab('employees',this)" style="font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:9px 18px;border-radius:9px;cursor:pointer;transition:all .15s;white-space:nowrap;background:rgba(184,146,58,.14);border:1px solid rgba(184,146,58,.35);color:#c9a84c;">Сотрудники</button>
+        <button id="tt-btn-workload" onclick="switchTeamTab('workload',this)" style="font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:9px 18px;border-radius:9px;cursor:pointer;transition:all .15s;white-space:nowrap;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.55);">Нагрузка по сотрудникам</button>
+        <button id="tt-btn-depts" onclick="switchTeamTab('depts',this)" style="font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:9px 18px;border-radius:9px;cursor:pointer;transition:all .15s;white-space:nowrap;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.55);">Эффективность отделов</button>
+      </div>
+
+      <!-- TAB: Сотрудники (карточки + перенесённая таблица эффективности) -->
+      <div id="team-tab-employees">
+        <div id="team-members-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+
+      <!-- TAB: Нагрузка -->
+      <div id="team-tab-workload" style="display:none;">
         <div style="font-size:13px;font-weight:500;color:var(--txt);margin-bottom:14px;">Нагрузка по сотрудникам</div>
         <div id="team-workload-bars" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+
+      <!-- TAB: Эффективность отделов (Фаза 3) -->
+      <div id="team-tab-depts" style="display:none;">
+        <div id="dept-eff-body" style="padding:8px 0;"></div>
       </div>
     </div>
 
@@ -27875,6 +27892,7 @@ async function loadKanban() {
         ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS cycle integer DEFAULT 1;
         ALTER TABLE projects ADD COLUMN IF NOT EXISTS current_cycle integer DEFAULT 1;
         ALTER TABLE projects ADD COLUMN IF NOT EXISTS cycle_started_at timestamptz;
+        ALTER TABLE team_members ADD COLUMN IF NOT EXISTS department text;
       `})
     } catch(e) {
       // rpc может не существовать — пробуем напрямую через отдельные запросы
@@ -32376,6 +32394,15 @@ function showSQLHint() {
 
     <div class="field"><label>Имя</label><input type="text" id="tm-name-inp" placeholder="Иван Иванов" oninput="tmUpdateAvatarLetter()"></div>
     <div class="field"><label>Роль</label><input type="text" id="tm-role-inp" placeholder="SMM-менеджер, дизайнер..."></div>
+    <div class="field"><label>Отдел <span style="color:var(--red);">*</span></label>
+      <div id="tm-dept-grid" style="display:flex;flex-wrap:wrap;gap:7px;margin-top:4px;"></div>
+      <div style="display:flex;gap:6px;margin-top:8px;">
+        <input type="text" id="tm-dept-new" placeholder="Новый отдел" onkeydown="if(event.key==='Enter'){event.preventDefault();tmCreateDept();}" style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 11px;color:var(--txt);font-size:12px;">
+        <button type="button" onclick="tmCreateDept()" title="Создать отдел" style="background:rgba(184,146,58,.12);border:1px solid rgba(184,146,58,.3);border-radius:8px;padding:0 14px;color:#c9a84c;cursor:pointer;font-size:16px;line-height:1;">+</button>
+      </div>
+      <div id="tm-dept-err" style="display:none;color:var(--red);font-size:11px;margin-top:5px;">Выбери или создай отдел</div>
+      <input type="hidden" id="tm-dept-val" value="">
+    </div>
     <div class="field"><label>Цвет</label>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;" id="tm-color-wrap">
         <div onclick="tmSetColor('#b8923a')" style="width:24px;height:24px;border-radius:50%;background:#b8923a;cursor:pointer;border:2px solid transparent;" data-color="#b8923a"></div>
@@ -33640,6 +33667,7 @@ function _ctRenderClients(rows) {
 
 
 async function loadOverview() {
+  if (window._relocateTeamEff) window._relocateTeamEff();
   if (!_allProjects || !_allProjects.length) return;
 
   var today = new Date(); today.setHours(0,0,0,0);
@@ -37823,6 +37851,13 @@ function openAddTeamMember(member) {
     if (status) status.textContent = 'PNG, JPG · до 2MB';
   }
   document.getElementById('tm-photo-file').value = '';
+  // Отделы — загрузить список и отрисовать пикер (предвыбор для редактирования)
+  var _selDept = member ? (member.department || '') : '';
+  var _deptVal = document.getElementById('tm-dept-val'); if (_deptVal) _deptVal.value = _selDept;
+  var _deptErr = document.getElementById('tm-dept-err'); if (_deptErr) _deptErr.style.display = 'none';
+  if (typeof loadDepartments === 'function') {
+    loadDepartments().then(function(){ if (typeof tmRenderDepts === 'function') tmRenderDepts(_selDept); });
+  }
   openModal('modal-team-member');
   setTimeout(function(){ document.getElementById('tm-name-inp').focus(); }, 80);
 }
@@ -37893,8 +37928,13 @@ async function saveTeamMember() {
   var color = document.getElementById('tm-color-val').value || '#b8923a';
   var id = document.getElementById('tm-id-val').value;
   var avatarUrl = document.getElementById('tm-photo-url').value.trim();
+  var dept = (document.getElementById('tm-dept-val') || {}).value || '';
   if (!name) return;
-  var payload = { name: name, role: role, color: color, agency_id: currentUser.id, avatar_url: avatarUrl || null };
+  if (!dept) {
+    var de = document.getElementById('tm-dept-err'); if (de) de.style.display = 'block';
+    return;
+  }
+  var payload = { name: name, role: role, color: color, agency_id: currentUser.id, avatar_url: avatarUrl || null, department: dept };
   if (id) {
     await sb.from('team_members').update(payload).eq('id', id);
   } else {
@@ -38784,7 +38824,7 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
 var _origSwitchDashTab2 = window.switchDashTab;
 window.switchDashTab = function(tab, btn) {
   _origSwitchDashTab2 && _origSwitchDashTab2(tab, btn);
-  if (tab === 'team') loadTeamPanel();
+  if (tab === 'team') { loadTeamPanel(); if (window.switchTeamTab) window.switchTeamTab('employees'); }
 };
 </script>
 
@@ -39213,6 +39253,124 @@ window.switchDashTab = function(tab, btn) {
     if (typeof showToast === 'function') showToast('Задача возвращена в текущий цикл', 'ok');
     if (typeof loadTasks === 'function' && typeof renderTracker === 'function') { await loadTasks(); renderTracker(); }
     window.openPastCycles();
+  };
+})();
+</script>
+
+<script id="dtr-departments-js">
+(function () {
+  var DEFAULTS = ['РУКОВОДСТВО','АДМИНИСТРАЦИЯ','ПРОДАКШН','ДИЗАЙН','ТАРГЕТ'];
+  function esc5(s){ return (typeof esc==='function')?esc(s):String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+
+  window.loadDepartments = async function () {
+    try { await sb.rpc('run_migration', { sql: "ALTER TABLE team_members ADD COLUMN IF NOT EXISTS department text;" }); } catch (e) {}
+    if (typeof currentUser === 'undefined' || !currentUser) { window._departments = DEFAULTS.slice(); return window._departments; }
+    try {
+      var res = await sb.from('agency_settings').select('value').eq('key', 'departments').eq('agency_id', currentUser.id).single();
+      if (res && res.data && res.data.value) {
+        var arr = JSON.parse(res.data.value);
+        if (Array.isArray(arr) && arr.length) { window._departments = arr; return arr; }
+      }
+    } catch (e) {}
+    window._departments = DEFAULTS.slice();
+    await window.saveDepartments();
+    return window._departments;
+  };
+
+  window.saveDepartments = async function () {
+    if (typeof currentUser === 'undefined' || !currentUser) return;
+    try {
+      await sb.from('agency_settings').upsert({ agency_id: currentUser.id, key: 'departments', value: JSON.stringify(window._departments || []) }, { onConflict: 'agency_id,key' });
+    } catch (e) {
+      try { localStorage.setItem('departments_' + currentUser.id, JSON.stringify(window._departments || [])); } catch (_) {}
+    }
+  };
+
+  window.tmRenderDepts = function (selected) {
+    var grid = document.getElementById('tm-dept-grid'); if (!grid) return;
+    var list = window._departments || [];
+    var hidden = document.getElementById('tm-dept-val');
+    if (selected == null) selected = hidden ? hidden.value : '';
+    if (!list.length) { grid.innerHTML = '<span style="font-size:11px;color:var(--txt3);">Нет отделов — создай ниже</span>'; return; }
+    grid.innerHTML = list.map(function (name, i) {
+      var on = name === selected;
+      return '<span style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:9px;cursor:pointer;font-size:11px;font-family:var(--font-mono);letter-spacing:.03em;transition:all .14s;'
+        + (on ? 'background:rgba(184,146,58,.16);border:1px solid rgba(184,146,58,.45);color:#c9a84c;' : 'background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);')
+        + '" onclick="tmSelectDept(' + i + ')">'
+        + esc5(name)
+        + '<span onclick="event.stopPropagation();tmDeleteDept(' + i + ')" title="Удалить отдел" style="opacity:.45;font-size:14px;line-height:1;padding:0 1px;">×</span>'
+        + '</span>';
+    }).join('');
+  };
+
+  window.tmSelectDept = function (i) {
+    var name = (window._departments || [])[i]; if (name == null) return;
+    var hidden = document.getElementById('tm-dept-val'); if (hidden) hidden.value = name;
+    var err = document.getElementById('tm-dept-err'); if (err) err.style.display = 'none';
+    window.tmRenderDepts(name);
+  };
+
+  window.tmCreateDept = async function () {
+    var inp = document.getElementById('tm-dept-new'); if (!inp) return;
+    var name = inp.value.trim().toUpperCase(); if (!name) return;
+    window._departments = window._departments || [];
+    if (window._departments.indexOf(name) === -1) { window._departments.push(name); await window.saveDepartments(); }
+    inp.value = '';
+    window.tmSelectDept(window._departments.indexOf(name));
+  };
+
+  window.tmDeleteDept = async function (i) {
+    var list = window._departments || []; var name = list[i]; if (name == null) return;
+    if (!confirm('Удалить отдел «' + name + '»? Сотрудники этого отдела останутся без отдела.')) return;
+    list.splice(i, 1); await window.saveDepartments();
+    var hidden = document.getElementById('tm-dept-val');
+    if (hidden && hidden.value === name) hidden.value = '';
+    window.tmRenderDepts(hidden ? hidden.value : '');
+  };
+})();
+</script>
+
+<script id="dtr-team-tabs-js">
+(function () {
+  // Разовый перенос блока «Эффективность сотрудников» из Сводки в вкладку «Сотрудники»
+  // + скрытие дублирующей нагрузки в Сводке. Узел сохраняет id — loadEfficiencyBlock работает как прежде.
+  window._relocateTeamEff = function () {
+    if (window._teamEffRelocated) return;
+    var dest = document.getElementById('team-tab-employees');
+    var effBody = document.getElementById('sv-efficiency-body');
+    if (!dest || !effBody) return; // DOM ещё не готов — повторим позже
+    var block = effBody.closest('.sv-section-block');
+    if (block) { block.style.margin = '24px 0 0'; dest.appendChild(block); }
+    var wl = document.getElementById('sv-workload-v2');
+    if (wl) { var wb = wl.closest('.sv-section-block'); if (wb) wb.style.display = 'none'; }
+    window._teamEffRelocated = true;
+  };
+
+  window.switchTeamTab = function (tab, btn) {
+    ['employees', 'workload', 'depts'].forEach(function (t) {
+      var pane = document.getElementById('team-tab-' + t);
+      if (pane) pane.style.display = (t === tab) ? '' : 'none';
+      var b = document.getElementById('tt-btn-' + t);
+      if (b) {
+        var on = (t === tab);
+        b.style.background  = on ? 'rgba(184,146,58,.14)' : 'rgba(255,255,255,.04)';
+        b.style.borderColor = on ? 'rgba(184,146,58,.35)' : 'rgba(255,255,255,.08)';
+        b.style.color       = on ? '#c9a84c'              : 'rgba(255,255,255,.55)';
+      }
+    });
+    if (tab === 'employees') {
+      window._relocateTeamEff();
+      if (typeof currentUser !== 'undefined' && currentUser && typeof loadEfficiencyBlock === 'function') {
+        sb.from('team_members').select('id,name,color,avatar_url,department').eq('agency_id', currentUser.id).order('name')
+          .then(function (r) { var m = r.data || []; if (m.length) loadEfficiencyBlock(m, null); });
+      }
+    } else if (tab === 'depts') {
+      if (typeof renderDeptEfficiency === 'function') { renderDeptEfficiency(); }
+      else {
+        var db = document.getElementById('dept-eff-body');
+        if (db) db.innerHTML = '<div style="text-align:center;color:var(--txt3);font-size:12px;padding:48px 0;font-family:var(--font-mono);">Эффективность отделов — в следующем обновлении.</div>';
+      }
+    }
   };
 })();
 </script>
