@@ -34057,88 +34057,50 @@ async function loadOverview() {
             // Максимум для относительной полоски
             var maxTotal = Math.max.apply(null, memberLoad.map(function(r){ return r.total; })) || 1;
 
-            // ── DTR workload redesign v2 ──
-            function dtrBarCell(r) {
-              var t = r.total || 1;
-              var pPct = Math.round(r.pending / t * 100);
-              var aPct = Math.round(r.active  / t * 100);
-              var dPct = 100 - pPct - aPct;
-              var lbl = r.active  > 0 ? 'актив. '  + aPct + '%'
-                      : r.pending > 0 ? 'ожид. '   + pPct + '%'
-                      : 'готово 100%';
-              return '<div style="display:flex;align-items:center;gap:10px;padding:0 16px 0 0;">'
-                + '<div style="flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden;display:flex;">'
-                  + (pPct > 0 ? '<div style="width:'+pPct+'%;height:100%;background:#b8923a;"></div>' : '')
-                  + (aPct > 0 ? '<div style="width:'+aPct+'%;height:100%;background:#3ecf8e;"></div>' : '')
-                  + (dPct > 0 ? '<div style="width:'+dPct+'%;height:100%;background:rgba(255,255,255,.15);"></div>' : '')
-                + '</div>'
-                + '<span style="font-family:var(--font-mono);font-size:9px;color:rgba(240,236,230,.28);white-space:nowrap;min-width:56px;text-align:right;">'+lbl+'</span>'
-              + '</div>';
+            // Цвет нагрузки
+            function loadColor(n) {
+              return n >= 5 ? 'var(--red)' : n >= 3 ? 'var(--amber)' : n > 0 ? 'var(--green)' : 'var(--txt3)';
             }
 
-            function dtrNumCell(n, col) {
-              var c = n > 0 ? col : 'rgba(240,236,230,.15)';
-              return '<div style="text-align:center;">'
-                + '<div style="font-size:18px;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1;color:' + c + ';">' + (n > 0 ? n : '—') + '</div>'
-                + (n > 0 ? '<div style="font-family:var(--font-mono);font-size:8px;letter-spacing:.06em;color:rgba(240,236,230,.2);margin-top:3px;text-transform:uppercase;">эт.</div>' : '')
-              + '</div>';
+            // Ячейка колонки
+            function cell(count, color, total, borderLeft) {
+              var pct = Math.round(count / (total || 1) * 100);
+              var bl = borderLeft ? 'border-left:1px solid rgba(255,255,255,.06);' : '';
+              return '<div style="' + bl + 'padding:16px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;">' +
+                '<div style="font-size:22px;font-family:var(--font-mono);color:' + (count > 0 ? color : 'rgba(255,255,255,.15)') + ';line-height:1;">' + (count > 0 ? count : '—') + '</div>' +
+                (count > 0 ?
+                  '<div style="width:60px;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;">' +
+                    '<div style="width:' + pct + '%;height:100%;background:' + color + ';border-radius:2px;"></div>' +
+                  '</div>' : '') +
+              '</div>';
             }
 
-            // Topbar — три суммарных числа
-            var html =
-              '<div style="display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid rgba(255,255,255,.05);">'
-                +'<div style="padding:16px 24px;text-align:center;border-right:1px solid rgba(255,255,255,.05);">'
-                  +'<div style="font-size:26px;font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:#b8923a;">'+sumPending+'</div>'
-                  +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.25);margin-top:5px;">В ожидании</div>'
-                +'</div>'
-                +'<div style="padding:16px 24px;text-align:center;border-right:1px solid rgba(255,255,255,.05);">'
-                  +'<div style="font-size:26px;font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:#3ecf8e;">'+sumActive+'</div>'
-                  +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.25);margin-top:5px;">В работе</div>'
-                +'</div>'
-                +'<div style="padding:16px 24px;text-align:center;">'
-                  +'<div style="font-size:26px;font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:rgba(240,236,230,.2);">'+sumDone+'</div>'
-                  +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.25);margin-top:5px;">Завершено</div>'
-                +'</div>'
-              +'</div>'
-              // Заголовки колонок
-              +'<div style="display:grid;grid-template-columns:200px 1fr 100px 100px 100px 56px;padding:8px 20px;border-bottom:1px solid rgba(255,255,255,.05);">'
-                +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);">Сотрудник</div>'
-                +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);">Распределение</div>'
-                +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);text-align:center;">Ожидание</div>'
-                +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);text-align:center;">В работе</div>'
-                +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);text-align:center;">Готово</div>'
-                +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);text-align:right;">Итого</div>'
-              +'</div>';
+            // Шапка
+            var html = '<div style="display:grid;grid-template-columns:200px 1fr 1fr 1fr;">' +
+              '<div style="padding:10px 20px;font-size:10px;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase;">Сотрудник</div>' +
+              '<div style="padding:10px 24px;font-size:10px;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase;text-align:center;border-left:1px solid rgba(255,255,255,.06);">В ожидании&nbsp;<span style="color:var(--txt2);font-family:var(--font-mono);">' + sumPending + '</span></div>' +
+              '<div style="padding:10px 24px;font-size:10px;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase;text-align:center;border-left:1px solid rgba(255,255,255,.06);">В работе&nbsp;<span style="color:var(--amber);font-family:var(--font-mono);">' + sumActive + '</span></div>' +
+              '<div style="padding:10px 24px;font-size:10px;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase;text-align:center;border-left:1px solid rgba(255,255,255,.06);">Завершено&nbsp;<span style="color:var(--green);font-family:var(--font-mono);">' + sumDone + '</span></div>' +
+            '</div>';
 
-            // Строки сотрудников — кликабельные
+            // Строки сотрудников
             html += memberLoad.map(function(r) {
-              var mc = r.m.color || '#b8923a';
-              var av = r.m.avatar_url
-                ? '<div style="width:32px;height:32px;border-radius:50%;overflow:hidden;border:1px solid '+mc+'44;flex-shrink:0;"><img src="'+r.m.avatar_url+'" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
-                : '<div style="width:32px;height:32px;border-radius:50%;background:'+mc+'18;border:1px solid '+mc+'44;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:'+mc+';flex-shrink:0;">'+r.m.name[0].toUpperCase()+'</div>';
-
-              return '<div '
-                +'onclick="typeof svOpenMemberDetail===\'function\'&&svOpenMemberDetail(\''+r.m.id+'\')" '
-                +'onmouseenter="this.style.background=\'rgba(255,255,255,.025)\'" '
-                +'onmouseleave="this.style.background=\'transparent\'" '
-                +'style="display:grid;grid-template-columns:200px 1fr 100px 100px 100px 56px;padding:13px 20px;border-bottom:1px solid rgba(255,255,255,.04);align-items:center;cursor:pointer;transition:background .15s;">'
-                // Сотрудник
-                +'<div style="display:flex;align-items:center;gap:10px;">'
-                  +av
-                  +'<div>'
-                    +'<div style="font-size:13px;font-weight:500;color:#f0ece6;letter-spacing:-.01em;">'+r.m.name+'</div>'
-                    +'<div style="font-family:var(--font-mono);font-size:10px;color:rgba(240,236,230,.28);margin-top:2px;">'+r.total+' эт.</div>'
-                  +'</div>'
-                +'</div>'
-                // Полоска
-                +dtrBarCell(r)
-                // Числа
-                +dtrNumCell(r.pending,'#b8923a')
-                +dtrNumCell(r.active,'#3ecf8e')
-                +dtrNumCell(r.done,'rgba(240,236,230,.4)')
-                // Итого
-                +'<div style="text-align:right;font-family:var(--font-mono);font-size:11px;color:rgba(240,236,230,.3);">'+r.total+'</div>'
-              +'</div>';
+              var lc = loadColor(r.active);
+              return '<div style="display:grid;grid-template-columns:200px 1fr 1fr 1fr;border-top:1px solid rgba(255,255,255,.06);">' +
+                // Имя
+                '<div style="display:flex;align-items:center;gap:10px;padding:14px 20px;">' +
+                  (r.m.avatar_url
+                  ? '<div style="width:40px;height:40px;border-radius:10px;overflow:hidden;border:1.5px solid ' + r.m.color + '44;flex-shrink:0;"><img src="' + r.m.avatar_url + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+                  : '<div style="width:40px;height:40px;border-radius:10px;background:' + r.m.color + '18;border:1.5px solid ' + r.m.color + '44;display:flex;align-items:center;justify-content:center;font-size:15px;color:' + r.m.color + ';flex-shrink:0;">' + r.m.name[0].toUpperCase() + '</div>') +
+                  '<div>' +
+                    '<div style="font-size:13px;color:var(--txt);">' + r.m.name + '</div>' +
+                    '<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);margin-top:2px;">' + r.total + ' этапов</div>' +
+                  '</div>' +
+                '</div>' +
+                cell(r.pending, 'rgba(200,196,190,.6)', maxTotal, true) +
+                cell(r.active,  lc,                     maxTotal, true) +
+                cell(r.done,    'var(--green)',          maxTotal, true) +
+              '</div>';
             }).join('');
 
             wEl2.innerHTML = html;
@@ -38150,47 +38112,88 @@ async function loadTeamPanel() {
     var sumP = memberLoad.reduce(function(s,r){return s+r.pending;},0);
     var sumA = memberLoad.reduce(function(s,r){return s+r.active;},0);
     var sumD = memberLoad.reduce(function(s,r){return s+r.completed;},0);
-    var maxT = Math.max.apply(null, memberLoad.map(function(r){return r.total;})) || 1;
 
-    function lc(n){ return n>=5?'var(--red)':n>=3?'var(--amber)':n>0?'var(--green)':'rgba(255,255,255,.2)'; }
-
-    function tcell(count, color, bl, memberId, status) {
-      var pct = Math.round(count / maxT * 100);
-      var bls = bl ? 'border-left:1px solid rgba(255,255,255,.06);' : '';
-      var clickable = count > 0 && memberId;
-      var clickAttr = clickable
-        ? ' class="wl-cell-click" data-mid="' + memberId + '" data-st="' + status + '" onclick="openWorkloadDrill(\'' + memberId + '\',\'' + status + '\')" title="Показать задачи сотрудника"'
-        : '';
-      var cur = clickable ? 'cursor:pointer;' : '';
-      return '<div' + clickAttr + ' style="' + bls + cur + 'padding:14px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transition:background .14s ease;position:relative;">' +
-        '<div style="font-size:20px;font-family:var(--font-mono);color:' + (count>0?color:'rgba(255,255,255,.15)') + ';line-height:1;">' + (count>0?count:'—') + '</div>' +
-        (count>0 ? '<div style="width:48px;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;"><div style="width:'+pct+'%;height:100%;background:'+color+';border-radius:2px;"></div></div>' : '') +
-      '</div>';
+    // ── DTR-style redesign ──
+    function dtrBar(r) {
+      var t = r.total || 1;
+      var pPct = Math.round(r.pending   / t * 100);
+      var aPct = Math.round(r.active    / t * 100);
+      var dPct = 100 - pPct - aPct;
+      var lbl  = r.active > 0  ? 'актив. '  + aPct + '%'
+               : r.pending > 0 ? 'ожид. '   + pPct + '%'
+               : 'готово 100%';
+      return '<div style="display:flex;align-items:center;gap:10px;padding-right:16px;">'
+        + '<div style="flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden;display:flex;">'
+          + (pPct > 0 ? '<div style="width:'+pPct+'%;height:100%;background:#b8923a;"></div>' : '')
+          + (aPct > 0 ? '<div style="width:'+aPct+'%;height:100%;background:#3ecf8e;"></div>' : '')
+          + (dPct > 0 ? '<div style="width:'+dPct+'%;height:100%;background:rgba(255,255,255,.15);"></div>' : '')
+        + '</div>'
+        + '<span style="font-family:var(--font-mono);font-size:9px;color:rgba(240,236,230,.28);white-space:nowrap;min-width:56px;text-align:right;">'+lbl+'</span>'
+      + '</div>';
     }
 
-    var hdr = '<div style="display:grid;grid-template-columns:200px 1fr 1fr 1fr;border-bottom:1px solid rgba(255,255,255,.06);">' +
-      '<div style="padding:8px 16px;font-size:10px;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase;">Сотрудник</div>' +
-      '<div style="padding:8px 20px;font-size:10px;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase;text-align:center;border-left:1px solid rgba(255,255,255,.06);">В ожидании <span style="color:var(--txt2);font-family:var(--font-mono);">' + sumP + '</span></div>' +
-      '<div style="padding:8px 20px;font-size:10px;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase;text-align:center;border-left:1px solid rgba(255,255,255,.06);">В работе <span style="color:var(--amber);font-family:var(--font-mono);">' + sumA + '</span></div>' +
-      '<div style="padding:8px 20px;font-size:10px;color:var(--txt3);letter-spacing:.06em;text-transform:uppercase;text-align:center;border-left:1px solid rgba(255,255,255,.06);">Завершено <span style="color:var(--green);font-family:var(--font-mono);">' + sumD + '</span></div>' +
-    '</div>';
+    function dtrNum(count, color, memberId, status) {
+      var clickable = count > 0 && memberId;
+      var clickAttr = clickable
+        ? ' onclick="openWorkloadDrill(\''+memberId+'\',\''+status+'\')" title="Показать задачи"'
+        : '';
+      var cur = clickable ? 'cursor:pointer;' : '';
+      var c   = count > 0 ? color : 'rgba(240,236,230,.15)';
+      return '<div'+clickAttr+' style="text-align:center;'+cur+'">'
+        + '<div style="font-size:18px;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1;color:'+c+';">'+(count>0?count:'—')+'</div>'
+        + (count > 0 ? '<div style="font-family:var(--font-mono);font-size:8px;letter-spacing:.06em;color:rgba(240,236,230,.2);margin-top:3px;text-transform:uppercase;">эт.</div>' : '')
+      + '</div>';
+    }
+
+    // Topbar
+    var hdr =
+      '<div style="display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid rgba(255,255,255,.05);">'
+        +'<div style="padding:16px 24px;text-align:center;border-right:1px solid rgba(255,255,255,.05);">'
+          +'<div style="font-size:26px;font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:#b8923a;">'+sumP+'</div>'
+          +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.25);margin-top:5px;">В ожидании</div>'
+        +'</div>'
+        +'<div style="padding:16px 24px;text-align:center;border-right:1px solid rgba(255,255,255,.05);">'
+          +'<div style="font-size:26px;font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:#3ecf8e;">'+sumA+'</div>'
+          +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.25);margin-top:5px;">В работе</div>'
+        +'</div>'
+        +'<div style="padding:16px 24px;text-align:center;">'
+          +'<div style="font-size:26px;font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:rgba(240,236,230,.2);">'+sumD+'</div>'
+          +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.25);margin-top:5px;">Завершено</div>'
+        +'</div>'
+      +'</div>'
+      // Заголовки колонок
+      +'<div style="display:grid;grid-template-columns:200px 1fr 100px 100px 100px 56px;padding:8px 20px;border-bottom:1px solid rgba(255,255,255,.05);">'
+        +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);">Сотрудник</div>'
+        +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);">Распределение</div>'
+        +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);text-align:center;">Ожидание</div>'
+        +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);text-align:center;">В работе</div>'
+        +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);text-align:center;">Готово</div>'
+        +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);text-align:right;">Итого</div>'
+      +'</div>';
 
     var rows = memberLoad.map(function(r) {
-      var avatarEl = r.m.avatar_url
-        ? '<div style="width:40px;height:40px;border-radius:10px;overflow:hidden;border:1.5px solid '+r.m.color+'44;flex-shrink:0;"><img src="'+r.m.avatar_url+'" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
-        : '<div style="width:40px;height:40px;border-radius:10px;background:'+r.m.color+'18;border:1.5px solid '+r.m.color+'44;display:flex;align-items:center;justify-content:center;font-size:15px;color:'+r.m.color+';flex-shrink:0;">'+r.m.name[0].toUpperCase()+'</div>';
-      return '<div style="display:grid;grid-template-columns:200px 1fr 1fr 1fr;border-top:1px solid rgba(255,255,255,.06);">' +
-        '<div style="display:flex;align-items:center;gap:10px;padding:12px 16px;">' +
-          avatarEl +
-          '<div>' +
-            '<div style="font-size:13px;color:var(--txt);">' + r.m.name + '</div>' +
-            '<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);margin-top:2px;">' + r.total + ' этапов</div>' +
-          '</div>' +
-        '</div>' +
-        tcell(r.pending,   'rgba(200,196,190,.6)', true, r.m.id, 'pending') +
-        tcell(r.active,    lc(r.active),           true, r.m.id, 'active') +
-        tcell(r.completed, 'var(--green)',          true, r.m.id, 'completed') +
-      '</div>';
+      var mc = r.m.color || '#b8923a';
+      var av = r.m.avatar_url
+        ? '<div style="width:32px;height:32px;border-radius:50%;overflow:hidden;border:1px solid '+mc+'44;flex-shrink:0;"><img src="'+r.m.avatar_url+'" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+        : '<div style="width:32px;height:32px;border-radius:50%;background:'+mc+'18;border:1px solid '+mc+'44;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:'+mc+';flex-shrink:0;">'+r.m.name[0].toUpperCase()+'</div>';
+
+      return '<div '
+        +'onmouseenter="this.style.background=\'rgba(255,255,255,.025)\'" '
+        +'onmouseleave="this.style.background=\'transparent\'" '
+        +'style="display:grid;grid-template-columns:200px 1fr 100px 100px 100px 56px;padding:13px 20px;border-bottom:1px solid rgba(255,255,255,.04);align-items:center;cursor:pointer;transition:background .15s;">'
+        +'<div style="display:flex;align-items:center;gap:10px;">'
+          +av
+          +'<div>'
+            +'<div style="font-size:13px;font-weight:500;color:#f0ece6;letter-spacing:-.01em;">'+r.m.name+'</div>'
+            +'<div style="font-family:var(--font-mono);font-size:10px;color:rgba(240,236,230,.28);margin-top:2px;">'+r.total+' эт.</div>'
+          +'</div>'
+        +'</div>'
+        +dtrBar(r)
+        +dtrNum(r.pending,   '#b8923a',             r.m.id, 'pending')
+        +dtrNum(r.active,    '#3ecf8e',             r.m.id, 'active')
+        +dtrNum(r.completed, 'rgba(240,236,230,.4)', r.m.id, 'completed')
+        +'<div style="text-align:right;font-family:var(--font-mono);font-size:11px;color:rgba(240,236,230,.3);">'+r.total+'</div>'
+      +'</div>';
     }).join('');
 
     barsEl.innerHTML = hdr + rows;
