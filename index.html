@@ -39394,19 +39394,21 @@ window.switchDashTab = function(tab, btn) {
 (function () {
   function esc6(s){ return (typeof esc==='function')?esc(s):String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
   function avatar(m, size){
-    size = size || 30;
+    size = size || 28;
     if (m.avatar_url) return '<img src="' + esc6(m.avatar_url) + '" style="width:'+size+'px;height:'+size+'px;border-radius:8px;object-fit:cover;flex-shrink:0;">';
     var col = m.color || '#b8923a';
     return '<div style="width:'+size+'px;height:'+size+'px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:'+(size*0.42)+'px;color:#fff;background:'+col+';">' + esc6((m.name||'?').charAt(0).toUpperCase()) + '</div>';
   }
-  function effColor(v){ return v == null ? 'var(--txt3)' : v >= 80 ? 'var(--green)' : v >= 50 ? 'var(--amber,#c9a84c)' : 'var(--red)'; }
-  function avg(arr){ var v = arr.filter(function(x){ return x != null; }); return v.length ? Math.round(v.reduce(function(s,x){ return s+x; },0)/v.length) : null; }
+  function median(arr){ if(!arr.length) return null; var a=arr.slice().sort(function(x,y){return x-y;}); var m=Math.floor(a.length/2); return a.length%2 ? a[m] : (a[m-1]+a[m])/2; }
+  function pctl(arr,p){ if(!arr.length) return null; var a=arr.slice().sort(function(x,y){return x-y;}); return a[Math.min(a.length-1, Math.floor(p/100*a.length))]; }
+  function fmtDays(d){ if(d==null) return '—'; if(d<1) return Math.round(d*24)+'ч'; return (Math.round(d*10)/10).toString().replace('.',',')+'д'; }
+  function fmtMin(m){ if(m==null) return '—'; if(m<60) return Math.round(m)+'м'; return Math.floor(m/60)+'ч'+(m%60?' '+Math.round(m%60)+'м':''); }
+  function speedColor(d){ return d==null?'var(--txt3)':d<=2?'var(--green)':d<=5?'var(--amber,#c9a84c)':'var(--red)'; }
+  function reworkColor(r){ return r==null?'var(--txt3)':r<=5?'var(--green)':r<=15?'var(--amber,#c9a84c)':'var(--red)'; }
+  function tempo(d){ if(d==null) return ''; return d<=2?'высокий темп':d<=5?'ровный темп':'медленный'; }
 
   window.toggleDeptBlock = function (head) {
-    var detail = head.nextElementSibling;
-    if (!detail) return;
-    var open = detail.style.display !== 'none' && detail.style.display !== '';
-    // toggle: if currently shown -> hide
+    var detail = head.nextElementSibling; if (!detail) return;
     var shown = detail.dataset.open === '1';
     detail.style.display = shown ? 'none' : 'block';
     detail.dataset.open = shown ? '0' : '1';
@@ -39414,66 +39416,141 @@ window.switchDashTab = function(tab, btn) {
     if (chev) chev.style.transform = shown ? 'rotate(0deg)' : 'rotate(90deg)';
   };
 
-  function deptBlock(name, mem, cache) {
-    var rows = mem.map(function(m){ return cache[m.id] || {}; });
-    var avgEff = avg(rows.map(function(r){ return (r.effScore != null) ? r.effScore : null; }));
-    var closed = rows.reduce(function(s,r){ return s + (r.doneTasks || 0); }, 0);
-    var rework = avg(rows.map(function(r){ return (r.reworkRate != null) ? r.reworkRate : null; }));
-    var col = effColor(avgEff);
+  function computeStats(tasks, now30) {
+    var cyc=[], touch=[], doneTotal=0, closed30=0, wip=0, returns=0;
+    tasks.forEach(function(t){
+      var isDone = (t.done === true || t.kanban_status === 'done');
+      var isArch = !!t.archived_at;
+      returns += (t.returned_count || 0);
+      if (isDone) {
+        doneTotal++;
+        if (t.done_at && t.created_at) { var dd=(new Date(t.done_at)-new Date(t.created_at))/86400000; if(dd>=0) cyc.push(dd); }
+        if (t.done_at && new Date(t.done_at).getTime() >= now30) closed30++;
+        if (t.time_logged > 0) touch.push(t.time_logged);
+      } else if (!isArch) { wip++; }
+    });
+    var rework = (doneTotal + returns) > 0 ? Math.round(returns/(doneTotal+returns)*100) : null;
+    return { doneTotal:doneTotal, closed30:closed30, wip:wip, returns:returns, rework:rework,
+             medCyc:median(cyc), p90Cyc:pctl(cyc,90), medTouch:median(touch) };
+  }
 
-    var memHtml = mem.length ? mem.map(function(m){
-      var r = cache[m.id] || {};
-      var e = (r.effScore != null) ? r.effScore + '%' : '—';
-      return '<div style="display:flex;align-items:center;gap:10px;padding:9px 4px;border-top:1px solid rgba(255,255,255,.05);">' +
-        avatar(m, 28) +
-        '<div style="flex:1;min-width:0;"><div style="font-size:12.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc6(m.name) + '</div>' +
-          '<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);">' + ((r.doneTasks||0) + ' зад. · возвраты ' + (r.reworkRate != null ? r.reworkRate + '%' : '—')) + '</div></div>' +
-        '<div style="font-family:var(--font-display,inherit);font-weight:700;font-size:15px;font-variant-numeric:tabular-nums;color:' + effColor(r.effScore) + ';">' + e + '</div>' +
+  function kpi(label, valHtml, sub, color){
+    return '<div style="text-align:center;min-width:64px;">' +
+      '<div style="font-family:var(--font-display,inherit);font-weight:700;font-size:17px;font-variant-numeric:tabular-nums;line-height:1;color:'+(color||'var(--txt)')+';">'+valHtml+'</div>' +
+      '<div style="font-size:8.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);font-family:var(--font-mono);margin-top:4px;">'+label+'</div>' +
+      (sub?'<div style="font-size:8.5px;color:var(--txt3);margin-top:1px;">'+sub+'</div>':'') +
+    '</div>';
+  }
+
+  function deptBlock(name, mem, byMember, now30) {
+    var allTasks = []; mem.forEach(function(m){ if(byMember[m.id]) allTasks = allTasks.concat(byMember[m.id]); });
+    var s = computeStats(allTasks, now30);
+    var hasData = s.doneTotal > 0 || s.wip > 0;
+
+    // концентрация: доля выпуска топ-исполнителя
+    var perMemDone = mem.map(function(m){ var ts=byMember[m.id]||[]; return ts.filter(function(t){return t.done===true||t.kanban_status==='done';}).length; });
+    var topShare = s.doneTotal>0 ? Math.round(Math.max.apply(null, perMemDone.concat([0]))/s.doneTotal*100) : null;
+
+    var speedHtml = s.medCyc!=null ? fmtDays(s.medCyc) : '—';
+
+    // collapsed KPIs
+    var kpis = hasData ? (
+      kpi('Скорость', speedHtml, tempo(s.medCyc), speedColor(s.medCyc)) +
+      kpi('Поток/30д', String(s.closed30), 'закрыто', s.closed30>0?'var(--green)':'var(--txt3)') +
+      kpi('Брак', s.rework!=null? s.rework+'%':'—', 'возвраты', reworkColor(s.rework)) +
+      kpi('В работе', String(s.wip), 'сейчас', s.wip>0?'var(--a2,#c9a84c)':'var(--txt3)')
+    ) : '<div style="font-size:11px;color:var(--txt3);font-family:var(--font-mono);align-self:center;">нет закрытых задач</div>';
+
+    // detail
+    var detail = '';
+    if (hasData) {
+      var stab = (s.medCyc!=null) ? ('медиана '+fmtDays(s.medCyc)+' → p90 '+fmtDays(s.p90Cyc)) : '—';
+      detail += '<div style="display:flex;flex-wrap:wrap;gap:18px;padding:12px 4px 14px;border-top:1px solid rgba(255,255,255,.05);font-size:11px;color:var(--txt2);font-family:var(--font-mono);">' +
+        '<div><span style="color:var(--txt3);">Стабильность:</span> '+stab+'</div>' +
+        '<div><span style="color:var(--txt3);">Время в работе:</span> ~'+fmtMin(s.medTouch)+'/задача</div>' +
+        '<div><span style="color:var(--txt3);">Концентрация:</span> '+(topShare!=null? topShare+'% на одном исполнителе'+(topShare>=70?' ⚠':''):'—')+'</div>' +
       '</div>';
-    }).join('') : '<div style="padding:12px 4px;font-size:12px;color:var(--txt3);border-top:1px solid rgba(255,255,255,.05);">В отделе пока нет сотрудников.</div>';
+      // per-employee
+      detail += mem.filter(function(m){return (byMember[m.id]||[]).length;}).map(function(m){
+        var ms = computeStats(byMember[m.id]||[], now30);
+        return '<div style="display:flex;align-items:center;gap:10px;padding:8px 4px;border-top:1px solid rgba(255,255,255,.04);">' +
+          avatar(m,26) +
+          '<div style="flex:1;min-width:0;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+esc6(m.name)+'</div>' +
+          '<div style="font-family:var(--font-mono);font-size:11px;color:var(--txt3);">закрыто <span style="color:var(--txt);">'+ms.doneTotal+'</span></div>' +
+          '<div style="font-family:var(--font-mono);font-size:11px;width:62px;text-align:right;color:'+speedColor(ms.medCyc)+';">'+(ms.medCyc!=null?fmtDays(ms.medCyc):'—')+'</div>' +
+          '<div style="font-family:var(--font-mono);font-size:11px;width:46px;text-align:right;color:'+reworkColor(ms.rework)+';">'+(ms.rework!=null?ms.rework+'%':'—')+'</div>' +
+        '</div>';
+      }).join('');
+    } else {
+      detail = '<div style="padding:12px 4px;font-size:12px;color:var(--txt3);border-top:1px solid rgba(255,255,255,.05);">В отделе нет данных по задачам.</div>';
+    }
 
     return '<div style="background:rgba(255,255,255,.02);border:0.5px solid rgba(255,255,255,.08);border-radius:14px;margin-bottom:10px;overflow:hidden;">' +
-      '<div onclick="toggleDeptBlock(this)" style="display:flex;align-items:center;gap:12px;padding:15px 17px;cursor:pointer;user-select:none;">' +
+      '<div onclick="toggleDeptBlock(this)" style="display:flex;align-items:center;gap:14px;padding:14px 17px;cursor:pointer;user-select:none;">' +
         '<svg class="dept-chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--txt3)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .18s;flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>' +
-        '<div style="flex:1;min-width:0;">' +
-          '<div style="font-size:13px;font-weight:600;letter-spacing:.03em;font-family:var(--font-mono);">' + esc6(name) + '</div>' +
-          '<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);margin-top:2px;">' + mem.length + ' сотр. · закрыто ' + closed + (rework != null ? ' · возвраты ' + rework + '%' : '') + '</div>' +
+        '<div style="min-width:140px;flex-shrink:0;">' +
+          '<div style="font-size:13px;font-weight:600;letter-spacing:.03em;font-family:var(--font-mono);">'+esc6(name)+'</div>' +
+          '<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);margin-top:2px;">'+mem.length+' сотр.</div>' +
         '</div>' +
-        '<div style="text-align:right;flex-shrink:0;">' +
-          '<div style="font-family:var(--font-display,inherit);font-weight:700;font-size:20px;font-variant-numeric:tabular-nums;color:' + col + ';line-height:1;">' + (avgEff != null ? avgEff + '%' : '—') + '</div>' +
-          '<div style="font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);font-family:var(--font-mono);margin-top:3px;">средний балл</div>' +
-        '</div>' +
+        '<div style="flex:1;display:flex;justify-content:flex-end;gap:22px;flex-wrap:wrap;">'+kpis+'</div>' +
       '</div>' +
-      '<div class="dept-detail" data-open="0" style="display:none;padding:0 17px 12px;">' + memHtml + '</div>' +
+      '<div class="dept-detail" data-open="0" style="display:none;padding:0 17px 14px;">'+detail+'</div>' +
     '</div>';
   }
 
   window.renderDeptEfficiency = async function () {
     var body = document.getElementById('dept-eff-body'); if (!body) return;
-    if (typeof currentUser === 'undefined' || !currentUser) { body.innerHTML = ''; return; }
+    if (typeof currentUser === 'undefined' || !currentUser) { body.innerHTML=''; return; }
     body.innerHTML = '<div style="text-align:center;color:var(--txt3);font-size:12px;padding:30px 0;font-family:var(--font-mono);">Загрузка…</div>';
-    if (typeof loadDepartments === 'function') { try { await loadDepartments(); } catch (e) {} }
+    if (typeof loadDepartments === 'function') { try { await loadDepartments(); } catch(e){} }
     var depts = (window._departments || []).slice();
-    var members = [];
+
+    var members = [], projIds = [];
     try {
       var mRes = await sb.from('team_members').select('id,name,color,avatar_url,department').eq('agency_id', currentUser.id).order('name');
       members = mRes.data || [];
-    } catch (e) {}
-    if (typeof loadEfficiencyBlock === 'function') { try { await loadEfficiencyBlock(members, null); } catch (e) {} }
-    var cache = window._efficiencyCache || {};
+    } catch(e){}
+    try {
+      if (typeof _allProjects !== 'undefined' && _allProjects && _allProjects.length) projIds = _allProjects.map(function(p){return p.id;});
+      else { var pRes = await sb.from('projects').select('id').eq('agency_id', currentUser.id); projIds = (pRes.data||[]).map(function(p){return p.id;}); }
+    } catch(e){}
 
-    var groups = {}; depts.forEach(function(d){ groups[d] = []; });
+    var stages = [], tasks = [];
+    if (projIds.length) {
+      try { var sRes = await sb.from('project_stages').select('project_id,stage_index,assignee_id').in('project_id', projIds); stages = sRes.data||[]; } catch(e){}
+      try { var tRes = await sb.from('stage_tasks').select('project_id,stage_index,done,done_at,created_at,time_logged,returned_count,kanban_status,archived_at').in('project_id', projIds); tasks = tRes.data||[]; } catch(e){}
+    }
+
+    var stageAssignee = {}; stages.forEach(function(s){ stageAssignee[s.project_id+'_'+s.stage_index] = s.assignee_id; });
+    var membersById = {}; members.forEach(function(m){ membersById[m.id] = m; });
+
+    // группировка задач: отдел -> {byMember}
     var NONE = 'Без отдела';
+    var groups = {}; depts.forEach(function(d){ groups[d] = { mem:[], byMember:{} }; });
+    function ensure(d){ if(!groups[d]) groups[d]={mem:[],byMember:{}}; return groups[d]; }
+    // members into groups
     members.forEach(function(m){
-      var d = (m.department && depts.indexOf(m.department) >= 0) ? m.department : (m.department ? m.department : NONE);
-      if (!groups[d]) groups[d] = [];
-      groups[d].push(m);
+      var d = (m.department && depts.indexOf(m.department)>=0) ? m.department : (m.department || NONE);
+      ensure(d).mem.push(m);
     });
-    var order = depts.slice();
-    Object.keys(groups).forEach(function(d){ if (order.indexOf(d) < 0 && groups[d].length) order.push(d); });
+    // tasks into groups via assignee
+    tasks.forEach(function(t){
+      var a = stageAssignee[t.project_id+'_'+t.stage_index]; if(!a) return;
+      var m = membersById[a]; if(!m) return;
+      var d = (m.department && depts.indexOf(m.department)>=0) ? m.department : (m.department || NONE);
+      var g = ensure(d);
+      if(!g.byMember[a]) g.byMember[a]=[];
+      g.byMember[a].push(t);
+    });
 
-    if (!order.length) { body.innerHTML = '<div style="text-align:center;color:var(--txt3);font-size:12px;padding:30px 0;">Нет отделов. Создай их при добавлении сотрудника.</div>'; return; }
-    body.innerHTML = order.map(function(d){ return deptBlock(d, groups[d] || [], cache); }).join('');
+    var order = depts.slice();
+    Object.keys(groups).forEach(function(d){ if(order.indexOf(d)<0 && (groups[d].mem.length || Object.keys(groups[d].byMember).length)) order.push(d); });
+
+    var now30 = Date.now() - 30*86400000;
+    if (!order.length) { body.innerHTML = '<div style="text-align:center;color:var(--txt3);font-size:12px;padding:30px 0;">Нет отделов.</div>'; return; }
+    body.innerHTML =
+      '<div style="font-size:11px;color:var(--txt3);font-family:var(--font-mono);margin:0 2px 12px;">Операционные метрики по отделам · атрибуция через ответственного за этап</div>' +
+      order.map(function(d){ return deptBlock(d, groups[d].mem, groups[d].byMember, now30); }).join('');
   };
 })();
 </script>
