@@ -39760,4 +39760,107 @@ window.switchDashTab = function(tab, btn) {
 .kb-card-done .kb-pri-badge { display: none; }
 .kb-card-done .kb-move-btn { border-color: rgba(255,255,255,.16); border-radius: 8px; }
 </style>
+
+<style id="dtr-typography-scale">
+/* ── Глобальное улучшение читаемости DTR ──
+   Поднимаем мелкие тексты на 1-2px без риска сломать лейаут.
+   Используем точечные классы, не трогаем инлайн-стили логики. */
+
+/* Навигация */
+.nav-item-label { font-size: 13px !important; }
+.nav-section-label { font-size: 10px !important; letter-spacing: .1em !important; }
+.sidebar-project-name { font-size: 13px !important; }
+
+/* Заголовки страниц */
+.page-title { font-size: 20px !important; }
+.page-subtitle { font-size: 12px !important; }
+.sv-section-title { font-size: 11px !important; letter-spacing: .1em !important; }
+
+/* Карточки проектов (dashboard) */
+.pcard-name { font-size: 15px !important; }
+.pcard-meta { font-size: 12px !important; }
+.pcard-badge { font-size: 10px !important; }
+.pcard-stat-val { font-size: 13px !important; }
+.pcard-stat-lbl { font-size: 10px !important; }
+
+/* Трекер этапов */
+.tracker-stage-name { font-size: 14px !important; }
+.tracker-badge { font-size: 10px !important; }
+.tracker-meta-chip { font-size: 11px !important; }
+.tracker-note-text { font-size: 12px !important; }
+.tracker-edit-btn { font-size: 11px !important; }
+.task-section-label { font-size: 11px !important; }
+.pp-stage-section-label { font-size: 11px !important; letter-spacing: .06em !important; }
+.pp-stage-mini-val { font-size: 20px !important; }
+.pp-stage-mini-lbl { font-size: 10px !important; }
+
+/* Канбан */
+.kb-card-title { font-size: 13px !important; }
+.kb-card-stage { font-size: 11px !important; }
+.kb-col-title { font-size: 11px !important; letter-spacing: .08em !important; }
+.kb-col-count { font-size: 11px !important; }
+.kb-pri-badge { font-size: 10px !important; }
+.kb-card-deadline { font-size: 11px !important; }
+.kb-move-btn { font-size: 11px !important; }
+
+/* Команда — таблица эффективности */
+.team-eff-name { font-size: 14px !important; }
+.team-eff-sub { font-size: 11px !important; }
+.team-eff-val { font-size: 16px !important; }
+.team-eff-lbl { font-size: 10px !important; }
+.team-eff-hint { font-size: 11px !important; }
+
+/* Финансы */
+.fin-trend-val { font-size: 22px !important; }
+.fin-trend-lbl { font-size: 10px !important; letter-spacing: .08em !important; }
+.fin-trend-sub { font-size: 11px !important; }
+.fin-cat-name { font-size: 13px !important; }
+.fin-cat-val { font-size: 13px !important; }
+
+/* Сводка (overview) */
+.apl-hero-num { font-size: 32px !important; }
+.apl-hero-lbl { font-size: 10px !important; letter-spacing: .1em !important; }
+.apl-hero-foot { font-size: 12px !important; }
+.apl-chart-label { font-size: 10px !important; letter-spacing: .1em !important; }
+
+/* Дедлайны */
+.dl-item-name { font-size: 14px !important; }
+.dl-item-proj { font-size: 12px !important; }
+.dl-item-date { font-size: 13px !important; }
+.dl-status-badge { font-size: 10px !important; }
+
+/* Циклы */
+.ct-hero-num { font-size: 28px !important; }
+.ct-hero-lbl { font-size: 10px !important; letter-spacing: .1em !important; }
+.ct-hero-sub { font-size: 12px !important; }
+
+/* База знаний */
+.kb-title { font-size: 15px !important; }
+.kb-meta { font-size: 12px !important; }
+.kb-tag { font-size: 10px !important; }
+
+/* Вкладки и кнопки */
+.pp-tab { font-size: 12px !important; }
+.tab-btn { font-size: 11px !important; }
+.pill-tab { font-size: 11px !important; }
+.btn-ghost { font-size: 12px !important; }
+.btn-primary { font-size: 13px !important; }
+
+/* Модалки */
+.modal-title { font-size: 17px !important; }
+.modal-label { font-size: 12px !important; }
+.modal-hint { font-size: 11px !important; }
+
+/* Toast */
+.alert-toast-body { font-size: 13px !important; }
+
+/* Общие утилиты — mono labels */
+.mono-label { font-size: 10px !important; letter-spacing: .1em !important; }
+.section-label { font-size: 10px !important; letter-spacing: .1em !important; }
+
+/* Таблица детализации по этапам (Циклы) */
+#ct-stage-table table { font-size: 13px !important; }
+#ct-stage-table th { font-size: 10px !important; }
+#ct-stage-table td { font-size: 13px !important; }
+</style>
 </html>
