@@ -38603,6 +38603,10 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
     }
   });
 
+  // Хелперы корректности: медиана (устойчива к выбросам) и потолок активного времени на задачу
+  function medianOf(a){ if(!a.length) return null; var s=a.slice().sort(function(x,y){return x-y;}); var m=Math.floor(s.length/2); return s.length%2 ? s[m] : (s[m-1]+s[m])/2; }
+  var MAX_TASK_MIN = 480; // потолок «активного времени» на задачу = 8ч (защита от незакрытого таймера)
+
   // Считаем метрики для каждого сотрудника
   var rows = members.map(function(m) {
 
@@ -38630,18 +38634,18 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
     });
     var avgDays = null;
     if (timeSamples.length > 0) {
-      var totalMs = timeSamples.reduce(function(s, t) {
+      var dayDiffs = timeSamples.map(function(t) {
         var endDate = t.done_at || t.updated_at;
         var diff = new Date(endDate) - new Date(t.created_at);
-        return s + (diff > 0 ? diff : 0); // игнорируем отрицательные diff
-      }, 0);
-      avgDays = totalMs / timeSamples.length / 86400000; // мс → дни
+        return diff > 0 ? diff / 86400000 : 0; // мс → дни, отрицательные → 0
+      });
+      avgDays = medianOf(dayDiffs); // медиана вместо среднего — устойчива к выбросам (залипший таймер и т.п.)
     }
 
     // ── 4. Среднее время активной работы (time_logged, минуты) ──
     var loggedSamples = doneTasks.filter(function(t){ return t.time_logged > 0; });
     var avgLogged = loggedSamples.length > 0
-      ? loggedSamples.reduce(function(s,t){ return s + t.time_logged; }, 0) / loggedSamples.length
+      ? loggedSamples.reduce(function(s,t){ return s + Math.min(t.time_logged, MAX_TASK_MIN); }, 0) / loggedSamples.length
       : null;
 
     // ── 5. Velocity: задач закрыто за 7 и 30 дней ──
@@ -38691,34 +38695,10 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
       ? Math.round(returns / (totalDoneItems + returns) * 100)
       : null;
 
-    // ── 7. Эффективность (score 0–100) ──
-    // Формула: (скорость_норм × 40) + (velocity_норм × 35) + (качество × 25)
-    // скорость_норм = чем меньше avgDays — тем выше (норма 3 дня → 100%)
-    // velocity_норм = done30 / 20 (норма 20 задач в месяц → 100%)
-    // качество = 100 - reworkRate
-    var hasAnyData    = myTasks.length > 0 || completedStages.length > 0 || completions > 0;
-    var speedScore    = avgDays !== null ? Math.max(0, Math.min(100, Math.round((1 - avgDays/10) * 100))) : null;
-    var velocityScore = done30 > 0 ? Math.min(100, Math.round(done30 / 20 * 100)) : null;
-    var qualityScore  = reworkRate !== null ? (100 - reworkRate) : null;
-
-    // Score: считаем только по доступным компонентам, не занижаем за отсутствие данных.
-    // Но «качество» в одиночку (0 возвратов на нуле работы) не должно давать 100% —
-    // нужна реальная пропускная способность: скорость ИЛИ velocity.
-    var hasThroughput = (speedScore !== null) || (velocityScore !== null);
-    var effScore = null;
-    if (hasAnyData && hasThroughput) {
-      var scoreComponents = [];
-      if (speedScore    !== null) scoreComponents.push({ val: speedScore,    w: 0.40 });
-      if (velocityScore !== null) scoreComponents.push({ val: velocityScore, w: 0.35 });
-      if (qualityScore  !== null) scoreComponents.push({ val: qualityScore,  w: 0.25 });
-      if (scoreComponents.length > 0) {
-        // Нормируем веса чтобы сумма = 1
-        var totalW = scoreComponents.reduce(function(s,c){ return s + c.w; }, 0);
-        effScore = Math.round(
-          scoreComponents.reduce(function(s,c){ return s + c.val * (c.w / totalW); }, 0)
-        );
-      }
-    }
+    // ── 7. Компоненты балла (velocity-бенчмарк относительный — считается ниже, по команде) ──
+    var hasAnyData   = myTasks.length > 0 || completedStages.length > 0 || completions > 0;
+    var speedScore   = avgDays !== null ? Math.max(0, Math.min(100, Math.round((1 - avgDays/10) * 100))) : null;
+    var qualityScore = reworkRate !== null ? (100 - reworkRate) : null;
 
     return {
       m: m,
@@ -38731,9 +38711,34 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
       done30: done30,
       returns: returns,
       reworkRate: reworkRate,
-      effScore: effScore
+      speedScore: speedScore,
+      qualityScore: qualityScore,
+      hasAnyData: hasAnyData,
+      effScore: null
     };
   }); // показываем всех сотрудников даже без данных
+
+  // ── Относительный velocity-бенчмарк: средний темп активных сотрудников (без магического «20») ──
+  // 100% = закрываешь столько же, сколько типичный работающий член команды за 30 дней.
+  var _vdone = rows.map(function(r){ return r.done30; }).filter(function(x){ return x > 0; });
+  var velBench = _vdone.length ? Math.max(1, _vdone.reduce(function(s,x){ return s + x; }, 0) / _vdone.length) : 1;
+  rows.forEach(function(r){
+    var velocityScore = r.done30 > 0 ? Math.min(100, Math.round(r.done30 / velBench * 100)) : null;
+    var hasThroughput = (r.speedScore !== null) || (velocityScore !== null);
+    var effScore = null;
+    if (r.hasAnyData && hasThroughput) {
+      var comps = [];
+      if (r.speedScore   !== null) comps.push({ val: r.speedScore,   w: 0.40 });
+      if (velocityScore  !== null) comps.push({ val: velocityScore,  w: 0.35 });
+      if (r.qualityScore !== null) comps.push({ val: r.qualityScore, w: 0.25 });
+      if (comps.length) {
+        var tw = comps.reduce(function(s,c){ return s + c.w; }, 0);
+        effScore = Math.round(comps.reduce(function(s,c){ return s + c.val * (c.w / tw); }, 0));
+      }
+    }
+    r.velocityScore = velocityScore;
+    r.effScore = effScore;
+  });
 
   // Кэшируем для использования в карточках команды
   window._efficiencyCache = {};
@@ -39426,7 +39431,7 @@ window.switchDashTab = function(tab, btn) {
         doneTotal++;
         if (t.done_at && t.created_at) { var dd=(new Date(t.done_at)-new Date(t.created_at))/86400000; if(dd>=0) cyc.push(dd); }
         if (t.done_at && new Date(t.done_at).getTime() >= now30) closed30++;
-        if (t.time_logged > 0) touch.push(t.time_logged);
+        if (t.time_logged > 0) touch.push(Math.min(t.time_logged, 480));
       } else if (!isArch) { wip++; }
     });
     var rework = (doneTotal + returns) > 0 ? Math.round(returns/(doneTotal+returns)*100) : null;
