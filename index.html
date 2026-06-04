@@ -39018,11 +39018,26 @@ window.switchDashTab = function(tab, btn) {
     } catch (e) { tasks = []; }
 
     // Рендер: группа = этап (проект › этап), внутри — задачи
+    // Применяем тот же фильтр что и канбан: скрываем archived + done-задачи pending-этапов
+    var stageStatusMap = {};
+    (window._wlStages || []).forEach(function(s) {
+      stageStatusMap[s.project_id + '_' + s.stage_index] = s.status;
+    });
+
     var html = myStages.map(function (s) {
       var stTasks = tasks.filter(function (t) {
         return t.project_id === s.project_id && (t.stage_index === s.stage_index);
       });
       stTasks.forEach(function (t) { if (!t.kanban_status) t.kanban_status = t.done ? 'done' : 'waiting'; });
+
+      // Скрываем задачи невидимые на канбане
+      var stKey = s.project_id + '_' + s.stage_index;
+      var stStatus = stageStatusMap[stKey] || s.status || 'pending';
+      stTasks = stTasks.filter(function(t) {
+        if (t.archived_at) return false;
+        if ((t.done || t.kanban_status === 'done') && stStatus === 'pending') return false;
+        return true;
+      });
 
       var grpHd =
         '<div class="wl-grp-hd">' +
