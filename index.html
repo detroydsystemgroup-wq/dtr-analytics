@@ -39375,6 +39375,94 @@ window.switchDashTab = function(tab, btn) {
 })();
 </script>
 
+<script id="dtr-dept-eff-js">
+(function () {
+  function esc6(s){ return (typeof esc==='function')?esc(s):String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function avatar(m, size){
+    size = size || 30;
+    if (m.avatar_url) return '<img src="' + esc6(m.avatar_url) + '" style="width:'+size+'px;height:'+size+'px;border-radius:8px;object-fit:cover;flex-shrink:0;">';
+    var col = m.color || '#b8923a';
+    return '<div style="width:'+size+'px;height:'+size+'px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:'+(size*0.42)+'px;color:#fff;background:'+col+';">' + esc6((m.name||'?').charAt(0).toUpperCase()) + '</div>';
+  }
+  function effColor(v){ return v == null ? 'var(--txt3)' : v >= 80 ? 'var(--green)' : v >= 50 ? 'var(--amber,#c9a84c)' : 'var(--red)'; }
+  function avg(arr){ var v = arr.filter(function(x){ return x != null; }); return v.length ? Math.round(v.reduce(function(s,x){ return s+x; },0)/v.length) : null; }
+
+  window.toggleDeptBlock = function (head) {
+    var detail = head.nextElementSibling;
+    if (!detail) return;
+    var open = detail.style.display !== 'none' && detail.style.display !== '';
+    // toggle: if currently shown -> hide
+    var shown = detail.dataset.open === '1';
+    detail.style.display = shown ? 'none' : 'block';
+    detail.dataset.open = shown ? '0' : '1';
+    var chev = head.querySelector('.dept-chev');
+    if (chev) chev.style.transform = shown ? 'rotate(0deg)' : 'rotate(90deg)';
+  };
+
+  function deptBlock(name, mem, cache) {
+    var rows = mem.map(function(m){ return cache[m.id] || {}; });
+    var avgEff = avg(rows.map(function(r){ return (r.effScore != null) ? r.effScore : null; }));
+    var closed = rows.reduce(function(s,r){ return s + (r.doneTasks || 0); }, 0);
+    var rework = avg(rows.map(function(r){ return (r.reworkRate != null) ? r.reworkRate : null; }));
+    var col = effColor(avgEff);
+
+    var memHtml = mem.length ? mem.map(function(m){
+      var r = cache[m.id] || {};
+      var e = (r.effScore != null) ? r.effScore + '%' : '—';
+      return '<div style="display:flex;align-items:center;gap:10px;padding:9px 4px;border-top:1px solid rgba(255,255,255,.05);">' +
+        avatar(m, 28) +
+        '<div style="flex:1;min-width:0;"><div style="font-size:12.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc6(m.name) + '</div>' +
+          '<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);">' + ((r.doneTasks||0) + ' зад. · возвраты ' + (r.reworkRate != null ? r.reworkRate + '%' : '—')) + '</div></div>' +
+        '<div style="font-family:var(--font-display,inherit);font-weight:700;font-size:15px;font-variant-numeric:tabular-nums;color:' + effColor(r.effScore) + ';">' + e + '</div>' +
+      '</div>';
+    }).join('') : '<div style="padding:12px 4px;font-size:12px;color:var(--txt3);border-top:1px solid rgba(255,255,255,.05);">В отделе пока нет сотрудников.</div>';
+
+    return '<div style="background:rgba(255,255,255,.02);border:0.5px solid rgba(255,255,255,.08);border-radius:14px;margin-bottom:10px;overflow:hidden;">' +
+      '<div onclick="toggleDeptBlock(this)" style="display:flex;align-items:center;gap:12px;padding:15px 17px;cursor:pointer;user-select:none;">' +
+        '<svg class="dept-chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--txt3)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .18s;flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>' +
+        '<div style="flex:1;min-width:0;">' +
+          '<div style="font-size:13px;font-weight:600;letter-spacing:.03em;font-family:var(--font-mono);">' + esc6(name) + '</div>' +
+          '<div style="font-size:10px;color:var(--txt3);font-family:var(--font-mono);margin-top:2px;">' + mem.length + ' сотр. · закрыто ' + closed + (rework != null ? ' · возвраты ' + rework + '%' : '') + '</div>' +
+        '</div>' +
+        '<div style="text-align:right;flex-shrink:0;">' +
+          '<div style="font-family:var(--font-display,inherit);font-weight:700;font-size:20px;font-variant-numeric:tabular-nums;color:' + col + ';line-height:1;">' + (avgEff != null ? avgEff + '%' : '—') + '</div>' +
+          '<div style="font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);font-family:var(--font-mono);margin-top:3px;">средний балл</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="dept-detail" data-open="0" style="display:none;padding:0 17px 12px;">' + memHtml + '</div>' +
+    '</div>';
+  }
+
+  window.renderDeptEfficiency = async function () {
+    var body = document.getElementById('dept-eff-body'); if (!body) return;
+    if (typeof currentUser === 'undefined' || !currentUser) { body.innerHTML = ''; return; }
+    body.innerHTML = '<div style="text-align:center;color:var(--txt3);font-size:12px;padding:30px 0;font-family:var(--font-mono);">Загрузка…</div>';
+    if (typeof loadDepartments === 'function') { try { await loadDepartments(); } catch (e) {} }
+    var depts = (window._departments || []).slice();
+    var members = [];
+    try {
+      var mRes = await sb.from('team_members').select('id,name,color,avatar_url,department').eq('agency_id', currentUser.id).order('name');
+      members = mRes.data || [];
+    } catch (e) {}
+    if (typeof loadEfficiencyBlock === 'function') { try { await loadEfficiencyBlock(members, null); } catch (e) {} }
+    var cache = window._efficiencyCache || {};
+
+    var groups = {}; depts.forEach(function(d){ groups[d] = []; });
+    var NONE = 'Без отдела';
+    members.forEach(function(m){
+      var d = (m.department && depts.indexOf(m.department) >= 0) ? m.department : (m.department ? m.department : NONE);
+      if (!groups[d]) groups[d] = [];
+      groups[d].push(m);
+    });
+    var order = depts.slice();
+    Object.keys(groups).forEach(function(d){ if (order.indexOf(d) < 0 && groups[d].length) order.push(d); });
+
+    if (!order.length) { body.innerHTML = '<div style="text-align:center;color:var(--txt3);font-size:12px;padding:30px 0;">Нет отделов. Создай их при добавлении сотрудника.</div>'; return; }
+    body.innerHTML = order.map(function(d){ return deptBlock(d, groups[d] || [], cache); }).join('');
+  };
+})();
+</script>
+
 <style id="dtr-modern-numerals">
 /* Современные числа: табличные (выровненные) lining-фигуры + аккуратный трекинг.
    Числа в метриках перестают «прыгать» при обновлении и выравниваются по колонкам. */
