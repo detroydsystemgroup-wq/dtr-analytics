@@ -33520,13 +33520,22 @@ async function loadCycleTime() {
     }
   });
 
-  // Покрытие: сколько завершённых этапов вообще есть (project_stages) и
-  // у скольких из них есть измеримый lead time.
+  // Покрытие: сколько уникальных (project|stage_index) комбинаций имеют
+  // хотя бы одно завершение в истории vs общее число завершённых этапов.
+  // Используем max(measurable, totalCompletedStages) как знаменатель чтобы
+  // покрытие не превышало 100% (инстансов может быть больше если этап
+  // завершался несколько раз — это реворк, не новое "покрытие").
   var totalCompletedStages = (typeof _allStages !== 'undefined')
     ? _allStages.filter(function (s) { return s.status === 'completed'; }).length
     : 0;
   var measurable = instances.length;
-  var coveragePct = totalCompletedStages ? Math.round(measurable / totalCompletedStages * 100) : 0;
+  // Уникальных этапов с историей (не инстансов — один этап мог завершаться N раз)
+  var measurableUnique = Object.keys(groups).filter(function (k) {
+    var w = _ctWalk(groups[k]);
+    return w.completed;
+  }).length;
+  var denominator = Math.max(totalCompletedStages, measurableUnique) || 1;
+  var coveragePct = Math.min(100, Math.round(measurableUnique / denominator * 100));
 
   // Если нечего показывать
   if (!instances.length) {
@@ -33542,7 +33551,7 @@ async function loadCycleTime() {
         }
       }
     }
-    _ctRenderHero(null, coveragePct, measurable, totalCompletedStages, 0);
+    _ctRenderHero(null, coveragePct, measurableUnique, totalCompletedStages, 0);
     return;
   }
   if (emptyEl) emptyEl.style.display = 'none';
@@ -33665,10 +33674,10 @@ async function loadCycleTime() {
 
   _ctData = { stageStats: stageStats, projectCycleMs: projectCycleMs, projectCycleN: projectCycleN,
     sumP50: sumP50, bottleneck: bottleneck, agingRows: agingRows, trend: trend, clientRows: clientRows,
-    measurable: measurable, totalCompletedStages: totalCompletedStages, coveragePct: coveragePct };
+    measurable: measurableUnique, totalCompletedStages: totalCompletedStages, coveragePct: coveragePct };
 
   // ── Рендер ──
-  _ctRenderHero(_ctData, coveragePct, measurable, totalCompletedStages, agingRows.length);
+  _ctRenderHero(_ctData, coveragePct, measurableUnique, totalCompletedStages, agingRows.length);
   _ctRenderStageChart(stageStats);
   _ctRenderStageTable(stageStats, sumP50);
   _ctRenderAging(agingRows);
@@ -33697,7 +33706,11 @@ function _ctRenderHero(d, coveragePct, measurable, totalCompleted, agingCount) {
   if (d.bottleneck) {
     set('ct-bottleneck', d.bottleneck.name);
     var bf2 = g('ct-bottleneck-foot');
-    if (bf2) bf2.textContent = 'медиана ' + _ctFmtDur(d.bottleneck.p50) + ' · n=' + d.bottleneck.n;
+    if (bf2) {
+      var bfTxt = 'медиана ' + _ctFmtDur(d.bottleneck.p50) + ' · n=' + d.bottleneck.n;
+      if (d.bottleneck.n < 3) bfTxt += ' ⚠ мало данных';
+      bf2.textContent = bfTxt;
+    }
   } else {
     set('ct-bottleneck', '—');
   }
