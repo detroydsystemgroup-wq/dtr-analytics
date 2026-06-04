@@ -18014,9 +18014,7 @@ html body main.cc-main.smm-fullscreen {
 </style>
 <meta charset="UTF-8">
 <meta name="build" content="dtr-v31052026-1117">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
+<meta http-equiv="Cache-Control" content="public, max-age=0, must-revalidate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DTR Performance Analytics</title>
 <meta name="description" content="DTR Performance Analytics — операционная панель агентства Detroyd System Group.">
@@ -18065,8 +18063,8 @@ html body main.cc-main.smm-fullscreen {
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 
 <!-- DTR MASTERCLASS REDESIGN — World-Class Override -->
@@ -23265,16 +23263,19 @@ async function afterLogin() {
   set('header-user2', name)
   set('header-user3', name)
 
-  // Автомиграция БД — добавляем недостающие колонки при каждом входе (безопасно, IF NOT EXISTS)
-  try {
-    // Проверяем наличие колонки kanban_status — если нет, таблица требует миграции
-    const { data: testRow } = await sb.from('stage_tasks').select('kanban_status,timer_started_at,done_at,time_logged').limit(1)
-    // Если запрос прошёл без ошибки — колонки есть
-  } catch(migErr) {
-    // Колонки отсутствуют — показываем подсказку пользователю
-    console.warn('[Migration needed] stage_tasks missing columns:', migErr.message)
-    showToast && showToast('⚠️', 'Требуется миграция БД — открой настройки', 'warn')
-  }
+  // Автомиграция БД — проверка в ФОНЕ (не блокирует показ дашборда).
+  // Проверяем наличие колонки kanban_status — если нет, таблица требует миграции.
+  sb.from('stage_tasks').select('kanban_status,timer_started_at,done_at,time_logged').limit(1)
+    .then(({ error }) => {
+      if (error) {
+        console.warn('[Migration needed] stage_tasks missing columns:', error.message)
+        showToast && showToast('⚠️', 'Требуется миграция БД — открой настройки', 'warn')
+      }
+    })
+    .catch(migErr => {
+      console.warn('[Migration needed] stage_tasks missing columns:', migErr.message)
+      showToast && showToast('⚠️', 'Требуется миграция БД — открой настройки', 'warn')
+    })
 
   // Check if this user is a client (has a project linked to their email)
   // Agency users (role: 'agency') always get the dashboard — never the client portal
@@ -24133,16 +24134,15 @@ async function loadProjects() {
   // Load all stages for all projects at once
   if (_allProjects.length) {
     const ids = _allProjects.map(p => p.id)
-    const { data: stages } = await sb.from('project_stages')
-      .select('*')
-      .in('project_id', ids)
-    _allStages = stages || []
-
     const activeIds = _allProjects.filter(p => p.status !== 'archived').map(p => p.id)
-    const { count: repCount } = await sb.from('reports')
-      .select('*', { count: 'exact', head: true })
-      .in('project_id', activeIds.length ? activeIds : ids)
-    set('stat-reports', repCount || 0)
+    // Этапы и счётчик отчётов независимы — гоним параллельно (экономим round-trip)
+    const [stagesRes, repRes] = await Promise.all([
+      sb.from('project_stages').select('*').in('project_id', ids),
+      sb.from('reports').select('*', { count: 'exact', head: true })
+        .in('project_id', activeIds.length ? activeIds : ids)
+    ])
+    _allStages = stagesRes.data || []
+    set('stat-reports', repRes.count || 0)
   } else {
     set('stat-reports', 0)
   }
@@ -39912,7 +39912,8 @@ window.switchDashTab = function(tab, btn) {
     '.kpi-v', '.roi-val', '.rp-metric-val', '.smm-cm-val',
     '.fin-trend-val', '.bi-mb-val', '.pp-stage-mini-val',
     '.kpf-num-val', '.kb-proj-stat-val', '.prow-pill-val',
-    '.sv-rc-val', '.cc-kpi-val', '.ov-card-val'
+    '.sv-rc-val', '.cc-kpi-val', '.ov-card-val',
+    '.apl-hero-num'
   ].join(',');
 
   var DURATION = 1200;                                   // мс
@@ -39925,6 +39926,13 @@ window.switchDashTab = function(tab, btn) {
     if (str == null) return null;
     var s = String(str).trim();
     if (!s || s === '\u2014' || s === '-') return null;
+    // Время: "65ч 46м" или "65ч" → считаем в минутах
+    var tm = s.match(/^(\d+)\s*ч(?:\s*(\d+)\s*м)?$/);
+    if (tm) {
+      var th = +tm[1], tmn = tm[2] ? +tm[2] : 0;
+      return { kind: 'hm', num: th * 60 + tmn, hadMin: tm[2] != null };
+    }
+    // Обычное число с префиксом/суффиксом
     var m = s.match(/^([^\d\-]*?)(-?[\d\u00A0\u202F .,]*\d|-?\d)([^\d]*)$/);
     if (!m) return null;
     var cleaned = m[2].replace(/[\u00A0\u202F ]/g, '').replace(',', '.');
@@ -39932,6 +39940,7 @@ window.switchDashTab = function(tab, btn) {
     if (!isFinite(num)) return null;
     var dot = cleaned.indexOf('.');
     return {
+      kind: 'num',
       prefix: m[1] || '',
       num: num,
       suffix: m[3] || '',
@@ -39940,6 +39949,11 @@ window.switchDashTab = function(tab, btn) {
   }
 
   function fmtLike(v, meta) {
+    if (meta.kind === 'hm') {
+      var mins = Math.max(0, Math.round(v));
+      var hh = Math.floor(mins / 60), mm2 = mins - hh * 60;
+      return meta.hadMin ? (hh + '\u0447 ' + mm2 + '\u043c') : (hh + '\u0447');
+    }
     var f = new Intl.NumberFormat('ru-RU', {
       minimumFractionDigits: meta.decimals,
       maximumFractionDigits: meta.decimals
