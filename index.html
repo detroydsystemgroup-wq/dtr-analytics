@@ -20438,9 +20438,9 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
         <button id="tt-btn-depts" onclick="switchTeamTab('depts',this)" style="font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:9px 18px;border-radius:9px;cursor:pointer;transition:all .15s;white-space:nowrap;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.55);">Эффективность отделов</button>
       </div>
 
-      <!-- TAB: Сотрудники (карточки + перенесённая таблица эффективности) -->
+      <!-- TAB: Сотрудники (только таблица эффективности; карточки скрыты, редактирование в строках таблицы) -->
       <div id="team-tab-employees">
-        <div id="team-members-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+        <div id="team-members-list" style="display:none;"></div>
       </div>
 
       <!-- TAB: Нагрузка -->
@@ -37935,10 +37935,18 @@ async function saveTeamMember() {
     return;
   }
   var payload = { name: name, role: role, color: color, agency_id: currentUser.id, avatar_url: avatarUrl || null, department: dept };
+  // Гарантируем колонку отдела перед записью (на случай, если миграция ещё не прошла)
+  try { await sb.rpc('run_migration', { sql: "ALTER TABLE team_members ADD COLUMN IF NOT EXISTS department text;" }); } catch (e) {}
+  var res;
   if (id) {
-    await sb.from('team_members').update(payload).eq('id', id);
+    res = await sb.from('team_members').update(payload).eq('id', id);
   } else {
-    await sb.from('team_members').insert(payload);
+    res = await sb.from('team_members').insert(payload);
+  }
+  if (res && res.error) {
+    if (typeof showToast === 'function') showToast('Не удалось сохранить: ' + res.error.message, 'error');
+    console.warn('saveTeamMember error:', res.error);
+    return; // оставляем модалку открытой, чтобы изменения не потерялись
   }
   closeModal('modal-team-member');
   loadTeamPanel();
@@ -38026,7 +38034,7 @@ async function loadTeamPanel() {
             avatarHtml +
             '<div style="flex:1;min-width:0;">' +
               '<div style="font-size:15px;color:var(--txt);font-weight:500;">'+m.name+'</div>' +
-              '<div style="font-size:12px;color:var(--txt3);margin-top:2px;">'+(m.role||'Нет роли')+' · '+assigned+' этапов</div>' +
+              '<div style="font-size:12px;color:var(--txt3);margin-top:2px;">'+(m.role||'Нет роли')+' · '+assigned+' этапов'+(m.department?' · <span style="color:#c9a84c;font-family:var(--font-mono);font-size:10px;letter-spacing:.03em;">'+m.department+'</span>':'')+'</div>' +
             '</div>' +
             '<div style="font-size:12px;color:var(--txt3);margin-right:4px;">нет данных</div>' +
             '<button onclick="openAddTeamMember('+mJson+')" style="font-size:11px;padding:5px 10px;border-radius:7px;border:1px solid var(--brd);background:transparent;color:var(--txt2);cursor:pointer;">Изм.</button>' +
@@ -38043,7 +38051,7 @@ async function loadTeamPanel() {
           avatarHtml +
           '<div style="flex:1;min-width:0;">' +
             '<div style="font-size:15px;color:var(--txt);font-weight:500;">'+m.name+'</div>' +
-            '<div style="font-size:12px;color:var(--txt3);margin-top:2px;">'+(m.role||'Нет роли')+' · '+assigned+' этапов</div>' +
+            '<div style="font-size:12px;color:var(--txt3);margin-top:2px;">'+(m.role||'Нет роли')+' · '+assigned+' этапов'+(m.department?' · <span style="color:#c9a84c;font-family:var(--font-mono);font-size:10px;letter-spacing:.03em;">'+m.department+'</span>':'')+'</div>' +
           '</div>' +
           '<div style="text-align:right;margin-right:8px;">' +
             '<div style="font-size:22px;font-weight:500;color:'+accentColor+';line-height:1;">'+(effScore2!==null?effScore2+'%':'—')+'</div>' +
@@ -38745,6 +38753,7 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
     { label: 'За 30 дн.',        w: '1fr',   hint: 'Задач закрыто за последние 30 дней' },
     { label: 'Возвраты',         w: '1fr',   hint: 'Доля этапов возвращённых назад (ниже = лучше)' },
     { label: 'Эффект.',          w: '1fr',   hint: 'Итоговый score: 40% скорость + 35% velocity + 25% качество' },
+    { label: '',                 w: '128px', hint: 'Редактирование' },
   ];
 
   var gridCols = COLS.map(function(c){ return c.w; }).join(' ');
@@ -38799,6 +38808,12 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
         : '<div style="font-family:var(--font-mono);font-size:16px;color:rgba(255,255,255,.2);">—</div>') +
     '</div>';
 
+    var mJson = JSON.stringify(r.m).replace(/"/g, '&quot;');
+    var actionsCell = '<div style="' + brd + 'padding:14px;display:flex;align-items:center;justify-content:center;gap:6px;">' +
+      '<button onclick="openAddTeamMember(' + mJson + ')" style="font-size:11px;padding:5px 9px;border-radius:7px;border:1px solid var(--brd);background:transparent;color:var(--txt2);cursor:pointer;white-space:nowrap;">Изм.</button>' +
+      '<button onclick="deleteTeamMember(\'' + r.m.id + '\')" style="font-size:11px;padding:5px 9px;border-radius:7px;border:1px solid rgba(224,82,82,.3);background:transparent;color:var(--red);cursor:pointer;">✕</button>' +
+    '</div>';
+
     return '<div style="display:grid;grid-template-columns:' + gridCols + ';border-top:1px solid rgba(255,255,255,.06);">' +
       // Имя
       '<div style="display:flex;align-items:center;gap:10px;padding:12px 20px;">' +
@@ -38813,7 +38828,7 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
       cell(r.done7 || '—', r.done7 > 0 ? 'var(--green)' : 'var(--txt3)', r.done7 > 0 ? 'задач' : null) +
       cell(r.done30 || '—', r.done30 > 0 ? 'var(--a2)' : 'var(--txt3)', r.done30 > 0 ? 'задач' : null) +
       cell(reworkVal, reworkColor(r.reworkRate), r.returns > 0 ? r.returns + ' возвр.' : r.reworkRate === 0 ? 'отлично' : null) +
-      scoreCell +
+      scoreCell + actionsCell +
     '</div>';
   }).join('');
 
