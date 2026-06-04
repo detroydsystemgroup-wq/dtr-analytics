@@ -24646,6 +24646,28 @@ async function createProject() {
 
   if (error) { g('proj-err').textContent = error.message; g('proj-err').style.display = 'block'; return }
 
+  // ── Сидинг этапов по умолчанию ──────────────────────────────────────
+  // Новый проект стартует с шаблона из 9 стандартных этапов. Их можно
+  // удалять/добавлять под специфику проекта (см. rebuildStages / saveStage).
+  // Имя пишем явно, но рендер всё равно подставит STAGES[stage_index] как
+  // фолбэк — поэтому даже без колонки name таймлайн не будет пустым.
+  if (proj) {
+    const _seedRows = STAGES.map((s, i) => ({
+      project_id: proj.id,
+      stage_index: i,
+      name: s.name,
+      status: 'pending'
+    }))
+    const { error: _seedErr } = await sb.from('project_stages').insert(_seedRows)
+    if (_seedErr) {
+      console.warn('[DTR] Сидинг этапов не удался:', _seedErr.message)
+      // Фолбэк: пробуем без колонки name (на случай, если её нет в схеме)
+      const _seedBare = STAGES.map((s, i) => ({ project_id: proj.id, stage_index: i, status: 'pending' }))
+      const { error: _seedErr2 } = await sb.from('project_stages').insert(_seedBare)
+      if (_seedErr2) console.warn('[DTR] Сидинг этапов (bare) тоже не удался:', _seedErr2.message)
+    }
+  }
+
   // Try to add photo if available (requires photo_url column)
   if (proj && photoUrl) {
     const { error: photoErr } = await sb.from('projects').update({ photo_url: photoUrl }).eq('id', proj.id)
