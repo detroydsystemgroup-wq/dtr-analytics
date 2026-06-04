@@ -38177,7 +38177,10 @@ async function loadTeamPanel() {
         ? '<div style="width:32px;height:32px;border-radius:50%;overflow:hidden;border:1px solid '+mc+'44;flex-shrink:0;"><img src="'+r.m.avatar_url+'" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
         : '<div style="width:32px;height:32px;border-radius:50%;background:'+mc+'18;border:1px solid '+mc+'44;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:'+mc+';flex-shrink:0;">'+r.m.name[0].toUpperCase()+'</div>';
 
+      var dominantStatus = r.active > 0 ? 'active' : r.pending > 0 ? 'pending' : 'completed';
+
       return '<div '
+        +'onclick="openWorkloadDrill(\'' + r.m.id + '\',\'' + dominantStatus + '\')" '
         +'onmouseenter="this.style.background=\'rgba(255,255,255,.025)\'" '
         +'onmouseleave="this.style.background=\'transparent\'" '
         +'style="display:grid;grid-template-columns:200px 1fr 100px 100px 100px 56px;padding:13px 20px;border-bottom:1px solid rgba(255,255,255,.04);align-items:center;cursor:pointer;transition:background .15s;">'
