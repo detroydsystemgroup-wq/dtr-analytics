@@ -28674,7 +28674,7 @@ function renderTracker() {
         <div class="task-list" id="task-list-${i}"></div>
       </div>`
 
-    return `<div class="tracker-stage">
+    return `<div class="tracker-stage" id="tracker-stage-${rec.stage_index}">
       <div class="tracker-stage-left">
         <div class="tracker-dot t-${st}">${dotInner}</div>
         ${!isLast ? `<div class="tracker-connector ${st === 'completed' ? 't-done' : ''}"></div>` : ''}
@@ -39040,10 +39040,11 @@ window.switchDashTab = function(tab, btn) {
       });
 
       var grpHd =
-        '<div class="wl-grp-hd">' +
+        '<div class="wl-grp-hd" onclick="wlGoToStage(\'' + s.project_id + '\',' + s.stage_index + ')" style="cursor:pointer;transition:color .15s;" onmouseenter="this.style.color=\'#c9a84c\'" onmouseleave="this.style.color=\'\'">' +
           '<span style="color:var(--txt2,#bbb);">' + esc2(projName(s.project_id)) + '</span>' +
           '<span style="opacity:.5;">›</span>' +
           '<span>' + esc2(stageName(s)) + '</span>' +
+          '<span style="font-size:11px;opacity:.5;margin-left:4px;">→</span>' +
         '</div>';
 
       var rows;
@@ -39077,6 +39078,49 @@ window.switchDashTab = function(tab, btn) {
     closeWorkloadDrill();
     if (typeof openProject === 'function') await openProject(projectId);
   };
+
+  // Переход на этап в трекере: открыть проект → вкладка «Этапы» → скролл + подсветка
+  window.wlGoToStage = async function (projectId, stageIndex) {
+    closeWorkloadDrill();
+    if (typeof openProject !== 'function') return;
+    await openProject(projectId);
+
+    // Переключаем на вкладку Этапы (tracker)
+    var stBtn = g('pptab-tracker');
+    if (typeof switchProjTab === 'function') switchProjTab('tracker', stBtn);
+
+    // Ждём рендера tracker-stage-{stageIndex}
+    var tries = 0;
+    var timer = setInterval(function () {
+      var el = g('tracker-stage-' + stageIndex);
+      if (el) {
+        clearInterval(timer);
+        try { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+        el.classList.add('wl-stage-flash');
+        setTimeout(function () { el.classList.remove('wl-stage-flash'); }, 2700);
+      } else if (++tries > 50) {
+        clearInterval(timer);
+        if (typeof showToast === 'function') showToast('Этап не найден', 'warn');
+      }
+    }, 100);
+  };
+
+  // CSS подсветки этапа
+  (function () {
+    var s = document.createElement('style');
+    s.textContent =
+      '@keyframes wlStageFlash {' +
+        '0%  { box-shadow: 0 0 0 0 rgba(184,146,58,.6), inset 0 0 0 1px rgba(184,146,58,.5); }' +
+        '40% { box-shadow: 0 0 0 8px rgba(184,146,58,.0), inset 0 0 0 1px rgba(184,146,58,.8); }' +
+        '100%{ box-shadow: 0 0 0 0 rgba(184,146,58,.0), inset 0 0 0 1px rgba(184,146,58,.15); }' +
+      '}' +
+      '.wl-stage-flash .tracker-stage-card,' +
+      '.wl-stage-flash > .tracker-stage-card {' +
+        'animation: wlStageFlash 2.7s ease forwards;' +
+        'border-color: rgba(184,146,58,.5) !important;' +
+      '}';
+    document.head.appendChild(s);
+  })();
 
   // Переход на задачу на канбане: открыть проект → вкладка «Канбан» → доскроллить + подсветить
   window.wlGoToTask = async function (projectId, taskId) {
