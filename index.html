@@ -39886,4 +39886,165 @@ window.switchDashTab = function(tab, btn) {
 #ct-stage-table th { font-size: 10px !important; }
 #ct-stage-table td { font-size: 13px !important; }
 </style>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     DTR — Count-Up Engine (премиум-отсчёт чисел)
+     Самодостаточный блок. Вставить ОДИН РАЗ перед </body>.
+     Логику приложения НЕ трогает: сам находит KPI и анимирует их.
+       • 0 → значение при первом появлении на экране (IntersectionObserver)
+       • старое → новое при обновлении числа (MutationObserver)
+       • сохраняет формат (1 234, 87%, 1 250 000 ₽, 12,5%)
+       • easeOutCubic, ~1.2с — плавно и сдержанно
+       • уважает prefers-reduced-motion
+       • не перезапускается, если цель не изменилась
+     ════════════════════════════════════════════════════════════════════ -->
+<script id="dtr-countup-engine">
+(function () {
+  'use strict';
+
+  // ── Какие элементы считаем «главными KPI» (по аудиту разметки) ──
+  // id-шники дашборда + числовые классы карточек. Текстовые поля
+  // (имена, заголовки) сюда НЕ входят и анимироваться не будут.
+  var KPI_SELECTOR = [
+    '#stat-active', '#stat-done', '#stat-overdue', '#stat-reports',
+    '#stat-total', '#stat-deadlines-week',
+    '#ct-cycle-total', '#ct-aging', '#ct-coverage', '#ct-bottleneck',
+    '.kpi-v', '.roi-val', '.rp-metric-val', '.smm-cm-val',
+    '.fin-trend-val', '.bi-mb-val', '.pp-stage-mini-val',
+    '.kpf-num-val', '.kb-proj-stat-val', '.prow-pill-val',
+    '.sv-rc-val', '.cc-kpi-val', '.ov-card-val'
+  ].join(',');
+
+  var DURATION = 1200;                                   // мс
+  var ease = function (t) { return 1 - Math.pow(1 - t, 3); }; // easeOutCubic
+  var REDUCED = window.matchMedia &&
+                window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ── Парсинг отформатированной строки → {prefix, num, suffix, decimals} ──
+  function parseFmt(str) {
+    if (str == null) return null;
+    var s = String(str).trim();
+    if (!s || s === '\u2014' || s === '-') return null;
+    var m = s.match(/^([^\d\-]*?)(-?[\d\u00A0\u202F .,]*\d|-?\d)([^\d]*)$/);
+    if (!m) return null;
+    var cleaned = m[2].replace(/[\u00A0\u202F ]/g, '').replace(',', '.');
+    var num = parseFloat(cleaned);
+    if (!isFinite(num)) return null;
+    var dot = cleaned.indexOf('.');
+    return {
+      prefix: m[1] || '',
+      num: num,
+      suffix: m[3] || '',
+      decimals: dot === -1 ? 0 : (cleaned.length - dot - 1)
+    };
+  }
+
+  function fmtLike(v, meta) {
+    var f = new Intl.NumberFormat('ru-RU', {
+      minimumFractionDigits: meta.decimals,
+      maximumFractionDigits: meta.decimals
+    }).format(v);
+    return meta.prefix + f + meta.suffix;
+  }
+
+  // ── Ядро: анимировать элемент от → до ──
+  function animate(el, fromNum, meta) {
+    if (el.__dtrRAF) cancelAnimationFrame(el.__dtrRAF);
+    var toNum = meta.num;
+    el.__dtrTarget = toNum;
+
+    if (REDUCED || fromNum === toNum) {       // без анимации — сразу финал
+      writeText(el, fmtLike(toNum, meta));
+      return;
+    }
+    var start = null;
+    function step(ts) {
+      if (start === null) start = ts;
+      var p = Math.min((ts - start) / DURATION, 1);
+      var cur = fromNum + (toNum - fromNum) * ease(p);
+      writeText(el, fmtLike(cur, meta));
+      if (p < 1) { el.__dtrRAF = requestAnimationFrame(step); }
+      else { el.__dtrRAF = null; el.__dtrShownNum = toNum; }
+    }
+    el.__dtrRAF = requestAnimationFrame(step);
+  }
+
+  // Запись текста + запоминаем РОВНО что записали.
+  // MutationObserver асинхронен, поэтому булев флаг не работает —
+  // сравниваем текущий текст с последним записанным нами.
+  function writeText(el, text) {
+    el.__dtrLastWritten = text;
+    el.textContent = text;
+  }
+
+  // ── Реакция на изменение числа (старое → новое) ──
+  function onChange(el) {
+    if (el.textContent === el.__dtrLastWritten) return;  // это мы сами писали — игнор
+    var meta = parseFmt(el.textContent);
+    if (!meta) return;                          // не число — не трогаем
+    if (el.__dtrTarget === meta.num) return;    // цель та же — не перезапускаем
+    var from = (typeof el.__dtrShownNum === 'number') ? el.__dtrShownNum
+             : (el.__dtrSeen ? 0 : meta.num);   // если ещё не появлялся — без аним.
+    if (!el.__dtrSeen) { el.__dtrTarget = meta.num; el.__dtrShownNum = meta.num; return; }
+    animate(el, from, meta);
+  }
+
+  // ── Первое появление на экране: 0 → значение ──
+  var io = ('IntersectionObserver' in window) ? new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      var el = e.target;
+      io.unobserve(el);
+      if (el.__dtrSeen) return;
+      el.__dtrSeen = true;
+      var meta = parseFmt(el.textContent);
+      if (!meta) return;
+      animate(el, 0, meta);
+    });
+  }, { threshold: 0.35 }) : null;
+
+  // ── Наблюдатель за изменениями текста уже отслеживаемых элементов ──
+  var mo = new MutationObserver(function (muts) {
+    var seen = new Set();
+    muts.forEach(function (m) {
+      var el = m.target.nodeType === 3 ? m.target.parentElement : m.target;
+      if (el && el.__dtrTracked && !seen.has(el)) { seen.add(el); onChange(el); }
+    });
+  });
+
+  function track(el) {
+    if (el.__dtrTracked) return;
+    el.__dtrTracked = true;
+    if (io) io.observe(el); else { el.__dtrSeen = true; var mt = parseFmt(el.textContent); if (mt) animate(el, 0, mt); }
+    mo.observe(el, { childList: true, characterData: true, subtree: true });
+  }
+
+  function scan(root) {
+    (root || document).querySelectorAll(KPI_SELECTOR).forEach(track);
+  }
+
+  // ── Старт + отслеживание новых KPI, которые появляются динамически ──
+  function init() {
+    scan(document);
+    // когда приложение дорисовывает карточки — подхватываем новые KPI
+    new MutationObserver(function (muts) {
+      muts.forEach(function (m) {
+        m.addedNodes && m.addedNodes.forEach(function (n) {
+          if (n.nodeType !== 1) return;
+          if (n.matches && n.matches(KPI_SELECTOR)) track(n);
+          if (n.querySelectorAll) scan(n);
+        });
+      });
+    }).observe(document.body, { childList: true, subtree: true });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else { init(); }
+
+  // экспорт на случай ручного вызова: DTRCount.refresh()
+  window.DTRCount = { refresh: function () { scan(document); }, selector: KPI_SELECTOR };
+})();
+</script>
+
 </html>
