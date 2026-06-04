@@ -20029,6 +20029,7 @@ html.light .mck-section.sec-smm{background:rgba(124,92,200,.06);border-color:rgb
           <button id="eff-per-prevmonth" data-period="prevmonth" onclick="setEffPeriod('prevmonth',this)" style="font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:5px 11px;border-radius:7px;cursor:pointer;transition:all .15s;white-space:nowrap;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.4);">Прошлый месяц</button>
           <button id="eff-per-30d" data-period="30d" onclick="setEffPeriod('30d',this)" style="font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:5px 11px;border-radius:7px;cursor:pointer;transition:all .15s;white-space:nowrap;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.4);">30 дней</button>
         </div>
+        <div id="eff-compare-strip" style="display:none;padding:8px 14px 0;"></div>
         <div id="sv-efficiency-body" style="padding:0;overflow:hidden;border-radius:0 0 12px 12px;"></div>
       </div>
 
@@ -38393,6 +38394,60 @@ function setEffPeriod(period, btn) {
     });
 }
 
+// ── Агрегат метрик команды за окно [start,end) ──
+function _effAgg(tasksArr, histArr, start, end) {
+  var s = start ? start.getTime() : -Infinity, e = end.getTime();
+  var inWin = function(d){ if (!d) return false; var t = new Date(d).getTime(); return t >= s && t < e; };
+  var done = 0, cycleMs = 0, cycleN = 0, mins = 0, taskRet = 0;
+  (tasksArr || []).forEach(function(t){
+    var d = t.done_at || (t.done ? t.updated_at : null);
+    var isDone = (t.done === true || t.kanban_status === 'done') && inWin(d);
+    if (isDone) {
+      done++;
+      mins += (t.time_logged || 0);
+      if (t.created_at) { var diff = new Date(d) - new Date(t.created_at); if (diff > 0) { cycleMs += diff; cycleN++; } }
+    }
+    if (t.returned_count > 0 && inWin(d)) taskRet += t.returned_count;
+  });
+  var histRet = (histArr || []).filter(function(h){ return inWin(h.created_at) && (h.event === 'Возвращён в ожидание' || h.event === 'pending'); }).length;
+  var completions = (histArr || []).filter(function(h){ return inWin(h.created_at) && (h.event === 'Завершён' || h.event === 'completed'); }).length;
+  var returns = histRet + taskRet;
+  var totalDone = done + completions;
+  return {
+    done: done,
+    avgCycleDays: cycleN ? (cycleMs / cycleN / 86400000) : null,
+    rework: (totalDone + returns) > 0 ? Math.round(returns / (totalDone + returns) * 100) : null,
+    hours: Math.round(mins / 60 * 10) / 10
+  };
+}
+
+// ── HTML полосы сравнения «текущий период vs предыдущий» ──
+function _effCompareHTML(cur, prv) {
+  function delta(c, p, lowerBetter, neutral) {
+    if (c == null || p == null) return '';
+    var d = Math.round((c - p) * 10) / 10;
+    if (d === 0) return '<span style="color:var(--txt3);font-family:var(--font-mono);font-size:10px;"> =</span>';
+    var arrow = d > 0 ? '▲' : '▼';
+    var col = neutral ? 'rgba(255,255,255,.45)' : ((lowerBetter ? d < 0 : d > 0) ? 'var(--green)' : 'var(--red)');
+    return '<span style="color:' + col + ';font-family:var(--font-mono);font-size:10px;margin-left:5px;">' + arrow + ' ' + (d > 0 ? '+' : '') + d + '</span>';
+  }
+  function card(label, valHtml, deltaHtml) {
+    return '<div style="flex:1;min-width:96px;background:rgba(255,255,255,.025);border:0.5px solid rgba(255,255,255,.07);border-radius:10px;padding:9px 12px;">' +
+      '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);margin-bottom:5px;">' + label + '</div>' +
+      '<div style="font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;">' + valHtml + deltaHtml + '</div>' +
+    '</div>';
+  }
+  var cyc = cur.avgCycleDays != null ? (Math.round(cur.avgCycleDays * 10) / 10) + 'д' : '—';
+  var rw  = cur.rework != null ? cur.rework + '%' : '—';
+  return '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+    '<div style="display:flex;align-items:center;font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);padding-right:4px;">vs<br>пред.</div>' +
+    card('Закрыто', cur.done, delta(cur.done, prv.done, false, false)) +
+    card('Ср. цикл', cyc, delta(cur.avgCycleDays, prv.avgCycleDays, true, false)) +
+    card('Rework', rw, delta(cur.rework, prv.rework, true, false)) +
+    card('Часы', cur.hours, delta(cur.hours, prv.hours, false, true)) +
+  '</div>';
+}
+
 async function loadEfficiencyBlock(members, activeProjectIds) {
   var el = document.getElementById('sv-efficiency-body');
   if (!el || !members || !members.length) return;
@@ -38461,6 +38516,24 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
   if (_period === 'month') { periodStart = new Date(now.getFullYear(), now.getMonth(), 1); }
   else if (_period === 'prevmonth') { periodStart = new Date(now.getFullYear(), now.getMonth() - 1, 1); periodEnd = new Date(now.getFullYear(), now.getMonth(), 1); }
   else if (_period === '30d') { periodStart = new Date(now.getTime() - 30 * 86400000); }
+
+  // ── Полоса сравнения «текущий период vs предыдущий» (считаем на полных данных) ──
+  (function(){
+    var strip = document.getElementById('eff-compare-strip');
+    if (!strip) return;
+    if (!periodStart) { strip.style.display = 'none'; strip.innerHTML = ''; return; }
+    var prevEnd = periodStart, prevStart;
+    if (_period === 'month' || _period === 'prevmonth') {
+      prevStart = new Date(periodStart.getFullYear(), periodStart.getMonth() - 1, 1);
+    } else {
+      prevStart = new Date(periodStart.getTime() - (periodEnd.getTime() - periodStart.getTime()));
+    }
+    var cur = _effAgg(tasks, history, periodStart, periodEnd);
+    var prv = _effAgg(tasks, history, prevStart, prevEnd);
+    strip.style.display = '';
+    strip.innerHTML = _effCompareHTML(cur, prv);
+  })();
+
   if (periodStart) {
     var _ps = periodStart.getTime(), _pe = periodEnd.getTime();
     var _inWin = function(dstr){ if (!dstr) return false; var d = new Date(dstr).getTime(); return d >= _ps && d < _pe; };
