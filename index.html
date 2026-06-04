@@ -23079,6 +23079,8 @@ let trackerData = []
 let editingStageIndex = null
 let selectedStageStatus = 'pending'
 let trackerChannel = null
+let kanbanChannel = null
+let projectsChannel = null
 let _isClientCache = null
 var _isClient = false
 
@@ -23242,6 +23244,8 @@ async function doLogout() {
   Object.keys(S).forEach(k => delete S[k])
   Object.keys(CH).forEach(k => { try { CH[k].destroy() } catch(e){} delete CH[k] })
   if (trackerChannel) { try { sb.removeChannel(trackerChannel) } catch(e){} trackerChannel = null }
+  if (kanbanChannel) { try { sb.removeChannel(kanbanChannel) } catch(e){} kanbanChannel = null }
+  if (projectsChannel) { try { sb.removeChannel(projectsChannel) } catch(e){} projectsChannel = null }
 
   // Сброс формы логина — кнопка, поля, ошибки
   const btn = g('btn-login')
@@ -23818,15 +23822,57 @@ function copyReportLink(type, id, btn) {
 
 
 // ══════════════════════════════════════════════
-// GLOBAL SEARCH (Cmd+K)
+// GLOBAL SEARCH (Cmd+K) + KEYBOARD SHORTCUTS
 // ══════════════════════════════════════════════
+
+// Карта: цифра → id вкладки дашборда
+const _KB_TAB_MAP = {
+  '1': 'projects',
+  '2': 'timeline',
+  '3': 'overview',
+  '4': 'cycletime',
+  '5': 'finance',
+  '6': 'team',
+  '7': 'kb',
+  '8': 'tools'
+}
+
 document.addEventListener('keydown', e => {
+  // Cmd/Ctrl+K → глобальный поиск
   if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
     e.preventDefault()
     const dash = g('page-dashboard')
     if (dash && dash.classList.contains('active')) openGlobalSearch()
   }
+
+  // ESC → закрыть поиск
   if (e.key === 'Escape') closeGlobalSearch()
+
+  // Пропускаем шорткаты если фокус в инпуте / текстовом поле / модалке открыта
+  const tag = document.activeElement?.tagName
+  const inInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT'
+  const hasOpenModal = document.querySelector('.modal-overlay.open')
+  if (inInput || hasOpenModal) return
+
+  // N → Новый проект (только на дашборде)
+  if (e.key === 'n' || e.key === 'N') {
+    const dash = g('page-dashboard')
+    if (dash && dash.classList.contains('active') && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      e.preventDefault()
+      openCreateProject()
+    }
+  }
+
+  // Цифры 1–8 → переключение вкладок дашборда
+  if (_KB_TAB_MAP[e.key] && !e.metaKey && !e.ctrlKey && !e.altKey) {
+    const dash = g('page-dashboard')
+    if (dash && dash.classList.contains('active')) {
+      e.preventDefault()
+      const tabId = 'dtab-' + _KB_TAB_MAP[e.key]
+      const tabBtn = g(tabId)
+      if (tabBtn) { switchDashTab(_KB_TAB_MAP[e.key], tabBtn) }
+    }
+  }
 })
 
 function openGlobalSearch() {
@@ -25892,7 +25938,7 @@ function runAnalysis() {
   // Save summary to DB — с await чтобы гарантировать сохранение
   if (currentReport) {
     sb.from('reports').update({ summary: { b_days:bD, d_days:dD, b_total_rev:bR, d_total_rev:dR, b_total_chk:bC, d_total_chk:dC, b_rev_per_day:bRD, d_rev_per_day:dRD, b_avg_check:bA, d_avg_check:dA, growth_pct:grP, growth_abs:gr, extra_revenue:ex, traffic_delta:tr, avg_check_delta:ad } }).eq('id', currentReport.id)
-      .then(function(res){ if(res.error) console.error('[runAnalysis] summary save error:', res.error); else console.log('[runAnalysis] summary saved OK, growth_pct:', grP, 'traffic_delta:', tr, 'avg_check_delta:', ad); })
+      .then(function(res){ if(res.error) console.error('[runAnalysis] summary save error:', res.error); })
       .catch(function(e){ console.error('[runAnalysis] summary save failed:', e); });
   }
 
@@ -26811,6 +26857,62 @@ async function buildForecast(currentMetrics) {
 
   // ── KPI Gap ──
   renderForecastKPIGap(forecastRD)
+
+  // ── Churn Risk Detection ──
+  _checkChurnRisk({ regRD, regCD, regA, dataPoints })
+}
+
+// ══════════════════════════════════════════════
+// CHURN RISK ENGINE
+// Вычисляет риск потери клиента по 3 трендам.
+// Порог 70% → toast + badge на карточке проекта.
+// ══════════════════════════════════════════════
+
+function _checkChurnRisk({ regRD, regCD, regA, dataPoints }) {
+  if (!currentProject || dataPoints.length < 2) return
+
+  // Взвешенная оценка риска по наклону каждого тренда
+  // slope < 0 → негативный тренд; нормируем по последнему значению
+  function slopeRisk(reg, lastVal) {
+    if (!reg || !lastVal || lastVal <= 0) return 0
+    const slopePct = (reg.slope / lastVal) * 100  // % изменения за период
+    if (slopePct >= 0) return 0                    // растёт → 0% риска
+    return Math.min(100, Math.abs(slopePct) * 5)  // падает на N% → N*5% риска (макс 100)
+  }
+
+  const cur = dataPoints[dataPoints.length - 1]
+  const riskRD  = slopeRisk(regRD, cur.rRD)   // риск по выручке
+  const riskCD  = slopeRisk(regCD, cur.rCD)   // риск по трафику
+  const riskA   = slopeRisk(regA,  cur.rA)    // риск по среднему чеку
+
+  // Взвешенный итог: выручка 50%, трафик 30%, чек 20%
+  const churnPct = Math.round(riskRD * 0.5 + riskCD * 0.3 + riskA * 0.2)
+
+  // Обновляем badge на карточке проекта (если в Overview)
+  _renderChurnBadge(currentProject.id, churnPct)
+
+  // Toast + запись лога только при превышении порога 70%
+  if (churnPct >= 70) {
+    const sessionKey = 'churn_alerted_' + currentProject.id + '_' + new Date().toDateString()
+    if (!sessionStorage.getItem(sessionKey)) {
+      sessionStorage.setItem(sessionKey, '1')
+      showAlertToast(
+        '🚨',
+        'Churn Risk ' + churnPct + '%',
+        currentProject.name + ' — все 3 тренда падают'
+      )
+      _logAlert('🚨', 'Churn Risk', 'crit', currentProject.name + ' · ' + churnPct + '%')
+    }
+  }
+}
+
+function _renderChurnBadge(projectId, churnPct) {
+  // Ищем карточку проекта в таблице Summary/Overview
+  const badge = document.querySelector('[data-churn-id="' + projectId + '"]')
+  if (!badge) return
+  badge.textContent = churnPct + '%'
+  badge.style.color = churnPct >= 70 ? 'var(--red)' : churnPct >= 40 ? 'var(--amber)' : 'var(--green)'
+  badge.style.display = 'block'
 }
 
 // ── Draw forecast chart ──
@@ -28797,6 +28899,39 @@ function setupRealtimeTracker() {
       filter: 'project_id=eq.' + currentProject.id
     }, () => { loadTracker() })
     .subscribe()
+
+  // ── Realtime: Kanban задачи ──
+  if (kanbanChannel) { try { sb.removeChannel(kanbanChannel) } catch(e){} kanbanChannel = null }
+  kanbanChannel = sb.channel('kanban-' + currentProject.id)
+    .on('postgres_changes', {
+      event: '*', schema: 'public', table: 'stage_tasks',
+      filter: 'project_id=eq.' + currentProject.id
+    }, (payload) => {
+      // Живое обновление Kanban — только если вкладка открыта
+      if (typeof loadKanban === 'function' && document.getElementById('pp-tab-kanban')?.style.display !== 'none') {
+        loadKanban()
+      }
+      // Обновляем счётчик времени в шапке проекта всегда
+      if (payload.new?.time_logged != null || payload.old?.time_logged != null) {
+        updateProjectTimeDisplay()
+      }
+      // Показываем живой toast об изменении задачи другим участником
+      const ev = payload.eventType
+      const task = payload.new || payload.old
+      if (task && task.title && ev !== 'DELETE') {
+        const actor = task.title.slice(0, 28)
+        if (ev === 'INSERT') showAlertToast('⚡', 'Новая задача', actor)
+        else if (ev === 'UPDATE') {
+          const oldStatus = payload.old?.kanban_status
+          const newStatus = payload.new?.kanban_status
+          if (oldStatus && newStatus && oldStatus !== newStatus) {
+            const labels = { waiting: 'В очереди', active: 'В работе', done: 'Готово' }
+            showAlertToast('🔄', actor, labels[newStatus] || newStatus)
+          }
+        }
+      }
+    })
+    .subscribe()
 }
 
 function openEditStage(i) {
@@ -30052,10 +30187,6 @@ async function cp2LoadROI(project) {
     .limit(10);
 
   var reports = res.data || [];
-  console.log('[cp2LoadROI] найдено отчётов:', reports.length);
-  reports.forEach(function(r, i){
-    console.log('[cp2LoadROI] отчёт', i, '| id:', r.id, '| title:', r.title, '| summary:', JSON.stringify(r.summary));
-  });
 
   // Ищем первый отчёт где summary содержит нужные поля
   var sm = null;
@@ -34246,6 +34377,7 @@ function svRenderProjTable(projData, overdueMap, today, MONTHS) {
       '<div style="text-align:right;font-family:var(--font-mono);font-size:12px;color:' + dlColor + ';">' + dlTxt + '</div>' +
       '<div style="text-align:right;font-family:var(--font-mono);font-size:11px;color:' + churnColor + ';">' +
         '<span class="sv-risk-dot" style="background:' + churnColor + ';"></span>' + churnTxt +
+        '<span data-churn-id="' + p.id + '" style="display:none;font-size:10px;margin-left:4px;"></span>' +
       '</div>' +
       '</div>';
   }).join('');
