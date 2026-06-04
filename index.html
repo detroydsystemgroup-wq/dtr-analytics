@@ -32517,7 +32517,7 @@ function filterDeadlines() {
   renderDeadlinePanel();
 }
 
-function renderDeadlinePanel() {
+async function renderDeadlinePanel() {
   var panel = document.getElementById('deadline-panel');
   if (!panel) return;
 
@@ -32551,6 +32551,36 @@ function renderDeadlinePanel() {
     });
   }
 
+  // Догружаем дедлайны задач ДО сортировки и рендера — чтобы список и шапка
+  // считались из одних и тех же полных данных (раньше задачи попадали только в счётчики)
+  if (activeProjIds.length) {
+    try {
+      var { data: tasks } = await sb.from('stage_tasks')
+        .select('project_id,deadline,done,title')
+        .in('project_id', activeProjIds)
+        .not('deadline','is',null);
+      (tasks||[]).forEach(function(t) {
+        if (!t.deadline) return;
+        var dlStr = t.deadline.slice(0,10);
+        var dl = new Date(dlStr); dl.setHours(0,0,0,0);
+        var diff = Math.round((dl - today) / 86400000);
+        var status = t.done ? 'done'
+          : diff < 0  ? 'overdue'
+          : diff === 0 ? 'today'
+          : diff <= 7  ? 'soon'
+          : 'future';
+        var proj = activeProjs.find(function(p){ return p.id === t.project_id; });
+        if (!proj) return;
+        allItems.push({
+          kind: 'task', t: t, proj: proj,
+          stageObj: { name: t.title || 'Задача', icon: '•', emoji: '✅' },
+          s: { status: t.done ? 'completed' : 'active' },
+          dl: dl, diff: diff, status: status
+        });
+      });
+    } catch(e) { console.warn('[DL tasks]', e); }
+  }
+
   allItems.sort(function(a,b){ return a.dl - b.dl; });
 
   function setS(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
@@ -32562,36 +32592,6 @@ function renderDeadlinePanel() {
   function sub(status) {
     var s = cntBy(status,'stage'), t = cntBy(status,'task');
     return '📋 ' + s + ' эт. · ✅ ' + t + ' зад.';
-  }
-
-  // Async: load task deadlines and re-render strip
-  if (activeProjIds.length) {
-    (async function() {
-      try {
-        var todayStr = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
-        var weekEnd = new Date(today); weekEnd.setDate(today.getDate()+7);
-        var weekStr = weekEnd.toISOString().slice(0,10);
-        var { data: tasks } = await sb.from('stage_tasks')
-          .select('project_id,deadline,done')
-          .in('project_id', activeProjIds)
-          .not('deadline','is',null);
-        (tasks||[]).forEach(function(t) {
-          if (!t.deadline) return;
-          var dlStr = t.deadline.slice(0,10);
-          var dl = new Date(dlStr); dl.setHours(0,0,0,0);
-          var diff = Math.round((dl - today) / 86400000);
-          var status = t.done ? 'done'
-            : diff < 0  ? 'overdue'
-            : diff === 0 ? 'today'
-            : diff <= 7  ? 'soon'
-            : 'future';
-          var proj = activeProjs.find(function(p){ return p.id === t.project_id; });
-          if (!proj) return;
-          allItems.push({ kind: 'task', t: t, proj: proj, dl: dl, diff: diff, status: status });
-        });
-        updateDLHeroStrip();
-      } catch(e) { console.warn('[DL tasks]', e); }
-    })();
   }
 
   function updateDLHeroStrip() {
