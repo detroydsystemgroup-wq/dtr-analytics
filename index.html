@@ -34057,97 +34057,88 @@ async function loadOverview() {
             // Максимум для относительной полоски
             var maxTotal = Math.max.apply(null, memberLoad.map(function(r){ return r.total; })) || 1;
 
-            // ── DTR-style workload redesign ──
-
-            // Суммарная полоска распределения: ожидание=gold, актив=green
-            function barHtml(r) {
+            // ── DTR workload redesign v2 ──
+            function dtrBarCell(r) {
               var t = r.total || 1;
               var pPct = Math.round(r.pending / t * 100);
               var aPct = Math.round(r.active  / t * 100);
               var dPct = 100 - pPct - aPct;
-              var label = r.active > 0
-                ? 'актив. ' + Math.round(r.active / t * 100) + '%'
-                : r.pending > 0
-                  ? 'ожид. ' + Math.round(r.pending / t * 100) + '%'
-                  : 'готово 100%';
-              return '<div style="display:flex;align-items:center;gap:10px;">' +
-                '<div style="flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden;display:flex;gap:1px;">' +
-                  (pPct > 0 ? '<div style="width:' + pPct + '%;height:100%;background:#b8923a;border-radius:99px;"></div>' : '') +
-                  (aPct > 0 ? '<div style="width:' + aPct + '%;height:100%;background:#3ecf8e;border-radius:99px;"></div>' : '') +
-                  (dPct > 0 ? '<div style="width:' + dPct + '%;height:100%;background:rgba(255,255,255,.12);border-radius:99px;"></div>' : '') +
-                '</div>' +
-                '<span style="font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;color:rgba(240,236,230,.28);white-space:nowrap;min-width:54px;text-align:right;">' + label + '</span>' +
-              '</div>';
+              var lbl = r.active  > 0 ? 'актив. '  + aPct + '%'
+                      : r.pending > 0 ? 'ожид. '   + pPct + '%'
+                      : 'готово 100%';
+              return '<div style="display:flex;align-items:center;gap:10px;padding:0 16px 0 0;">'
+                + '<div style="flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden;display:flex;">'
+                  + (pPct > 0 ? '<div style="width:'+pPct+'%;height:100%;background:#b8923a;"></div>' : '')
+                  + (aPct > 0 ? '<div style="width:'+aPct+'%;height:100%;background:#3ecf8e;"></div>' : '')
+                  + (dPct > 0 ? '<div style="width:'+dPct+'%;height:100%;background:rgba(255,255,255,.15);"></div>' : '')
+                + '</div>'
+                + '<span style="font-family:var(--font-mono);font-size:9px;color:rgba(240,236,230,.28);white-space:nowrap;min-width:56px;text-align:right;">'+lbl+'</span>'
+              + '</div>';
             }
 
-            // Числовая ячейка
-            function numCell(count, color) {
-              return '<div style="text-align:center;">' +
-                '<div style="font-size:17px;font-weight:700;font-family:var(--font-display,inherit);letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1;color:' + (count > 0 ? color : 'rgba(240,236,230,.15)') + ';">' +
-                  (count > 0 ? count : '—') +
-                '</div>' +
-                (count > 0
-                  ? '<div style="font-family:var(--font-mono);font-size:8.5px;letter-spacing:.06em;text-transform:uppercase;color:rgba(240,236,230,.18);margin-top:3px;">эт.</div>'
-                  : '') +
-              '</div>';
+            function dtrNumCell(n, col) {
+              var c = n > 0 ? col : 'rgba(240,236,230,.15)';
+              return '<div style="text-align:center;">'
+                + '<div style="font-size:18px;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1;color:' + c + ';">' + (n > 0 ? n : '—') + '</div>'
+                + (n > 0 ? '<div style="font-family:var(--font-mono);font-size:8px;letter-spacing:.06em;color:rgba(240,236,230,.2);margin-top:3px;text-transform:uppercase;">эт.</div>' : '')
+              + '</div>';
             }
 
-            // Шапка — summary topbar с тремя цифрами
+            // Topbar — три суммарных числа
             var html =
-              '<div style="display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid rgba(255,255,255,.05);">' +
-                '<div style="padding:16px 24px;text-align:center;border-right:1px solid rgba(255,255,255,.05);">' +
-                  '<div style="font-size:26px;font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:#b8923a;">' + sumPending + '</div>' +
-                  '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(240,236,230,.28);margin-top:4px;">В ожидании</div>' +
-                '</div>' +
-                '<div style="padding:16px 24px;text-align:center;border-right:1px solid rgba(255,255,255,.05);">' +
-                  '<div style="font-size:26px;font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:#3ecf8e;">' + sumActive + '</div>' +
-                  '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(240,236,230,.28);margin-top:4px;">В работе</div>' +
-                '</div>' +
-                '<div style="padding:16px 24px;text-align:center;">' +
-                  '<div style="font-size:26px;font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:rgba(240,236,230,.2);">' + sumDone + '</div>' +
-                  '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(240,236,230,.28);margin-top:4px;">Завершено</div>' +
-                '</div>' +
-              '</div>' +
+              '<div style="display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid rgba(255,255,255,.05);">'
+                +'<div style="padding:16px 24px;text-align:center;border-right:1px solid rgba(255,255,255,.05);">'
+                  +'<div style="font-size:26px;font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:#b8923a;">'+sumPending+'</div>'
+                  +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.25);margin-top:5px;">В ожидании</div>'
+                +'</div>'
+                +'<div style="padding:16px 24px;text-align:center;border-right:1px solid rgba(255,255,255,.05);">'
+                  +'<div style="font-size:26px;font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:#3ecf8e;">'+sumActive+'</div>'
+                  +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.25);margin-top:5px;">В работе</div>'
+                +'</div>'
+                +'<div style="padding:16px 24px;text-align:center;">'
+                  +'<div style="font-size:26px;font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:rgba(240,236,230,.2);">'+sumDone+'</div>'
+                  +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.25);margin-top:5px;">Завершено</div>'
+                +'</div>'
+              +'</div>'
               // Заголовки колонок
-              '<div style="display:grid;grid-template-columns:200px 1fr 100px 100px 100px 64px;padding:9px 20px;border-bottom:1px solid rgba(255,255,255,.05);">' +
-                '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(240,236,230,.25);">Сотрудник</div>' +
-                '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(240,236,230,.25);">Распределение</div>' +
-                '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(240,236,230,.25);text-align:center;">Ожидание</div>' +
-                '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(240,236,230,.25);text-align:center;">В работе</div>' +
-                '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(240,236,230,.25);text-align:center;">Готово</div>' +
-                '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(240,236,230,.25);text-align:right;">Итого</div>' +
-              '</div>';
+              +'<div style="display:grid;grid-template-columns:200px 1fr 100px 100px 100px 56px;padding:8px 20px;border-bottom:1px solid rgba(255,255,255,.05);">'
+                +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);">Сотрудник</div>'
+                +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);">Распределение</div>'
+                +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);text-align:center;">Ожидание</div>'
+                +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);text-align:center;">В работе</div>'
+                +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);text-align:center;">Готово</div>'
+                +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);text-align:right;">Итого</div>'
+              +'</div>';
 
             // Строки сотрудников — кликабельные
             html += memberLoad.map(function(r) {
-              var avatarHtml = r.m.avatar_url
-                ? '<div style="width:32px;height:32px;border-radius:50%;overflow:hidden;border:1px solid ' + (r.m.color||'#b8923a') + '44;flex-shrink:0;"><img src="' + r.m.avatar_url + '" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
-                : '<div style="width:32px;height:32px;border-radius:50%;background:' + (r.m.color||'#b8923a') + '18;border:1px solid ' + (r.m.color||'#b8923a') + '44;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:' + (r.m.color||'#b8923a') + ';flex-shrink:0;">' + r.m.name[0].toUpperCase() + '</div>';
+              var mc = r.m.color || '#b8923a';
+              var av = r.m.avatar_url
+                ? '<div style="width:32px;height:32px;border-radius:50%;overflow:hidden;border:1px solid '+mc+'44;flex-shrink:0;"><img src="'+r.m.avatar_url+'" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+                : '<div style="width:32px;height:32px;border-radius:50%;background:'+mc+'18;border:1px solid '+mc+'44;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:'+mc+';flex-shrink:0;">'+r.m.name[0].toUpperCase()+'</div>';
 
-              return '<div ' +
-                  'onclick="svOpenMemberDetail && svOpenMemberDetail(\'' + r.m.id + '\')" ' +
-                  'style="display:grid;grid-template-columns:200px 1fr 100px 100px 100px 64px;' +
-                         'padding:13px 20px;border-bottom:1px solid rgba(255,255,255,.04);' +
-                         'align-items:center;cursor:pointer;transition:background .15s;" ' +
-                  'onmouseenter="this.style.background=\'rgba(255,255,255,.025)\'" ' +
-                  'onmouseleave="this.style.background=\'transparent\'">' +
+              return '<div '
+                +'onclick="typeof svOpenMemberDetail===\'function\'&&svOpenMemberDetail(\''+r.m.id+'\')" '
+                +'onmouseenter="this.style.background=\'rgba(255,255,255,.025)\'" '
+                +'onmouseleave="this.style.background=\'transparent\'" '
+                +'style="display:grid;grid-template-columns:200px 1fr 100px 100px 100px 56px;padding:13px 20px;border-bottom:1px solid rgba(255,255,255,.04);align-items:center;cursor:pointer;transition:background .15s;">'
                 // Сотрудник
-                '<div style="display:flex;align-items:center;gap:10px;">' +
-                  avatarHtml +
-                  '<div>' +
-                    '<div style="font-size:13px;font-weight:500;color:#f0ece6;letter-spacing:-.01em;">' + r.m.name + '</div>' +
-                    '<div style="font-family:var(--font-mono);font-size:10px;color:rgba(240,236,230,.28);margin-top:2px;">' + r.total + ' эт.</div>' +
-                  '</div>' +
-                '</div>' +
+                +'<div style="display:flex;align-items:center;gap:10px;">'
+                  +av
+                  +'<div>'
+                    +'<div style="font-size:13px;font-weight:500;color:#f0ece6;letter-spacing:-.01em;">'+r.m.name+'</div>'
+                    +'<div style="font-family:var(--font-mono);font-size:10px;color:rgba(240,236,230,.28);margin-top:2px;">'+r.total+' эт.</div>'
+                  +'</div>'
+                +'</div>'
                 // Полоска
-                '<div style="padding-right:16px;">' + barHtml(r) + '</div>' +
+                +dtrBarCell(r)
                 // Числа
-                numCell(r.pending, '#b8923a') +
-                numCell(r.active,  '#3ecf8e') +
-                numCell(r.done,    'rgba(240,236,230,.4)') +
+                +dtrNumCell(r.pending,'#b8923a')
+                +dtrNumCell(r.active,'#3ecf8e')
+                +dtrNumCell(r.done,'rgba(240,236,230,.4)')
                 // Итого
-                '<div style="text-align:right;font-family:var(--font-mono);font-size:11px;color:rgba(240,236,230,.3);">' + r.total + '</div>' +
-              '</div>';
+                +'<div style="text-align:right;font-family:var(--font-mono);font-size:11px;color:rgba(240,236,230,.3);">'+r.total+'</div>'
+              +'</div>';
             }).join('');
 
             wEl2.innerHTML = html;
