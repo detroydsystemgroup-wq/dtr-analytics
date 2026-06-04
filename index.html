@@ -27878,8 +27878,12 @@ async function loadKanban() {
       .order('created_at', { ascending: true })
     if (error) throw error
     kanbanTasks = data || []
-    // Скрываем задачи прошлых циклов (archived_at) из рабочей доски
-    kanbanTasks = kanbanTasks.filter(t => !t.archived_at)
+    // Скрываем задачи прошлых циклов: archived_at, либо завершённые под сброшенным (pending) этапом
+    var _stPending = {}
+    ;(typeof trackerData !== 'undefined' ? trackerData : []).forEach(s => {
+      if ((s.status || 'pending') === 'pending') _stPending[s.stage_index] = true
+    })
+    kanbanTasks = kanbanTasks.filter(t => !(t.archived_at || ((t.done || t.kanban_status === 'done') && _stPending[t.stage_index])))
     // Sync: tasks without kanban_status get 'waiting', done tasks get 'done'
     kanbanTasks.forEach(t => {
       if (!t.kanban_status) t.kanban_status = t.done ? 'done' : 'waiting'
@@ -28359,15 +28363,36 @@ async function loadTasks() {
     const { data } = await sb.from('stage_tasks')
       .select('*').eq('project_id', currentProject.id)
       .order('created_at', { ascending: true })
+
+    // Этапы, сброшенные в «Ожидает» — под ними завершённые задачи = прошлый цикл
+    const stPending = {}
+    ;(typeof trackerData !== 'undefined' ? trackerData : []).forEach(s => {
+      if ((s.status || 'pending') === 'pending') stPending[s.stage_index] = true
+    })
+    const isPastCycle = t => !!t.archived_at || ((t.done || t.kanban_status === 'done') && stPending[t.stage_index])
+
     tasksData = {}
+    let anyPast = false
+    const backfill = []
     ;(data || []).forEach(t => {
-      if (t.archived_at) return  // задачи прошлых циклов не показываем в трекере
+      if (isPastCycle(t)) {
+        anyPast = true
+        if (!t.archived_at) backfill.push(t.id)   // пометить как архив для «Прошлых циклов» / возврата
+        return
+      }
       if (!tasksData[t.stage_index]) tasksData[t.stage_index] = []
       tasksData[t.stage_index].push(t)
     })
-    // Кнопка «Прошлые циклы» — только если есть архивные задачи
+
+    // Ленивый бэкфилл: проставляем archived_at найденным «сиротам» прошлого цикла
+    if (backfill.length) {
+      try { await sb.rpc('run_migration', { sql: "ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS archived_at timestamptz;" }) } catch(e) {}
+      try { await sb.from('stage_tasks').update({ archived_at: new Date().toISOString() }).in('id', backfill) } catch(e) {}
+    }
+
+    // Кнопка «Прошлые циклы» — только если есть скрытые задачи прошлого цикла
     var _pcBtn = g('btn-past-cycles')
-    if (_pcBtn) _pcBtn.style.display = (data || []).some(t => t.archived_at) ? 'inline-flex' : 'none'
+    if (_pcBtn) _pcBtn.style.display = anyPast ? 'inline-flex' : 'none'
   } catch(e) { console.warn('Tasks load failed (table may not exist yet):', e.message) }
 }
 
@@ -39039,7 +39064,8 @@ window.switchDashTab = function(tab, btn) {
 
   window.pcRestoreTask = async function (id) {
     try {
-      await sb.from('stage_tasks').update({ archived_at: null }).eq('id', id);
+      // Возврат = задача снова открыта в текущем цикле (иначе правило «done под pending-этапом» спрячет её опять)
+      await sb.from('stage_tasks').update({ archived_at: null, done: false, kanban_status: 'waiting', done_at: null }).eq('id', id);
     } catch (e) { if (typeof showToast === 'function') showToast('Ошибка возврата задачи', 'error'); return; }
     if (typeof showToast === 'function') showToast('Задача возвращена в текущий цикл', 'ok');
     if (typeof loadTasks === 'function' && typeof renderTracker === 'function') { await loadTasks(); renderTracker(); }
