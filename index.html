@@ -38932,4 +38932,18 @@ window.switchDashTab = function(tab, btn) {
 }
 .apl-hero-num, .stat-val { letter-spacing: -.03em; }
 </style>
+
+<style id="dtr-kb-card-skin">
+/* Карточки канбана — подгонка под утверждённый макет (канбан видит только агентство) */
+.kb-card-active { border-color: rgba(184,146,58,.4); }
+.kb-card-active .kb-timer-live {
+  background: transparent; border-color: transparent;
+  color: var(--a2); font-size: 17px; font-weight: 700;
+  padding: 2px 0; min-width: 0; letter-spacing: .04em;
+}
+.kb-card-active .kb-timer-live-dot { background: var(--a2); }
+.kb-card-done .kb-card-title { text-decoration: line-through; color: var(--txt3); }
+.kb-card-done .kb-pri-badge { display: none; }
+.kb-card-done .kb-move-btn { border-color: rgba(255,255,255,.16); border-radius: 8px; }
+</style>
 </html>
