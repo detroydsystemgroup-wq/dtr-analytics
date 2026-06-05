@@ -20732,15 +20732,25 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
       </div>
 
       <div style="padding-top:20px;">
-      <!-- TAB BAR + кнопка добавить -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-<div style="display:flex;gap:2px;background:var(--bg4);border:1px solid var(--brd);border-radius:9px;padding:3px;">
-        <button id="tt-btn-employees" onclick="switchTeamTab('employees',this)" class="sv-pill sv-pill-active">Сотрудники</button>
-        <button id="tt-btn-workload" onclick="switchTeamTab('workload',this)" class="sv-pill">Нагрузка по сотрудникам</button>
-        <button id="tt-btn-depts" onclick="switchTeamTab('depts',this)" class="sv-pill">Эффективность отделов</button>
+      <!-- TAB BAR + ПОИСК + кнопка добавить -->
+      <div style="display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;">
+        <!-- Вкладки -->
+        <div style="display:flex;gap:2px;background:var(--bg4);border:1px solid var(--brd);border-radius:9px;padding:3px;flex-shrink:0;">
+          <button id="tt-btn-employees" onclick="switchTeamTab('employees',this)" class="sv-pill sv-pill-active">Сотрудники</button>
+          <button id="tt-btn-workload" onclick="switchTeamTab('workload',this)" class="sv-pill">Нагрузка по сотрудникам</button>
+          <button id="tt-btn-depts" onclick="switchTeamTab('depts',this)" class="sv-pill">Эффективность отделов</button>
         </div>
+        <!-- Поиск -->
+        <div style="flex:1;min-width:180px;max-width:280px;position:relative;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--txt3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none;flex-shrink:0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="team-search-inp" type="text" placeholder="Поиск сотрудника или отдела…" autocomplete="off"
+            oninput="teamSearchFilter(this.value)"
+            style="width:100%;box-sizing:border-box;background:var(--bg4);border:1px solid var(--brd);border-radius:9px;padding:8px 32px 8px 32px;color:var(--txt);font-family:var(--font-display);font-size:12px;outline:none;transition:border-color .18s;"
+            onfocus="this.style.borderColor='rgba(184,146,58,.4)'"
+            onblur="this.style.borderColor='var(--brd)'">
+          <button id="team-search-clear" onclick="teamSearchClear()" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--txt3);font-size:14px;line-height:1;padding:2px 4px;">✕</button>
         </div>
+        <!-- Кнопка добавить -->
         <button onclick="openAddTeamMember()" style="display:flex;align-items:center;gap:6px;background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.25);border-radius:7px;padding:8px 16px;color:#c9a84c;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.04em;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;" onmouseover="this.style.background='rgba(184,146,58,.2)'" onmouseout="this.style.background='rgba(184,146,58,.1)'">+ Добавить</button>
       </div>
 
@@ -40884,6 +40894,124 @@ window.switchDashTab = function(tab, btn) {
       }
     }
   };
+
+})();
+</script>
+
+<script id="dtr-team-search-js">
+/* ══ TEAM SEARCH — фильтр по имени / отделу / роли ══ */
+(function () {
+  'use strict';
+
+  var _query = '';
+
+  /* ── Нормализатор строки для нечёткого поиска ── */
+  function norm(s) {
+    return String(s || '').toLowerCase().trim();
+  }
+  function matches(s, q) {
+    return norm(s).indexOf(q) !== -1;
+  }
+
+  /* ── Показать/скрыть кнопку сброса ── */
+  function syncClear(q) {
+    var btn = document.getElementById('team-search-clear');
+    if (btn) btn.style.display = q ? 'block' : 'none';
+  }
+
+  /* ── Применить фильтр к таблице Эффективности сотрудников ── */
+  function filterEffTable(q) {
+    var body = document.getElementById('sv-efficiency-body');
+    if (!body) return;
+    /* Строки — прямые дочерние div с grid */
+    var rows = body.querySelectorAll('[style*="grid-template-columns"]');
+    var found = 0;
+    rows.forEach(function (row) {
+      /* Первая ячейка содержит имя */
+      var nameCell = row.querySelector('div');
+      var text = nameCell ? nameCell.textContent : row.textContent;
+      var show = !q || matches(text, q);
+      row.style.display = show ? '' : 'none';
+      if (show) found++;
+    });
+    /* Показываем «нет результатов» если ничего */
+    var noRes = document.getElementById('team-search-no-results');
+    if (!noRes && body.parentNode) {
+      noRes = document.createElement('div');
+      noRes.id = 'team-search-no-results';
+      noRes.style.cssText = 'display:none;padding:28px;text-align:center;font-family:var(--font-mono);font-size:12px;color:var(--txt3);letter-spacing:.06em;';
+      noRes.textContent = 'Ничего не найдено';
+      body.parentNode.appendChild(noRes);
+    }
+    if (noRes) noRes.style.display = (q && found === 0) ? '' : 'none';
+  }
+
+  /* ── Применить фильтр к таблице Нагрузки (team-workload-bars) ── */
+  function filterWorkload(q) {
+    var bars = document.getElementById('team-workload-bars');
+    if (!bars) return;
+    var rows = bars.querySelectorAll('[style*="grid-template-columns"]');
+    rows.forEach(function (row) {
+      var text = row.textContent;
+      row.style.display = (!q || matches(text, q)) ? '' : 'none';
+    });
+  }
+
+  /* ── Применить фильтр к карточкам Эффективности отделов (dept-eff-body) ── */
+  function filterDepts(q) {
+    var body = document.getElementById('dept-eff-body');
+    if (!body) return;
+    /* Карточки — прямые дочерние div */
+    var cards = body.children;
+    for (var i = 0; i < cards.length; i++) {
+      var text = cards[i].textContent;
+      cards[i].style.display = (!q || matches(text, q)) ? '' : 'none';
+    }
+  }
+
+  /* ── Главная функция фильтрации ── */
+  window.teamSearchFilter = function (val) {
+    _query = norm(val);
+    syncClear(_query);
+    filterEffTable(_query);
+    filterWorkload(_query);
+    filterDepts(_query);
+  };
+
+  /* ── Сброс ── */
+  window.teamSearchClear = function () {
+    var inp = document.getElementById('team-search-inp');
+    if (inp) { inp.value = ''; inp.focus(); }
+    _query = '';
+    syncClear('');
+    filterEffTable('');
+    filterWorkload('');
+    filterDepts('');
+  };
+
+  /* ── Сбрасываем поиск при переключении вкладки ── */
+  var _origSwitchTeam = window.switchTeamTab;
+  window.switchTeamTab = function (tab, btn) {
+    if (typeof _origSwitchTeam === 'function') _origSwitchTeam(tab, btn);
+    /* Если есть запрос — перефильтровываем новую вкладку */
+    if (_query) {
+      setTimeout(function () {
+        filterEffTable(_query);
+        filterWorkload(_query);
+        filterDepts(_query);
+      }, 80);
+    }
+  };
+
+  /* ── Keyboard shortcut: Escape сбрасывает поиск ── */
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      var inp = document.getElementById('team-search-inp');
+      if (inp && document.activeElement === inp) {
+        window.teamSearchClear();
+      }
+    }
+  });
 
 })();
 </script>
