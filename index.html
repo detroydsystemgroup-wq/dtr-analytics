@@ -20284,20 +20284,17 @@ html.light .mck-section.sec-smm{background:rgba(124,92,200,.06);border-color:rgb
               <div class="sv-section-sub">Скорость · Нагрузка · Возвраты · Velocity</div>
             </div>
           </div>
-          <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;">
-<div style="display:flex;gap:2px;background:var(--bg4);border:1px solid var(--brd);border-radius:9px;padding:3px;">
-            <button id="eff-scope-active" onclick="setEffScope('active', this)" class="sv-pill sv-pill-active">Только активные</button>
-            <button id="eff-scope-all" onclick="setEffScope('all', this)" class="sv-pill">Все проекты</button>
+          <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;">
+            <div style="display:flex;gap:2px;background:var(--bg4);border:1px solid var(--brd);border-radius:9px;padding:3px;">
+              <button id="eff-per-all" data-period="all" onclick="setEffPeriod('all',this)" class="sv-pill sv-pill-active">Всё время</button>
+              <button id="eff-per-month" data-period="month" onclick="setEffPeriod('month',this)" class="sv-pill">Этот месяц</button>
+              <button id="eff-per-prevmonth" data-period="prevmonth" onclick="setEffPeriod('prevmonth',this)" class="sv-pill">Прошлый месяц</button>
+              <button id="eff-per-30d" data-period="30d" onclick="setEffPeriod('30d',this)" class="sv-pill">30 дней</button>
             </div>
-          </div>
-        </div>
-        <div id="eff-period-bar" style="display:flex;gap:6px;align-items:center;padding:10px 14px 2px;flex-wrap:wrap;">
-          <span style="font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);margin-right:2px;">Период:</span>
-<div style="display:flex;gap:2px;background:var(--bg4);border:1px solid var(--brd);border-radius:9px;padding:3px;">
-          <button id="eff-per-all" data-period="all" onclick="setEffPeriod('all',this)" class="sv-pill sv-pill-active">Всё время</button>
-          <button id="eff-per-month" data-period="month" onclick="setEffPeriod('month',this)" class="sv-pill">Этот месяц</button>
-          <button id="eff-per-prevmonth" data-period="prevmonth" onclick="setEffPeriod('prevmonth',this)" class="sv-pill">Прошлый месяц</button>
-          <button id="eff-per-30d" data-period="30d" onclick="setEffPeriod('30d',this)" class="sv-pill">30 дней</button>
+            <div style="display:flex;gap:2px;background:var(--bg4);border:1px solid var(--brd);border-radius:9px;padding:3px;">
+              <button id="eff-scope-active" onclick="setEffScope('active', this)" class="sv-pill sv-pill-active">Только активные</button>
+              <button id="eff-scope-all" onclick="setEffScope('all', this)" class="sv-pill">Все проекты</button>
+            </div>
           </div>
         </div>
         <div id="eff-compare-strip" style="display:none;padding:8px 14px 0;"></div>
