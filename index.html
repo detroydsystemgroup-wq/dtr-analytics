@@ -20223,16 +20223,20 @@ html.light .mck-section.sec-smm{background:rgba(124,92,200,.06);border-color:rgb
             </div>
           </div>
           <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;">
-            <button id="eff-scope-active" onclick="setEffScope('active', this)" style="font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:7px;cursor:pointer;transition:all .15s;white-space:nowrap;background:var(--bg5,rgba(255,255,255,.07));border:none;color:var(--txt);box-shadow:0 1px 3px rgba(0,0,0,.35);">Только активные</button>
-            <button id="eff-scope-all" onclick="setEffScope('all', this)" style="font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:7px;cursor:pointer;transition:all .15s;white-space:nowrap;background:transparent;border:none;color:rgba(240,236,230,.35);">Все проекты</button>
+<div style="display:flex;gap:2px;background:var(--bg4);border:1px solid var(--brd);border-radius:9px;padding:3px;">
+            <button id="eff-scope-active" onclick="setEffScope('active', this)" class="sv-pill sv-pill-active">Только активные</button>
+            <button id="eff-scope-all" onclick="setEffScope('all', this)" class="sv-pill">Все проекты</button>
+            </div>
           </div>
         </div>
         <div id="eff-period-bar" style="display:flex;gap:6px;align-items:center;padding:10px 14px 2px;flex-wrap:wrap;">
           <span style="font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);margin-right:2px;">Период:</span>
-          <button id="eff-per-all" data-period="all" onclick="setEffPeriod('all',this)" style="font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:7px;cursor:pointer;transition:all .15s;white-space:nowrap;background:var(--bg5,rgba(255,255,255,.07));border:none;color:var(--txt);box-shadow:0 1px 3px rgba(0,0,0,.35);">Всё время</button>
-          <button id="eff-per-month" data-period="month" onclick="setEffPeriod('month',this)" style="font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:7px;cursor:pointer;transition:all .15s;white-space:nowrap;background:transparent;border:none;color:rgba(240,236,230,.35);">Этот месяц</button>
-          <button id="eff-per-prevmonth" data-period="prevmonth" onclick="setEffPeriod('prevmonth',this)" style="font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:7px;cursor:pointer;transition:all .15s;white-space:nowrap;background:transparent;border:none;color:rgba(240,236,230,.35);">Прошлый месяц</button>
-          <button id="eff-per-30d" data-period="30d" onclick="setEffPeriod('30d',this)" style="font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:7px;cursor:pointer;transition:all .15s;white-space:nowrap;background:transparent;border:none;color:rgba(240,236,230,.35);">30 дней</button>
+<div style="display:flex;gap:2px;background:var(--bg4);border:1px solid var(--brd);border-radius:9px;padding:3px;">
+          <button id="eff-per-all" data-period="all" onclick="setEffPeriod('all',this)" class="sv-pill sv-pill-active">Всё время</button>
+          <button id="eff-per-month" data-period="month" onclick="setEffPeriod('month',this)" class="sv-pill">Этот месяц</button>
+          <button id="eff-per-prevmonth" data-period="prevmonth" onclick="setEffPeriod('prevmonth',this)" class="sv-pill">Прошлый месяц</button>
+          <button id="eff-per-30d" data-period="30d" onclick="setEffPeriod('30d',this)" class="sv-pill">30 дней</button>
+          </div>
         </div>
         <div id="eff-compare-strip" style="display:none;padding:8px 14px 0;"></div>
         <div id="sv-efficiency-body" style="padding:0;overflow:hidden;border-radius:0 0 12px 12px;"></div>
@@ -20669,9 +20673,11 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
       <!-- TAB BAR + кнопка добавить -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button id="tt-btn-employees" onclick="switchTeamTab('employees',this)" style="font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:8px 16px;border-radius:8px;cursor:pointer;transition:all .15s;white-space:nowrap;background:var(--bg5,rgba(255,255,255,.07));border:none;color:var(--txt);box-shadow:0 1px 3px rgba(0,0,0,.35);border-bottom:2px solid var(--a2,#c9a84c);">Сотрудники</button>
-        <button id="tt-btn-workload" onclick="switchTeamTab('workload',this)" style="font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:8px 16px;border-radius:8px;cursor:pointer;transition:all .15s;white-space:nowrap;background:transparent;border:none;color:rgba(240,236,230,.35);">Нагрузка по сотрудникам</button>
-        <button id="tt-btn-depts" onclick="switchTeamTab('depts',this)" style="font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:8px 16px;border-radius:8px;cursor:pointer;transition:all .15s;white-space:nowrap;background:transparent;border:none;color:rgba(240,236,230,.35);">Эффективность отделов</button>
+<div style="display:flex;gap:2px;background:var(--bg4);border:1px solid var(--brd);border-radius:9px;padding:3px;">
+        <button id="tt-btn-employees" onclick="switchTeamTab('employees',this)" class="sv-pill sv-pill-active">Сотрудники</button>
+        <button id="tt-btn-workload" onclick="switchTeamTab('workload',this)" class="sv-pill">Нагрузка по сотрудникам</button>
+        <button id="tt-btn-depts" onclick="switchTeamTab('depts',this)" class="sv-pill">Эффективность отделов</button>
+        </div>
         </div>
         <button onclick="openAddTeamMember()" style="display:flex;align-items:center;gap:6px;background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.25);border-radius:7px;padding:8px 16px;color:#c9a84c;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.04em;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;" onmouseover="this.style.background='rgba(184,146,58,.2)'" onmouseout="this.style.background='rgba(184,146,58,.1)'">+ Добавить</button>
       </div>
@@ -38816,11 +38822,7 @@ function _effApplyScopeStyles() {
   [['eff-scope-active','active'], ['eff-scope-all','all']].forEach(function(pair){
     var b = document.getElementById(pair[0]);
     if (!b) return;
-    var on = scope === pair[1];
-    b.style.background = on ? 'var(--bg5,rgba(255,255,255,.07))' : 'transparent';
-    b.style.color      = on ? 'var(--txt)'                       : 'rgba(240,236,230,.35)';
-    b.style.boxShadow  = on ? '0 1px 3px rgba(0,0,0,.35)'       : 'none';
-    b.style.border     = 'none';
+    b.classList.toggle('sv-pill-active', scope === pair[1]);
   });
 }
 
@@ -38841,11 +38843,7 @@ function _effApplyPeriodStyles() {
   ['eff-per-all','eff-per-month','eff-per-prevmonth','eff-per-30d'].forEach(function(id){
     var b = document.getElementById(id);
     if (!b) return;
-    var on = b.getAttribute('data-period') === period;
-    b.style.background = on ? 'var(--bg5,rgba(255,255,255,.07))' : 'transparent';
-    b.style.color      = on ? 'var(--txt)'                       : 'rgba(240,236,230,.35)';
-    b.style.boxShadow  = on ? '0 1px 3px rgba(0,0,0,.35)'       : 'none';
-    b.style.border     = 'none';
+    b.classList.toggle('sv-pill-active', b.getAttribute('data-period') === period);
   });
 }
 
@@ -39850,11 +39848,7 @@ window.switchDashTab = function(tab, btn) {
       if (pane) pane.style.display = (t === tab) ? '' : 'none';
       var b = document.getElementById('tt-btn-' + t);
       if (b) {
-        var on = (t === tab);
-        b.style.background  = on ? 'var(--bg5,rgba(255,255,255,.07))' : 'transparent';
-        b.style.color       = on ? 'var(--txt)'                        : 'rgba(240,236,230,.35)';
-        b.style.boxShadow   = on ? '0 1px 3px rgba(0,0,0,.35)'        : 'none';
-        b.style.borderBottom= on ? '2px solid var(--a2,#c9a84c)'       : 'none';
+        b.classList.toggle('sv-pill-active', t === tab);
       }
     });
     if (tab === 'employees') {
