@@ -38577,98 +38577,9 @@ async function loadTeamPanel() {
   }
 
   if (barsEl) {
-    var sumP = memberLoad.reduce(function(s,r){return s+r.pending;},0);
-    var sumA = memberLoad.reduce(function(s,r){return s+r.active;},0);
-    var sumD = memberLoad.reduce(function(s,r){return s+r.completed;},0);
-
-    // ── DTR-style redesign ──
-    function dtrBar(r) {
-      var t = r.total || 1;
-      var pPct = Math.round(r.pending   / t * 100);
-      var aPct = Math.round(r.active    / t * 100);
-      var dPct = 100 - pPct - aPct;
-      var lbl  = r.active > 0  ? 'актив. '  + aPct + '%'
-               : r.pending > 0 ? 'ожид. '   + pPct + '%'
-               : 'готово 100%';
-      return '<div style="display:flex;align-items:center;gap:10px;padding-right:16px;">'
-        + '<div style="flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden;display:flex;">'
-          + (pPct > 0 ? '<div style="width:'+pPct+'%;height:100%;background:#b8923a;"></div>' : '')
-          + (aPct > 0 ? '<div style="width:'+aPct+'%;height:100%;background:#3ecf8e;"></div>' : '')
-          + (dPct > 0 ? '<div style="width:'+dPct+'%;height:100%;background:rgba(255,255,255,.15);"></div>' : '')
-        + '</div>'
-        + '<span style="font-family:var(--font-mono);font-size:9px;color:rgba(240,236,230,.28);white-space:nowrap;min-width:56px;text-align:right;">'+lbl+'</span>'
-      + '</div>';
-    }
-
-    function dtrNum(count, color, memberId, status) {
-      var clickable = count > 0 && memberId;
-      var clickAttr = clickable
-        ? ' onclick="openWorkloadDrill(\''+memberId+'\',\''+status+'\')" title="Показать задачи"'
-        : '';
-      var cur = clickable ? 'cursor:pointer;' : '';
-      var c   = count > 0 ? color : 'rgba(240,236,230,.15)';
-      return '<div'+clickAttr+' style="text-align:center;'+cur+'">'
-        + '<div style="font-size:18px;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1;color:'+c+';">'+(count>0?count:'—')+'</div>'
-        + (count > 0 ? '<div style="font-family:var(--font-mono);font-size:8px;letter-spacing:.06em;color:rgba(240,236,230,.2);margin-top:3px;text-transform:uppercase;">эт.</div>' : '')
-      + '</div>';
-    }
-
-    // Topbar
-    var hdr =
-      '<div style="display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid rgba(255,255,255,.05);">'
-        +'<div style="padding:16px 24px;text-align:center;border-right:1px solid rgba(255,255,255,.05);">'
-          +'<div style="font-size:26px;font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:#b8923a;">'+sumP+'</div>'
-          +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.25);margin-top:5px;">В ожидании</div>'
-        +'</div>'
-        +'<div style="padding:16px 24px;text-align:center;border-right:1px solid rgba(255,255,255,.05);">'
-          +'<div style="font-size:26px;font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:#3ecf8e;">'+sumA+'</div>'
-          +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.25);margin-top:5px;">В работе</div>'
-        +'</div>'
-        +'<div style="padding:16px 24px;text-align:center;">'
-          +'<div style="font-size:26px;font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:rgba(240,236,230,.2);">'+sumD+'</div>'
-          +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.25);margin-top:5px;">Завершено</div>'
-        +'</div>'
-      +'</div>'
-      // Заголовки колонок
-      +'<div style="display:grid;grid-template-columns:200px 1fr 100px 100px 100px 56px;padding:8px 20px;border-bottom:1px solid rgba(255,255,255,.05);">'
-        +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);">Сотрудник</div>'
-        +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);">Распределение</div>'
-        +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);text-align:center;">Ожидание</div>'
-        +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);text-align:center;">В работе</div>'
-        +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);text-align:center;">Готово</div>'
-        +'<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.22);text-align:right;">Итого</div>'
-      +'</div>';
-
-    var rows = memberLoad.map(function(r) {
-      var mc = r.m.color || '#b8923a';
-      var av = r.m.avatar_url
-        ? '<div style="width:36px;height:36px;border-radius:10px;overflow:hidden;border:1.5px solid '+mc+'55;flex-shrink:0;"><img src="'+r.m.avatar_url+'" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
-        : '<div style="width:36px;height:36px;border-radius:10px;background:'+mc+'18;border:1.5px solid '+mc+'44;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:'+mc+';flex-shrink:0;">'+r.m.name[0].toUpperCase()+'</div>';
-
-      var dominantStatus = r.active > 0 ? 'active' : r.pending > 0 ? 'pending' : 'completed';
-
-      var _wsk = (r.m.name + ' ' + (r.m.department||'')).toLowerCase();
-      return '<div data-team-row data-search="' + _wsk + '" '
-        +'onclick="openWorkloadDrill(\'' + r.m.id + '\',\'' + dominantStatus + '\')" '
-        +'onmouseenter="this.style.background=\'rgba(255,255,255,.025)\'" '
-        +'onmouseleave="this.style.background=\'transparent\'" '
-        +'style="display:grid;grid-template-columns:200px 1fr 100px 100px 100px 56px;padding:13px 20px;border-bottom:1px solid rgba(255,255,255,.04);align-items:center;cursor:pointer;transition:background .15s;">'
-        +'<div style="display:flex;align-items:center;gap:10px;">'
-          +av
-          +'<div>'
-            +'<div style="font-size:13px;font-weight:500;color:#f0ece6;letter-spacing:-.01em;">'+r.m.name+'</div>'
-            +'<div style="font-family:var(--font-mono);font-size:10px;color:rgba(240,236,230,.28);margin-top:2px;">'+r.total+' эт.</div>'
-          +'</div>'
-        +'</div>'
-        +dtrBar(r)
-        +dtrNum(r.pending,   '#b8923a',             r.m.id, 'pending')
-        +dtrNum(r.active,    '#3ecf8e',             r.m.id, 'active')
-        +dtrNum(r.completed, 'rgba(240,236,230,.4)', r.m.id, 'completed')
-        +'<div style="text-align:right;font-family:var(--font-mono);font-size:11px;color:rgba(240,236,230,.3);">'+r.total+'</div>'
-      +'</div>';
-    }).join('');
-
-    barsEl.innerHTML = hdr + rows;
+    window._wlData = { memberLoad: memberLoad };
+    window._wlFilters = window._wlFilters || { q:'', sort:'total' };
+    if (window._renderWorkload) window._renderWorkload();
   }
 }
 
@@ -40103,6 +40014,108 @@ window.switchDashTab = function(tab, btn) {
 })();
 </script>
 
+<script id="dtr-workload-mod-js">
+(function(){
+  // фильтр-бар стили (на случай, если вкладка «Сотрудники» ещё не открывалась)
+  if (!document.getElementById('effx-bar-style')) {
+    var st=document.createElement('style'); st.id='effx-bar-style';
+    st.textContent=
+      '.effx-fbar{display:flex;flex-direction:column;gap:0;padding:12px 14px;background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.008));}'
+    + '.effx-r1{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}'
+    + '.effx-search{position:relative;flex:1;min-width:200px;}'
+    + '.effx-search input{width:100%;box-sizing:border-box;background:var(--bg4);border:1px solid var(--brd);border-radius:9px;padding:9px 12px 9px 32px;color:var(--txt);font-family:var(--font-display);font-size:12px;outline:none;transition:border-color .18s;}'
+    + '.effx-search input:focus{border-color:rgba(184,146,58,.45);}'
+    + '.effx-search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none;}'
+    + '.effx-sel{appearance:none;-webkit-appearance:none;background:var(--bg4);border:1px solid var(--brd);border-radius:9px;padding:8px 28px 8px 11px;color:var(--txt);font-family:var(--font-mono);font-size:11px;cursor:pointer;outline:none;}'
+    + '.effx-sel:hover{border-color:rgba(184,146,58,.35);}'
+    + '.effx-meta{margin-left:auto;display:flex;align-items:center;gap:11px;}'
+    + '.effx-cnt{font-family:var(--font-mono);font-size:10.5px;color:var(--txt3);}';
+    document.head.appendChild(st);
+  }
+
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+  function bar(r){
+    var t=r.total||1, pP=Math.round(r.pending/t*100), aP=Math.round(r.active/t*100), dP=100-pP-aP;
+    var lbl = r.active>0?'актив. '+aP+'%' : r.pending>0?'ожид. '+pP+'%' : 'готово 100%';
+    return '<div style="display:flex;align-items:center;gap:10px;padding-right:16px;">'
+      +'<div style="flex:1;height:5px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden;display:flex;">'
+        +(pP>0?'<div style="width:'+pP+'%;height:100%;background:#b8923a;"></div>':'')
+        +(aP>0?'<div style="width:'+aP+'%;height:100%;background:#3ecf8e;"></div>':'')
+        +(dP>0?'<div style="width:'+dP+'%;height:100%;background:rgba(255,255,255,.15);"></div>':'')
+      +'</div>'
+      +'<span style="font-family:var(--font-mono);font-size:9px;color:var(--txt3);white-space:nowrap;min-width:62px;text-align:right;">'+lbl+'</span>'
+    +'</div>';
+  }
+  function num(count,color,memberId,status){
+    var clickable=count>0&&memberId;
+    var attr=clickable?' onclick="event.stopPropagation();openWorkloadDrill(\''+memberId+'\',\''+status+'\')" title="Показать задачи" style="cursor:pointer;text-align:center;"':' style="text-align:center;"';
+    var c=count>0?color:'rgba(240,236,230,.15)';
+    return '<div'+attr+'><div style="font-family:var(--font-mono);font-size:16px;font-variant-numeric:tabular-nums;line-height:1;color:'+c+';">'+(count>0?count:'—')+'</div>'+(count>0?'<div style="font-family:var(--font-mono);font-size:8px;letter-spacing:.06em;color:var(--txt3);margin-top:3px;text-transform:uppercase;">эт.</div>':'')+'</div>';
+  }
+  function avatarEl(m){
+    var mc=m.color||'#b8923a';
+    return m.avatar_url
+      ? '<div style="width:36px;height:36px;border-radius:9px;overflow:hidden;border:1.5px solid '+mc+'55;flex-shrink:0;"><img src="'+m.avatar_url+'" style="width:100%;height:100%;object-fit:cover;"></div>'
+      : '<div style="width:36px;height:36px;border-radius:9px;background:'+mc+'18;border:1.5px solid '+mc+'44;display:flex;align-items:center;justify-content:center;font-size:14px;color:'+mc+';flex-shrink:0;">'+m.name[0].toUpperCase()+'</div>';
+  }
+
+  window.wlxSearch=function(v){ window._wlFilters.q=v; var i=document.getElementById('wlx-q'); if(i&&i.value!==v)i.value=v; window._renderWorkload(); };
+  window.wlxSort=function(v){ window._wlFilters.sort=v; window._renderWorkload(); };
+
+  window._renderWorkload=function(){
+    var el=document.getElementById('team-workload-bars'); if(!el) return;
+    var data=(window._wlData&&window._wlData.memberLoad)||[];
+    var F=window._wlFilters=window._wlFilters||{q:'',sort:'total'};
+    var sumP=0,sumA=0,sumD=0; data.forEach(function(r){sumP+=r.pending;sumA+=r.active;sumD+=r.completed;});
+
+    var list=data.filter(function(r){ if(!F.q) return true; var h=(r.m.name+' '+(r.m.department||'')).toLowerCase(); return h.indexOf(F.q.toLowerCase())>=0; });
+    if(F.sort==='total') list.sort(function(a,b){return b.total-a.total;});
+    else if(F.sort==='active') list.sort(function(a,b){return b.active-a.active;});
+    else if(F.sort==='pending') list.sort(function(a,b){return b.pending-a.pending;});
+    else if(F.sort==='name') list.sort(function(a,b){return a.m.name.localeCompare(b.m.name,'ru');});
+
+    var grid='200px 1fr 100px 100px 100px 56px';
+    var fbar='<div class="effx-fbar" style="border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:14px;">'
+      +'<div class="effx-r1">'
+        +'<div class="effx-search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--txt3)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+          +'<input id="wlx-q" type="text" placeholder="Поиск по сотруднику или отделу…" autocomplete="off" value="'+esc(F.q)+'" oninput="wlxSearch(this.value)"></div>'
+        +'<select class="effx-sel" id="wlx-sort" onchange="wlxSort(this.value)">'
+          +['total:По загрузке','active:По активным','pending:По ожиданию','name:По имени'].map(function(o){var p=o.split(':');return '<option value="'+p[0]+'"'+(p[0]===F.sort?' selected':'')+'>'+p[1]+'</option>';}).join('')
+        +'</select>'
+        +'<div class="effx-meta"><span class="effx-cnt">'+list.length+' из '+data.length+' сотр.</span></div>'
+      +'</div></div>';
+
+    var summary='<div style="display:grid;grid-template-columns:repeat(3,1fr);border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;margin-bottom:8px;">'
+      +'<div style="padding:16px 24px;text-align:center;border-right:1px solid rgba(255,255,255,.06);"><div style="font-family:\'Bebas Neue\',sans-serif;font-size:32px;line-height:.9;color:#b8923a;font-variant-numeric:tabular-nums;">'+sumP+'</div><div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--txt3);margin-top:6px;">В ожидании</div></div>'
+      +'<div style="padding:16px 24px;text-align:center;border-right:1px solid rgba(255,255,255,.06);"><div style="font-family:\'Bebas Neue\',sans-serif;font-size:32px;line-height:.9;color:#3ecf8e;font-variant-numeric:tabular-nums;">'+sumA+'</div><div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--txt3);margin-top:6px;">В работе</div></div>'
+      +'<div style="padding:16px 24px;text-align:center;"><div style="font-family:\'Bebas Neue\',sans-serif;font-size:32px;line-height:.9;color:rgba(240,236,230,.45);font-variant-numeric:tabular-nums;">'+sumD+'</div><div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--txt3);margin-top:6px;">Завершено</div></div>'
+    +'</div>';
+
+    var legend='<div style="display:flex;gap:16px;align-items:center;padding:0 4px 12px;font-family:var(--font-mono);font-size:9px;letter-spacing:.04em;color:var(--txt3);">'
+      +'<span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:5px;border-radius:2px;background:#b8923a;"></span>Ожидание</span>'
+      +'<span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:5px;border-radius:2px;background:#3ecf8e;"></span>В работе</span>'
+      +'<span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:5px;border-radius:2px;background:rgba(255,255,255,.15);"></span>Готово</span>'
+    +'</div>';
+
+    var tbl='<div style="border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;">';
+    tbl+='<div style="display:grid;grid-template-columns:'+grid+';padding:9px 20px;border-bottom:1px solid rgba(255,255,255,.06);font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3);">'
+      +'<div>Сотрудник</div><div>Распределение</div><div style="text-align:center;">Ожидание</div><div style="text-align:center;">В работе</div><div style="text-align:center;">Готово</div><div style="text-align:right;">Итого</div></div>';
+    if(!list.length){ tbl+='<div style="padding:36px;text-align:center;font-family:var(--font-mono);font-size:12px;color:var(--txt3);">Ничего не найдено.</div>'; }
+    else tbl+=list.map(function(r){
+      var dom=r.active>0?'active':r.pending>0?'pending':'completed';
+      return '<div onclick="openWorkloadDrill(\''+r.m.id+'\',\''+dom+'\')" onmouseenter="this.style.background=\'rgba(184,146,58,.035)\'" onmouseleave="this.style.background=\'transparent\'" style="display:grid;grid-template-columns:'+grid+';padding:13px 20px;border-top:1px solid rgba(255,255,255,.05);align-items:center;cursor:pointer;transition:background .14s;">'
+        +'<div style="display:flex;align-items:center;gap:10px;">'+avatarEl(r.m)+'<div><div style="font-size:13px;color:var(--txt);">'+r.m.name+'</div><div style="font-family:var(--font-mono);font-size:10px;color:var(--txt3);margin-top:2px;">'+r.total+' эт.</div></div></div>'
+        +bar(r)+num(r.pending,'#b8923a',r.m.id,'pending')+num(r.active,'#3ecf8e',r.m.id,'active')+num(r.completed,'rgba(240,236,230,.4)',r.m.id,'completed')
+        +'<div style="text-align:right;font-family:var(--font-mono);font-size:13px;color:var(--txt2);">'+r.total+'</div>'
+      +'</div>';
+    }).join('');
+    tbl+='</div>';
+
+    el.innerHTML=fbar+summary+legend+tbl;
+  };
+})();
+</script>
+
 <script id="dtr-dept-eff-js">
 (function () {
   function esc6(s){ return (typeof esc==='function')?esc(s):String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
@@ -40114,7 +40127,7 @@ window.switchDashTab = function(tab, btn) {
   }
   function median(arr){ if(!arr.length) return null; var a=arr.slice().sort(function(x,y){return x-y;}); var m=Math.floor(a.length/2); return a.length%2 ? a[m] : (a[m-1]+a[m])/2; }
   function pctl(arr,p){ if(!arr.length) return null; var a=arr.slice().sort(function(x,y){return x-y;}); return a[Math.min(a.length-1, Math.floor(p/100*a.length))]; }
-  function fmtDays(d){ if(d==null) return '—'; if(d<1) return Math.round(d*24)+'ч'; return (Math.round(d*10)/10).toString().replace('.',',')+'д'; }
+  function fmtDays(d){ if(d==null) return '—'; if(d<1/24) return '< 1 ч'; if(d<1) return Math.round(d*24)+'ч'; return (Math.round(d*10)/10).toString().replace('.',',')+'д'; }
   function fmtMin(m){ if(m==null) return '—'; if(m<60) return Math.round(m)+'м'; return Math.floor(m/60)+'ч'+(m%60?' '+Math.round(m%60)+'м':''); }
   function speedColor(d){ return d==null?'var(--txt3)':d<=2?'var(--green)':d<=5?'var(--amber,#c9a84c)':'var(--red)'; }
   function reworkColor(r){ return r==null?'var(--txt3)':r<=5?'var(--green)':r<=15?'var(--amber,#c9a84c)':'var(--red)'; }
@@ -40187,6 +40200,7 @@ window.switchDashTab = function(tab, btn) {
     var medRaw = s.medCyc;
     var medNum, medUnit;
     if (medRaw===null) { medNum='—'; medUnit=''; }
+    else if (medRaw<1/24) { medNum='< 1'; medUnit='ч'; }
     else if (medRaw<1) { medNum=String(Math.round(medRaw*24)); medUnit='ч'; }
     else { medNum=(Math.round(medRaw*10)/10).toString().replace('.',','); medUnit='д'; }
 
@@ -40332,10 +40346,54 @@ window.switchDashTab = function(tab, btn) {
 
     var now30 = Date.now() - 30*86400000;
     if (!order.length) { body.innerHTML = '<div style="text-align:center;color:var(--txt3);font-size:12px;padding:30px 0;">Нет отделов.</div>'; return; }
-    var cards = order.map(function(d){ return deptBlock(d, groups[d].mem, groups[d].byMember, now30); }).join('');
+
+    // готовим записи + метрики для фильтра/сортировки
+    window._deptNow30 = now30;
+    window._deptBlockFn = deptBlock;
+    window._deptEntries = order.map(function(d){
+      var g = groups[d];
+      var allTasks = []; g.mem.forEach(function(m){ if(g.byMember[m.id]) allTasks = allTasks.concat(g.byMember[m.id]); });
+      var s = computeStats(allTasks, now30);
+      var sp = s.medCyc!=null ? Math.max(0,Math.min(100,Math.round((1-s.medCyc/10)*100))) : null;
+      var ql = s.rework!=null ? (100-s.rework) : null;
+      var eff = (sp!==null&&ql!==null) ? Math.round(sp*0.5+ql*0.5) : (sp!==null?sp:(ql!==null?ql:null));
+      return { name:d, mem:g.mem, byMember:g.byMember, medCyc:s.medCyc, rework:s.rework, effScore:eff };
+    });
+    window._deptFilters = window._deptFilters || { q:'', sort:'eff' };
+
+    var F = window._deptFilters;
+    var bar = '<div class="effx-fbar" style="border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:14px;">'
+      + '<div class="effx-r1">'
+        + '<div class="effx-search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--txt3)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+          + '<input id="deptx-q" type="text" placeholder="Поиск по отделу или сотруднику…" autocomplete="off" value="' + (F.q||'').replace(/"/g,'&quot;') + '" oninput="deptxSearch(this.value)"></div>'
+        + '<select class="effx-sel" id="deptx-sort" onchange="deptxSort(this.value)">'
+          + ['eff:По эффективности','cycle:По циклу','rework:По браку','name:По названию'].map(function(o){var p=o.split(':');return '<option value="'+p[0]+'"'+(p[0]===F.sort?' selected':'')+'>'+p[1]+'</option>';}).join('')
+        + '</select>'
+        + '<div class="effx-meta"><span class="effx-cnt" id="deptx-cnt"></span></div>'
+      + '</div></div>';
+
     body.innerHTML =
       '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(240,236,230,.18);margin-bottom:12px;">Эффективность отделов · атрибуция через ответственного за этап</div>' +
-      '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">' + cards + '</div>';
+      bar + '<div id="dept-eff-cards-grid"></div>';
+    window._renderDeptCards();
+  };
+
+  window.deptxSearch = function(v){ window._deptFilters.q=v; var i=document.getElementById('deptx-q'); if(i&&i.value!==v)i.value=v; window._renderDeptCards(); };
+  window.deptxSort = function(v){ window._deptFilters.sort=v; window._renderDeptCards(); };
+  window._renderDeptCards = function(){
+    var el = document.getElementById('dept-eff-cards-grid'); if(!el) return;
+    var entries = window._deptEntries||[]; var F = window._deptFilters||{q:'',sort:'eff'};
+    var list = entries.filter(function(e){ if(!F.q) return true; var h=(e.name+' '+e.mem.map(function(m){return m.name;}).join(' ')).toLowerCase(); return h.indexOf(F.q.toLowerCase())>=0; });
+    var nz=function(v,big){ return (v===null||v===undefined)?(big?-Infinity:Infinity):v; };
+    if(F.sort==='eff') list.sort(function(a,b){return nz(b.effScore,true)-nz(a.effScore,true);});
+    else if(F.sort==='cycle') list.sort(function(a,b){return nz(a.medCyc,false)-nz(b.medCyc,false);});
+    else if(F.sort==='rework') list.sort(function(a,b){return nz(a.rework,false)-nz(b.rework,false);});
+    else if(F.sort==='name') list.sort(function(a,b){return a.name.localeCompare(b.name,'ru');});
+    var cards = list.map(function(e){ return window._deptBlockFn(e.name, e.mem, e.byMember, window._deptNow30); }).join('');
+    el.innerHTML = list.length
+      ? '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">' + cards + '</div>'
+      : '<div style="text-align:center;color:var(--txt3);font-size:12px;padding:30px 0;font-family:var(--font-mono);">Ничего не найдено.</div>';
+    var cnt=document.getElementById('deptx-cnt'); if(cnt) cnt.textContent = list.length + ' из ' + entries.length;
   };
 })();
 </script>
