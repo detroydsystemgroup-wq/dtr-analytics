@@ -20715,17 +20715,17 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
         </div>
         <div class="apl-hero-divider"></div>
         <div class="apl-hero-card">
-          <div class="apl-hero-eyebrow">VELOCITY (30 ДНЕЙ)</div>
-          <div class="apl-hero-num" id="tm-hero-vel" style="color:var(--cyan);">—</div>
-          <div class="apl-hero-sub">задач закрыто</div>
+          <div class="apl-hero-eyebrow">СР. ЭФФЕКТ. СОТРУДНИКОВ</div>
+          <div class="apl-hero-num" id="tm-hero-vel" style="color:var(--green);">—</div>
+          <div class="apl-hero-sub" id="tm-hero-vel-sub">по сотрудникам</div>
           <div class="apl-hero-rule"></div>
           <div class="apl-hero-foot" id="tm-hero-vel-foot">—</div>
         </div>
         <div class="apl-hero-divider"></div>
         <div class="apl-hero-card">
-          <div class="apl-hero-eyebrow">СР. ЭФФЕКТИВНОСТЬ</div>
+          <div class="apl-hero-eyebrow">СР. ЭФФЕКТ. ОТДЕЛОВ</div>
           <div class="apl-hero-num" id="tm-hero-eff" style="color:var(--green);">—</div>
-          <div class="apl-hero-sub" id="tm-hero-eff-sub">по команде</div>
+          <div class="apl-hero-sub" id="tm-hero-eff-sub">по отделам</div>
           <div class="apl-hero-rule"></div>
           <div class="apl-hero-foot" id="tm-hero-eff-foot">—</div>
         </div>
@@ -38486,12 +38486,11 @@ async function loadTeamPanel() {
       var cache = window._efficiencyCache || {};
       var ids = Object.keys(cache);
       var allMembers = ids.length;
-      var cycles = [], vel30 = 0, effScores = [];
+      var cycles = [], effScores = [];
       ids.forEach(function(id) {
         var c = cache[id];
         if (!c) return;
         if (c.avgDays != null) cycles.push(c.avgDays);
-        vel30 += (c.done30 || 0);
         if (c.effScore != null) effScores.push(c.effScore);
       });
       // Медиана цикла
@@ -38500,30 +38499,55 @@ async function loadTeamPanel() {
         var sc = cycles.slice().sort(function(a,b){return a-b;});
         medCycle = sc.length % 2 ? sc[Math.floor(sc.length/2)] : (sc[sc.length/2-1]+sc[sc.length/2])/2;
       }
-      // Ср. эффективность
+      // Ср. эффективность сотрудников
       var avgEff = effScores.length ? Math.round(effScores.reduce(function(s,v){return s+v;},0)/effScores.length) : null;
-      var effColor = avgEff == null ? 'var(--a2)' : avgEff >= 75 ? 'var(--green)' : avgEff >= 50 ? 'var(--amber)' : 'var(--red)';
+      var effColor = avgEff == null ? 'var(--txt3)' : avgEff >= 75 ? 'var(--green)' : avgEff >= 50 ? 'var(--amber)' : 'var(--red)';
       var cycleColor = medCycle == null ? 'var(--green)' : medCycle <= 2 ? 'var(--green)' : medCycle <= 5 ? 'var(--amber)' : 'var(--red)';
+
+      // Ср. эффективность отделов — считаем через dept → members → cache
+      var depts = window._departments || [];
+      var membersArr = members || [];
+      var deptScores = [];
+      if (depts.length) {
+        depts.forEach(function(dept) {
+          var deptMembers = membersArr.filter(function(m){ return m.department === dept; });
+          var scores = deptMembers.map(function(m){ return cache[m.id] ? cache[m.id].effScore : null; }).filter(function(s){ return s != null; });
+          if (scores.length) {
+            var avg = Math.round(scores.reduce(function(s,v){return s+v;},0)/scores.length);
+            deptScores.push(avg);
+          }
+        });
+      }
+      // Fallback: если отделов нет — берём среднее по всем сотрудникам как раньше
+      var avgDeptEff = deptScores.length ? Math.round(deptScores.reduce(function(s,v){return s+v;},0)/deptScores.length) : avgEff;
+      var deptEffColor = avgDeptEff == null ? 'var(--txt3)' : avgDeptEff >= 75 ? 'var(--green)' : avgDeptEff >= 50 ? 'var(--amber)' : 'var(--red)';
+
       function setT(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; }
       function setC(id, c) { var el = document.getElementById(id); if (el) el.style.color = c; }
-      // Сотрудники
+
+      // Карточка 1: Сотрудников
       setT('tm-hero-count', allMembers || members.length);
       setT('tm-hero-count-sub', 'в команде');
       setT('tm-hero-count-foot', members.length + ' сотр. · ' + stages.length + ' этапов');
-      // Цикл
+
+      // Карточка 2: Цикл задачи
       var cycTxt = medCycle == null ? '—' : medCycle < 1 ? Math.round(medCycle*24)+'ч' : medCycle.toFixed(1).replace('.',',')+' д';
       setT('tm-hero-cycle', cycTxt);
       setC('tm-hero-cycle', cycleColor);
       setT('tm-hero-cycle-sub', medCycle == null ? 'нет данных' : medCycle <= 2 ? 'высокий темп' : medCycle <= 5 ? 'ровный темп' : 'медленно');
       setT('tm-hero-cycle-foot', cycles.length + ' сотр. с данными');
-      // Velocity
-      setT('tm-hero-vel', vel30 || '—');
-      setT('tm-hero-vel-foot', 'за 7 дней: ' + ids.reduce(function(s,id){return s+(cache[id]?cache[id].done7||0:0);},0));
-      // Эффективность
-      setT('tm-hero-eff', avgEff != null ? avgEff + '%' : '—');
-      setC('tm-hero-eff', effColor);
-      setT('tm-hero-eff-sub', avgEff == null ? 'нет данных' : avgEff >= 75 ? 'отлично' : avgEff >= 50 ? 'в норме' : 'требует внимания');
-      setT('tm-hero-eff-foot', effScores.length + ' из ' + members.length + ' сотр.');
+
+      // Карточка 3: Ср. эффективность сотрудников
+      setT('tm-hero-vel', avgEff != null ? avgEff + '%' : '—');
+      setC('tm-hero-vel', effColor);
+      setT('tm-hero-vel-sub', avgEff == null ? 'нет данных' : avgEff >= 75 ? 'отлично' : avgEff >= 50 ? 'в норме' : 'требует внимания');
+      setT('tm-hero-vel-foot', effScores.length + ' из ' + members.length + ' сотр.');
+
+      // Карточка 4: Ср. эффективность отделов
+      setT('tm-hero-eff', avgDeptEff != null ? avgDeptEff + '%' : '—');
+      setC('tm-hero-eff', deptEffColor);
+      setT('tm-hero-eff-sub', deptScores.length ? deptScores.length + ' отд. с данными' : 'нет отделов');
+      setT('tm-hero-eff-foot', deptScores.length ? 'лучший: ' + Math.max.apply(null,deptScores) + '% · хуже: ' + Math.min.apply(null,deptScores) + '%' : 'настройте отделы');
     })();
   }
 
