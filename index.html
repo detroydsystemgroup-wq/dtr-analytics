@@ -11723,7 +11723,8 @@ select option:checked {
   background: var(--bg4);
   border: 1px solid var(--brd);
   border-radius: 9px;
-  padding: 3px
+  padding: 3px;
+  transition: border-color .2s ease;
 }
 
 .dl-view2-btn {
@@ -11737,7 +11738,7 @@ select option:checked {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all .15s
+  transition: background .22s ease, color .22s ease, transform .12s ease;
 }
 
 .dl-view2-btn:hover {
@@ -11745,9 +11746,14 @@ select option:checked {
   background: rgba(255,255,255,.04)
 }
 
+.dl-view2-btn:active {
+  transform: scale(.9);
+}
+
 .dl-view2-btn.dl-view-active {
   background: rgba(184,146,58,.14);
-  color: var(--a3)
+  color: var(--a3);
+  box-shadow: 0 0 0 1px rgba(184,146,58,.2) inset;
 }
 
 .dl-reset2 {
@@ -15550,8 +15556,9 @@ button, a, [role="button"],
   font-weight: 500;
   color: var(--txt3);
   cursor: pointer;
-  transition: all .15s;
-  white-space: nowrap
+  transition: background .22s ease, color .22s ease, box-shadow .22s ease, transform .12s ease;
+  white-space: nowrap;
+  position: relative;
 }
 
 .sv-pill:hover {
@@ -15561,7 +15568,12 @@ button, a, [role="button"],
 
 .sv-pill-active {
   background: rgba(184,146,58,.14);
-  color: var(--a3)
+  color: var(--a3);
+  box-shadow: 0 0 0 1px rgba(184,146,58,.25) inset;
+}
+
+.sv-pill:active {
+  transform: scale(.96);
 }
 
 .sv-proj-table {
@@ -18011,6 +18023,56 @@ html body main.cc-main.smm-fullscreen {
 
 /* Onboarding tooltip toggle — hide in report */
 #ob-toggle { display: none !important; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   GLOBAL — плавные переходы для всех интерактивных элементов
+   ═══════════════════════════════════════════════════════════════════ */
+.dash-tab {
+  transition: background .22s ease, color .22s ease, box-shadow .22s ease !important;
+}
+.dash-tab.dt-active {
+  transition: background .22s ease, color .22s ease, box-shadow .22s ease !important;
+}
+.dash-tab:active { transform: scale(.97); }
+
+/* pp-tab плавный тумблер */
+.pp-tab {
+  transition: background .22s ease, color .22s ease, border-color .22s ease !important;
+}
+.pp-tab:active { transform: scale(.97); }
+
+/* Dept view buttons */
+#dept-view-cards, #dept-view-org {
+  transition: background .22s ease, color .22s ease !important;
+}
+
+/* Все кнопки с onclick через .sv-pill — уже покрыты выше */
+
+/* Аватарки сотрудников — квадратные с мягкими углами (override) */
+.team-member-avatar {
+  border-radius: 10px !important;
+}
+
+/* Принудительно квадратные все аватарки в таблицах команды и нагрузки */
+#sv-workload-v2 img,
+#sv-efficiency-body img,
+#sv-workload-v2 [style*="border-radius:50%"],
+#sv-efficiency-body [style*="border-radius:50%"],
+#team-workload-bars img,
+#team-members-list img {
+  border-radius: 10px !important;
+}
+#sv-workload-v2 div[style*="border-radius:50%"],
+#team-workload-bars div[style*="border-radius:50%"],
+#sv-efficiency-body div[style*="border-radius:50%"] {
+  border-radius: 10px !important;
+}
+
+/* Hover эффект строк в таблице — плавнее */
+.sv-proj-tr,
+[onmouseenter] {
+  transition: background .18s ease;
+}
 
 /* ═══════════════════════════════════════════════════════════════════
    ORG-CHART — визуальный редактор организационной структуры
@@ -22369,7 +22431,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
       <div class="hero-compare">
         <div class="hb before">
           <div class="hb-tag">
-            <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:rgba(240,236,230,.07);border:1px solid rgba(240,236,230,.18);flex-shrink:0;">
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:8px;background:rgba(240,236,230,.07);border:1px solid rgba(240,236,230,.18);flex-shrink:0;">
               <span style="width:7px;height:7px;border-radius:50%;background:rgba(240,236,230,.6);display:block;"></span>
             </span>
             <span id="lbl-b" style="font-size:13px;font-weight:600;letter-spacing:-.01em;color:rgba(240,236,230,.85);text-transform:none;">Период 1</span>
@@ -22386,7 +22448,7 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
         </div>
         <div class="hb during">
           <div class="hb-tag">
-            <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:rgba(184,146,58,.15);border:1px solid rgba(184,146,58,.45);flex-shrink:0;box-shadow:0 0 10px rgba(184,146,58,.2);">
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:8px;background:rgba(184,146,58,.15);border:1px solid rgba(184,146,58,.45);flex-shrink:0;box-shadow:0 0 10px rgba(184,146,58,.2);">
               <span style="width:7px;height:7px;border-radius:50%;background:#c9a84c;display:block;box-shadow:0 0 6px rgba(201,168,76,.8);animation:pulse 2s ease-in-out infinite;"></span>
             </span>
             <span id="lbl-d" style="font-size:13px;font-weight:700;letter-spacing:-.01em;color:#c9a84c;text-transform:none;">Период 2</span>
@@ -26344,7 +26406,7 @@ function runAnalysis() {
       const chkDelta = sd.chk - sb.chk
       return `<div style="background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:22px;position:relative;overflow:hidden;">
         <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${s.col};"></div>
-        <div style="position:absolute;bottom:-20px;right:-20px;width:100px;height:100px;border-radius:50%;background:${s.col};opacity:.06;filter:blur(24px);pointer-events:none;"></div>
+        <div style="position:absolute;bottom:-20px;right:-20px;width:100px;height:100px;border-radius:12px;background:${s.col};opacity:.06;filter:blur(24px);pointer-events:none;"></div>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;">
           <span style="font-size:22px;">${s.icon}</span>
           <div><div style="font-size:15px;font-weight:700;">${s.name}</div><div style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);">${s.sub}</div></div>
@@ -31220,7 +31282,7 @@ function renderSMMReelsGrid() {
       html += '<svg width="24" height="24" viewBox="0 0 24 24" fill="'+(isTop?'rgba(222,193,122,.5)':'rgba(255,255,255,.2)')+'"><path d="M8 5v14l11-7z"/></svg></div>'
     }
     // rank badge — sits on the outer corner, NOT clipped (ring matches card bg)
-    html += '<div style="position:absolute;top:-9px;left:-9px;width:26px;height:26px;border-radius:50%;font-family:\'DM Mono\',monospace;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px #111114;'+(isTop?'background:#b8923a;color:#0a0a0c;':'background:#1a1a1e;border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.5);')+'">'+(i+1)+'</div>'
+    html += '<div style="position:absolute;top:-9px;left:-9px;width:26px;height:26px;border-radius:8px;font-family:\'DM Mono\',monospace;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px #111114;'+(isTop?'background:#b8923a;color:#0a0a0c;':'background:#1a1a1e;border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.5);')+'">'+(i+1)+'</div>'
     html += '</div>'
 
     // body
@@ -32824,12 +32886,12 @@ function showSQLHint() {
     </div>
     <div class="field"><label>Цвет</label>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;" id="tm-color-wrap">
-        <div onclick="tmSetColor('#b8923a')" style="width:24px;height:24px;border-radius:50%;background:#b8923a;cursor:pointer;border:2px solid transparent;" data-color="#b8923a"></div>
-        <div onclick="tmSetColor('#3ecf8e')" style="width:24px;height:24px;border-radius:50%;background:#3ecf8e;cursor:pointer;border:2px solid transparent;" data-color="#3ecf8e"></div>
-        <div onclick="tmSetColor('#38b2ac')" style="width:24px;height:24px;border-radius:50%;background:#38b2ac;cursor:pointer;border:2px solid transparent;" data-color="#38b2ac"></div>
-        <div onclick="tmSetColor('#7f77dd')" style="width:24px;height:24px;border-radius:50%;background:#7f77dd;cursor:pointer;border:2px solid transparent;" data-color="#7f77dd"></div>
-        <div onclick="tmSetColor('#e8993a')" style="width:24px;height:24px;border-radius:50%;background:#e8993a;cursor:pointer;border:2px solid transparent;" data-color="#e8993a"></div>
-        <div onclick="tmSetColor('#e05252')" style="width:24px;height:24px;border-radius:50%;background:#e05252;cursor:pointer;border:2px solid transparent;" data-color="#e05252"></div>
+        <div onclick="tmSetColor('#b8923a')" style="width:24px;height:24px;border-radius:8px;background:#b8923a;cursor:pointer;border:2px solid transparent;" data-color="#b8923a"></div>
+        <div onclick="tmSetColor('#3ecf8e')" style="width:24px;height:24px;border-radius:8px;background:#3ecf8e;cursor:pointer;border:2px solid transparent;" data-color="#3ecf8e"></div>
+        <div onclick="tmSetColor('#38b2ac')" style="width:24px;height:24px;border-radius:8px;background:#38b2ac;cursor:pointer;border:2px solid transparent;" data-color="#38b2ac"></div>
+        <div onclick="tmSetColor('#7f77dd')" style="width:24px;height:24px;border-radius:8px;background:#7f77dd;cursor:pointer;border:2px solid transparent;" data-color="#7f77dd"></div>
+        <div onclick="tmSetColor('#e8993a')" style="width:24px;height:24px;border-radius:8px;background:#e8993a;cursor:pointer;border:2px solid transparent;" data-color="#e8993a"></div>
+        <div onclick="tmSetColor('#e05252')" style="width:24px;height:24px;border-radius:8px;background:#e05252;cursor:pointer;border:2px solid transparent;" data-color="#e05252"></div>
       </div>
     </div>
     <input type="hidden" id="tm-color-val" value="#b8923a">
@@ -36318,7 +36380,7 @@ async function cpRenderMilestone(project) {
           '<div style="position:absolute;top:0;right:0;bottom:0;width:56px;background:linear-gradient(90deg,transparent,#0f0f12);z-index:3;pointer-events:none;"></div>' +
         '</div>'
       : '<div style="background:linear-gradient(145deg,#13110a 0%,#0c0a06 100%);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;">' +
-          '<div style="position:absolute;width:120px;height:120px;background:radial-gradient(circle,rgba(184,146,58,.18) 0%,transparent 70%);border-radius:50%;pointer-events:none;"></div>' +
+          '<div style="position:absolute;width:120px;height:120px;background:radial-gradient(circle,rgba(184,146,58,.18) 0%,transparent 70%);border-radius:12px;pointer-events:none;"></div>' +
           '<div style="width:64px;height:64px;border-radius:14px;background:' + safeCol + '22;border:1px solid ' + safeCol + '44;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:' + safeCol + ';position:relative;z-index:1;font-family:\'DM Sans\',sans-serif;">' +
             (p.name ? p.name[0].toUpperCase() : '?') +
           '</div>' +
@@ -38552,8 +38614,8 @@ async function loadTeamPanel() {
     var rows = memberLoad.map(function(r) {
       var mc = r.m.color || '#b8923a';
       var av = r.m.avatar_url
-        ? '<div style="width:32px;height:32px;border-radius:50%;overflow:hidden;border:1px solid '+mc+'44;flex-shrink:0;"><img src="'+r.m.avatar_url+'" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
-        : '<div style="width:32px;height:32px;border-radius:50%;background:'+mc+'18;border:1px solid '+mc+'44;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:'+mc+';flex-shrink:0;">'+r.m.name[0].toUpperCase()+'</div>';
+        ? '<div style="width:36px;height:36px;border-radius:10px;overflow:hidden;border:1.5px solid '+mc+'55;flex-shrink:0;"><img src="'+r.m.avatar_url+'" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+        : '<div style="width:36px;height:36px;border-radius:10px;background:'+mc+'18;border:1.5px solid '+mc+'44;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:'+mc+';flex-shrink:0;">'+r.m.name[0].toUpperCase()+'</div>';
 
       var dominantStatus = r.active > 0 ? 'active' : r.pending > 0 ? 'pending' : 'completed';
 
