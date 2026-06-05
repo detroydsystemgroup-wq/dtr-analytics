@@ -33754,11 +33754,18 @@ function _ctRenderStageChart(stats) {
 
 function _ctRenderStageTable(stats, sumForContribution) {
   var el = g('ct-stage-table'); if (!el) return;
-  var head = ['ЭТАП', 'N', 'МЕДИАНА', 'p90', 'ДОЛЯ СРЕДИ ЭТАПОВ', '% ВОЗВРАТОВ', 'ПОТЕРИ НА ВОЗВРАТ'];
+  var head = ['ЭТАП', 'N', 'МЕДИАНА', 'p90', 'ДОЛЯ СРЕДИ ЭТАПОВ', '% ВОЗВРАТОВ', 'ПРОСТОЙ'];
   var rows = stats.map(function (s) {
     var contrib = (sumForContribution > 0 && s.p50 != null) ? Math.round(s.p50 / sumForContribution * 100) : null;
-    var rw = Math.round(s.reworkRate * 100);
-    var rwCol = rw >= 40 ? 'var(--red)' : (rw >= 20 ? 'var(--amber)' : 'var(--txt2)');
+    // % возвратов показываем только при n>=2: при n=1 один факт возврата даёт 100%, что вводит в заблуждение
+    var rwTxt, rwCol;
+    if (s.n < 2) {
+      rwTxt = '—'; rwCol = 'var(--txt2)';
+    } else {
+      var rw = Math.round(s.reworkRate * 100);
+      rwTxt = rw + '%';
+      rwCol = rw >= 40 ? 'var(--red)' : (rw >= 20 ? 'var(--amber)' : 'var(--txt2)');
+    }
     var nameCell = '<b>' + esc(s.name) + '</b>' + (s.lowSample ? ' <span style="font-size:9px;color:var(--amber);font-family:var(--font-mono);">мало данных</span>' : '');
     return '<tr style="border-bottom:1px solid rgba(255,255,255,.04);">'
       + '<td style="padding:9px 10px;">' + nameCell + '</td>'
@@ -33766,7 +33773,7 @@ function _ctRenderStageTable(stats, sumForContribution) {
       + '<td style="text-align:right;padding:9px 10px;font-family:var(--font-display);font-weight:700;color:var(--a2);">' + _ctFmtDur(s.p50) + '</td>'
       + '<td style="text-align:right;padding:9px 10px;font-family:var(--font-display);color:var(--cyan);">' + (s.p90 != null ? _ctFmtDur(s.p90) : '—') + '</td>'
       + '<td style="text-align:right;padding:9px 10px;font-family:var(--font-mono);color:var(--txt2);">' + (contrib != null ? contrib + '%' : '—') + '</td>'
-      + '<td style="text-align:right;padding:9px 10px;font-family:var(--font-mono);color:' + rwCol + ';">' + rw + '%</td>'
+      + '<td style="text-align:right;padding:9px 10px;font-family:var(--font-mono);color:' + rwCol + ';">' + rwTxt + '</td>'
       + '<td style="text-align:right;padding:9px 10px;font-family:var(--font-display);color:var(--txt2);">' + (s.lossMs != null ? _ctFmtDur(s.lossMs) : '—') + '</td>'
       + '</tr>';
   }).join('');
