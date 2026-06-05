@@ -20733,22 +20733,27 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
 
       <div style="padding-top:20px;">
       <!-- TAB BAR + ПОИСК + кнопка добавить -->
-      <div style="display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;">
-        <!-- Вкладки -->
-        <div style="display:flex;gap:2px;background:var(--bg4);border:1px solid var(--brd);border-radius:9px;padding:3px;flex-shrink:0;">
-          <button id="tt-btn-employees" onclick="switchTeamTab('employees',this)" class="sv-pill sv-pill-active">Сотрудники</button>
-          <button id="tt-btn-workload" onclick="switchTeamTab('workload',this)" class="sv-pill">Нагрузка по сотрудникам</button>
-          <button id="tt-btn-depts" onclick="switchTeamTab('depts',this)" class="sv-pill">Эффективность отделов</button>
-        </div>
-        <!-- Поиск -->
-        <div style="flex:1;min-width:180px;max-width:280px;position:relative;">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--txt3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none;flex-shrink:0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input id="team-search-inp" type="text" placeholder="Поиск сотрудника или отдела…" autocomplete="off"
-            oninput="teamSearchFilter(this.value)"
-            style="width:100%;box-sizing:border-box;background:var(--bg4);border:1px solid var(--brd);border-radius:9px;padding:8px 32px 8px 32px;color:var(--txt);font-family:var(--font-display);font-size:12px;outline:none;transition:border-color .18s;"
-            onfocus="this.style.borderColor='rgba(184,146,58,.4)'"
-            onblur="this.style.borderColor='var(--brd)'">
-          <button id="team-search-clear" onclick="teamSearchClear()" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--txt3);font-size:14px;line-height:1;padding:2px 4px;">✕</button>
+      <div style="display:flex;align-items:center;gap:8px;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;">
+        <!-- Левая группа: вкладки + поиск -->
+        <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;flex-wrap:wrap;">
+          <!-- Вкладки -->
+          <div style="display:flex;gap:2px;background:var(--bg4);border:1px solid var(--brd);border-radius:9px;padding:3px;flex-shrink:0;">
+            <button id="tt-btn-employees" onclick="switchTeamTab('employees',this)" class="sv-pill sv-pill-active">Сотрудники</button>
+            <button id="tt-btn-workload" onclick="switchTeamTab('workload',this)" class="sv-pill">Нагрузка по сотрудникам</button>
+            <button id="tt-btn-depts" onclick="switchTeamTab('depts',this)" class="sv-pill">Эффективность отделов</button>
+          </div>
+          <!-- Поиск -->
+          <div style="position:relative;flex-shrink:0;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--txt3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input id="team-search-inp" type="text" placeholder="Поиск…" autocomplete="off"
+              oninput="teamSearchFilter(this.value)"
+              style="width:200px;box-sizing:border-box;background:var(--bg4);border:1px solid var(--brd);border-radius:9px;padding:8px 28px 8px 30px;color:var(--txt);font-family:var(--font-display);font-size:12px;outline:none;transition:border-color .18s,width .2s;"
+              onfocus="this.style.borderColor='rgba(184,146,58,.4)';this.style.width='260px'"
+              onblur="this.style.borderColor='var(--brd)';if(!this.value)this.style.width='200px'">
+            <button id="team-search-clear" onclick="teamSearchClear()" style="display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--txt3);font-size:13px;line-height:1;padding:2px 3px;transition:color .15s;" onmouseover="this.style.color='var(--txt)'" onmouseout="this.style.color='var(--txt3)'">✕</button>
+          </div>
+          <!-- Счётчик результатов -->
+          <span id="team-search-counter" style="display:none;font-family:var(--font-mono);font-size:10px;color:var(--txt3);letter-spacing:.06em;"></span>
         </div>
         <!-- Кнопка добавить -->
         <button onclick="openAddTeamMember()" style="display:flex;align-items:center;gap:6px;background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.25);border-radius:7px;padding:8px 16px;color:#c9a84c;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.04em;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;" onmouseover="this.style.background='rgba(184,146,58,.2)'" onmouseout="this.style.background='rgba(184,146,58,.1)'">+ Добавить</button>
@@ -38653,7 +38658,8 @@ async function loadTeamPanel() {
 
       var dominantStatus = r.active > 0 ? 'active' : r.pending > 0 ? 'pending' : 'completed';
 
-      return '<div '
+      var _wsk = (r.m.name + ' ' + (r.m.department||'')).toLowerCase();
+      return '<div data-team-row data-search="' + _wsk + '" '
         +'onclick="openWorkloadDrill(\'' + r.m.id + '\',\'' + dominantStatus + '\')" '
         +'onmouseenter="this.style.background=\'rgba(255,255,255,.025)\'" '
         +'onmouseleave="this.style.background=\'transparent\'" '
@@ -39301,6 +39307,8 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
     return r === null ? 'var(--txt3)' : r === 0 ? 'var(--green)' : r <= 15 ? 'var(--amber)' : 'var(--red)';
   }
 
+  function norm(s){ return String(s||'').toLowerCase(); }
+
   function cell(val, color, sub) {
     return '<div style="' + brd + 'padding:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;">' +
       '<div style="font-family:var(--font-mono);font-size:16px;color:' + color + ';line-height:1;">' + val + '</div>' +
@@ -39331,7 +39339,8 @@ async function loadEfficiencyBlock(members, activeProjectIds) {
       '<button onclick="deleteTeamMember(\'' + r.m.id + '\')" style="font-size:11px;padding:5px 9px;border-radius:7px;border:1px solid rgba(224,82,82,.3);background:transparent;color:var(--red);cursor:pointer;">✕</button>' +
     '</div>';
 
-    return '<div style="display:grid;grid-template-columns:' + gridCols + ';border-top:1px solid rgba(255,255,255,.06);">' +
+    var _sk = norm([r.m.name, r.m.role||'', r.m.department||''].join(' '));
+    return '<div data-team-row data-search="' + _sk + '" style="display:grid;grid-template-columns:' + gridCols + ';border-top:1px solid rgba(255,255,255,.06);">' +
       // Имя
       '<div style="display:flex;align-items:center;gap:10px;padding:12px 20px;">' +
         avatarEl +
@@ -40899,118 +40908,101 @@ window.switchDashTab = function(tab, btn) {
 </script>
 
 <script id="dtr-team-search-js">
-/* ══ TEAM SEARCH — фильтр по имени / отделу / роли ══ */
 (function () {
   'use strict';
 
-  var _query = '';
+  var _q = '';
 
-  /* ── Нормализатор строки для нечёткого поиска ── */
-  function norm(s) {
-    return String(s || '').toLowerCase().trim();
-  }
-  function matches(s, q) {
-    return norm(s).indexOf(q) !== -1;
-  }
+  function norm(s) { return String(s||'').toLowerCase().trim(); }
 
-  /* ── Показать/скрыть кнопку сброса ── */
   function syncClear(q) {
     var btn = document.getElementById('team-search-clear');
     if (btn) btn.style.display = q ? 'block' : 'none';
   }
 
-  /* ── Применить фильтр к таблице Эффективности сотрудников ── */
-  function filterEffTable(q) {
-    var body = document.getElementById('sv-efficiency-body');
-    if (!body) return;
-    /* Строки — прямые дочерние div с grid */
-    var rows = body.querySelectorAll('[style*="grid-template-columns"]');
+  /* Показывает/скрывает строки по data-search атрибуту.
+     Возвращает число видимых строк. */
+  function filterRows(containerId, q) {
+    var cont = document.getElementById(containerId);
+    if (!cont) return 0;
+    var rows = cont.querySelectorAll('[data-team-row]');
     var found = 0;
-    rows.forEach(function (row) {
-      /* Первая ячейка содержит имя */
-      var nameCell = row.querySelector('div');
-      var text = nameCell ? nameCell.textContent : row.textContent;
-      var show = !q || matches(text, q);
+    rows.forEach(function(row) {
+      var key = norm(row.getAttribute('data-search') || '');
+      var show = !q || key.indexOf(q) !== -1;
       row.style.display = show ? '' : 'none';
       if (show) found++;
     });
-    /* Показываем «нет результатов» если ничего */
-    var noRes = document.getElementById('team-search-no-results');
-    if (!noRes && body.parentNode) {
-      noRes = document.createElement('div');
-      noRes.id = 'team-search-no-results';
-      noRes.style.cssText = 'display:none;padding:28px;text-align:center;font-family:var(--font-mono);font-size:12px;color:var(--txt3);letter-spacing:.06em;';
-      noRes.textContent = 'Ничего не найдено';
-      body.parentNode.appendChild(noRes);
-    }
-    if (noRes) noRes.style.display = (q && found === 0) ? '' : 'none';
+    return found;
   }
 
-  /* ── Применить фильтр к таблице Нагрузки (team-workload-bars) ── */
-  function filterWorkload(q) {
-    var bars = document.getElementById('team-workload-bars');
-    if (!bars) return;
-    var rows = bars.querySelectorAll('[style*="grid-template-columns"]');
-    rows.forEach(function (row) {
-      var text = row.textContent;
-      row.style.display = (!q || matches(text, q)) ? '' : 'none';
-    });
-  }
-
-  /* ── Применить фильтр к карточкам Эффективности отделов (dept-eff-body) ── */
+  /* Фильтрует карточки отделов (dept-eff-body) */
   function filterDepts(q) {
     var body = document.getElementById('dept-eff-body');
     if (!body) return;
-    /* Карточки — прямые дочерние div */
-    var cards = body.children;
-    for (var i = 0; i < cards.length; i++) {
-      var text = cards[i].textContent;
-      cards[i].style.display = (!q || matches(text, q)) ? '' : 'none';
-    }
+    Array.from(body.children).forEach(function(card) {
+      var text = norm(card.textContent);
+      card.style.display = (!q || text.indexOf(q) !== -1) ? '' : 'none';
+    });
   }
 
-  /* ── Главная функция фильтрации ── */
-  window.teamSearchFilter = function (val) {
-    _query = norm(val);
-    syncClear(_query);
-    filterEffTable(_query);
-    filterWorkload(_query);
-    filterDepts(_query);
+  /* Обновляет счётчик «найдено X» */
+  function updateCounter(n, total, q) {
+    var el = document.getElementById('team-search-counter');
+    if (!el) return;
+    if (!q) { el.style.display = 'none'; return; }
+    el.style.display = '';
+    el.textContent = n === 0 ? 'Ничего не найдено' : n + ' из ' + total;
+    el.style.color = n === 0 ? 'var(--red)' : 'var(--txt3)';
+  }
+
+  /* Главная функция */
+  window.teamSearchFilter = function(val) {
+    _q = norm(val);
+    syncClear(_q);
+
+    /* Эффективность */
+    var effBody = document.getElementById('sv-efficiency-body');
+    var totalEff = effBody ? effBody.querySelectorAll('[data-team-row]').length : 0;
+    var foundEff = filterRows('sv-efficiency-body', _q);
+
+    /* Нагрузка */
+    var wlBody = document.getElementById('team-workload-bars');
+    var foundWl = filterRows('team-workload-bars', _q);
+
+    /* Отделы */
+    filterDepts(_q);
+
+    /* Счётчик — показываем для активной вкладки */
+    updateCounter(foundEff, totalEff, _q);
   };
 
-  /* ── Сброс ── */
-  window.teamSearchClear = function () {
+  /* Сброс */
+  window.teamSearchClear = function() {
     var inp = document.getElementById('team-search-inp');
     if (inp) { inp.value = ''; inp.focus(); }
-    _query = '';
+    _q = '';
     syncClear('');
-    filterEffTable('');
-    filterWorkload('');
+    ['sv-efficiency-body','team-workload-bars'].forEach(function(id) {
+      var cont = document.getElementById(id);
+      if (cont) cont.querySelectorAll('[data-team-row]').forEach(function(r){ r.style.display = ''; });
+    });
     filterDepts('');
+    updateCounter(0, 0, '');
   };
 
-  /* ── Сбрасываем поиск при переключении вкладки ── */
-  var _origSwitchTeam = window.switchTeamTab;
-  window.switchTeamTab = function (tab, btn) {
-    if (typeof _origSwitchTeam === 'function') _origSwitchTeam(tab, btn);
-    /* Если есть запрос — перефильтровываем новую вкладку */
-    if (_query) {
-      setTimeout(function () {
-        filterEffTable(_query);
-        filterWorkload(_query);
-        filterDepts(_query);
-      }, 80);
-    }
+  /* Повторно применяем после перерисовки таблицы */
+  var _origLoadEff = window.loadEfficiencyBlock;
+  window.loadEfficiencyBlock = function() {
+    var res = _origLoadEff && _origLoadEff.apply(this, arguments);
+    if (_q) setTimeout(function(){ window.teamSearchFilter(document.getElementById('team-search-inp') ? document.getElementById('team-search-inp').value : ''); }, 100);
+    return res;
   };
 
-  /* ── Keyboard shortcut: Escape сбрасывает поиск ── */
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') {
-      var inp = document.getElementById('team-search-inp');
-      if (inp && document.activeElement === inp) {
-        window.teamSearchClear();
-      }
-    }
+  /* Escape */
+  document.addEventListener('keydown', function(e) {
+    var inp = document.getElementById('team-search-inp');
+    if (e.key === 'Escape' && inp && document.activeElement === inp) window.teamSearchClear();
   });
 
 })();
