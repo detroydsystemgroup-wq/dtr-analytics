@@ -40327,80 +40327,231 @@ window.switchDashTab = function(tab, btn) {
     '</div>';
   }
 
-  /* ── ПАНЕЛЬ ДОБАВИТЬ ── */
-  function addPanelHtml(allNodes, depts, members) {
-    var used = usedLabels(_tree);
+  /* ── КАСТОМНЫЙ ДРОПДАУН ── */
+  /* _orgDd: { what: value, parent: nodeId, moveto: nodeId } */
+  var _orgDd = { what: '', parent: '', moveto: '' };
 
-    /* Отделы ещё не в дереве */
-    var freeDepts = depts.filter(function(d){ return used.indexOf(d) < 0; });
-    /* Сотрудники ещё не в дереве */
-    var freeMembers = members.filter(function(m){ return used.indexOf(m.name) < 0; });
+  function orgDdStyle() {
+    return 'position:relative;user-select:none;';
+  }
+  function orgDdTriggerStyle(accent) {
+    return 'display:flex;align-items:center;justify-content:space-between;gap:8px;' +
+      'padding:10px 14px;border-radius:10px;cursor:pointer;' +
+      'background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);' +
+      'color:#f0ece6;font-family:var(--font-mono);font-size:12px;' +
+      'transition:border-color .15s;';
+  }
+  function orgChevron() {
+    return '<svg width="10" height="6" viewBox="0 0 10 6" fill="none" style="flex-shrink:0;opacity:.5;">' +
+      '<path d="M1 1l4 4 4-4" stroke="#f0ece6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+  function orgDdMenuStyle() {
+    return 'position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:999;' +
+      'background:#1a1a24;border:1px solid rgba(255,255,255,.12);border-radius:12px;' +
+      'overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.6);';
+  }
+  function orgDdGroup(label) {
+    return '<div style="padding:8px 14px 4px;font-family:var(--font-mono);font-size:8px;' +
+      'letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.28);">' + esc(label) + '</div>';
+  }
+  function orgDdItem(value, label, dot) {
+    var dotHtml = dot ? '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:' + dot + ';margin-right:8px;flex-shrink:0;"></span>' : '';
+    return '<div onclick="orgDdPick(\'' + value + '\')" ' +
+      'style="display:flex;align-items:center;padding:9px 14px;cursor:pointer;' +
+        'font-family:var(--font-display,inherit);font-size:13px;color:#f0ece6;' +
+        'transition:background .1s;" ' +
+      'onmouseenter="this.style.background=\'rgba(201,168,76,.1)\'" ' +
+      'onmouseleave="this.style.background=\'\'">' +
+      dotHtml + esc(label) +
+    '</div>';
+  }
+  function orgDdDivider() {
+    return '<div style="height:1px;background:rgba(255,255,255,.06);margin:4px 0;"></div>';
+  }
 
-    var parentOpts = allNodes.map(function(n){
-      return '<option value="' + esc(n.id) + '">' + esc(n.label) + '</option>';
-    }).join('');
+  /* Пикер: запоминаем выбор, закрываем меню, перерисовываем */
+  window.orgDdPick = function(value) {
+    /* Определяем какой дропдаун открыт */
+    var open = document.querySelector('.org-dd-menu');
+    if (!open) return;
+    var ddId = open.dataset.ddid;
+    _orgDd[ddId] = value;
+    document.querySelectorAll('.org-dd-menu').forEach(function(m){ m.remove(); });
+    renderTree();
+  };
 
-    var deptOpts = freeDepts.length
-      ? freeDepts.map(function(d){ return '<option value="dept|' + esc(d) + '">' + esc(d) + '</option>'; }).join('')
-      : '<option value="" disabled>— нет новых отделов —</option>';
+  window.orgDdToggle = function(ddId, btn) {
+    /* Закрываем все открытые */
+    var existing = document.querySelector('.org-dd-menu[data-ddid="' + ddId + '"]');
+    if (existing) { existing.remove(); return; }
+    document.querySelectorAll('.org-dd-menu').forEach(function(m){ m.remove(); });
+    /* Строим меню */
+    var menu = document.createElement('div');
+    menu.className = 'org-dd-menu';
+    menu.dataset.ddid = ddId;
+    menu.style.cssText = orgDdMenuStyle();
+    menu.innerHTML = _orgDd['_menu_' + ddId] || '';
+    btn.closest('[data-ddwrap]').appendChild(menu);
+    /* Закрываем при клике вне */
+    setTimeout(function(){
+      document.addEventListener('click', function closeOrgDd(e){
+        if (!menu.contains(e.target) && e.target !== btn) {
+          menu.remove();
+          document.removeEventListener('click', closeOrgDd);
+        }
+      });
+    }, 0);
+  };
 
-    var memOpts = freeMembers.length
-      ? freeMembers.map(function(m){ return '<option value="mem|' + esc(m.id) + '|' + esc(m.name) + '|' + esc(m.color||'#c9a84c') + '">' + esc(m.name) + '</option>'; }).join('')
-      : '<option value="" disabled>— все добавлены —</option>';
+  function ddLabelFor(ddId, fallback) {
+    var v = _orgDd[ddId] || '';
+    if (!v) return fallback;
+    /* what: "dept|NAME" или "mem|id|NAME|COLOR" */
+    if (ddId === 'what') {
+      var p = v.split('|');
+      return p[0] === 'dept' ? p[1] : (p[2] || fallback);
+    }
+    /* parent/moveto: nodeId */
+    if (_tree) {
+      var n = findNode(_tree, v);
+      if (n) return n.label;
+    }
+    return fallback;
+  }
 
-    var inp = 'width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:9px 12px;color:#f0ece6;font-size:13px;outline:none;';
+  function buildWhatMenu(freeDepts, freeMembers) {
+    var html = '';
+    if (freeDepts.length) {
+      html += orgDdGroup('Отделы');
+      freeDepts.forEach(function(d){ html += orgDdItem('dept|' + d, d); });
+    }
+    if (freeMembers.length) {
+      if (freeDepts.length) html += orgDdDivider();
+      html += orgDdGroup('Сотрудники');
+      freeMembers.forEach(function(m){
+        html += orgDdItem('mem|' + m.id + '|' + m.name + '|' + (m.color||'#c9a84c'), m.name, m.color||'#c9a84c');
+      });
+    }
+    if (!freeDepts.length && !freeMembers.length) {
+      html += '<div style="padding:14px;text-align:center;font-family:var(--font-mono);font-size:11px;color:rgba(240,236,230,.3);">Все уже добавлены</div>';
+    }
+    return html;
+  }
 
-    return '<div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;">' +
-      /* ЧТО добавить */
-      '<div>' +
-        '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(240,236,230,.3);margin-bottom:5px;">Что добавить</div>' +
-        '<select id="org-sel-what" style="' + inp + '">' +
-          '<optgroup label="Отделы">' + deptOpts + '</optgroup>' +
-          '<optgroup label="Сотрудники">' + memOpts + '</optgroup>' +
-        '</select>' +
+  function buildParentMenu(allNodes, excludeId) {
+    var html = orgDdGroup('Подчиняется');
+    allNodes.filter(function(n){ return n.id !== excludeId; }).forEach(function(n){
+      var isDept = (n.type === 'dept' || n.type === 'root');
+      html += orgDdItem(n.id, n.label, isDept ? '#c9a84c' : null);
+    });
+    return html;
+  }
+
+  function ddButton(ddId, label, placeholder) {
+    var shown = label || placeholder;
+    var isPlaceholder = !label;
+    return '<div data-ddwrap style="' + orgDdStyle() + '">' +
+      '<div onclick="orgDdToggle(\'' + ddId + '\',this)" style="' + orgDdTriggerStyle() + '">' +
+        '<span style="' + (isPlaceholder ? 'color:rgba(240,236,230,.3);' : 'color:#f0ece6;font-weight:600;') + '">' + esc(shown) + '</span>' +
+        orgChevron() +
       '</div>' +
-      /* КОМУ подчиняется */
-      '<div>' +
-        '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(240,236,230,.3);margin-bottom:5px;">Подчиняется</div>' +
-        '<select id="org-sel-parent" style="' + inp + '">' + parentOpts + '</select>' +
-      '</div>' +
-      /* КНОПКА */
-      '<button onclick="orgAddNode()" style="padding:10px 22px;border-radius:9px;border:none;cursor:pointer;background:rgba(201,168,76,.2);color:var(--a2,#c9a84c);font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;white-space:nowrap;">+ Добавить</button>' +
     '</div>';
   }
 
-  /* ── ПАНЕЛЬ РЕДАКТИРОВАНИЯ (при клике на узел) ── */
-  function editPanelHtml(node, allNodes) {
-    var inp = 'width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:9px 12px;color:#f0ece6;font-size:13px;outline:none;';
-    var isRoot = node.id === _tree.id;
+  /* ── ПАНЕЛЬ ДОБАВИТЬ ── */
+  function addPanelHtml(allNodes, depts, members) {
+    var used = usedLabels(_tree);
+    var freeDepts   = depts.filter(function(d){ return used.indexOf(d) < 0; });
+    var freeMembers = members.filter(function(m){ return used.indexOf(m.name) < 0; });
 
-    return '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">' +
-      '<div style="font-family:var(--font-mono);font-size:11px;color:rgba(240,236,230,.5);">Выбран:</div>' +
-      '<div style="font-family:var(--font-display,inherit);font-weight:700;font-size:13px;color:#f0ece6;">' + esc(node.label) + '</div>' +
-      '<div style="margin-left:auto;display:flex;gap:6px;">' +
-        (isRoot
-          ? ''
-          : '<button onclick="orgMoveNode()" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.12);cursor:pointer;background:rgba(255,255,255,.05);color:rgba(240,236,230,.6);font-family:var(--font-mono);font-size:10px;">Переместить</button>'
-        ) +
-        (isRoot
-          ? ''
-          : '<button onclick="orgDeleteNode()" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(224,82,82,.3);cursor:pointer;background:rgba(224,82,82,.07);color:#e05252;font-family:var(--font-mono);font-size:10px;">Удалить</button>'
-        ) +
-        '<button onclick="orgCancelEdit()" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.08);cursor:pointer;background:transparent;color:rgba(240,236,230,.35);font-family:var(--font-mono);font-size:10px;">Снять выбор</button>' +
+    /* Автовыбор первого элемента если ещё не выбран */
+    if (!_orgDd.what) {
+      if (freeDepts.length)        _orgDd.what = 'dept|' + freeDepts[0];
+      else if (freeMembers.length) _orgDd.what = 'mem|' + freeMembers[0].id + '|' + freeMembers[0].name + '|' + (freeMembers[0].color||'#c9a84c');
+    }
+    if (!_orgDd.parent && allNodes.length) _orgDd.parent = allNodes[0].id;
+
+    /* Сохраняем меню для deferredToggle */
+    _orgDd['_menu_what']   = buildWhatMenu(freeDepts, freeMembers);
+    _orgDd['_menu_parent'] = buildParentMenu(allNodes, '');
+
+    var whatLabel   = ddLabelFor('what',   'Выберите…');
+    var parentLabel = ddLabelFor('parent', 'Выберите…');
+
+    var lbl = 'font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(240,236,230,.28);margin-bottom:6px;';
+
+    return '<div style="display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end;">' +
+      '<div>' +
+        '<div style="' + lbl + '">Что добавить</div>' +
+        ddButton('what', whatLabel, 'Выберите…') +
       '</div>' +
-    '</div>' +
-    /* Переместить: куда */
-    (!isRoot ? '<div id="org-move-row" style="display:none;margin-top:10px;display:none;">' +
-      '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(240,236,230,.3);margin-bottom:5px;">Переместить под</div>' +
-      '<div style="display:flex;gap:8px;">' +
-        '<select id="org-sel-moveto" style="flex:1;' + inp + '">' +
-          allNodes.filter(function(n){ return n.id !== node.id; }).map(function(n){
-            return '<option value="' + esc(n.id) + '">' + esc(n.label) + '</option>';
-          }).join('') +
-        '</select>' +
-        '<button onclick="orgConfirmMove()" style="padding:9px 18px;border-radius:9px;border:none;cursor:pointer;background:rgba(201,168,76,.2);color:var(--a2,#c9a84c);font-family:var(--font-mono);font-size:11px;">OK</button>' +
+      '<div>' +
+        '<div style="' + lbl + '">Подчиняется</div>' +
+        ddButton('parent', parentLabel, 'Выберите…') +
       '</div>' +
-    '</div>' : '');
+      '<button onclick="orgAddNode()" ' +
+        'style="padding:11px 24px;border-radius:10px;border:none;cursor:pointer;' +
+          'background:rgba(201,168,76,.18);color:var(--a2,#c9a84c);' +
+          'font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;' +
+          'white-space:nowrap;border:1px solid rgba(201,168,76,.3);' +
+          'transition:background .15s;" ' +
+        'onmouseenter="this.style.background=\'rgba(201,168,76,.28)\'" ' +
+        'onmouseleave="this.style.background=\'rgba(201,168,76,.18)\'">+ Добавить</button>' +
+    '</div>';
+  }
+
+  /* ── ПАНЕЛЬ РЕДАКТИРОВАНИЯ ── */
+  function editPanelHtml(node, allNodes) {
+    var isRoot = node.id === _tree.id;
+    var col    = node.color || '#c9a84c';
+
+    _orgDd['_menu_moveto'] = buildParentMenu(allNodes, node.id);
+    if (!_orgDd.moveto || _orgDd.moveto === node.id) {
+      var first = allNodes.find(function(n){ return n.id !== node.id; });
+      _orgDd.moveto = first ? first.id : '';
+    }
+    var moveLabel = ddLabelFor('moveto', 'Выберите…');
+
+    var dotHtml = '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + col + ';margin-right:8px;flex-shrink:0;"></span>';
+
+    var lbl = 'font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(240,236,230,.28);margin-bottom:6px;';
+
+    var btnS = function(bg, col2, brd) {
+      return 'padding:8px 16px;border-radius:9px;border:1px solid ' + brd + ';cursor:pointer;' +
+        'background:' + bg + ';color:' + col2 + ';font-family:var(--font-mono);font-size:10px;' +
+        'letter-spacing:.04em;transition:background .12s;';
+    };
+
+    return /* Строка: имя + кнопки */
+      '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">' +
+        '<div style="display:flex;align-items:center;">' +
+          dotHtml +
+          '<span style="font-family:var(--font-display,inherit);font-weight:700;font-size:14px;color:#f0ece6;">' + esc(node.label) + '</span>' +
+        '</div>' +
+        '<div style="margin-left:auto;display:flex;gap:6px;">' +
+          (isRoot ? '' :
+            '<button onclick="orgMoveToggle()" style="' + btnS('rgba(255,255,255,.05)','rgba(240,236,230,.6)','rgba(255,255,255,.12)') + '">Переместить ↓</button>'
+          ) +
+          (isRoot ? '' :
+            '<button onclick="orgDeleteNode()" style="' + btnS('rgba(224,82,82,.07)','#e05252','rgba(224,82,82,.3)') + '">Удалить</button>'
+          ) +
+          '<button onclick="orgCancelEdit()" style="' + btnS('transparent','rgba(240,236,230,.3)','rgba(255,255,255,.08)') + '">✕</button>' +
+        '</div>' +
+      '</div>' +
+
+      /* Строка переместить (скрыта по умолчанию) */
+      (!isRoot ?
+        '<div id="org-move-row" style="display:none;margin-top:12px;">' +
+          '<div style="' + lbl + '">Переместить под</div>' +
+          '<div style="display:flex;gap:8px;align-items:center;">' +
+            ddButton('moveto', moveLabel, 'Выберите…') +
+            '<button onclick="orgConfirmMove()" ' +
+              'style="padding:11px 20px;border-radius:10px;border:1px solid rgba(201,168,76,.3);cursor:pointer;' +
+                'background:rgba(201,168,76,.18);color:var(--a2,#c9a84c);font-family:var(--font-mono);font-size:11px;white-space:nowrap;">' +
+              'Применить</button>' +
+          '</div>' +
+        '</div>'
+      : '');
   }
 
   /* ── MAIN RENDER ── */
@@ -40455,13 +40606,12 @@ window.switchDashTab = function(tab, btn) {
   };
 
   window.orgAddNode = function() {
-    var what     = (document.getElementById('org-sel-what')||{}).value || '';
-    var parentId = (document.getElementById('org-sel-parent')||{}).value || _tree.id;
+    var what     = _orgDd.what || '';
+    var parentId = _orgDd.parent || (_tree ? _tree.id : '');
     if (!what) return;
     var parent = findNode(_tree, parentId);
     if (!parent) return;
     if (!parent.children) parent.children = [];
-
     var parts = what.split('|');
     var node;
     if (parts[0] === 'dept') {
@@ -40469,9 +40619,9 @@ window.switchDashTab = function(tab, btn) {
     } else if (parts[0] === 'mem') {
       node = { id: mkId(), label: parts[2], type: 'member', color: parts[3] || '#c9a84c', children: [] };
     } else { return; }
-
     parent.children.push(node);
     saveTree(_tree);
+    _orgDd.what = '';   /* сбрасываем выбор "что" после добавления */
     _editing = null;
     renderTree();
   };
@@ -40487,14 +40637,15 @@ window.switchDashTab = function(tab, btn) {
     renderTree();
   };
 
-  window.orgMoveNode = function() {
+  window.orgMoveToggle = function() {
     var row = document.getElementById('org-move-row');
-    if (row) row.style.display = row.style.display === 'none' ? '' : 'none';
+    if (row) row.style.display = (row.style.display === 'none' || !row.style.display) ? 'block' : 'none';
   };
+  window.orgMoveNode = window.orgMoveToggle; /* обратная совместимость */
 
   window.orgConfirmMove = function() {
     if (!_editing) return;
-    var newParentId = (document.getElementById('org-sel-moveto')||{}).value;
+    var newParentId = _orgDd.moveto || '';
     if (!newParentId || newParentId === _editing) return;
     var node = findNode(_tree, _editing);
     if (!node) return;
