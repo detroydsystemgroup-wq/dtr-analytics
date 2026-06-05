@@ -18011,6 +18011,183 @@ html body main.cc-main.smm-fullscreen {
 
 /* Onboarding tooltip toggle — hide in report */
 #ob-toggle { display: none !important; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   KB ARCHIVE — строки архива в базе знаний
+   ═══════════════════════════════════════════════════════════════════ */
+.kb-archive-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(240,236,230,.08);
+  border-radius: 10px;
+  background: var(--bg2);
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.kb-archive-row:hover {
+  border-color: rgba(184,146,58,.35);
+  background: var(--bg4);
+}
+.kb-archive-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  opacity: .85;
+}
+.kb-archive-name {
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--txt);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kb-archive-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: .08em;
+  color: var(--txt3);
+  margin-top: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ТИПОГРАФИКА — табличные числа, выравнивание метрик
+   ═══════════════════════════════════════════════════════════════════ */
+/* Современные числа: табличные (выровненные) lining-фигуры + аккуратный трекинг.
+   Числа в метриках перестают «прыгать» при обновлении и выравниваются по колонкам. */
+.apl-hero-num, .stat-val, .fin-trend-val, .sv-rc-val,
+.kb-card-timer, .kb-timer-live, .kb-timer-logged, .kb-card-deadline,
+.apl-hero-foot, .fin-trend-sub, .sv-rc-sub {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+.apl-hero-num, .stat-val { letter-spacing: -.03em; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   КАНБАН — карточки (skin-патч)
+   ═══════════════════════════════════════════════════════════════════ */
+/* Карточки канбана — подгонка под утверждённый макет (канбан видит только агентство) */
+.kb-card-active { border-color: rgba(184,146,58,.4); }
+.kb-card-active .kb-timer-live {
+  background: transparent; border-color: transparent;
+  color: var(--a2); font-size: 17px; font-weight: 700;
+  padding: 2px 0; min-width: 0; letter-spacing: .04em;
+}
+.kb-card-active .kb-timer-live-dot { background: var(--a2); }
+.kb-card-done .kb-card-title { text-decoration: line-through; color: var(--txt3); }
+.kb-card-done .kb-pri-badge { display: none; }
+.kb-card-done .kb-move-btn { border-color: rgba(255,255,255,.16); border-radius: 8px; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   МАСШТАБ ШРИФТОВ — глобальное улучшение читаемости
+   ═══════════════════════════════════════════════════════════════════ */
+/* ── Глобальное улучшение читаемости DTR ──
+   Поднимаем мелкие тексты на 1-2px без риска сломать лейаут.
+   Используем точечные классы, не трогаем инлайн-стили логики. */
+
+/* Навигация */
+.nav-item-label { font-size: 13px !important; }
+.nav-section-label { font-size: 10px !important; letter-spacing: .1em !important; }
+.sidebar-project-name { font-size: 13px !important; }
+
+/* Заголовки страниц */
+.page-title { font-size: 20px !important; }
+.page-subtitle { font-size: 12px !important; }
+.sv-section-title { font-size: 11px !important; letter-spacing: .1em !important; }
+
+/* Карточки проектов (dashboard) */
+.pcard-name { font-size: 15px !important; }
+.pcard-meta { font-size: 12px !important; }
+.pcard-badge { font-size: 10px !important; }
+.pcard-stat-val { font-size: 13px !important; }
+.pcard-stat-lbl { font-size: 10px !important; }
+
+/* Трекер этапов */
+.tracker-stage-name { font-size: 14px !important; }
+.tracker-badge { font-size: 10px !important; }
+.tracker-meta-chip { font-size: 11px !important; }
+.tracker-note-text { font-size: 12px !important; }
+.tracker-edit-btn { font-size: 11px !important; }
+.task-section-label { font-size: 11px !important; }
+.pp-stage-section-label { font-size: 11px !important; letter-spacing: .06em !important; }
+.pp-stage-mini-val { font-size: 20px !important; }
+.pp-stage-mini-lbl { font-size: 10px !important; }
+
+/* Канбан */
+.kb-card-title { font-size: 13px !important; }
+.kb-card-stage { font-size: 11px !important; }
+.kb-col-title { font-size: 11px !important; letter-spacing: .08em !important; }
+.kb-col-count { font-size: 11px !important; }
+.kb-pri-badge { font-size: 10px !important; }
+.kb-card-deadline { font-size: 11px !important; }
+.kb-move-btn { font-size: 11px !important; }
+
+/* Команда — таблица эффективности */
+.team-eff-name { font-size: 14px !important; }
+.team-eff-sub { font-size: 11px !important; }
+.team-eff-val { font-size: 16px !important; }
+.team-eff-lbl { font-size: 10px !important; }
+.team-eff-hint { font-size: 11px !important; }
+
+/* Финансы */
+.fin-trend-val { font-size: 22px !important; }
+.fin-trend-lbl { font-size: 10px !important; letter-spacing: .08em !important; }
+.fin-trend-sub { font-size: 11px !important; }
+.fin-cat-name { font-size: 13px !important; }
+.fin-cat-val { font-size: 13px !important; }
+
+/* Сводка (overview) */
+.apl-hero-num { font-size: 32px !important; }
+.apl-hero-lbl { font-size: 10px !important; letter-spacing: .1em !important; }
+.apl-hero-foot { font-size: 12px !important; }
+.apl-chart-label { font-size: 10px !important; letter-spacing: .1em !important; }
+
+/* Дедлайны */
+.dl-item-name { font-size: 14px !important; }
+.dl-item-proj { font-size: 12px !important; }
+.dl-item-date { font-size: 13px !important; }
+.dl-status-badge { font-size: 10px !important; }
+
+/* Циклы */
+.ct-hero-num { font-size: 28px !important; }
+.ct-hero-lbl { font-size: 10px !important; letter-spacing: .1em !important; }
+.ct-hero-sub { font-size: 12px !important; }
+
+/* База знаний */
+.kb-title { font-size: 15px !important; }
+.kb-meta { font-size: 12px !important; }
+.kb-tag { font-size: 10px !important; }
+
+/* Вкладки и кнопки */
+.pp-tab { font-size: 12px !important; }
+.tab-btn { font-size: 11px !important; }
+.pill-tab { font-size: 11px !important; }
+.btn-ghost { font-size: 12px !important; }
+.btn-primary { font-size: 13px !important; }
+
+/* Модалки */
+.modal-title { font-size: 17px !important; }
+.modal-label { font-size: 12px !important; }
+.modal-hint { font-size: 11px !important; }
+
+/* Toast */
+.alert-toast-body { font-size: 13px !important; }
+
+/* Общие утилиты — mono labels */
+.mono-label { font-size: 10px !important; letter-spacing: .1em !important; }
+.section-label { font-size: 10px !important; letter-spacing: .1em !important; }
+
+/* Таблица детализации по этапам (Циклы) */
+#ct-stage-table table { font-size: 13px !important; }
+#ct-stage-table th { font-size: 10px !important; }
+#ct-stage-table td { font-size: 13px !important; }
 </style>
 <meta charset="UTF-8">
 <meta name="build" content="dtr-v31052026-1117">
@@ -19332,14 +19509,14 @@ html.light .crc-open{color:#fff}
 .mck-section.sec-perf .mck-section-head{border-bottom-color:rgba(52,211,153,.16)}
 .mck-section.sec-smm .mck-section-head{border-bottom-color:rgba(167,139,250,.18)}
 .mck-section .mck-section-label{font-size:11px;letter-spacing:.13em;color:var(--txt);font-weight:600}
-.mck-section-bar{width:4px;height:18px;border-radius:3px}
-.mck-section-bar.perf{background:linear-gradient(180deg,#34d399,#c9a84c)}
-.mck-section-bar.smm{background:linear-gradient(180deg,#a78bfa,#8b5cf6)}
+#page-report #page-report .mck-section-bar{width:4px;height:18px;border-radius:3px}
+#page-report .mck-section-bar.perf{background:linear-gradient(180deg,#34d399,#c9a84c)}
+#page-report .mck-section-bar.smm{background:linear-gradient(180deg,#a78bfa,#8b5cf6)}
 
 /* счётчик — в цвет карточек */
-.mck-section-count.perf{color:#34d399}
-.mck-section-count.smm{color:#a78bfa}
-.mck-section-unit{color:var(--txt3)}
+#page-report .mck-section-count.perf{color:#34d399}
+#page-report .mck-section-count.smm{color:#a78bfa}
+#page-report #page-report .mck-section-unit{color:var(--txt3)}
 
 html.light .mck-section.sec-perf{background:rgba(46,139,87,.05);border-color:rgba(46,139,87,.2)}
 html.light .mck-section.sec-smm{background:rgba(124,92,200,.06);border-color:rgba(124,92,200,.22)}
@@ -22922,7 +23099,7 @@ UPDATE stage_tasks SET kanban_status = CASE WHEN done = true THEN 'done' ELSE 'w
   </div>
 </div>
 
-<script>
+<script id="dtr-main-js">
 // ══════════════════════════════════════════════
 // CONFIG — замени на свои ключи
 // ══════════════════════════════════════════════
@@ -32089,7 +32266,7 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 </script>
 
-<script>
+<script id="dtr-cc-sync-js">
 // ── CC Project count sync ──
 const _origRenderProjects = typeof renderProjectsGrid === 'function' ? renderProjectsGrid : null;
 
@@ -35213,70 +35390,6 @@ function renderMenuCombos(b3, d3) {
 }
 
 // ── СТАРАЯ функция-заглушка (псевдо-оценка из агрегата) сохранена ниже, но больше не вызывается ──
-function renderMenuCombos_LEGACY(b3, d3) {
-  var el = document.getElementById('sec-menu-combos');
-  var inner = document.getElementById('menu-combos-inner');
-  if (!el || !inner) return;
-  var src = d3 || b3; if (!src) return;
-
-  var DRINK_KW = ['Cola','Coca','Fanta','Sprite','Choy','Tea','Suv','Sok','kofe','Cofee','limon','Malina','Fuse','Ays','PEPSI','Garden','Anor','Chortoq','Fyusti'];
-  var SAUCE_KW = ['Sous','Ketchup','Mayonez','Qalampir','xalapenyo','Pishloq'];
-
-  var mains = [], drinks = [], sauces = [];
-  src.rows.filter(function(r){return r.rev>0&&r.qty>0;}).forEach(function(r){
-    var n = r.label;
-    if(DRINK_KW.some(function(k){return n.indexOf(k)>=0;})) drinks.push(r);
-    else if(SAUCE_KW.some(function(k){return n.indexOf(k)>=0;})) sauces.push(r);
-    else mains.push(r);
-  });
-
-  mains = mains.sort(function(a,b){return b.qty-a.qty;}).slice(0,5);
-  drinks = drinks.sort(function(a,b){return b.qty-a.qty;}).slice(0,4);
-  sauces = sauces.sort(function(a,b){return b.qty-a.qty;}).slice(0,3);
-
-  var totalChk = src.rows.reduce(function(s,r){return s+(r.rev>0?r.qty:0);},0)||1;
-  var fmt2 = function(v){return new Intl.NumberFormat('ru-RU').format(Math.round(v));};
-
-  // Для каждого основного блюда считаем "вероятность" каждого напитка/соуса
-  // Score = qty_addon / avg_check_qty (примерно: сколько раз берут вместе)
-  // Это оценка, основанная на частоте обоих в чеке
-  var html = '';
-  mains.forEach(function(main){
-    var mainShare = main.qty / totalChk; // доля основного в чеках
-    html += '<div style="background:var(--bg3);border:1px solid var(--brd);border-radius:14px;padding:18px;margin-bottom:12px;">'
-      +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">'
-      +'<div style="font-size:22px;">🥙</div>'
-      +'<div><div style="font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'+main.label+'">'+main.label+'</div>'
-      +'<div style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);">'+fmt2(main.qty)+' шт · '+fmt2(main.rev/1e6)+'M сум</div></div>'
-      +'<div style="margin-left:auto;font-family:\"Bebas Neue\",sans-serif;font-size:22px;color:var(--a2);">'+Math.round(mainShare*100)+'% чеков</div></div>'
-      +'<div style="font-size:10px;color:var(--txt2);font-family:var(--font-mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Часто берут вместе:</div>'
-      +'<div style="display:flex;flex-wrap:wrap;gap:6px;">';
-
-    // Top drinks
-    drinks.slice(0,3).forEach(function(d){
-      var coScore = Math.round(Math.sqrt(main.qty * d.qty) / totalChk * 100);
-      html += '<div style="display:flex;align-items:center;gap:6px;padding:6px 10px;background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.2);border-radius:8px;">'
-        +'<span style="font-size:13px;">🥤</span>'
-        +'<div><div style="font-size:11px;font-weight:600;white-space:nowrap;">'+d.label.slice(0,20)+'</div>'
-        +'<div style="font-size:9px;color:#38bdf8;font-family:var(--font-mono);">~'+coScore+'% чеков</div></div></div>';
-    });
-
-    // Top sauces
-    sauces.slice(0,2).forEach(function(s){
-      var coScore = Math.round(Math.sqrt(main.qty * s.qty) / totalChk * 100);
-      html += '<div style="display:flex;align-items:center;gap:6px;padding:6px 10px;background:rgba(232,153,58,.08);border:1px solid rgba(232,153,58,.2);border-radius:8px;">'
-        +'<span style="font-size:13px;">🧂</span>'
-        +'<div><div style="font-size:11px;font-weight:600;white-space:nowrap;">'+s.label.slice(0,20)+'</div>'
-        +'<div style="font-size:9px;color:var(--amber);font-family:var(--font-mono);">~'+coScore+'% чеков</div></div></div>';
-    });
-
-    html += '</div></div>';
-  });
-
-  inner.innerHTML = html || '<div style="padding:16px;font-size:12px;color:var(--txt2);font-family:var(--font-mono);">Загрузите данные по блюдам для анализа</div>';
-  el.style.display = 'block';
-  showBlock('block-menu');
-}
 
 function runNewBlocks() {
   const b1 = S['b1'], d1 = S['d1'];
@@ -36269,49 +36382,7 @@ async function cpRenderMilestone(project) {
   </div>
 </div>
 
-<style>
-.kb-archive-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border: 1px solid rgba(240,236,230,.08);
-  border-radius: 10px;
-  background: var(--bg2);
-  cursor: pointer;
-  transition: border-color .15s, background .15s;
-}
-.kb-archive-row:hover {
-  border-color: rgba(184,146,58,.35);
-  background: var(--bg4);
-}
-.kb-archive-avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 9px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  flex-shrink: 0;
-  opacity: .85;
-}
-.kb-archive-name {
-  font-family: var(--font-display);
-  font-size: 14px;
-  color: var(--txt);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.kb-archive-tag {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: .08em;
-  color: var(--txt3);
-  margin-top: 2px;
-}
-</style>
+
 
 <div class="modal-overlay" id="modal-kb-archive" onclick="if(event.target===this)closeModal('modal-kb-archive')">
   <div class="modal" style="max-width:520px;max-height:calc(100vh - 80px);display:flex;flex-direction:column;">
@@ -36330,7 +36401,7 @@ async function cpRenderMilestone(project) {
 
 
 <!-- ── KB JAVASCRIPT ── -->
-<script>
+<script id="dtr-kanban-js">
 (function(){
 'use strict';
 
@@ -37050,7 +37121,7 @@ window.kbDeleteCat = async function(id) {
 })();
 </script>
 
-<script>
+<script id="dtr-report-search-js">
 /* ── Поиск отчётов — дропдаун с клавиатурной навигацией ── */
 (function() {
   var inp       = document.getElementById('cp2-reports-search');
@@ -37236,13 +37307,12 @@ window.kbDeleteCat = async function(id) {
   });
 })();
 
-function cp2FilterReports(){}  // legacy stub — больше не используется
-function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
+  // legacy stub — больше не используется
 </script>
 
 
 
-<script>
+<script id="dtr-services-js">
 (function() {
   const SERVICES = [
     { id: 'smm',          label: 'SMM',                    color: '#38b2ac', bg: 'rgba(56,178,172,.12)',  border: 'rgba(56,178,172,.3)'  },
@@ -37457,7 +37527,7 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
 
 
 
-<script>
+<script id="dtr-dropdown-js">
 (function(){
   window.dtrToggleDd = function(type) {
     var menu = document.getElementById('dd-' + type + '-menu');
@@ -37583,7 +37653,7 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
 
 
 
-<script>
+<script id="dtr-svc-meta-js">
 (function(){
   var SVC_META = {
     smm:          { label: 'SMM',                    color: '#38b2ac' },
@@ -37691,7 +37761,7 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
 
 
 
-<script>
+<script id="dtr-stage-defaults-js">
 (function(){
   var DEFAULTS = [
     'Анализ клиентских данных',
@@ -37940,7 +38010,7 @@ function cp2ClearSearch(){ if(window.cp2CloseDropdown) cp2CloseDropdown(); }
 })();
 </script>
 
-<script>
+<script id="dtr-admin-tools-js">
 async function dtrResetClientPassword() {
   var newPass = document.getElementById('ps-new-client-pass').value.trim();
   var msg = document.getElementById('ps-reset-pass-msg');
@@ -37988,7 +38058,7 @@ async function dtrResetClientPassword() {
 }
 </script>
 
-<script>
+<script id="dtr-team-mgmt-js">
 // ── TEAM MANAGEMENT ──────────────────────────────────────────────
 
 var _tmColor = '#b8923a';
@@ -39918,134 +39988,8 @@ window.switchDashTab = function(tab, btn) {
 })();
 </script>
 
-<style id="dtr-modern-numerals">
-/* Современные числа: табличные (выровненные) lining-фигуры + аккуратный трекинг.
-   Числа в метриках перестают «прыгать» при обновлении и выравниваются по колонкам. */
-.apl-hero-num, .stat-val, .fin-trend-val, .sv-rc-val,
-.kb-card-timer, .kb-timer-live, .kb-timer-logged, .kb-card-deadline,
-.apl-hero-foot, .fin-trend-sub, .sv-rc-sub {
-  font-variant-numeric: tabular-nums lining-nums;
-  font-feature-settings: "tnum" 1, "lnum" 1;
-}
-.apl-hero-num, .stat-val { letter-spacing: -.03em; }
-</style>
 
-<style id="dtr-kb-card-skin">
-/* Карточки канбана — подгонка под утверждённый макет (канбан видит только агентство) */
-.kb-card-active { border-color: rgba(184,146,58,.4); }
-.kb-card-active .kb-timer-live {
-  background: transparent; border-color: transparent;
-  color: var(--a2); font-size: 17px; font-weight: 700;
-  padding: 2px 0; min-width: 0; letter-spacing: .04em;
-}
-.kb-card-active .kb-timer-live-dot { background: var(--a2); }
-.kb-card-done .kb-card-title { text-decoration: line-through; color: var(--txt3); }
-.kb-card-done .kb-pri-badge { display: none; }
-.kb-card-done .kb-move-btn { border-color: rgba(255,255,255,.16); border-radius: 8px; }
-</style>
 
-<style id="dtr-typography-scale">
-/* ── Глобальное улучшение читаемости DTR ──
-   Поднимаем мелкие тексты на 1-2px без риска сломать лейаут.
-   Используем точечные классы, не трогаем инлайн-стили логики. */
-
-/* Навигация */
-.nav-item-label { font-size: 13px !important; }
-.nav-section-label { font-size: 10px !important; letter-spacing: .1em !important; }
-.sidebar-project-name { font-size: 13px !important; }
-
-/* Заголовки страниц */
-.page-title { font-size: 20px !important; }
-.page-subtitle { font-size: 12px !important; }
-.sv-section-title { font-size: 11px !important; letter-spacing: .1em !important; }
-
-/* Карточки проектов (dashboard) */
-.pcard-name { font-size: 15px !important; }
-.pcard-meta { font-size: 12px !important; }
-.pcard-badge { font-size: 10px !important; }
-.pcard-stat-val { font-size: 13px !important; }
-.pcard-stat-lbl { font-size: 10px !important; }
-
-/* Трекер этапов */
-.tracker-stage-name { font-size: 14px !important; }
-.tracker-badge { font-size: 10px !important; }
-.tracker-meta-chip { font-size: 11px !important; }
-.tracker-note-text { font-size: 12px !important; }
-.tracker-edit-btn { font-size: 11px !important; }
-.task-section-label { font-size: 11px !important; }
-.pp-stage-section-label { font-size: 11px !important; letter-spacing: .06em !important; }
-.pp-stage-mini-val { font-size: 20px !important; }
-.pp-stage-mini-lbl { font-size: 10px !important; }
-
-/* Канбан */
-.kb-card-title { font-size: 13px !important; }
-.kb-card-stage { font-size: 11px !important; }
-.kb-col-title { font-size: 11px !important; letter-spacing: .08em !important; }
-.kb-col-count { font-size: 11px !important; }
-.kb-pri-badge { font-size: 10px !important; }
-.kb-card-deadline { font-size: 11px !important; }
-.kb-move-btn { font-size: 11px !important; }
-
-/* Команда — таблица эффективности */
-.team-eff-name { font-size: 14px !important; }
-.team-eff-sub { font-size: 11px !important; }
-.team-eff-val { font-size: 16px !important; }
-.team-eff-lbl { font-size: 10px !important; }
-.team-eff-hint { font-size: 11px !important; }
-
-/* Финансы */
-.fin-trend-val { font-size: 22px !important; }
-.fin-trend-lbl { font-size: 10px !important; letter-spacing: .08em !important; }
-.fin-trend-sub { font-size: 11px !important; }
-.fin-cat-name { font-size: 13px !important; }
-.fin-cat-val { font-size: 13px !important; }
-
-/* Сводка (overview) */
-.apl-hero-num { font-size: 32px !important; }
-.apl-hero-lbl { font-size: 10px !important; letter-spacing: .1em !important; }
-.apl-hero-foot { font-size: 12px !important; }
-.apl-chart-label { font-size: 10px !important; letter-spacing: .1em !important; }
-
-/* Дедлайны */
-.dl-item-name { font-size: 14px !important; }
-.dl-item-proj { font-size: 12px !important; }
-.dl-item-date { font-size: 13px !important; }
-.dl-status-badge { font-size: 10px !important; }
-
-/* Циклы */
-.ct-hero-num { font-size: 28px !important; }
-.ct-hero-lbl { font-size: 10px !important; letter-spacing: .1em !important; }
-.ct-hero-sub { font-size: 12px !important; }
-
-/* База знаний */
-.kb-title { font-size: 15px !important; }
-.kb-meta { font-size: 12px !important; }
-.kb-tag { font-size: 10px !important; }
-
-/* Вкладки и кнопки */
-.pp-tab { font-size: 12px !important; }
-.tab-btn { font-size: 11px !important; }
-.pill-tab { font-size: 11px !important; }
-.btn-ghost { font-size: 12px !important; }
-.btn-primary { font-size: 13px !important; }
-
-/* Модалки */
-.modal-title { font-size: 17px !important; }
-.modal-label { font-size: 12px !important; }
-.modal-hint { font-size: 11px !important; }
-
-/* Toast */
-.alert-toast-body { font-size: 13px !important; }
-
-/* Общие утилиты — mono labels */
-.mono-label { font-size: 10px !important; letter-spacing: .1em !important; }
-.section-label { font-size: 10px !important; letter-spacing: .1em !important; }
-
-/* Таблица детализации по этапам (Циклы) */
-#ct-stage-table table { font-size: 13px !important; }
-#ct-stage-table th { font-size: 10px !important; }
-#ct-stage-table td { font-size: 13px !important; }
-</style>
 
 <!-- ════════════════════════════════════════════════════════════════════
      DTR — Count-Up Engine (премиум-отсчёт чисел)
