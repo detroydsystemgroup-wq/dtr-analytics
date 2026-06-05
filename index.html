@@ -40202,40 +40202,27 @@ window.switchDashTab = function(tab, btn) {
 
 <script id="dtr-orgchart-js">
 /* ═══════════════════════════════════════════════════════════════════
-   DTR ORG-CHART — визуальный редактор организационной структуры
-   Хранит данные в localStorage (dtr_orgchart_{agencyId}).
+   DTR ORG-CHART v2 — выбор из существующих отделов и сотрудников
    ═══════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
 
   /* ── STORAGE ── */
   function storageKey() {
-    var id = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.id : 'demo';
-    return 'dtr_orgchart_' + id;
+    var uid = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.id : 'demo';
+    return 'dtr_orgchart_' + uid;
   }
-  function loadTree() {
-    try { return JSON.parse(localStorage.getItem(storageKey()) || 'null'); } catch(e){ return null; }
-  }
-  function saveTree(tree) {
-    try { localStorage.setItem(storageKey(), JSON.stringify(tree)); } catch(e){}
-  }
+  function loadTree()      { try { return JSON.parse(localStorage.getItem(storageKey()) || 'null'); } catch(e){ return null; } }
+  function saveTree(tree)  { try { localStorage.setItem(storageKey(), JSON.stringify(tree)); } catch(e){} }
+  function defaultTree()   { return { id: 'root', label: 'Главный руководитель', type: 'root', color: '#c9a84c', children: [] }; }
 
-  /* ── DEFAULT TREE (пустой корень) ── */
-  function defaultTree() {
-    return { id: 'root', title: 'Главный руководитель', color: '#c9a84c', children: [] };
-  }
+  var _uidC = Date.now();
+  function mkId() { return 'n' + (++_uidC); }
 
-  /* ── UID ── */
-  var _uid = Date.now();
-  function uid() { return 'n' + (++_uid); }
-
-  /* ── FIND/UPDATE node by id ── */
+  /* ── TREE UTILS ── */
   function findNode(tree, id) {
     if (tree.id === id) return tree;
-    for (var i = 0; i < (tree.children||[]).length; i++) {
-      var r = findNode(tree.children[i], id);
-      if (r) return r;
-    }
+    for (var i = 0; i < (tree.children||[]).length; i++) { var r = findNode(tree.children[i], id); if (r) return r; }
     return null;
   }
   function removeNode(tree, id) {
@@ -40243,155 +40230,192 @@ window.switchDashTab = function(tab, btn) {
     tree.children = tree.children.filter(function(c){ return c.id !== id; });
     tree.children.forEach(function(c){ removeNode(c, id); });
   }
+  function collectAll(node, arr) {
+    arr = arr || [];
+    arr.push(node);
+    (node.children||[]).forEach(function(c){ collectAll(c, arr); });
+    return arr;
+  }
+  /* Собираем все label уже добавленных узлов чтобы не добавлять дважды */
+  function usedLabels(tree) {
+    return collectAll(tree).map(function(n){ return n.label; });
+  }
 
-  /* ── SVG CONNECTOR LINES ── */
+  /* ── SVG ЛИНИИ ── */
   function buildConnectors(wrap) {
     var svg = wrap.querySelector('.org-svg');
     if (!svg) return;
-    var wRect = wrap.getBoundingClientRect();
+    var wR = wrap.getBoundingClientRect();
     var lines = '';
     wrap.querySelectorAll('[data-parent-id]').forEach(function(child) {
-      var parentId = child.dataset.parentId;
-      var parent = wrap.querySelector('[data-node-id="' + parentId + '"]');
-      if (!parent) return;
-      var pRect = parent.getBoundingClientRect();
-      var cRect = child.getBoundingClientRect();
-      var px = pRect.left + pRect.width/2 - wRect.left;
-      var py = pRect.bottom - wRect.top;
-      var cx = cRect.left + cRect.width/2 - wRect.left;
-      var cy = cRect.top - wRect.top;
-      var my = py + (cy - py) * 0.5;
-      lines += '<path d="M'+px+','+py+' C'+px+','+my+' '+cx+','+my+' '+cx+','+cy+'" fill="none" stroke="rgba(201,168,76,.35)" stroke-width="1.5"/>';
+      var par = wrap.querySelector('[data-node-id="' + child.dataset.parentId + '"]');
+      if (!par) return;
+      var pR = par.getBoundingClientRect(), cR = child.getBoundingClientRect();
+      var px = pR.left + pR.width/2 - wR.left, py = pR.bottom - wR.top;
+      var cx = cR.left + cR.width/2 - wR.left, cy = cR.top - wR.top;
+      var my = py + (cy - py) * 0.45;
+      lines += '<path d="M'+px+','+py+' C'+px+','+my+' '+cx+','+my+' '+cx+','+cy+'" fill="none" stroke="rgba(201,168,76,.3)" stroke-width="1.5" stroke-dasharray="none"/>';
     });
     svg.innerHTML = lines;
   }
 
-  /* ── RENDER TREE ── */
-  var _tree;
-  var _editing = null; // id узла в редакторе
+  /* ── RENDER УЗЛА ── */
+  function esc(s) {
+    return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
+  }
+
+  var _tree, _editing = null;
 
   function renderNode(node, parentId) {
     var isRoot = !parentId;
-    var col = node.color || '#c9a84c';
-    var parentAttr = parentId ? ' data-parent-id="' + parentId + '"' : '';
-    var children = (node.children || []);
+    var col    = node.color || '#c9a84c';
+    var parAttr = parentId ? ' data-parent-id="' + parentId + '"' : '';
+    var isActive = (_editing === node.id);
 
-    // Узел-карточка
-    var cardHtml =
-      '<div class="org-node" data-node-id="' + node.id + '"' + parentAttr +
-        ' style="background:rgba(255,255,255,.04);border:1.5px solid ' + col + '33;border-radius:14px;padding:14px 18px;cursor:pointer;position:relative;' +
-        (isRoot ? 'border-color:' + col + '99;background:' + col + '14;' : '') + '"' +
-        ' onclick="orgNodeClick(event,\'" + node.id + "\')">' +
-        '<div style="font-family:var(--font-display,inherit);font-weight:700;font-size:13px;color:#f0ece6;line-height:1.25;text-align:center;min-width:90px;max-width:140px;">' + escOrg(node.title) + '</div>' +
-        (node.subtitle ? '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;color:rgba(240,236,230,.4);text-align:center;margin-top:3px;">' + escOrg(node.subtitle) + '</div>' : '') +
-        '<div class="org-node-dot" style="position:absolute;top:6px;right:8px;width:7px;height:7px;border-radius:50%;background:' + col + ';opacity:.7;"></div>' +
+    var dot = node.type === 'member'
+      ? '<div style="position:absolute;top:6px;right:8px;width:7px;height:7px;border-radius:50%;background:' + col + ';opacity:.8;"></div>'
+      : '<div style="position:absolute;top:6px;right:8px;font-family:var(--font-mono);font-size:7px;letter-spacing:.06em;color:' + col + ';opacity:.7;">ОТД</div>';
+
+    var card =
+      '<div class="org-node" data-node-id="' + node.id + '"' + parAttr +
+        ' onclick="orgNodeClick(event,\'' + node.id + '\')"' +
+        ' style="background:' + (isRoot ? col+'18' : isActive ? 'rgba(201,168,76,.1)' : 'rgba(255,255,255,.04)') + ';' +
+          'border:1.5px solid ' + (isActive ? col+'cc' : isRoot ? col+'88' : col+'28') + ';' +
+          'border-radius:14px;padding:12px 16px;cursor:pointer;position:relative;' +
+          'min-width:100px;max-width:150px;text-align:center;">' +
+        dot +
+        '<div style="font-family:var(--font-display,inherit);font-weight:700;font-size:12px;color:#f0ece6;line-height:1.3;">' + esc(node.label) + '</div>' +
       '</div>';
 
-    if (!children.length) {
-      return '<div class="org-col" style="display:inline-flex;flex-direction:column;align-items:center;padding:0 8px;">' + cardHtml + '</div>';
-    }
+    var ch = (node.children||[]);
+    if (!ch.length) return '<div class="org-col" style="display:inline-flex;flex-direction:column;align-items:center;padding:0 10px;">' + card + '</div>';
 
-    var childrenHtml = children.map(function(c){ return renderNode(c, node.id); }).join('');
-
-    return '<div class="org-col" style="display:inline-flex;flex-direction:column;align-items:center;padding:0 8px;">' +
-      cardHtml +
-      '<div class="org-children" style="display:flex;flex-direction:row;align-items:flex-start;margin-top:0;padding-top:0;">' +
-        childrenHtml +
+    return '<div class="org-col" style="display:inline-flex;flex-direction:column;align-items:center;padding:0 10px;">' +
+      card +
+      '<div class="org-children" style="display:flex;flex-direction:row;align-items:flex-start;margin-top:0;">' +
+        ch.map(function(c){ return renderNode(c, node.id); }).join('') +
       '</div>' +
     '</div>';
   }
 
-  function escOrg(s) {
-    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
-      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
-    });
+  /* ── ПАНЕЛЬ ДОБАВИТЬ ── */
+  function addPanelHtml(allNodes, depts, members) {
+    var used = usedLabels(_tree);
+
+    /* Отделы ещё не в дереве */
+    var freeDepts = depts.filter(function(d){ return used.indexOf(d) < 0; });
+    /* Сотрудники ещё не в дереве */
+    var freeMembers = members.filter(function(m){ return used.indexOf(m.name) < 0; });
+
+    var parentOpts = allNodes.map(function(n){
+      return '<option value="' + esc(n.id) + '">' + esc(n.label) + '</option>';
+    }).join('');
+
+    var deptOpts = freeDepts.length
+      ? freeDepts.map(function(d){ return '<option value="dept|' + esc(d) + '">' + esc(d) + '</option>'; }).join('')
+      : '<option value="" disabled>— нет новых отделов —</option>';
+
+    var memOpts = freeMembers.length
+      ? freeMembers.map(function(m){ return '<option value="mem|' + esc(m.id) + '|' + esc(m.name) + '|' + esc(m.color||'#c9a84c') + '">' + esc(m.name) + '</option>'; }).join('')
+      : '<option value="" disabled>— все добавлены —</option>';
+
+    var inp = 'width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:9px 12px;color:#f0ece6;font-size:13px;outline:none;';
+
+    return '<div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;">' +
+      /* ЧТО добавить */
+      '<div>' +
+        '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(240,236,230,.3);margin-bottom:5px;">Что добавить</div>' +
+        '<select id="org-sel-what" style="' + inp + '">' +
+          '<optgroup label="Отделы">' + deptOpts + '</optgroup>' +
+          '<optgroup label="Сотрудники">' + memOpts + '</optgroup>' +
+        '</select>' +
+      '</div>' +
+      /* КОМУ подчиняется */
+      '<div>' +
+        '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(240,236,230,.3);margin-bottom:5px;">Подчиняется</div>' +
+        '<select id="org-sel-parent" style="' + inp + '">' + parentOpts + '</select>' +
+      '</div>' +
+      /* КНОПКА */
+      '<button onclick="orgAddNode()" style="padding:10px 22px;border-radius:9px;border:none;cursor:pointer;background:rgba(201,168,76,.2);color:var(--a2,#c9a84c);font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;white-space:nowrap;">+ Добавить</button>' +
+    '</div>';
   }
+
+  /* ── ПАНЕЛЬ РЕДАКТИРОВАНИЯ (при клике на узел) ── */
+  function editPanelHtml(node, allNodes) {
+    var inp = 'width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:9px 12px;color:#f0ece6;font-size:13px;outline:none;';
+    var isRoot = node.id === _tree.id;
+
+    return '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">' +
+      '<div style="font-family:var(--font-mono);font-size:11px;color:rgba(240,236,230,.5);">Выбран:</div>' +
+      '<div style="font-family:var(--font-display,inherit);font-weight:700;font-size:13px;color:#f0ece6;">' + esc(node.label) + '</div>' +
+      '<div style="margin-left:auto;display:flex;gap:6px;">' +
+        (isRoot
+          ? ''
+          : '<button onclick="orgMoveNode()" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.12);cursor:pointer;background:rgba(255,255,255,.05);color:rgba(240,236,230,.6);font-family:var(--font-mono);font-size:10px;">Переместить</button>'
+        ) +
+        (isRoot
+          ? ''
+          : '<button onclick="orgDeleteNode()" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(224,82,82,.3);cursor:pointer;background:rgba(224,82,82,.07);color:#e05252;font-family:var(--font-mono);font-size:10px;">Удалить</button>'
+        ) +
+        '<button onclick="orgCancelEdit()" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.08);cursor:pointer;background:transparent;color:rgba(240,236,230,.35);font-family:var(--font-mono);font-size:10px;">Снять выбор</button>' +
+      '</div>' +
+    '</div>' +
+    /* Переместить: куда */
+    (!isRoot ? '<div id="org-move-row" style="display:none;margin-top:10px;display:none;">' +
+      '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(240,236,230,.3);margin-bottom:5px;">Переместить под</div>' +
+      '<div style="display:flex;gap:8px;">' +
+        '<select id="org-sel-moveto" style="flex:1;' + inp + '">' +
+          allNodes.filter(function(n){ return n.id !== node.id; }).map(function(n){
+            return '<option value="' + esc(n.id) + '">' + esc(n.label) + '</option>';
+          }).join('') +
+        '</select>' +
+        '<button onclick="orgConfirmMove()" style="padding:9px 18px;border-radius:9px;border:none;cursor:pointer;background:rgba(201,168,76,.2);color:var(--a2,#c9a84c);font-family:var(--font-mono);font-size:11px;">OK</button>' +
+      '</div>' +
+    '</div>' : '');
+  }
+
+  /* ── MAIN RENDER ── */
+  var _depts   = [];
+  var _members = [];
 
   function renderTree() {
     var body = document.getElementById('dept-org-body');
     if (!body || !_tree) return;
 
-    // Список всех узлов для выпадающего "родитель"
-    var allNodes = [];
-    function collect(node) {
-      allNodes.push({ id: node.id, title: node.title });
-      (node.children||[]).forEach(collect);
-    }
-    collect(_tree);
+    var allNodes = collectAll(_tree);
+    var edNode   = _editing ? findNode(_tree, _editing) : null;
 
-    var edNode = _editing ? findNode(_tree, _editing) : null;
+    var panelHtml = edNode ? editPanelHtml(edNode, allNodes) : addPanelHtml(allNodes, _depts, _members);
 
-    var editorHtml = '<div id="org-editor" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:20px;margin-bottom:20px;">' +
-      '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.35);margin-bottom:14px;">' +
-        (edNode ? 'Редактировать: ' + escOrg(edNode.title) : 'Добавить узел') +
-      '</div>' +
-      '<div style="display:grid;grid-template-columns:1fr 1fr 120px;gap:10px;align-items:end;">' +
-        // Название
-        '<div>' +
-          '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(240,236,230,.3);margin-bottom:5px;">Название</div>' +
-          '<input id="org-inp-title" type="text" placeholder="Отдел / должность" value="' + escOrg(edNode ? edNode.title : '') + '" ' +
-            'style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:9px 12px;color:#f0ece6;font-size:13px;font-family:var(--font-display,inherit);outline:none;" />' +
-        '</div>' +
-        // Подзаголовок
-        '<div>' +
-          '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(240,236,230,.3);margin-bottom:5px;">Подпись (необяз.)</div>' +
-          '<input id="org-inp-sub" type="text" placeholder="Напр.: 3 сотр." value="' + escOrg(edNode ? (edNode.subtitle||'') : '') + '" ' +
-            'style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:9px 12px;color:#f0ece6;font-size:13px;font-family:var(--font-display,inherit);outline:none;" />' +
-        '</div>' +
-        // Цвет
-        '<div>' +
-          '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(240,236,230,.3);margin-bottom:5px;">Цвет</div>' +
-          '<input id="org-inp-color" type="color" value="' + (edNode ? (edNode.color||'#c9a84c') : '#c9a84c') + '" ' +
-            'style="width:100%;height:40px;border:1px solid rgba(255,255,255,.1);border-radius:9px;background:rgba(255,255,255,.06);cursor:pointer;padding:2px;" />' +
-        '</div>' +
-      '</div>' +
-      // Родитель (только при добавлении нового)
-      (!edNode ? '<div style="margin-top:10px;">' +
-        '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(240,236,230,.3);margin-bottom:5px;">Подчиняется</div>' +
-        '<select id="org-sel-parent" style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:9px 12px;color:#f0ece6;font-size:13px;font-family:var(--font-display,inherit);outline:none;">' +
-          allNodes.map(function(n){ return '<option value="' + escOrg(n.id) + '">' + escOrg(n.title) + '</option>'; }).join('') +
-        '</select>' +
-      '</div>' : '') +
-      // Кнопки
-      '<div style="display:flex;gap:8px;margin-top:14px;">' +
-        (edNode
-          ? '<button onclick="orgSaveEdit()" style="flex:1;padding:9px;border-radius:9px;border:none;cursor:pointer;background:rgba(201,168,76,.2);color:var(--a2,#c9a84c);font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;">Сохранить</button>' +
-            '<button onclick="orgCancelEdit()" style="padding:9px 16px;border-radius:9px;border:1px solid rgba(255,255,255,.1);cursor:pointer;background:transparent;color:rgba(240,236,230,.4);font-family:var(--font-mono);font-size:11px;">Отмена</button>' +
-            (edNode.id !== _tree.id ? '<button onclick="orgDeleteNode()" style="padding:9px 16px;border-radius:9px;border:1px solid rgba(224,82,82,.3);cursor:pointer;background:rgba(224,82,82,.08);color:#e05252;font-family:var(--font-mono);font-size:11px;">Удалить</button>' : '')
-          : '<button onclick="orgAddNode()" style="flex:1;padding:9px;border-radius:9px;border:none;cursor:pointer;background:rgba(201,168,76,.2);color:var(--a2,#c9a84c);font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;">+ Добавить</button>'
-        ) +
-      '</div>' +
-    '</div>';
+    var panelLabel = edNode ? 'Узел выбран' : 'Добавить в структуру';
 
-    // Диаграмма
-    var diagramHtml =
-      '<div style="overflow-x:auto;overflow-y:hidden;padding-bottom:16px;">' +
-        '<div id="org-diagram-wrap" style="position:relative;display:inline-flex;flex-direction:column;align-items:center;padding:24px;min-width:100%;box-sizing:border-box;">' +
+    body.innerHTML =
+      /* ── ПАНЕЛЬ ── */
+      '<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px 20px;margin-bottom:16px;">' +
+        '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(240,236,230,.3);margin-bottom:12px;">' + panelLabel + '</div>' +
+        panelHtml +
+      '</div>' +
+
+      /* ── ДИАГРАММА ── */
+      '<div style="overflow-x:auto;overflow-y:hidden;">' +
+        '<div id="org-diagram-wrap" style="position:relative;display:inline-flex;flex-direction:column;align-items:center;padding:28px 20px;min-width:100%;box-sizing:border-box;">' +
           '<svg class="org-svg" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;"></svg>' +
-          '<div id="org-diagram-nodes" style="position:relative;">' +
-            renderNode(_tree, null) +
-          '</div>' +
+          '<div style="position:relative;">' + renderNode(_tree, null) + '</div>' +
         '</div>' +
+      '</div>' +
+
+      /* ── FOOTER ── */
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;">' +
+        '<div style="font-family:var(--font-mono);font-size:9px;color:rgba(240,236,230,.2);">Нажмите на узел чтобы выбрать · ОТД = отдел</div>' +
+        '<button onclick="orgReset()" style="padding:5px 12px;border-radius:7px;border:1px solid rgba(255,255,255,.06);cursor:pointer;background:transparent;color:rgba(240,236,230,.25);font-family:var(--font-mono);font-size:9px;">Сбросить</button>' +
       '</div>';
 
-    // Легенда подсказка
-    var hintHtml = '<div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;color:rgba(240,236,230,.2);margin-top:8px;text-align:center;">Нажмите на узел чтобы редактировать · Добавьте новый узел через форму выше</div>';
-
-    body.innerHTML = editorHtml + diagramHtml + hintHtml;
-
-    // Рисуем линии после того как DOM отрисовался
     requestAnimationFrame(function(){
       requestAnimationFrame(function(){
-        var wrap = document.getElementById('org-diagram-wrap');
-        if (wrap) buildConnectors(wrap);
+        var w = document.getElementById('org-diagram-wrap');
+        if (w) buildConnectors(w);
       });
     });
-
-    // Подсвечиваем редактируемый узел
-    if (_editing) {
-      var el = body.querySelector('[data-node-id="' + _editing + '"]');
-      if (el) el.style.outline = '2px solid rgba(201,168,76,.6)';
-    }
   }
 
   /* ── ACTIONS ── */
@@ -40402,27 +40426,57 @@ window.switchDashTab = function(tab, btn) {
   };
 
   window.orgAddNode = function() {
-    var title = (document.getElementById('org-inp-title')||{}).value || '';
-    var sub   = (document.getElementById('org-inp-sub')||{}).value || '';
-    var color = (document.getElementById('org-inp-color')||{}).value || '#c9a84c';
+    var what     = (document.getElementById('org-sel-what')||{}).value || '';
     var parentId = (document.getElementById('org-sel-parent')||{}).value || _tree.id;
-    if (!title.trim()) { alert('Введите название'); return; }
+    if (!what) return;
     var parent = findNode(_tree, parentId);
     if (!parent) return;
     if (!parent.children) parent.children = [];
-    parent.children.push({ id: uid(), title: title.trim(), subtitle: sub.trim()||null, color: color, children: [] });
+
+    var parts = what.split('|');
+    var node;
+    if (parts[0] === 'dept') {
+      node = { id: mkId(), label: parts[1], type: 'dept', color: '#c9a84c', children: [] };
+    } else if (parts[0] === 'mem') {
+      node = { id: mkId(), label: parts[2], type: 'member', color: parts[3] || '#c9a84c', children: [] };
+    } else { return; }
+
+    parent.children.push(node);
     saveTree(_tree);
     _editing = null;
     renderTree();
   };
 
-  window.orgSaveEdit = function() {
-    if (!_editing) return;
+  window.orgDeleteNode = function() {
+    if (!_editing || _editing === _tree.id) return;
     var node = findNode(_tree, _editing);
     if (!node) return;
-    node.title    = (document.getElementById('org-inp-title')||{}).value || node.title;
-    node.subtitle = (document.getElementById('org-inp-sub')||{}).value || null;
-    node.color    = (document.getElementById('org-inp-color')||{}).value || node.color;
+    if (!confirm('Удалить «' + node.label + '»' + ((node.children||[]).length ? ' и всех подчинённых?' : '?'))) return;
+    removeNode(_tree, _editing);
+    saveTree(_tree);
+    _editing = null;
+    renderTree();
+  };
+
+  window.orgMoveNode = function() {
+    var row = document.getElementById('org-move-row');
+    if (row) row.style.display = row.style.display === 'none' ? '' : 'none';
+  };
+
+  window.orgConfirmMove = function() {
+    if (!_editing) return;
+    var newParentId = (document.getElementById('org-sel-moveto')||{}).value;
+    if (!newParentId || newParentId === _editing) return;
+    var node = findNode(_tree, _editing);
+    if (!node) return;
+    /* Проверяем что newParent не является потомком node */
+    var nodeDescendants = collectAll(node).map(function(n){ return n.id; });
+    if (nodeDescendants.indexOf(newParentId) >= 0) { alert('Нельзя переместить узел в своего потомка'); return; }
+    removeNode(_tree, _editing);
+    var newParent = findNode(_tree, newParentId);
+    if (!newParent) return;
+    if (!newParent.children) newParent.children = [];
+    newParent.children.push(node);
     saveTree(_tree);
     _editing = null;
     renderTree();
@@ -40430,34 +40484,6 @@ window.switchDashTab = function(tab, btn) {
 
   window.orgCancelEdit = function() { _editing = null; renderTree(); };
 
-  window.orgDeleteNode = function() {
-    if (!_editing || _editing === _tree.id) return;
-    var node = findNode(_tree, _editing);
-    if (!node) return;
-    if (!confirm('Удалить «' + node.title + '» и всех подчинённых?')) return;
-    removeNode(_tree, _editing);
-    saveTree(_tree);
-    _editing = null;
-    renderTree();
-  };
-
-  /* ── EXPORT PNG ── */
-  window.orgExportPng = function() {
-    var wrap = document.getElementById('org-diagram-wrap');
-    if (!wrap) return;
-    if (typeof html2canvas !== 'undefined') {
-      html2canvas(wrap, { backgroundColor: '#0e0e16', scale: 2 }).then(function(canvas) {
-        var a = document.createElement('a');
-        a.download = 'orgchart.png';
-        a.href = canvas.toDataURL('image/png');
-        a.click();
-      });
-    } else {
-      alert('html2canvas не загружен, экспорт недоступен');
-    }
-  };
-
-  /* ── RESET ── */
   window.orgReset = function() {
     if (!confirm('Сбросить орг-структуру?')) return;
     _tree = defaultTree();
@@ -40466,44 +40492,53 @@ window.switchDashTab = function(tab, btn) {
     renderTree();
   };
 
+  /* ── ЗАГРУЗКА ДАННЫХ ── */
+  async function loadOrgData() {
+    _depts   = (window._departments || []).slice();
+    _members = [];
+    try {
+      if (typeof currentUser !== 'undefined' && currentUser) {
+        var res = await sb.from('team_members').select('id,name,color').eq('agency_id', currentUser.id).order('name');
+        _members = res.data || [];
+      }
+    } catch(e) {}
+  }
+
   /* ── VIEW SWITCH ── */
-  window.deptSwitchView = function(view, btn) {
-    var cards = document.getElementById('dept-eff-body');
-    var org   = document.getElementById('dept-org-body');
+  window.deptSwitchView = function(view) {
+    var cards    = document.getElementById('dept-eff-body');
+    var org      = document.getElementById('dept-org-body');
     var btnCards = document.getElementById('dept-view-cards');
     var btnOrg   = document.getElementById('dept-view-org');
-    var activeStyle = 'background:rgba(201,168,76,.18);color:var(--a2,#c9a84c);';
-    var idleStyle   = 'background:transparent;color:rgba(240,236,230,.4);';
+
+    var activeS = 'background:rgba(201,168,76,.18);color:var(--a2,#c9a84c);';
+    var idleS   = 'background:transparent;color:rgba(240,236,230,.4);';
 
     if (view === 'cards') {
       if (cards) cards.style.display = '';
-      if (org)   org.style.display   = 'none';
-      if (btnCards) btnCards.style.cssText += activeStyle;
-      if (btnOrg)   btnOrg.style.cssText   += idleStyle;
+      if (org)   org.style.display = 'none';
+      if (btnCards) { btnCards.style.background='rgba(201,168,76,.18)'; btnCards.style.color='var(--a2,#c9a84c)'; }
+      if (btnOrg)   { btnOrg.style.background='transparent'; btnOrg.style.color='rgba(240,236,230,.4)'; }
     } else {
       if (cards) cards.style.display = 'none';
-      if (org)   org.style.display   = '';
-      if (btnCards) btnCards.style.cssText += idleStyle;
-      if (btnOrg)   btnOrg.style.cssText   += activeStyle;
-      // Инициализируем дерево если ещё не было
-      if (!_tree) {
-        _tree = loadTree() || defaultTree();
-      }
-      renderTree();
+      if (org)   org.style.display = '';
+      if (btnCards) { btnCards.style.background='transparent'; btnCards.style.color='rgba(240,236,230,.4)'; }
+      if (btnOrg)   { btnOrg.style.background='rgba(201,168,76,.18)'; btnOrg.style.color='var(--a2,#c9a84c)'; }
+
+      if (!_tree) _tree = loadTree() || defaultTree();
+      loadOrgData().then(function(){ renderTree(); });
     }
   };
 
-  /* ── INIT on tab open ── */
-  // Перехватываем switchTeamTab чтобы инициализировать при первом открытии вкладки depts
+  /* ── ПЕРЕХВАТ switchTeamTab ── */
   var _origSwitch = window.switchTeamTab;
   window.switchTeamTab = function(tab, btn) {
     if (typeof _origSwitch === 'function') _origSwitch(tab, btn);
     if (tab === 'depts') {
-      // Если орг-вид уже открыт — перерисовываем
       var org = document.getElementById('dept-org-body');
       if (org && org.style.display !== 'none') {
         if (!_tree) _tree = loadTree() || defaultTree();
-        renderTree();
+        loadOrgData().then(function(){ renderTree(); });
       }
     }
   };
