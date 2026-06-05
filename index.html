@@ -20628,19 +20628,52 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
       </div>
     </div>
 
-    <div id="dtab-team-panel" style="display:none;padding:24px 20px;">
-       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-        <div>
-          <div style="font-size:16px;font-weight:500;color:var(--txt);">Команда агентства</div>
-          <div style="font-size:11px;color:var(--txt3);margin-top:2px;">Сотрудники назначаются на этапы проектов</div>
+    <div id="dtab-team-panel" style="display:none;">
+
+      <!-- ── TEAM HERO STRIP (стиль Сводки / Финансов) ── -->
+      <div class="apl-hero-strip" id="team-hero-strip">
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">СОТРУДНИКОВ</div>
+          <div class="apl-hero-num" id="tm-hero-count" style="color:var(--a2);">—</div>
+          <div class="apl-hero-sub" id="tm-hero-count-sub">в команде</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="tm-hero-count-foot">—</div>
         </div>
-        <button onclick="openAddTeamMember()" style="display:flex;align-items:center;gap:6px;background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.25);border-radius:7px;padding:8px 16px;color:#c9a84c;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.04em;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;" onmouseover="this.style.background='rgba(184,146,58,.2)';this.style.borderColor='rgba(184,146,58,.45)'" onmouseout="this.style.background='rgba(184,146,58,.1)';this.style.borderColor='rgba(184,146,58,.25)'">+ Добавить</button>
+        <div class="apl-hero-divider"></div>
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">СР. ЦИКЛ ЗАДАЧИ</div>
+          <div class="apl-hero-num" id="tm-hero-cycle" style="color:var(--green);">—</div>
+          <div class="apl-hero-sub" id="tm-hero-cycle-sub">медиана команды</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="tm-hero-cycle-foot">—</div>
+        </div>
+        <div class="apl-hero-divider"></div>
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">VELOCITY (30 ДНЕЙ)</div>
+          <div class="apl-hero-num" id="tm-hero-vel" style="color:var(--cyan);">—</div>
+          <div class="apl-hero-sub">задач закрыто</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="tm-hero-vel-foot">—</div>
+        </div>
+        <div class="apl-hero-divider"></div>
+        <div class="apl-hero-card">
+          <div class="apl-hero-eyebrow">СР. ЭФФЕКТИВНОСТЬ</div>
+          <div class="apl-hero-num" id="tm-hero-eff" style="color:var(--green);">—</div>
+          <div class="apl-hero-sub" id="tm-hero-eff-sub">по команде</div>
+          <div class="apl-hero-rule"></div>
+          <div class="apl-hero-foot" id="tm-hero-eff-foot">—</div>
+        </div>
       </div>
-      <!-- TAB BAR -->
-      <div style="display:flex;gap:8px;margin:4px 0 20px;flex-wrap:wrap;">
+
+      <div style="padding:20px 24px 0;">
+      <!-- TAB BAR + кнопка добавить -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button id="tt-btn-employees" onclick="switchTeamTab('employees',this)" style="font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:9px 18px;border-radius:9px;cursor:pointer;transition:all .15s;white-space:nowrap;background:rgba(184,146,58,.14);border:1px solid rgba(184,146,58,.35);color:#c9a84c;">Сотрудники</button>
         <button id="tt-btn-workload" onclick="switchTeamTab('workload',this)" style="font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:9px 18px;border-radius:9px;cursor:pointer;transition:all .15s;white-space:nowrap;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.55);">Нагрузка по сотрудникам</button>
         <button id="tt-btn-depts" onclick="switchTeamTab('depts',this)" style="font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:9px 18px;border-radius:9px;cursor:pointer;transition:all .15s;white-space:nowrap;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.55);">Эффективность отделов</button>
+        </div>
+        <button onclick="openAddTeamMember()" style="display:flex;align-items:center;gap:6px;background:rgba(184,146,58,.1);border:1px solid rgba(184,146,58,.25);border-radius:7px;padding:8px 16px;color:#c9a84c;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.04em;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;" onmouseover="this.style.background='rgba(184,146,58,.2)'" onmouseout="this.style.background='rgba(184,146,58,.1)'">+ Добавить</button>
       </div>
 
       <!-- TAB: Сотрудники (только таблица эффективности; карточки скрыты, редактирование в строках таблицы) -->
@@ -20669,7 +20702,9 @@ ALTER TABLE projects ADD COLUMN IF NOT EXISTS operational_cost bigint DEFAULT 0;
         <!-- Орг-структура -->
         <div id="dept-org-body" style="display:none;"></div>
       </div>
-    </div>
+      <div style="height:40px;"></div>
+      </div><!-- /padding-wrap -->
+    </div><!-- /dtab-team-panel -->
 
     </main>
   </div>
@@ -38378,6 +38413,51 @@ async function loadTeamPanel() {
         '</div>' +
       '</div>';
     }).join('');
+
+    // ── Обновляем TEAM HERO STRIP ──
+    (function updateTeamHero() {
+      var cache = window._efficiencyCache || {};
+      var ids = Object.keys(cache);
+      var allMembers = ids.length;
+      var cycles = [], vel30 = 0, effScores = [];
+      ids.forEach(function(id) {
+        var c = cache[id];
+        if (!c) return;
+        if (c.avgDays != null) cycles.push(c.avgDays);
+        vel30 += (c.done30 || 0);
+        if (c.effScore != null) effScores.push(c.effScore);
+      });
+      // Медиана цикла
+      var medCycle = null;
+      if (cycles.length) {
+        var sc = cycles.slice().sort(function(a,b){return a-b;});
+        medCycle = sc.length % 2 ? sc[Math.floor(sc.length/2)] : (sc[sc.length/2-1]+sc[sc.length/2])/2;
+      }
+      // Ср. эффективность
+      var avgEff = effScores.length ? Math.round(effScores.reduce(function(s,v){return s+v;},0)/effScores.length) : null;
+      var effColor = avgEff == null ? 'var(--a2)' : avgEff >= 75 ? 'var(--green)' : avgEff >= 50 ? 'var(--amber)' : 'var(--red)';
+      var cycleColor = medCycle == null ? 'var(--green)' : medCycle <= 2 ? 'var(--green)' : medCycle <= 5 ? 'var(--amber)' : 'var(--red)';
+      function setT(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; }
+      function setC(id, c) { var el = document.getElementById(id); if (el) el.style.color = c; }
+      // Сотрудники
+      setT('tm-hero-count', allMembers || members.length);
+      setT('tm-hero-count-sub', 'в команде');
+      setT('tm-hero-count-foot', members.length + ' сотр. · ' + stages.length + ' этапов');
+      // Цикл
+      var cycTxt = medCycle == null ? '—' : medCycle < 1 ? Math.round(medCycle*24)+'ч' : medCycle.toFixed(1).replace('.',',')+' д';
+      setT('tm-hero-cycle', cycTxt);
+      setC('tm-hero-cycle', cycleColor);
+      setT('tm-hero-cycle-sub', medCycle == null ? 'нет данных' : medCycle <= 2 ? 'высокий темп' : medCycle <= 5 ? 'ровный темп' : 'медленно');
+      setT('tm-hero-cycle-foot', cycles.length + ' сотр. с данными');
+      // Velocity
+      setT('tm-hero-vel', vel30 || '—');
+      setT('tm-hero-vel-foot', 'за 7 дней: ' + ids.reduce(function(s,id){return s+(cache[id]?cache[id].done7||0:0);},0));
+      // Эффективность
+      setT('tm-hero-eff', avgEff != null ? avgEff + '%' : '—');
+      setC('tm-hero-eff', effColor);
+      setT('tm-hero-eff-sub', avgEff == null ? 'нет данных' : avgEff >= 75 ? 'отлично' : avgEff >= 50 ? 'в норме' : 'требует внимания');
+      setT('tm-hero-eff-foot', effScores.length + ' из ' + members.length + ' сотр.');
+    })();
   }
 
   // График нагрузки
