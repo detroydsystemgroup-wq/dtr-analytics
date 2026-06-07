@@ -33997,9 +33997,11 @@ async function loadCycleTime() {
   var projectCycleMs = spans.length ? _ctMedian(spans) : null;
   var projectCycleN = spans.length;
 
-  // ── Узкое место = этап с максимальной медианой (среди надёжных n>=3) ──
-  var reliable = stageStats.filter(function (s) { return s.n >= 3 && s.p50 != null; });
-  var pool = reliable.length ? reliable : stageStats.filter(function (s) { return s.p50 != null; });
+  // ── Узкое место = РЕАЛЬНО самый долгий этап (макс. медиана). Надёжность
+  // показываем подписью n и пометкой «мало данных», а не прячем длинный этап.
+  // Раньше фильтр n>=3 исключал настоящий самый долгий этап (если у него n<3),
+  // и «узким местом» назначался короткий — это противоречило графику и таблице.
+  var pool = stageStats.filter(function (s) { return s.p50 != null; });
   var bottleneck = pool.length ? pool.reduce(function (mx, s) { return s.p50 > mx.p50 ? s : mx; }) : null;
 
   // ── Aging WIP: открытые этапы дольше своего p85 ──
