@@ -29397,6 +29397,18 @@ window.projectCompleteContinue = async function() {
     await sb.from('project_stages')
       .update({ status: 'pending', completed_at: null, deadline: null, note: null })
       .eq('project_id', currentProject.id)
+    // Маркер границы цикла в истории — чтобы аналитика «Циклов» считала каждый
+    // цикл отдельно. Не критично при сбое (метрики не сломаются).
+    try {
+      const { data: _cycStages } = await sb.from('project_stages')
+        .select('stage_index').eq('project_id', currentProject.id)
+      if (_cycStages && _cycStages.length) {
+        await sb.from('stage_history').insert(_cycStages.map(function(st){
+          return { project_id: currentProject.id, stage_index: st.stage_index,
+                   event: 'Новый цикл', new_status: 'cycle_reset' }
+        }))
+      }
+    } catch(e) { console.warn('cycle marker (continue):', e.message) }
     // Скрываем завершённые задачи прошлого цикла (незакрытые переносим как есть)
     try { await sb.rpc('run_migration', { sql: "ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS archived_at timestamptz; ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS cycle integer DEFAULT 1; ALTER TABLE projects ADD COLUMN IF NOT EXISTS current_cycle integer DEFAULT 1; ALTER TABLE projects ADD COLUMN IF NOT EXISTS cycle_started_at timestamptz;" }) } catch(e) {}
     try {
@@ -30179,6 +30191,7 @@ async function cp2LoadActivity(project, limit, containerId) {
 
   var historyQuery = sb.from('stage_history').select('event,stage_index,note,created_at')
         .eq('project_id', project.id)
+        .neq('event', 'Новый цикл')
         .order('created_at', {ascending:false})
         .limit(Math.max(lim * 4, 25));
 
@@ -32761,6 +32774,17 @@ async function reactivateProject(btn) {
     await sb.from('project_stages')
       .update({ status: 'pending', completed_at: null, deadline: null, note: null })
       .eq('project_id', _psProjectId)
+    // Маркер границы цикла в истории (как в «Новый цикл»)
+    try {
+      const { data: _cycStages } = await sb.from('project_stages')
+        .select('stage_index').eq('project_id', _psProjectId)
+      if (_cycStages && _cycStages.length) {
+        await sb.from('stage_history').insert(_cycStages.map(function(st){
+          return { project_id: _psProjectId, stage_index: st.stage_index,
+                   event: 'Новый цикл', new_status: 'cycle_reset' }
+        }))
+      }
+    } catch(e) { console.warn('cycle marker (reactivate):', e.message) }
     // Скрываем завершённые задачи прошлого цикла (незакрытые переносим)
     try { await sb.rpc('run_migration', { sql: "ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS archived_at timestamptz; ALTER TABLE stage_tasks ADD COLUMN IF NOT EXISTS cycle integer DEFAULT 1; ALTER TABLE projects ADD COLUMN IF NOT EXISTS current_cycle integer DEFAULT 1; ALTER TABLE projects ADD COLUMN IF NOT EXISTS cycle_started_at timestamptz;" }) } catch(e) {}
     try {
@@ -33720,6 +33744,7 @@ function _ctStatusOf(ev) {
   var e = ev.event || '';
   if (/Начат/i.test(e)) return 'active';
   if (/Заверш/i.test(e)) return 'completed';
+  if (/Новый цикл/i.test(e)) return 'cycle_reset';
   if (/ожидан|Возвращ/i.test(e)) return 'pending';
   return null;
 }
@@ -33753,27 +33778,42 @@ function _ctDays(ms) { return ms == null ? null : ms / _CT_DAY; }
 // инстансы и (если этап ещё открыт) — на незавершённый «WIP».
 function _ctWalk(events) {
   // events отсортированы по created_at ASC
-  var firstStart = null, lastComplete = null, activeSince = null;
-  var activeMs = 0, returns = 0, completed = false;
+  // Каждая пара active→completed = ОТДЕЛЬНЫЙ инстанс этапа (один цикл).
+  // Это разделяет повторяющиеся месячные циклы: завершение закрывает инстанс,
+  // следующий старт открывает новый. Сброс цикла в историю не пишется, поэтому
+  // именно завершение служит границей. Возврат (pending) инстанс НЕ закрывает —
+  // лид-тайм продолжается до завершения, а возврат считается как rework.
+  var instances = [];                 // [{start, complete, activeMs, returns}]
+  var instStart = null, instActiveMs = 0, instReturns = 0;
+  var activeSince = null;
   for (var i = 0; i < events.length; i++) {
     var st = _ctStatusOf(events[i]);
     var t = new Date(events[i].created_at).getTime();
     if (isNaN(t)) continue;
     if (st === 'active') {
-      if (firstStart === null) firstStart = t;
+      if (instStart === null) instStart = t;   // начало нового инстанса (цикла)
       if (activeSince === null) activeSince = t;
     } else if (st === 'completed') {
-      if (activeSince !== null) { activeMs += (t - activeSince); activeSince = null; }
-      lastComplete = t; completed = true;
+      if (activeSince !== null) { instActiveMs += (t - activeSince); activeSince = null; }
+      if (instStart !== null && t >= instStart) {
+        instances.push({ start: instStart, complete: t, activeMs: instActiveMs, returns: instReturns });
+      }
+      instStart = null; instActiveMs = 0; instReturns = 0;   // сброс под следующий цикл
+    } else if (st === 'cycle_reset') {
+      // Жёсткая граница цикла: отбрасываем НЕзавершённый инстанс прошлого цикла,
+      // чтобы он не «протёк» в следующий. Завершённый уже выгружен на 'completed'.
+      activeSince = null; instStart = null; instActiveMs = 0; instReturns = 0;
     } else if (st === 'pending') {
-      if (activeSince !== null) { activeMs += (t - activeSince); activeSince = null; }
-      if (firstStart !== null) returns++;  // возврат после старта = rework
+      if (activeSince !== null) { instActiveMs += (t - activeSince); activeSince = null; }
+      if (instStart !== null) instReturns++;   // возврат после старта = rework (инстанс открыт)
     }
   }
+  // Открытый (незавершённый) инстанс — это WIP, если этап сейчас в работе.
+  var wip = (instStart !== null) ? { start: instStart, stillActive: activeSince !== null } : null;
   return {
-    firstStart: firstStart, lastComplete: lastComplete,
-    activeMs: activeMs, returns: returns, completed: completed,
-    stillActive: activeSince !== null  // открыт и сейчас в работе
+    instances: instances,            // завершённые циклы этапа
+    wip: wip,                         // текущий незакрытый инстанс (или null)
+    everCompleted: instances.length > 0
   };
 }
 
@@ -33834,17 +33874,20 @@ async function loadCycleTime() {
     var pid = parts[0], idx = parseInt(parts[1], 10);
     var nm = _ctStageName(pid, idx);
     var w = _ctWalk(groups[k]);
-    if (w.completed && w.firstStart !== null && w.lastComplete !== null && w.lastComplete >= w.firstStart) {
+    // Каждый завершённый цикл этапа — отдельный инстанс (старт→финиш этого цикла)
+    w.instances.forEach(function (inst) {
       instances.push({
         pid: pid, idx: idx, name: nm,
-        startMs: w.firstStart,
-        leadMs: w.lastComplete - w.firstStart,
-        activeMs: w.activeMs,
-        returns: w.returns,
-        completeAt: w.lastComplete
+        startMs: inst.start,
+        leadMs: inst.complete - inst.start,
+        activeMs: inst.activeMs,
+        returns: inst.returns,
+        completeAt: inst.complete
       });
-    } else if (!w.completed && w.firstStart !== null && w.stillActive) {
-      wip.push({ pid: pid, idx: idx, name: nm, sinceMs: now - w.firstStart });
+    });
+    // Открытый этап, который сейчас в работе — это WIP (для aging)
+    if (w.wip && w.wip.stillActive) {
+      wip.push({ pid: pid, idx: idx, name: nm, sinceMs: now - w.wip.start });
     }
   });
 
@@ -33859,10 +33902,16 @@ async function loadCycleTime() {
   var measurable = instances.length;
   // Уникальных этапов с историей (не инстансов — один этап мог завершаться N раз)
   var measurableUnique = Object.keys(groups).filter(function (k) {
-    var w = _ctWalk(groups[k]);
-    return w.completed;
+    return _ctWalk(groups[k]).everCompleted;
   }).length;
-  var denominator = Math.max(totalCompletedStages, measurableUnique) || 1;
+  // Знаменатель покрытия = уникальные этапы, у которых в ИСТОРИИ есть хотя бы одно
+  // завершение (измеримое или нет). measurableUnique всегда ⊆ completedUnique,
+  // поэтому дробь корректна и ≤100%. Раньше знаменатель брался из текущего снимка
+  // статусов, который после сброса цикла меньше числителя — отсюда «19 из 6».
+  var completedUnique = Object.keys(groups).filter(function (k) {
+    return groups[k].some(function (h) { return _ctStatusOf(h) === 'completed'; });
+  }).length;
+  var denominator = completedUnique || 1;
   var coveragePct = Math.min(100, Math.round(measurableUnique / denominator * 100));
 
   // Если нечего показывать
@@ -33879,7 +33928,7 @@ async function loadCycleTime() {
         }
       }
     }
-    _ctRenderHero(null, coveragePct, measurableUnique, totalCompletedStages, 0);
+    _ctRenderHero(null, coveragePct, measurableUnique, completedUnique, 0);
     return;
   }
   if (emptyEl) emptyEl.style.display = 'none';
@@ -33923,8 +33972,20 @@ async function loadCycleTime() {
   // измеренного этапа до завершения последнего. Не предполагает
   // последовательности — это фактическое календарное время. Берём только
   // проекты с ≥2 измеренными этапами (иначе это просто длительность 1 этапа). ──
+  // Границу текущего цикла берём из БД (projects.cycle_started_at), а НЕ из
+  // эвристики — поэтому время не «протекает» между месяцами. Этапы, стартовавшие
+  // до начала текущего цикла, в расчёт span не идут. Проекты без cycle_started_at
+  // (старые/одноцикловые) считаются как один цикл — для них берём все инстансы.
+  var _ctCycleSince = {};
+  if (typeof _allProjects !== 'undefined') {
+    _allProjects.forEach(function (p) {
+      _ctCycleSince[p.id] = p.cycle_started_at ? new Date(p.cycle_started_at).getTime() : null;
+    });
+  }
   var projSpan = {};
   instances.forEach(function (it) {
+    var since = _ctCycleSince[it.pid];
+    if (since != null && it.startMs < since) return;   // этап из прошлого цикла — пропускаем
     var s = projSpan[it.pid] || (projSpan[it.pid] = { minStart: it.startMs, maxEnd: it.completeAt, n: 0 });
     if (it.startMs < s.minStart) s.minStart = it.startMs;
     if (it.completeAt > s.maxEnd) s.maxEnd = it.completeAt;
@@ -34005,7 +34066,7 @@ async function loadCycleTime() {
     measurable: measurableUnique, totalCompletedStages: totalCompletedStages, coveragePct: coveragePct };
 
   // ── Рендер ──
-  _ctRenderHero(_ctData, coveragePct, measurableUnique, totalCompletedStages, agingRows.length);
+  _ctRenderHero(_ctData, coveragePct, measurableUnique, completedUnique, agingRows.length);
   _ctRenderStageChart(stageStats);
   _ctRenderStageTable(stageStats, sumP50);
   _ctRenderAging(agingRows);
@@ -36084,6 +36145,7 @@ async function cpRenderActivityFeed(project) {
 
   const { data: hist } = await sb.from('stage_history')
     .select('*').eq('project_id', project.id)
+    .neq('event', 'Новый цикл')
     .order('created_at', { ascending: false }).limit(5);
   if (!hist || !hist.length) return;
 
