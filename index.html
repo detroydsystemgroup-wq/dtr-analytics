@@ -34552,13 +34552,18 @@ async function buildRoomCard(room, myRole, user, members, habits, logs){
     </div>`;
   }).join('');
 
-  /* ── Matrix v2 — compact 26px cells, 7-day grid ── */
-  const mxCols = `minmax(140px,1fr) repeat(7,32px) 44px${isOwner?' 24px':''}`;
+  /* ── Сетка как в личном трекере: имя | 7×44px | прогресс | удаление ── */
+  const mxCols = `200px repeat(7,44px) minmax(130px,170px) 32px`;
 
+  // Заголовки дней: метка + число (как в личном трекере)
   const colHeadV2 = weekDates.map((d,i)=>{
     const key = dateStr(d);
     const isToday = key===today;
-    return `<div class="cr-mx-head-cell${isToday?' is-today':''}">${DLBL[i]}</div>`;
+    const isPast = d<now && !isToday;
+    return `<div style="text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px">
+      <div class="hab-col-day${isToday?' is-today':''}">${DLBL[i]}</div>
+      <div class="hab-col-date${isToday?' is-today':isPast?' is-past':' is-future'}">${d.getDate()}</div>
+    </div>`;
   }).join('');
 
   const habRowsV2 = habits.map(h=>{
@@ -34575,68 +34580,68 @@ async function buildRoomCard(room, myRole, user, members, habits, logs){
       const missed = !future && !isToday && !done;
       if(!future){ wPassed++; if(done) wDone++; }
 
-      const clickFn = isToday ? `chabToggleCell('${room.id}','${h.id}','${key}',this)` : '';
-      let cls = 'cr-mx-cell chab-cell mine';
-      if(done) cls += ' done';
-      if(future) cls += ' is-future future';
-      if(missed) cls += ' is-missed missed';
-      if(isToday) cls += ' is-today';
+      let cls = 'hab-cell';
+      if(done) cls += ' done';          // 'done' — семантика для chabToggleCell/realtime
+      if(isToday) cls += ' cell-today';
+      if(future) cls += ' cell-future';
+      if(missed) cls += ' cell-missed';
 
-      const inlineStyle = done
-        ? `background:${color}26;border-color:${color}5C`
-        : isToday
-          ? `border-color:${color}80`
-          : '';
+      const clickAttr = isToday
+        ? `onclick="chabToggleCell('${room.id}','${h.id}','${key}',this)"`
+        : '';
+      const cursorStyle = isToday ? '' : 'cursor:default;';
+      const doneStyle = done
+        ? `background:linear-gradient(135deg,${color}40,${color}20);border:0.5px solid ${color}70;box-shadow:0 2px 10px ${color}35;`
+        : '';
 
       let inner;
       if(done){
-        inner = `<span class="chab-check"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>`;
+        inner = `<span class="chab-check"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.8" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>`;
       } else if(missed){
-        inner = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(239,68,68,.55)" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+        inner = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(239,68,68,.7)" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+      } else if(future){
+        inner = `<div style="width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.04)"></div>`;
       } else {
-        inner = `<div class="cr-mx-cell-dot${isToday?' is-today':''}"></div>`;
+        inner = `<div style="width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.1)"></div>`;
       }
 
-      return `<div class="${cls}" data-chab-cell="${room.id}|${h.id}|${key}"
-        style="${inlineStyle}"
-        ${clickFn?`onclick="${clickFn}"`:''}>${inner}</div>`;
+      return `<div class="${cls}" data-chab-cell="${room.id}|${h.id}|${key}" style="${doneStyle}${cursorStyle}" ${clickAttr}>${inner}</div>`;
     }).join('');
 
     const weekPct = wPassed>0 ? Math.round(wDone/wPassed*100) : 0;
     const doneToday = !!(myHabLog[today]);
     const atRiskRow = myStreak>=3 && !doneToday;
     const perfectRow = wPassed>0 && wDone===wPassed;
-    let rowClass = 'cr-mx-row chab-hab-row';
-    if(atRiskRow) rowClass += ' is-at-risk at-risk';
-    else if(perfectRow) rowClass += ' is-perfect perfect';
-
-    const streakHtml = myStreak>0
-      ? `<div class="cr-mx-hab-streak is-active">🔥 ${myStreak}</div>`
-      : `<div class="cr-mx-hab-streak">— дисциплина</div>`;
+    let rowClass = 'hab-row';
+    if(atRiskRow) rowClass += ' at-risk';
+    else if(perfectRow) rowClass += ' perfect';
 
     const iconHtml = typeof window.habIconHTML === 'function'
-      ? window.habIconHTML(h.icon, 14, color)
+      ? window.habIconHTML(h.icon, 20, color)
       : (h.icon||'🎯');
 
-    const delCell = isOwner
-      ? `<button onclick="chabDeleteHabit('${room.id}','${h.id}')" title="Удалить привычку"
-          style="width:22px;height:22px;border-radius:6px;background:transparent;border:none;color:rgba(255,255,255,.18);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:background .15s,color .15s"
-          onmouseover="this.style.background='rgba(239,68,68,.12)';this.style.color='#ef4444'"
-          onmouseout="this.style.background='transparent';this.style.color='rgba(255,255,255,.18)'">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
-        </button>` : '';
+    const delBtn = isOwner
+      ? `<button class="hab-del-btn" onclick="chabDeleteHabit('${room.id}','${h.id}')" title="Удалить привычку"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button>`
+      : `<div></div>`;
 
     return `<div class="${rowClass}" style="grid-template-columns:${mxCols}">
-      <div class="cr-mx-hab">
-        <div class="cr-mx-hab-icon" style="background:${color}1a;border:0.5px solid ${color}38;color:${color}">${iconHtml}</div>
-        <div class="cr-mx-hab-text">
-          <div class="cr-mx-hab-name">${esc(h.name)}</div>
-          ${streakHtml}
+      <div class="hab-row-name">
+        <div class="hab-row-icon" style="background:${color}18;border:0.5px solid ${color}35;color:${color}">${iconHtml}</div>
+        <div class="hab-row-label" style="min-width:0">
+          <div class="hab-row-title" style="font-size:14px">${esc(h.name)}</div>
+          <div class="hab-row-sub">${myStreak>0?`<span style="color:var(--orange);font-weight:700;font-size:11px">🔥 ${myStreak} дн.</span>`:'<span style="color:var(--t3);font-size:11px">— дисциплина</span>'}</div>
         </div>
       </div>
       ${cells}
-      <div class="cr-mx-pct" style="color:${weekPct>=100?color:weekPct>0?color:'var(--t3)'}">${weekPct}%</div>
-      ${delCell}
+      <div class="hab-prog-wrap">
+        <div class="hab-prog-head">
+          <span class="hab-prog-lbl">Неделя</span>
+          <span class="hab-prog-pct" style="color:${weekPct===100?color:weekPct>=50?color:'var(--t3)'}">${weekPct}%</span>
+        </div>
+        <div class="hab-prog-bar"><div class="hab-prog-fill" style="width:${weekPct}%;background:${weekPct===100?`linear-gradient(90deg,${color}cc,${color})`:`${color}99`}"></div></div>
+        <div class="hab-prog-sub"><span>${wDone}/${wPassed} дн.</span>${weekPct===100?`<span style="color:${color};font-size:11px">✦ Идеально</span>`:''}</div>
+      </div>
+      ${delBtn}
     </div>`;
   }).join('');
 
@@ -34767,14 +34772,14 @@ async function buildRoomCard(room, myRole, user, members, habits, logs){
         </div>
 
         ${habits.length ? `
-          <div class="cr-mx chab-matrix-inner">
-            <div class="cr-mx-head" style="grid-template-columns:${mxCols}">
-              <div class="cr-mx-head-name">Привычка</div>
+          <div class="chab-matrix-wrap" style="overflow-x:auto">
+            <div style="display:grid;grid-template-columns:${mxCols};align-items:center;gap:12px;padding:2px 20px 8px;margin-bottom:2px;border-bottom:0.5px solid rgba(255,255,255,.05);min-width:760px">
+              <div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2)">Привычка</div>
               ${colHeadV2}
-              <div class="cr-mx-head-cell" style="text-align:right">%</div>
-              ${isOwner?'<div></div>':''}
+              <div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2);padding-left:4px">Прогресс</div>
+              <div></div>
             </div>
-            ${habRowsV2}
+            <div style="min-width:760px">${habRowsV2}</div>
           </div>
         ` : `
           <div class="cr-mx-empty">
