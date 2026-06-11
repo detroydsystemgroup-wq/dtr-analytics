@@ -45283,13 +45283,21 @@ function lsLoad(rid){ try{ return JSON.parse(localStorage.getItem(LS_KEY(rid))||
 function lsSave(rid,d){ try{ localStorage.setItem(LS_KEY(rid), JSON.stringify(d)); }catch{} }
 
 function getChallenges(roomId){
-  /* Supabase кеш приоритетнее — если есть данные оттуда, используем их */
+  /* Объединяем челленджи из Supabase-кеша И localStorage, без дублей по id.
+     Раньше при наличии кеша localStorage игнорировался — поэтому челленджи,
+     сохранённые локально (когда запись в Supabase не прошла: нет таблицы / RLS),
+     пропадали после перезагрузки. Теперь они сохраняются. */
+  let fromCache = [];
   try{
-    const fromCache = getCache()?.perRoom?.[roomId]?.challenges;
-    if(fromCache !== undefined) return fromCache;
+    const c = getCache()?.perRoom?.[roomId]?.challenges;
+    if(Array.isArray(c)) fromCache = c;
   } catch{}
-  /* Fallback: localStorage */
-  return lsLoad(roomId);
+  const local = lsLoad(roomId);
+  const seen = new Set(fromCache.map(c=>String(c.id)));
+  const merged = fromCache.slice();
+  local.forEach(c=>{ if(!seen.has(String(c.id))) merged.push(c); });
+  merged.sort((a,b)=> String(b.created_at||'').localeCompare(String(a.created_at||'')));
+  return merged;
 }
 
 /* ── refreshAllRooms ─────────────────────────────────────── */
